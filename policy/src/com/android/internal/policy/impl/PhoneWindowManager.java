@@ -4438,6 +4438,17 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mForceDefaultOrientation) {
             return Surface.ROTATION_0;
         }
+	// Rio add for drone device
+	//if (SystemProperties.getBoolean("ro.support.lcd.horizontal", false)) {
+		if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT && lastRotation
+== ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+			return 1;
+		}
+
+		if (orientation == 1 && lastRotation == 3) {
+			return 3;
+		}
+	//}//end
 
         synchronized (mLock) {
             int sensorRotation = mOrientationListener.getProposedRotation(); // may be -1
