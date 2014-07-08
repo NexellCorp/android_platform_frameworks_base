@@ -290,6 +290,20 @@ public class NavigationBarView extends LinearLayout {
     public View getCameraButton() {
         return mCurrentView.findViewById(R.id.camera_button);
     }
+    
+    // begin add by bill
+    public View getScreenShotButton() {
+        return mCurrentView.findViewById(R.id.screenshot);
+    }
+
+    public View getDownButton() {
+        return mCurrentView.findViewById(R.id.down);
+    }
+
+    public View getUpButton() {
+        return mCurrentView.findViewById(R.id.up);
+    }// end add by bill
+
 
     private void getIcons(Resources res) {
         mBackIcon = res.getDrawable(R.drawable.ic_sysbar_back);
@@ -378,6 +392,11 @@ public class NavigationBarView extends LinearLayout {
         getBackButton()   .setVisibility(disableBack       ? View.INVISIBLE : View.VISIBLE);
         getHomeButton()   .setVisibility(disableHome       ? View.INVISIBLE : View.VISIBLE);
         getRecentsButton().setVisibility(disableRecent     ? View.INVISIBLE : View.VISIBLE);
+        if (getUpButton() != null) 
+        	getUpButton()     .setVisibility(disableBack       ? View.INVISIBLE : View.VISIBLE);    // add by bill
+        if (getDownButton() != null)
+        	getDownButton()   .setVisibility(disableBack       ? View.INVISIBLE : View.VISIBLE);    // add by bill
+
 
         final boolean showSearch = disableHome && !disableSearch;
         final boolean showCamera = showSearch && !mCameraDisabledByDpm;
