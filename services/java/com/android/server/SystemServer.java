@@ -1119,6 +1119,14 @@ class ServerThread {
         } catch (Throwable e) {
             Slog.i(TAG, "failed to getInt hwc.resolution setting value");
         }
+
+        try {
+            int hwcHDMIScreenDownSizing = Settings.System.getInt(context.getContentResolver(), "hwc.screendownsizing", 0);
+            Slog.i(TAG, "hwc.screendownsizing is " + hwcHDMIScreenDownSizing);
+            SystemProperties.set("hwc.screendownsizing", Integer.toString(hwcHDMIScreenDownSizing));
+        } catch (Throwable e) {
+            Slog.i(TAG, "failed to getInt hwc.screendownsizing setting value");
+        }
     }
 
     static final void startSystemUi(Context context) {
