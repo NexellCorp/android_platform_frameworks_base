@@ -466,6 +466,19 @@ public final class PowerManagerService extends IPowerManager.Stub
             filter = new IntentFilter();
             filter.addAction(Intent.ACTION_BOOT_COMPLETED);
             mContext.registerReceiver(new BootCompletedReceiver(), filter, null, mHandler);
+	
+	
+			/* bok test SD Insert/remove TurnOn Screen */
+			filter = new IntentFilter();
+			filter.addAction(Intent.ACTION_MEDIA_REMOVED);
+			filter.addAction(Intent.ACTION_MEDIA_CHECKING);
+			filter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
+			filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
+			//filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
+			//filter.addAction(Intent.ACTION_MEDIA_EJECT);
+			filter.addDataScheme("file");
+			mContext.registerReceiver(new IsSdReceiver(), filter, null, mHandler);
+
 
             filter = new IntentFilter();
             filter.addAction(Intent.ACTION_DREAMING_STARTED);
@@ -1849,6 +1862,16 @@ public final class PowerManagerService extends IPowerManager.Stub
         mDirty |= DIRTY_BATTERY_STATE;
         updatePowerStateLocked();
     }
+	/* bok test SD Insert/remove TurnOn Screen */
+	private void handleSdmountStateChangedLocked(){
+			mDirty |= DIRTY_IS_POWERED|  DIRTY_USER_ACTIVITY ;
+			mNotifier.onWakeUpStarted();
+			sendPendingNotificationsLocked();
+			mWakefulness = WAKEFULNESS_AWAKE;
+			mSendWakeUpFinishedNotificationWhenReady = true;
+			mLastUserActivityTime = SystemClock.uptimeMillis();
+			updatePowerStateLocked();
+	}
 
     private void startWatchingForBootAnimationFinished() {
         mHandler.sendEmptyMessage(MSG_CHECK_IF_BOOT_ANIMATION_FINISHED);
@@ -2412,6 +2435,17 @@ public final class PowerManagerService extends IPowerManager.Stub
             }
         }
     }
+
+	/* bok test SD Insert/remove TurnOn Screen */
+	private final class IsSdReceiver extends BroadcastReceiver {
+	@Override
+		public void onReceive(Context context, Intent intent) {
+			synchronized (mLock) {
+		        handleSdmountStateChangedLocked();
+	    	}
+		}
+	}
+
 
     private final class BootCompletedReceiver extends BroadcastReceiver {
         @Override
