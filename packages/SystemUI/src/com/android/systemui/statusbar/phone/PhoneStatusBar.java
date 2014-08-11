@@ -743,7 +743,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
         }
         return mNaturalBarHeight;
     }
-    
+
     // begin add by bill
     private View.OnClickListener mScreenshotClickListener = new View.OnClickListener() {
 
@@ -774,7 +774,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
             }
         }
     };
-    
+
  // Assume this is called from the Handler thread.
     private void takeScreenshot() {
         synchronized (mScreenshotLock) {
@@ -881,7 +881,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode {
         mNavigationBarView.getRecentsButton().setOnClickListener(mRecentsClickListener);
         mNavigationBarView.getRecentsButton().setOnTouchListener(mRecentsPreloadOnTouchListener);
         mNavigationBarView.getHomeButton().setOnTouchListener(mHomeSearchActionListener);
-        mNavigationBarView.getSearchLight().setOnTouchListener(mHomeSearchActionListener); 
+        mNavigationBarView.getSearchLight().setOnTouchListener(mHomeSearchActionListener);
         mNavigationBarView.getScreenShotButton().setOnClickListener(mScreenshotClickListener);  // add by bill
         updateSearchPanel();
     }
