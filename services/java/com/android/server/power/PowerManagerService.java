@@ -367,6 +367,8 @@ public final class PowerManagerService extends IPowerManager.Stub
 
     // Time when we last logged a warning about calling userActivity() without permission.
     private long mLastWarningAboutUserActivityPermission = Long.MIN_VALUE;
+	/*Bok Add for SD insert/remove  function wakeup on/off */
+	private boolean mSdwake = true;
 
     private native void nativeInit();
 
@@ -474,11 +476,11 @@ public final class PowerManagerService extends IPowerManager.Stub
 			filter.addAction(Intent.ACTION_MEDIA_CHECKING);
 			filter.addAction(Intent.ACTION_MEDIA_BAD_REMOVAL);
 			filter.addAction(Intent.ACTION_MEDIA_MOUNTED);
-			//filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
+			filter.addAction(Intent.ACTION_MEDIA_UNMOUNTED);
 			//filter.addAction(Intent.ACTION_MEDIA_EJECT);
 			filter.addDataScheme("file");
 			mContext.registerReceiver(new IsSdReceiver(), filter, null, mHandler);
-
+			mSdwake = (SystemProperties.get("pm.sdwake.enabled", "true").equals("true") ? true : false);  
 
             filter = new IntentFilter();
             filter.addAction(Intent.ACTION_DREAMING_STARTED);
@@ -1864,16 +1866,22 @@ public final class PowerManagerService extends IPowerManager.Stub
     }
 	/* bok test SD Insert/remove TurnOn Screen */
 	private void handleSdmountStateChangedLocked(){
+        if (DEBUG) {
+            Slog.d(TAG, "SD Insert/removed TurnOn Screen...   wakeOn : " +mSdwake);
+        }
+		
+		if(mSdwake == true ) {
 			mDirty |= DIRTY_IS_POWERED|  DIRTY_USER_ACTIVITY ;
-			mNotifier.onWakeUpStarted();
 			sendPendingNotificationsLocked();
+			mNotifier.onWakeUpStarted();
 			mWakefulness = WAKEFULNESS_AWAKE;
 			mSendWakeUpFinishedNotificationWhenReady = true;
 			mLastUserActivityTime = SystemClock.uptimeMillis();
 			updatePowerStateLocked();
+		}
 	}
 
-    private void startWatchingForBootAnimationFinished() {
+	private void startWatchingForBootAnimationFinished() {
         mHandler.sendEmptyMessage(MSG_CHECK_IF_BOOT_ANIMATION_FINISHED);
     }
 
