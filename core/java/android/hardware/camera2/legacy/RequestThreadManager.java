@@ -266,6 +266,13 @@ public class RequestThreadManager {
         }
     }
 
+    // psw0523 add
+    public void forcedStopPreview() {
+        Log.d(TAG, "called forcedStopPreview");
+        stopPreview();
+    }
+    // end psw0523
+
     private void startPreview() {
         if (VERBOSE) {
             Log.v(TAG, "startPreview - preview running? " + mPreviewRunning);
@@ -937,6 +944,9 @@ public class RequestThreadManager {
      * Quit the request thread, and clean up everything.
      */
     public void quit() {
+        // psw0523 add for switching camera
+        stopPreview();
+        // end psw0523
         Handler handler = mRequestThread.waitAndGetHandler();
         handler.sendMessageAtFrontOfQueue(handler.obtainMessage(MSG_CLEANUP));
         mRequestThread.quitSafely();

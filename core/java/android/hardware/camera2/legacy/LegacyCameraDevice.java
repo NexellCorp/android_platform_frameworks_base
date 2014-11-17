@@ -414,6 +414,12 @@ public class LegacyCameraDevice implements AutoCloseable {
         return mRequestThreadManager.cancelRepeating(requestId);
     }
 
+    // psw0523 add
+    public void stopPreview() {
+        Log.d(TAG, "called stopPreview");
+        mRequestThreadManager.forcedStopPreview();
+    }
+
     /**
      * Block until the {@link ICameraDeviceCallbacks#onCameraIdle()} callback is received.
      */
