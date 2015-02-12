@@ -137,6 +137,8 @@ static void setArgv0(const char *argv0, const char *newArgv0)
 
 int main(int argc, char* const argv[])
 {
+    // psw0523 debugging
+    ALOGD("start app_process...");
 #ifdef __arm__
     /*
      * b/7188322 - Temporarily revert to the compat memory layout

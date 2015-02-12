@@ -204,10 +204,20 @@ class ServerThread {
             Slog.e("System", "************ Failure starting bootstrap service", e);
         }
 
+        // psw0523 fix
+        //boolean disableStorage = SystemProperties.getBoolean("config.disable_storage", false);
+        //boolean disableMedia = SystemProperties.getBoolean("config.disable_media", false);
+        //boolean disableBluetooth = SystemProperties.getBoolean("config.disable_bluetooth", false);
+        //boolean disableTelephony = SystemProperties.getBoolean("config.disable_telephony", false);
+        //boolean disableLocation = SystemProperties.getBoolean("config.disable_location", false);
+        //boolean disableSystemUI = SystemProperties.getBoolean("config.disable_systemui", false);
+        //boolean disableNonCoreServices = SystemProperties.getBoolean("config.disable_noncore", false);
+        //boolean disableNetwork = SystemProperties.getBoolean("config.disable_network", false);
+
         boolean disableStorage = SystemProperties.getBoolean("config.disable_storage", false);
         boolean disableMedia = SystemProperties.getBoolean("config.disable_media", false);
-        boolean disableBluetooth = SystemProperties.getBoolean("config.disable_bluetooth", false);
-        boolean disableTelephony = SystemProperties.getBoolean("config.disable_telephony", false);
+        boolean disableBluetooth = SystemProperties.getBoolean("config.disable_bluetooth", true);
+        boolean disableTelephony = SystemProperties.getBoolean("config.disable_telephony", true);
         boolean disableLocation = SystemProperties.getBoolean("config.disable_location", false);
         boolean disableSystemUI = SystemProperties.getBoolean("config.disable_systemui", false);
         boolean disableNonCoreServices = SystemProperties.getBoolean("config.disable_noncore", false);
@@ -218,6 +228,7 @@ class ServerThread {
             display = new DisplayManagerService(context, wmHandler);
             ServiceManager.addService(Context.DISPLAY_SERVICE, display, true);
 
+            // psw0523 : NO this block -> phone app error
             Slog.i(TAG, "Telephony Registry");
             telephonyRegistry = new TelephonyRegistry(context);
             ServiceManager.addService("telephony.registry", telephonyRegistry);
@@ -227,21 +238,23 @@ class ServerThread {
 
             AttributeCache.init(context);
 
-            if (!display.waitForDefaultDisplay()) {
-                reportWtf("Timeout waiting for default display to be initialized.",
-                        new Throwable());
-            }
+            // psw0523 test
+            //if (!display.waitForDefaultDisplay()) {
+                //reportWtf("Timeout waiting for default display to be initialized.",
+                        //new Throwable());
+            //}
 
             Slog.i(TAG, "Package Manager");
             // Only run "core" apps if we're encrypting the device.
-            String cryptState = SystemProperties.get("vold.decrypt");
-            if (ENCRYPTING_STATE.equals(cryptState)) {
-                Slog.w(TAG, "Detected encryption in progress - only parsing core apps");
-                onlyCore = true;
-            } else if (ENCRYPTED_STATE.equals(cryptState)) {
-                Slog.w(TAG, "Device encrypted - only parsing core apps");
-                onlyCore = true;
-            }
+            // psw0523 test
+            //String cryptState = SystemProperties.get("vold.decrypt");
+            //if (ENCRYPTING_STATE.equals(cryptState)) {
+                //Slog.w(TAG, "Detected encryption in progress - only parsing core apps");
+                //onlyCore = true;
+            //} else if (ENCRYPTED_STATE.equals(cryptState)) {
+                //Slog.w(TAG, "Device encrypted - only parsing core apps");
+                //onlyCore = true;
+            //}
 
             pm = PackageManagerService.main(context, installer,
                     factoryTest != SystemServer.FACTORY_TEST_OFF,
@@ -286,13 +299,15 @@ class ServerThread {
             battery = new BatteryService(context, lights);
             ServiceManager.addService("battery", battery);
 
-            Slog.i(TAG, "Vibrator Service");
-            vibrator = new VibratorService(context);
-            ServiceManager.addService("vibrator", vibrator);
+            // psw0523 test
+            //Slog.i(TAG, "Vibrator Service");
+            //vibrator = new VibratorService(context);
+            //ServiceManager.addService("vibrator", vibrator);
 
-            Slog.i(TAG, "Consumer IR Service");
-            consumerIr = new ConsumerIrService(context);
-            ServiceManager.addService(Context.CONSUMER_IR_SERVICE, consumerIr);
+            // psw0523 test
+            //Slog.i(TAG, "Consumer IR Service");
+            //consumerIr = new ConsumerIrService(context);
+            //ServiceManager.addService(Context.CONSUMER_IR_SERVICE, consumerIr);
 
             // only initialize the power service after we have started the
             // lights service, content providers and the battery service.
@@ -304,10 +319,11 @@ class ServerThread {
             alarm = new AlarmManagerService(context);
             ServiceManager.addService(Context.ALARM_SERVICE, alarm);
 
-            Slog.i(TAG, "Init Watchdog");
-            Watchdog.getInstance().init(context, battery, power, alarm,
-                    ActivityManagerService.self());
-            Watchdog.getInstance().addThread(wmHandler, "WindowManager thread");
+            // psw0523 test
+            //Slog.i(TAG, "Init Watchdog");
+            //Watchdog.getInstance().init(context, battery, power, alarm,
+                    //ActivityManagerService.self());
+            //Watchdog.getInstance().addThread(wmHandler, "WindowManager thread");
 
             Slog.i(TAG, "Input Manager");
             inputManager = new InputManagerService(context, wmHandler);
@@ -450,6 +466,17 @@ class ServerThread {
                 }
             }
 
+            // psw0523 test
+            VMRuntime.getRuntime().startJitCompilation();
+            wm.systemReady();
+            Configuration config = wm.computeNewConfiguration();
+            DisplayMetrics metrics = new DisplayMetrics();
+            WindowManager w = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+            w.getDefaultDisplay().getMetrics(metrics);
+            context.getResources().updateConfiguration(config, metrics);
+
+            // end psw0523
+
             if (!disableNonCoreServices) {
                 try {
                     Slog.i(TAG, "Clipboard Service");
@@ -554,9 +581,10 @@ class ServerThread {
              * AppWidget Provider. Make sure MountService is completely started
              * first before continuing.
              */
-            if (mountService != null && !onlyCore) {
-                mountService.waitForAsecScan();
-            }
+            // psw0523 fix
+            //if (mountService != null && !onlyCore) {
+                //mountService.waitForAsecScan();
+            //}
 
             try {
                 if (accountManager != null)
@@ -617,13 +645,14 @@ class ServerThread {
                 }
             }
 
-            try {
-                Slog.i(TAG, "DropBox Service");
-                ServiceManager.addService(Context.DROPBOX_SERVICE,
-                        new DropBoxManagerService(context, new File("/data/system/dropbox")));
-            } catch (Throwable e) {
-                reportWtf("starting DropBoxManagerService", e);
-            }
+            // psw0523 fix
+            //try {
+                //Slog.i(TAG, "DropBox Service");
+                //ServiceManager.addService(Context.DROPBOX_SERVICE,
+                        //new DropBoxManagerService(context, new File("/data/system/dropbox")));
+            //} catch (Throwable e) {
+                //reportWtf("starting DropBoxManagerService", e);
+            //}
 
             if (!disableNonCoreServices && context.getResources().getBoolean(
                         R.bool.config_enableWallpaperService)) {
@@ -647,46 +676,49 @@ class ServerThread {
                 }
             }
 
-            if (!disableNonCoreServices) {
-                try {
-                    Slog.i(TAG, "Dock Observer");
-                    // Listen for dock station changes
-                    dock = new DockObserver(context);
-                } catch (Throwable e) {
-                    reportWtf("starting DockObserver", e);
-                }
-            }
+            // psw0523 fix
+            //if (!disableNonCoreServices) {
+                //try {
+                    //Slog.i(TAG, "Dock Observer");
+                    //// Listen for dock station changes
+                    //dock = new DockObserver(context);
+                //} catch (Throwable e) {
+                    //reportWtf("starting DockObserver", e);
+                //}
+            //}
 
-            if (!disableMedia) {
-                try {
-                    Slog.i(TAG, "Wired Accessory Manager");
-                    // Listen for wired headset changes
-                    inputManager.setWiredAccessoryCallbacks(
-                            new WiredAccessoryManager(context, inputManager));
-                } catch (Throwable e) {
-                    reportWtf("starting WiredAccessoryManager", e);
-                }
-            }
+            // psw0523 fix
+            //if (!disableMedia) {
+                //try {
+                    //Slog.i(TAG, "Wired Accessory Manager");
+                    //// Listen for wired headset changes
+                    //inputManager.setWiredAccessoryCallbacks(
+                            //new WiredAccessoryManager(context, inputManager));
+                //} catch (Throwable e) {
+                    //reportWtf("starting WiredAccessoryManager", e);
+                //}
+            //}
 
-            if (!disableNonCoreServices) {
-                try {
-                    Slog.i(TAG, "USB Service");
-                    // Manage USB host and device support
-                    usb = new UsbService(context);
-                    ServiceManager.addService(Context.USB_SERVICE, usb);
-                } catch (Throwable e) {
-                    reportWtf("starting UsbService", e);
-                }
+            // psw0523 fix
+            //if (!disableNonCoreServices) {
+                //try {
+                    //Slog.i(TAG, "USB Service");
+                    //// Manage USB host and device support
+                    //usb = new UsbService(context);
+                    //ServiceManager.addService(Context.USB_SERVICE, usb);
+                //} catch (Throwable e) {
+                    //reportWtf("starting UsbService", e);
+                //}
 
-                try {
-                    Slog.i(TAG, "Serial Service");
-                    // Serial port support
-                    serial = new SerialService(context);
-                    ServiceManager.addService(Context.SERIAL_SERVICE, serial);
-                } catch (Throwable e) {
-                    Slog.e(TAG, "Failure starting SerialService", e);
-                }
-            }
+                //try {
+                    //Slog.i(TAG, "Serial Service");
+                    //// Serial port support
+                    //serial = new SerialService(context);
+                    //ServiceManager.addService(Context.SERIAL_SERVICE, serial);
+                //} catch (Throwable e) {
+                    //Slog.e(TAG, "Failure starting SerialService", e);
+                //}
+            //}
 
             try {
                 Slog.i(TAG, "Twilight Service");
@@ -704,13 +736,14 @@ class ServerThread {
             }
 
             if (!disableNonCoreServices) {
-                try {
-                    Slog.i(TAG, "Backup Service");
-                    ServiceManager.addService(Context.BACKUP_SERVICE,
-                            new BackupManagerService(context));
-                } catch (Throwable e) {
-                    Slog.e(TAG, "Failure starting Backup Service", e);
-                }
+                // psw0523 fix
+                //try {
+                    //Slog.i(TAG, "Backup Service");
+                    //ServiceManager.addService(Context.BACKUP_SERVICE,
+                            //new BackupManagerService(context));
+                //} catch (Throwable e) {
+                    //Slog.e(TAG, "Failure starting Backup Service", e);
+                //}
 
                 try {
                     Slog.i(TAG, "AppWidget Service");
@@ -720,12 +753,13 @@ class ServerThread {
                     reportWtf("starting AppWidget Service", e);
                 }
 
-                try {
-                    Slog.i(TAG, "Recognition Service");
-                    recognition = new RecognitionManagerService(context);
-                } catch (Throwable e) {
-                    reportWtf("starting Recognition Service", e);
-                }
+                // psw0523 fix
+                //try {
+                    //Slog.i(TAG, "Recognition Service");
+                    //recognition = new RecognitionManagerService(context);
+                //} catch (Throwable e) {
+                    //reportWtf("starting Recognition Service", e);
+                //}
             }
 
             try {
@@ -735,17 +769,18 @@ class ServerThread {
                 reportWtf("starting DiskStats Service", e);
             }
 
-            try {
-                // need to add this service even if SamplingProfilerIntegration.isEnabled()
-                // is false, because it is this service that detects system property change and
-                // turns on SamplingProfilerIntegration. Plus, when sampling profiler doesn't work,
-                // there is little overhead for running this service.
-                Slog.i(TAG, "SamplingProfiler Service");
-                ServiceManager.addService("samplingprofiler",
-                            new SamplingProfilerService(context));
-            } catch (Throwable e) {
-                reportWtf("starting SamplingProfiler Service", e);
-            }
+            // psw0523 fix
+            //try {
+                //// need to add this service even if SamplingProfilerIntegration.isEnabled()
+                //// is false, because it is this service that detects system property change and
+                //// turns on SamplingProfilerIntegration. Plus, when sampling profiler doesn't work,
+                //// there is little overhead for running this service.
+                //Slog.i(TAG, "SamplingProfiler Service");
+                //ServiceManager.addService("samplingprofiler",
+                            //new SamplingProfilerService(context));
+            //} catch (Throwable e) {
+                //reportWtf("starting SamplingProfiler Service", e);
+            //}
 
             if (!disableNetwork) {
                 try {
@@ -766,51 +801,54 @@ class ServerThread {
                 }
             }
 
-            if (!disableNetwork) {
-                try {
-                    Slog.i(TAG, "CertBlacklister");
-                    CertBlacklister blacklister = new CertBlacklister(context);
-                } catch (Throwable e) {
-                    reportWtf("starting CertBlacklister", e);
-                }
-            }
+            // psw0523 fix
+            //if (!disableNetwork) {
+                //try {
+                    //Slog.i(TAG, "CertBlacklister");
+                    //CertBlacklister blacklister = new CertBlacklister(context);
+                //} catch (Throwable e) {
+                    //reportWtf("starting CertBlacklister", e);
+                //}
+            //}
 
-            if (!disableNonCoreServices &&
-                context.getResources().getBoolean(R.bool.config_dreamsSupported)) {
-                try {
-                    Slog.i(TAG, "Dreams Service");
-                    // Dreams (interactive idle-time views, a/k/a screen savers)
-                    dreamy = new DreamManagerService(context, wmHandler);
-                    ServiceManager.addService(DreamService.DREAM_SERVICE, dreamy);
-                } catch (Throwable e) {
-                    reportWtf("starting DreamManagerService", e);
-                }
-            }
+            // psw0523 fix
+            //if (!disableNonCoreServices &&
+                //context.getResources().getBoolean(R.bool.config_dreamsSupported)) {
+                //try {
+                    //Slog.i(TAG, "Dreams Service");
+                    //// Dreams (interactive idle-time views, a/k/a screen savers)
+                    //dreamy = new DreamManagerService(context, wmHandler);
+                    //ServiceManager.addService(DreamService.DREAM_SERVICE, dreamy);
+                //} catch (Throwable e) {
+                    //reportWtf("starting DreamManagerService", e);
+                //}
+            //}
 
-            if (!disableNonCoreServices) {
-                try {
-                    Slog.i(TAG, "Assets Atlas Service");
-                    atlas = new AssetAtlasService(context);
-                    ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
-                } catch (Throwable e) {
-                    reportWtf("starting AssetAtlasService", e);
-                }
-            }
+            // psw0523 fix
+            //if (!disableNonCoreServices) {
+                //try {
+                    //Slog.i(TAG, "Assets Atlas Service");
+                    //atlas = new AssetAtlasService(context);
+                    //ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
+                //} catch (Throwable e) {
+                    //reportWtf("starting AssetAtlasService", e);
+                //}
+            //}
 
-            try {
-                Slog.i(TAG, "IdleMaintenanceService");
-                new IdleMaintenanceService(context, battery);
-            } catch (Throwable e) {
-                reportWtf("starting IdleMaintenanceService", e);
-            }
+            //try {
+                //Slog.i(TAG, "IdleMaintenanceService");
+                //new IdleMaintenanceService(context, battery);
+            //} catch (Throwable e) {
+                //reportWtf("starting IdleMaintenanceService", e);
+            //}
 
-            try {
-                Slog.i(TAG, "Print Service");
-                printManager = new PrintManagerService(context);
-                ServiceManager.addService(Context.PRINT_SERVICE, printManager);
-            } catch (Throwable e) {
-                reportWtf("starting Print Service", e);
-            }
+            //try {
+                //Slog.i(TAG, "Print Service");
+                //printManager = new PrintManagerService(context);
+                //ServiceManager.addService(Context.PRINT_SERVICE, printManager);
+            //} catch (Throwable e) {
+                //reportWtf("starting Print Service", e);
+            //}
 
             if (!disableNonCoreServices) {
                 try {
@@ -825,25 +863,27 @@ class ServerThread {
 
         // Before things start rolling, be sure we have decided whether
         // we are in safe mode.
-        final boolean safeMode = wm.detectSafeMode();
-        if (safeMode) {
-            ActivityManagerService.self().enterSafeMode();
-            // Post the safe mode state in the Zygote class
-            Zygote.systemInSafeMode = true;
-            // Disable the JIT for the system_server process
-            VMRuntime.getRuntime().disableJitCompilation();
-        } else {
-            // Enable the JIT for the system_server process
-            VMRuntime.getRuntime().startJitCompilation();
-        }
+        // psw0523 fix
+        //final boolean safeMode = wm.detectSafeMode();
+        //if (safeMode) {
+            //ActivityManagerService.self().enterSafeMode();
+            //// Post the safe mode state in the Zygote class
+            //Zygote.systemInSafeMode = true;
+            //// Disable the JIT for the system_server process
+            //VMRuntime.getRuntime().disableJitCompilation();
+        //} else {
+            //// Enable the JIT for the system_server process
+            //VMRuntime.getRuntime().startJitCompilation();
+        //}
 
         // It is now time to start up the app processes...
 
-        try {
-            vibrator.systemReady();
-        } catch (Throwable e) {
-            reportWtf("making Vibrator Service ready", e);
-        }
+        // psw0523 fix
+        //try {
+            //vibrator.systemReady();
+        //} catch (Throwable e) {
+            //reportWtf("making Vibrator Service ready", e);
+        //}
 
         if (lockSettings != null) {
             try {
@@ -869,24 +909,27 @@ class ServerThread {
             }
         }
 
-        try {
-            wm.systemReady();
-        } catch (Throwable e) {
-            reportWtf("making Window Manager Service ready", e);
-        }
+        // psw0523 test
+        //try {
+            //wm.systemReady();
+        //} catch (Throwable e) {
+            //reportWtf("making Window Manager Service ready", e);
+        //}
 
-        if (safeMode) {
-            ActivityManagerService.self().showSafeModeOverlay();
-        }
+        // psw0523 fix
+        //if (safeMode) {
+            //ActivityManagerService.self().showSafeModeOverlay();
+        //}
 
         // Update the configuration for this context by hand, because we're going
         // to start using it before the config change done in wm.systemReady() will
         // propagate to it.
-        Configuration config = wm.computeNewConfiguration();
-        DisplayMetrics metrics = new DisplayMetrics();
-        WindowManager w = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
-        w.getDefaultDisplay().getMetrics(metrics);
-        context.getResources().updateConfiguration(config, metrics);
+        // psw0523 test
+        //Configuration config = wm.computeNewConfiguration();
+        //DisplayMetrics metrics = new DisplayMetrics();
+        //WindowManager w = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
+        //w.getDefaultDisplay().getMetrics(metrics);
+        //context.getResources().updateConfiguration(config, metrics);
 
         try {
             power.systemReady(twilight, dreamy);
@@ -901,7 +944,9 @@ class ServerThread {
         }
 
         try {
-            display.systemReady(safeMode, onlyCore);
+            // psw0523 fix
+            //display.systemReady(safeMode, onlyCore);
+            display.systemReady(false, onlyCore);
         } catch (Throwable e) {
             reportWtf("making Display Manager Service ready", e);
         }
@@ -1013,7 +1058,9 @@ class ServerThread {
                 // third party code...
 
                 try {
-                    if (appWidgetF != null) appWidgetF.systemRunning(safeMode);
+                    // psw0523 fix
+                    //if (appWidgetF != null) appWidgetF.systemRunning(safeMode);
+                    if (appWidgetF != null) appWidgetF.systemRunning(false);
                 } catch (Throwable e) {
                     reportWtf("Notifying AppWidgetService running", e);
                 }
@@ -1096,7 +1143,7 @@ class ServerThread {
         }
 
         // psw0523 add for nexell hwc property
-        setNexellProperty(contextF);
+        //setNexellProperty(contextF);
 
         Looper.loop();
         Slog.d(TAG, "System ServerThread is exiting!");

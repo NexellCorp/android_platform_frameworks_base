@@ -38,6 +38,6 @@ LOCAL_MODULE_PATH := $(TARGET_OUT_EXECUTABLES)/asan
 LOCAL_MODULE_STEM := app_process
 LOCAL_ADDRESS_SANITIZER := true
 
-include $(BUILD_EXECUTABLE)
+#include $(BUILD_EXECUTABLE)
 
 endif # ifeq($(TARGET_ARCH),arm)
