@@ -3752,7 +3752,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mForcingShowNavBar = false;
         mForcingShowNavBarLayer = -1;
 
-        mHideLockScreen = false;
+        // psw0523 fix for quickboot
+        //mHideLockScreen = false;
+        mHideLockScreen = true;
         mAllowLockscreenWhenOn = false;
         mDismissKeyguard = DISMISS_KEYGUARD_NONE;
         mShowingLockscreen = false;
