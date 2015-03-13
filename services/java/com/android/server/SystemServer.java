@@ -331,17 +331,19 @@ public final class SystemServer {
         mDisplayManagerService = mSystemServiceManager.startService(DisplayManagerService.class);
 
         // We need the default display before we can initialize the package manager.
-        mSystemServiceManager.startBootPhase(SystemService.PHASE_WAIT_FOR_DEFAULT_DISPLAY);
+        // psw0523 fix
+        //mSystemServiceManager.startBootPhase(SystemService.PHASE_WAIT_FOR_DEFAULT_DISPLAY);
 
         // Only run "core" apps if we're encrypting the device.
-        String cryptState = SystemProperties.get("vold.decrypt");
-        if (ENCRYPTING_STATE.equals(cryptState)) {
-            Slog.w(TAG, "Detected encryption in progress - only parsing core apps");
-            mOnlyCore = true;
-        } else if (ENCRYPTED_STATE.equals(cryptState)) {
-            Slog.w(TAG, "Device encrypted - only parsing core apps");
-            mOnlyCore = true;
-        }
+        // psw0523 fix
+        //String cryptState = SystemProperties.get("vold.decrypt");
+        //if (ENCRYPTING_STATE.equals(cryptState)) {
+            //Slog.w(TAG, "Detected encryption in progress - only parsing core apps");
+            //mOnlyCore = true;
+        //} else if (ENCRYPTED_STATE.equals(cryptState)) {
+            //Slog.w(TAG, "Device encrypted - only parsing core apps");
+            //mOnlyCore = true;
+        //}
 
         // Start the package manager.
         Slog.i(TAG, "Package Manager");
@@ -387,7 +389,8 @@ public final class SystemServer {
         final Context context = mSystemContext;
         AccountManagerService accountManager = null;
         ContentService contentService = null;
-        VibratorService vibrator = null;
+        // psw0523 fix
+        //VibratorService vibrator = null;
         IAlarmManager alarm = null;
         MountService mountService = null;
         NetworkManagementService networkManagement = null;
@@ -404,19 +407,30 @@ public final class SystemServer {
         CommonTimeManagementService commonTimeMgmtService = null;
         InputManagerService inputManager = null;
         TelephonyRegistry telephonyRegistry = null;
-        ConsumerIrService consumerIr = null;
+        // psw0523 fix
+        //ConsumerIrService consumerIr = null;
         AudioService audioService = null;
         MmsServiceBroker mmsService = null;
 
+        // psw0523 fix
+        //boolean disableStorage = SystemProperties.getBoolean("config.disable_storage", false);
+        //boolean disableMedia = SystemProperties.getBoolean("config.disable_media", false);
+        //boolean disableBluetooth = SystemProperties.getBoolean("config.disable_bluetooth", false);
+        //boolean disableTelephony = SystemProperties.getBoolean("config.disable_telephony", false);
+        //boolean disableLocation = SystemProperties.getBoolean("config.disable_location", false);
+        //boolean disableSystemUI = SystemProperties.getBoolean("config.disable_systemui", false);
+        //boolean disableNonCoreServices = SystemProperties.getBoolean("config.disable_noncore", false);
+        //boolean disableNetwork = SystemProperties.getBoolean("config.disable_network", false);
+        //boolean isEmulator = SystemProperties.get("ro.kernel.qemu").equals("1");
         boolean disableStorage = SystemProperties.getBoolean("config.disable_storage", false);
         boolean disableMedia = SystemProperties.getBoolean("config.disable_media", false);
-        boolean disableBluetooth = SystemProperties.getBoolean("config.disable_bluetooth", false);
-        boolean disableTelephony = SystemProperties.getBoolean("config.disable_telephony", false);
+        boolean disableBluetooth = true;
+        boolean disableTelephony = true;
         boolean disableLocation = SystemProperties.getBoolean("config.disable_location", false);
         boolean disableSystemUI = SystemProperties.getBoolean("config.disable_systemui", false);
         boolean disableNonCoreServices = SystemProperties.getBoolean("config.disable_noncore", false);
         boolean disableNetwork = SystemProperties.getBoolean("config.disable_network", false);
-        boolean isEmulator = SystemProperties.get("ro.kernel.qemu").equals("1");
+        boolean isEmulator = false;
 
         try {
             Slog.i(TAG, "Reading configuration...");
@@ -451,21 +465,24 @@ public final class SystemServer {
             Slog.i(TAG, "System Content Providers");
             mActivityManagerService.installSystemProviders();
 
-            Slog.i(TAG, "Vibrator Service");
-            vibrator = new VibratorService(context);
-            ServiceManager.addService("vibrator", vibrator);
+            // psw0523 fix
+            //Slog.i(TAG, "Vibrator Service");
+            //vibrator = new VibratorService(context);
+            //ServiceManager.addService("vibrator", vibrator);
 
-            Slog.i(TAG, "Consumer IR Service");
-            consumerIr = new ConsumerIrService(context);
-            ServiceManager.addService(Context.CONSUMER_IR_SERVICE, consumerIr);
+            // psw0523 fix
+            //Slog.i(TAG, "Consumer IR Service");
+            //consumerIr = new ConsumerIrService(context);
+            //ServiceManager.addService(Context.CONSUMER_IR_SERVICE, consumerIr);
 
             mSystemServiceManager.startService(AlarmManagerService.class);
             alarm = IAlarmManager.Stub.asInterface(
                     ServiceManager.getService(Context.ALARM_SERVICE));
 
-            Slog.i(TAG, "Init Watchdog");
-            final Watchdog watchdog = Watchdog.getInstance();
-            watchdog.init(context, mActivityManagerService);
+            // psw0523 fix
+            //Slog.i(TAG, "Init Watchdog");
+            //final Watchdog watchdog = Watchdog.getInstance();
+            //watchdog.init(context, mActivityManagerService);
 
             Slog.i(TAG, "Input Manager");
             inputManager = new InputManagerService(context);
@@ -764,13 +781,14 @@ public final class SystemServer {
                 }
             }
 
-            try {
-                Slog.i(TAG, "DropBox Service");
-                ServiceManager.addService(Context.DROPBOX_SERVICE,
-                        new DropBoxManagerService(context, new File("/data/system/dropbox")));
-            } catch (Throwable e) {
-                reportWtf("starting DropBoxManagerService", e);
-            }
+            // psw0523 fix
+            //try {
+                //Slog.i(TAG, "DropBox Service");
+                //ServiceManager.addService(Context.DROPBOX_SERVICE,
+                        //new DropBoxManagerService(context, new File("/data/system/dropbox")));
+            //} catch (Throwable e) {
+                //reportWtf("starting DropBoxManagerService", e);
+            //}
 
             if (!disableNonCoreServices && context.getResources().getBoolean(
                         R.bool.config_enableWallpaperService)) {
@@ -793,9 +811,10 @@ public final class SystemServer {
                 }
             }
 
-            if (!disableNonCoreServices) {
-                mSystemServiceManager.startService(DockObserver.class);
-            }
+            // psw0523 fix
+            //if (!disableNonCoreServices) {
+                //mSystemServiceManager.startService(DockObserver.class);
+            //}
 
             if (!disableMedia) {
                 try {
@@ -853,17 +872,18 @@ public final class SystemServer {
                 reportWtf("starting DiskStats Service", e);
             }
 
-            try {
-                // need to add this service even if SamplingProfilerIntegration.isEnabled()
-                // is false, because it is this service that detects system property change and
-                // turns on SamplingProfilerIntegration. Plus, when sampling profiler doesn't work,
-                // there is little overhead for running this service.
-                Slog.i(TAG, "SamplingProfiler Service");
-                ServiceManager.addService("samplingprofiler",
-                            new SamplingProfilerService(context));
-            } catch (Throwable e) {
-                reportWtf("starting SamplingProfiler Service", e);
-            }
+            // psw0523 fix
+            //try {
+                //// need to add this service even if SamplingProfilerIntegration.isEnabled()
+                //// is false, because it is this service that detects system property change and
+                //// turns on SamplingProfilerIntegration. Plus, when sampling profiler doesn't work,
+                //// there is little overhead for running this service.
+                //Slog.i(TAG, "SamplingProfiler Service");
+                //ServiceManager.addService("samplingprofiler",
+                            //new SamplingProfilerService(context));
+            //} catch (Throwable e) {
+                //reportWtf("starting SamplingProfiler Service", e);
+            //}
 
             if (!disableNetwork) {
                 try {
@@ -893,36 +913,38 @@ public final class SystemServer {
                 }
             }
 
-            if (!disableNonCoreServices) {
-                // Dreams (interactive idle-time views, a/k/a screen savers, and doze mode)
-                mSystemServiceManager.startService(DreamManagerService.class);
-            }
+            // psw0523 fix
+            //if (!disableNonCoreServices) {
+                //// Dreams (interactive idle-time views, a/k/a screen savers, and doze mode)
+                //mSystemServiceManager.startService(DreamManagerService.class);
+            //}
 
-            if (!disableNonCoreServices) {
-                try {
-                    Slog.i(TAG, "Assets Atlas Service");
-                    atlas = new AssetAtlasService(context);
-                    ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
-                } catch (Throwable e) {
-                    reportWtf("starting AssetAtlasService", e);
-                }
-            }
+            //if (!disableNonCoreServices) {
+                //try {
+                    //Slog.i(TAG, "Assets Atlas Service");
+                    //atlas = new AssetAtlasService(context);
+                    //ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
+                //} catch (Throwable e) {
+                    //reportWtf("starting AssetAtlasService", e);
+                //}
+            //}
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PRINTING)) {
-                mSystemServiceManager.startService(PRINT_MANAGER_SERVICE_CLASS);
-            }
+            //if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PRINTING)) {
+                //mSystemServiceManager.startService(PRINT_MANAGER_SERVICE_CLASS);
+            //}
 
             mSystemServiceManager.startService(RestrictionsManagerService.class);
 
             mSystemServiceManager.startService(MediaSessionService.class);
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_HDMI_CEC)) {
-                mSystemServiceManager.startService(HdmiControlService.class);
-            }
+            // psw0523 fix
+            //if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_HDMI_CEC)) {
+                //mSystemServiceManager.startService(HdmiControlService.class);
+            //}
 
-            if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LIVE_TV)) {
-                mSystemServiceManager.startService(TvInputManagerService.class);
-            }
+            //if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_LIVE_TV)) {
+                //mSystemServiceManager.startService(TvInputManagerService.class);
+            //}
 
             if (!disableNonCoreServices) {
                 try {
@@ -970,19 +992,21 @@ public final class SystemServer {
 
         // It is now time to start up the app processes...
 
-        try {
-            vibrator.systemReady();
-        } catch (Throwable e) {
-            reportWtf("making Vibrator Service ready", e);
-        }
+        // psw0523 fix
+        //try {
+            //vibrator.systemReady();
+        //} catch (Throwable e) {
+            //reportWtf("making Vibrator Service ready", e);
+        //}
 
-        if (lockSettings != null) {
-            try {
-                lockSettings.systemReady();
-            } catch (Throwable e) {
-                reportWtf("making Lock Settings Service ready", e);
-            }
-        }
+        // psw0523 fix
+        //if (lockSettings != null) {
+            //try {
+                //lockSettings.systemReady();
+            //} catch (Throwable e) {
+                //reportWtf("making Lock Settings Service ready", e);
+            //}
+        //}
 
         // Needed by DevicePolicyManager for initialization
         mSystemServiceManager.startBootPhase(SystemService.PHASE_LOCK_SETTINGS_READY);
@@ -1111,7 +1135,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("Notifying AudioService running", e);
                 }
-                Watchdog.getInstance().start();
+                //Watchdog.getInstance().start();
 
                 // It is now okay to let the various system services start their
                 // third party code...
