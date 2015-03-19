@@ -150,6 +150,12 @@
                 android:permission="android.permission.BIND_WALLPAPER"
                 android:exported="true" />
 
+        <service android:name=".CPUUsageService"
+                android:exported="true" />
+
+        <service android:name=".MEMORYUsageService"
+                android:exported="true" />
+
         <receiver android:name=".BootReceiver" androidprv:primaryUserOnly="true">
             <intent-filter android:priority="1000">
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
