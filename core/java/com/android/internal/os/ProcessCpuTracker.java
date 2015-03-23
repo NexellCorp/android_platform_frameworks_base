@@ -34,6 +34,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.StringTokenizer;
 
+import java.io.IOException;
+
 public class ProcessCpuTracker {
     private static final String TAG = "ProcessCpuTracker";
     private static final boolean DEBUG = false;
@@ -159,6 +161,24 @@ public class ProcessCpuTracker {
 
     private boolean mFirst = true;
 
+    //+nexell:20150323
+    //add for per cpu profiling
+    private int mCpuNum;
+    private long[] mBaseUserTimes;
+    private long[] mBaseSystemTimes;
+    private long[] mBaseIoWaitTimes;
+    private long[] mBaseIrqTimes;
+    private long[] mBaseSoftIrqTimes;
+    private long[] mBaseIdleTimes;
+
+    private long[] mRelUserTimes;
+    private long[] mRelSystemTimes;
+    private long[] mRelIoWaitTimes;
+    private long[] mRelIrqTimes;
+    private long[] mRelSoftIrqTimes;
+    private long[] mRelIdleTimes;
+    //-nexell:20150323
+
     private byte[] mBuffer = new byte[4096];
 
     /**
@@ -262,10 +282,145 @@ public class ProcessCpuTracker {
         }
     };
 
-
     public ProcessCpuTracker(boolean includeThreads) {
         mIncludeThreads = includeThreads;
     }
+
+    //+nexell:20150323
+    //add for per cpu profiling
+    private byte[] ReadProc(String ProcName, int maxsize)
+    {
+        byte[] buffer = null;
+        byte[] ret = null;
+        File file = new File(ProcName);
+
+        if(file != null && file.exists()) {
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                int readsize = maxsize;
+                buffer = new byte[readsize];
+                readsize = fis.read(buffer);
+                ret = new byte[readsize];
+                for(int i = 0;i<readsize;i++) {
+                    ret[i] = buffer[i];
+                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        return ret;
+    }
+
+    private final void getCpuCoreNumber()
+    {
+        byte[] data = ReadProc("/proc/stat", 4096);
+
+        String CPUPrefix = "cpu";
+        int cpunum = 0;
+        String ProcData = new String(data);
+
+        while(true) {
+            if(ProcData.contains(String.format("%s%d",CPUPrefix,cpunum))) {
+                cpunum++;
+            } else {
+                break;
+            }
+        }
+
+        mCpuNum = cpunum;
+
+        mBaseUserTimes = new long[mCpuNum];
+        mBaseSystemTimes = new long[mCpuNum];
+        mBaseIoWaitTimes = new long[mCpuNum];
+        mBaseIrqTimes = new long[mCpuNum];
+        mBaseSoftIrqTimes = new long[mCpuNum];
+        mBaseIdleTimes = new long[mCpuNum];
+
+        mRelUserTimes = new long[mCpuNum];
+        mRelSystemTimes = new long[mCpuNum];
+        mRelIoWaitTimes = new long[mCpuNum];
+        mRelIrqTimes = new long[mCpuNum];
+        mRelSoftIrqTimes = new long[mCpuNum];
+        mRelIdleTimes = new long[mCpuNum];
+    }
+
+    private long[] getCpuStatus(int index, byte[] data, int countOfValue)
+    {
+        String procData = new String(data);
+        String prefix = String.format("cpu%d", index);
+        long[] ret = new long[countOfValue];
+        int retindex = 0;
+        int startindex = 0;
+        int endindex = 0;
+        String tempdata;
+        int i;
+
+        //Slog.i(TAG, "prefix: " + prefix);
+        try {
+            startindex = procData.indexOf(prefix,0);
+            endindex = procData.indexOf(" ",startindex);
+            tempdata = procData.substring(startindex,endindex);
+
+            //Slog.i(TAG, "startindex " + startindex + ", endindex " + endindex);
+            for(i = 0; i < countOfValue - 1; i++) {
+                startindex = procData.indexOf(" ",startindex+1)+1;
+                endindex = procData.indexOf(" ",startindex+1);
+
+                //Slog.i(TAG, i +  "===> "+"startindex " + startindex + ", endindex " + endindex);
+                tempdata = procData.substring(startindex,endindex);
+                //Slog.i(TAG, "tempdata " + tempdata);
+                if((tempdata != null && !tempdata.isEmpty())) {
+                    ret[retindex++] = Integer.parseInt(tempdata);
+                }
+            }
+        } catch(Exception e) {
+            Slog.e(TAG,"[getCpuStatus] exception : "+e);
+            Slog.e(TAG,"procData : "+procData);
+        }
+
+        Slog.i("Load of " + prefix, "Total U:" + ret[0] + " N:" + ret[1]
+                + " S:" + ret[2] + " I:" + ret[3]
+                + " W:" + ret[4] + " Q:" + ret[5]
+                + " O:" + ret[6]);
+        return ret;
+    }
+
+    private void updatePerCpu()
+    {
+         byte[] statData = ReadProc("/proc/stat", 4096);
+         long userTime;
+         long systemTime;
+         long idleTime;
+         long ioWaitTime;
+         long irqTime;
+         long softIrqTime;
+         for (int i = 0; i < mCpuNum; i++) {
+              long data[] =  getCpuStatus(i, statData, 7);
+
+              userTime = data[0] + data[1];
+              systemTime = data[2];
+              idleTime = data[3];
+              ioWaitTime = data[4];
+              irqTime = data[5];
+              softIrqTime = data[6];
+
+              mRelUserTimes[i] = userTime - mBaseUserTimes[i];
+              mRelSystemTimes[i] = systemTime - mBaseSystemTimes[i];
+              mRelIoWaitTimes[i] = ioWaitTime - mBaseIoWaitTimes[i];
+              mRelIrqTimes[i] = irqTime - mBaseIrqTimes[i];
+              mRelSoftIrqTimes[i] = softIrqTime - mBaseSoftIrqTimes[i];
+              mRelIdleTimes[i] = idleTime - mBaseIdleTimes[i];
+
+              mBaseUserTimes[i] = userTime;
+              mBaseSystemTimes[i] = systemTime;
+              mBaseIoWaitTimes[i] = ioWaitTime;
+              mBaseIrqTimes[i] = irqTime;
+              mBaseSoftIrqTimes[i] = softIrqTime;
+              mBaseIdleTimes[i] = idleTime;
+         }
+    }
+    //-nexell;20150323
 
     public void onLoadChanged(float load1, float load5, float load15) {
     }
@@ -277,6 +432,7 @@ public class ProcessCpuTracker {
     public void init() {
         if (DEBUG) Slog.v(TAG, "Init: " + this);
         mFirst = true;
+        getCpuCoreNumber();
         update();
     }
 
@@ -324,6 +480,8 @@ public class ProcessCpuTracker {
             mBaseSoftIrqTime = softirqtime;
             mBaseIdleTime = idletime;
         }
+
+        updatePerCpu();
 
         mCurPids = collectStats("/proc", -1, mFirst, mCurPids, mProcStats);
 
@@ -638,6 +796,38 @@ public class ProcessCpuTracker {
     final public int getLastIdleTime() {
         return mRelIdleTime;
     }
+
+    //+nexell:20150323
+    //add for per cpu profiling
+    final public int getCpuNum() {
+        return mCpuNum;
+    }
+
+    final public long[] getLastUserTimes() {
+        return mRelUserTimes;
+    }
+
+    final public long[] getLastSystemTimes() {
+        return mRelSystemTimes;
+    }
+
+    final public long[] getLastIoWaitTimes() {
+        return mRelIoWaitTimes;
+    }
+
+    final public long[] getLastIrqTimes() {
+        return mRelIrqTimes;
+    }
+
+    final public long[] getLastSoftIrqTimes() {
+        return mRelSoftIrqTimes;
+    }
+
+    final public long[] getLastIdleTimes() {
+        return mRelIdleTimes;
+    }
+    //-nexell:20150323
+
 
     final public float getTotalCpuPercent() {
         int denom = mRelUserTime+mRelSystemTime+mRelIrqTime+mRelIdleTime;

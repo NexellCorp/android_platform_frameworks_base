@@ -48,27 +48,27 @@ public class CPUUsageService extends Service {
             int LIT = getLastIdleTime();
             float PER = ((float)LIT * 100) / TCP;
             String result_Percentage = String.format("%3.2f",100.0f-PER);
+            mLoadText = "Percent of CPU Load : " + result_Percentage + "%(";
 
-            //int TCP1 = getLastUserTime1() + getLastSystemTime1() + getLastIoWaitTime1() + getLastIrqTime1() + getLastSoftIrqTime1() + getLastIdleTime1();
-            //int LIT1 = getLastIdleTime1();
-            //float PER1 = ((float)LIT1 * 100) / TCP1;
-            //String result_Percentage1 = String.format("%3.2f",100.0f-PER1);
+            //+nexell:20150323
+            //add for per cpu profiling
+            int cpuNum = getCpuNum();
+
+            long[] lastUserTimes = getLastUserTimes();
+            long[] lastSystemTimes = getLastUserTimes();
+            long[] lastIoWaitTimes = getLastIoWaitTimes();
+            long[] lastIrqTimes = getLastIrqTimes();
+            long[] lastSoftIrqTimes = getLastSoftIrqTimes();
+            long[] lastIdleTimes = getLastIdleTimes();
 
 
-            //int TCP2 = getLastUserTime2() + getLastSystemTime2() + getLastIoWaitTime2() + getLastIrqTime2() + getLastSoftIrqTime2() + getLastIdleTime2();
-            //int LIT2 = getLastIdleTime2();
-            //float PER2 = ((float)LIT2 * 100) / TCP2;
-            //String result_Percentage2 = String.format("%3.2f",100.0f-PER2);
-
-            //mLoadText = "Percent of CPU Load : " + result_Percentage + "%("+result_Percentage1+","+result_Percentage2+")";
-            mLoadText = "Percent of CPU Load : " + result_Percentage +")";
-            /*
-               String cpu0 = SystemProperties.get("persist.sys.cpu0", "0");
-               SystemClock.sleep(10);
-               String cpu1 = SystemProperties.get("persist.sys.cpu1", "0");
-
-               mLoadText = "CPU0 : " + cpu0 + " Hz / CPU1 : " + cpu1 + " Hz";
-               */
+            for (int i = 0; i < cpuNum; i++) {
+                long tcp = lastUserTimes[i] + lastSystemTimes[i] + lastIoWaitTimes[i] + lastIrqTimes[i] + lastSoftIrqTimes[i] + lastIdleTimes[i];
+                float per = ((float)lastIdleTimes[i] * 100) / tcp;
+                String results = String.format("%3.2f ", 100.0f - per);
+                mLoadText += results;
+            }
+            mLoadText += ")";
             mLoadWidth = (int)mPaint.measureText(mLoadText);
         }
 
@@ -93,11 +93,6 @@ public class CPUUsageService extends Service {
             @Override
             public void handleMessage(Message msg) {
                 if (msg.what == 1) {
-                    /*
-                       SystemProperties.set("ctl.start", "getcpuclk0");
-                       SystemClock.sleep(10);
-                       SystemProperties.set("ctl.start", "getcpuclk1");
-                       */
                     mStats.updates();
                     mStats.update();
                     updateDisplay();
