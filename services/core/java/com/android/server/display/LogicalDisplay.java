@@ -26,6 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import libcore.util.Objects;
+// psw0523 add for debugging
+import android.util.Log;
+import android.util.Slog;
 
 /**
  * Describes how a logical display is configured.
@@ -306,12 +309,19 @@ final class LogicalDisplay {
             displayRectWidth = displayInfo.logicalWidth * physHeight / displayInfo.logicalHeight;
             displayRectHeight = physHeight;
         }
-        int displayRectTop = (physHeight - displayRectHeight) / 2;
-        int displayRectLeft = (physWidth - displayRectWidth) / 2;
-        mTempDisplayRect.set(displayRectLeft, displayRectTop,
-                displayRectLeft + displayRectWidth, displayRectTop + displayRectHeight);
+        // psw0523 test for tvout
+        if (false) {
+            int displayRectTop = (physHeight - displayRectHeight) / 2;
+            int displayRectLeft = (physWidth - displayRectWidth) / 2;
+            mTempDisplayRect.set(displayRectLeft, displayRectTop,
+                    displayRectLeft + displayRectWidth, displayRectTop + displayRectHeight);
 
-        device.setProjectionInTransactionLocked(orientation, mTempLayerStackRect, mTempDisplayRect);
+            device.setProjectionInTransactionLocked(orientation, mTempLayerStackRect, mTempDisplayRect);
+        } else {
+            mTempDisplayRect.set(0, 0, physWidth, physHeight);
+
+            device.setProjectionInTransactionLocked(orientation, mTempLayerStackRect, mTempDisplayRect);
+        }
     }
 
     /**
