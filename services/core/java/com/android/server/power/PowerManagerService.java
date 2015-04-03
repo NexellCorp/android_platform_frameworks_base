@@ -1045,72 +1045,75 @@ public final class PowerManagerService extends SystemService
     // dozing before really going to sleep.
     @SuppressWarnings("deprecation")
     private boolean goToSleepNoUpdateLocked(long eventTime, int reason, int flags, int uid) {
-        if (DEBUG_SPEW) {
-            Slog.d(TAG, "goToSleepNoUpdateLocked: eventTime=" + eventTime
-                    + ", reason=" + reason + ", flags=" + flags + ", uid=" + uid);
-        }
+        // psw0523 fir for fine
+        return false;
 
-        if (eventTime < mLastWakeTime
-                || mWakefulness == WAKEFULNESS_ASLEEP
-                || mWakefulness == WAKEFULNESS_DOZING
-                || !mBootCompleted || !mSystemReady) {
-            return false;
-        }
+        //if (DEBUG_SPEW) {
+            //Slog.d(TAG, "goToSleepNoUpdateLocked: eventTime=" + eventTime
+                    //+ ", reason=" + reason + ", flags=" + flags + ", uid=" + uid);
+        //}
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "goToSleep");
-        try {
-            switch (reason) {
-                case PowerManager.GO_TO_SLEEP_REASON_DEVICE_ADMIN:
-                    Slog.i(TAG, "Going to sleep due to device administration policy "
-                            + "(uid " + uid +")...");
-                    break;
-                case PowerManager.GO_TO_SLEEP_REASON_TIMEOUT:
-                    Slog.i(TAG, "Going to sleep due to screen timeout (uid " + uid +")...");
-                    break;
-                case PowerManager.GO_TO_SLEEP_REASON_LID_SWITCH:
-                    Slog.i(TAG, "Going to sleep due to lid switch (uid " + uid +")...");
-                    break;
-                case PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON:
-                    Slog.i(TAG, "Going to sleep due to power button (uid " + uid +")...");
-                    break;
-                case PowerManager.GO_TO_SLEEP_REASON_HDMI:
-                    Slog.i(TAG, "Going to sleep due to HDMI standby (uid " + uid +")...");
-                    break;
-                default:
-                    Slog.i(TAG, "Going to sleep by application request (uid " + uid +")...");
-                    reason = PowerManager.GO_TO_SLEEP_REASON_APPLICATION;
-                    break;
-            }
+        //if (eventTime < mLastWakeTime
+                //|| mWakefulness == WAKEFULNESS_ASLEEP
+                //|| mWakefulness == WAKEFULNESS_DOZING
+                //|| !mBootCompleted || !mSystemReady) {
+            //return false;
+        //}
 
-            mLastSleepTime = eventTime;
-            mDirty |= DIRTY_WAKEFULNESS;
-            mWakefulness = WAKEFULNESS_DOZING;
-            mSandmanSummoned = true;
-            setInteractiveStateLocked(false, reason);
+        //Trace.traceBegin(Trace.TRACE_TAG_POWER, "goToSleep");
+        //try {
+            //switch (reason) {
+                //case PowerManager.GO_TO_SLEEP_REASON_DEVICE_ADMIN:
+                    //Slog.i(TAG, "Going to sleep due to device administration policy "
+                            //+ "(uid " + uid +")...");
+                    //break;
+                //case PowerManager.GO_TO_SLEEP_REASON_TIMEOUT:
+                    //Slog.i(TAG, "Going to sleep due to screen timeout (uid " + uid +")...");
+                    //break;
+                //case PowerManager.GO_TO_SLEEP_REASON_LID_SWITCH:
+                    //Slog.i(TAG, "Going to sleep due to lid switch (uid " + uid +")...");
+                    //break;
+                //case PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON:
+                    //Slog.i(TAG, "Going to sleep due to power button (uid " + uid +")...");
+                    //break;
+                //case PowerManager.GO_TO_SLEEP_REASON_HDMI:
+                    //Slog.i(TAG, "Going to sleep due to HDMI standby (uid " + uid +")...");
+                    //break;
+                //default:
+                    //Slog.i(TAG, "Going to sleep by application request (uid " + uid +")...");
+                    //reason = PowerManager.GO_TO_SLEEP_REASON_APPLICATION;
+                    //break;
+            //}
 
-            // Report the number of wake locks that will be cleared by going to sleep.
-            int numWakeLocksCleared = 0;
-            final int numWakeLocks = mWakeLocks.size();
-            for (int i = 0; i < numWakeLocks; i++) {
-                final WakeLock wakeLock = mWakeLocks.get(i);
-                switch (wakeLock.mFlags & PowerManager.WAKE_LOCK_LEVEL_MASK) {
-                    case PowerManager.FULL_WAKE_LOCK:
-                    case PowerManager.SCREEN_BRIGHT_WAKE_LOCK:
-                    case PowerManager.SCREEN_DIM_WAKE_LOCK:
-                        numWakeLocksCleared += 1;
-                        break;
-                }
-            }
-            EventLog.writeEvent(EventLogTags.POWER_SLEEP_REQUESTED, numWakeLocksCleared);
+            //mLastSleepTime = eventTime;
+            //mDirty |= DIRTY_WAKEFULNESS;
+            //mWakefulness = WAKEFULNESS_DOZING;
+            //mSandmanSummoned = true;
+            //setInteractiveStateLocked(false, reason);
 
-            // Skip dozing if requested.
-            if ((flags & PowerManager.GO_TO_SLEEP_FLAG_NO_DOZE) != 0) {
-                reallyGoToSleepNoUpdateLocked(eventTime, uid);
-            }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
-        return true;
+            //// Report the number of wake locks that will be cleared by going to sleep.
+            //int numWakeLocksCleared = 0;
+            //final int numWakeLocks = mWakeLocks.size();
+            //for (int i = 0; i < numWakeLocks; i++) {
+                //final WakeLock wakeLock = mWakeLocks.get(i);
+                //switch (wakeLock.mFlags & PowerManager.WAKE_LOCK_LEVEL_MASK) {
+                    //case PowerManager.FULL_WAKE_LOCK:
+                    //case PowerManager.SCREEN_BRIGHT_WAKE_LOCK:
+                    //case PowerManager.SCREEN_DIM_WAKE_LOCK:
+                        //numWakeLocksCleared += 1;
+                        //break;
+                //}
+            //}
+            //EventLog.writeEvent(EventLogTags.POWER_SLEEP_REQUESTED, numWakeLocksCleared);
+
+            //// Skip dozing if requested.
+            //if ((flags & PowerManager.GO_TO_SLEEP_FLAG_NO_DOZE) != 0) {
+                //reallyGoToSleepNoUpdateLocked(eventTime, uid);
+            //}
+        //} finally {
+            //Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        //}
+        //return true;
     }
 
     private void napInternal(long eventTime, int uid) {
