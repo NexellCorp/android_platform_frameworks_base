@@ -32,10 +32,14 @@ import android.os.SystemProperties;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.os.StrictMode;
 import android.util.Log;
+import java.io.FileInputStream;
 
 public class CPUUsageService extends Service {
     private View mView;
+    private static byte[] mBuffer = new byte[1024];
+    private static int mCpuFreq;
 
     private static final class Stats extends ProcessCpuTracker {
         String mLoadText = "";
@@ -43,12 +47,35 @@ public class CPUUsageService extends Service {
 
         private final Paint mPaint;
 
+        private void getCpuFreq() {
+            StrictMode.ThreadPolicy savedPolicy = StrictMode.allowThreadDiskReads();
+            try {
+                FileInputStream is = new FileInputStream("/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq");
+                int len = is.read(mBuffer);
+                is.close();
+                final int BUFLEN = mBuffer.length;
+                //String str = new String(mBuffer);
+                String str = new String(mBuffer, 0, len - 1);
+                //Log.d("CPUUsage", "str ==> " + str);
+
+                mCpuFreq = ((int)Integer.parseInt(str)) / 1000;
+            } catch (java.io.FileNotFoundException e) {
+            } catch (java.io.IOException e) {
+            } finally {
+                StrictMode.setThreadPolicy(savedPolicy);
+            }
+        }
+
         public void updates() {
             int TCP = getLastUserTime() + getLastSystemTime() + getLastIoWaitTime() + getLastIrqTime() + getLastSoftIrqTime() + getLastIdleTime();
             int LIT = getLastIdleTime();
             float PER = ((float)LIT * 100) / TCP;
             String result_Percentage = String.format("%3.2f",100.0f-PER);
-            mLoadText = "Percent of CPU Load : " + result_Percentage + "%(";
+            getCpuFreq();
+
+            //Log.d("CPUUsage", "CpuFreq: " + mCpuFreq);
+            mLoadText = "CpuFreq : " + mCpuFreq + "MHz, ";
+            mLoadText += "Percent of CPU Load : " + result_Percentage + "%(";
 
             //+nexell:20150323
             //add for per cpu profiling
