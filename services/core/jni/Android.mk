@@ -27,6 +27,10 @@ LOCAL_SRC_FILES += \
     $(LOCAL_REL_DIR)/com_android_server_PersistentDataBlockService.cpp \
     $(LOCAL_REL_DIR)/onload.cpp
 
+# psw0523 add for fine dna service
+LOCAL_SRC_FILES += $(LOCAL_REL_DIR)/DES64.cpp
+LOCAL_SRC_FILES += $(LOCAL_REL_DIR)/com_android_server_DNAManagerService.cpp
+
 include external/stlport/libstlport.mk
 
 LOCAL_C_INCLUDES += \

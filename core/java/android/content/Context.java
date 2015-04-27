@@ -2902,6 +2902,9 @@ public abstract class Context {
      */
     public static final String MEDIA_PROJECTION_SERVICE = "media_projection";
 
+    /* psw0523 add for fine dna service */
+    public static final String DNA_SERVICE = "dna";
+
     /**
      * Determine whether the given permission is allowed for a particular
      * process and user ID running in the system.

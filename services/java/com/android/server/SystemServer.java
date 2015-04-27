@@ -98,6 +98,9 @@ import com.android.server.wallpaper.WallpaperManagerService;
 import com.android.server.webkit.WebViewUpdateService;
 import com.android.server.wm.WindowManagerService;
 
+// psw0523 add for DNAManager
+import com.android.server.DNAManagerService;
+
 import dalvik.system.VMRuntime;
 
 import java.io.File;
@@ -722,6 +725,12 @@ public final class SystemServer {
                     reportWtf("starting UpdateLockService", e);
                 }
             }
+
+            /*
+             * psw0523 add for DNAManager
+             */
+            Slog.i(TAG, "DNA Service");
+            ServiceManager.addService(Context.DNA_SERVICE, new DNAManagerService(context));
 
             /*
              * MountService has a few dependencies: Notification Manager and
