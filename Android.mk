@@ -386,6 +386,9 @@ LOCAL_SRC_FILES += \
 # psw0523 add for fine DNAManager
 LOCAL_SRC_FILES += core/java/android/os/IDNAManager.aidl
 
+# psw0523 add for fine USBPowerControl
+LOCAL_SRC_FILES += core/java/android/os/IUSBPowerControl.aidl
+
 # FRAMEWORKS_BASE_JAVA_SRC_DIRS comes from build/core/pathmap.mk
 LOCAL_AIDL_INCLUDES += $(FRAMEWORKS_BASE_JAVA_SRC_DIRS)
 

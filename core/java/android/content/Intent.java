@@ -684,6 +684,20 @@ public class Intent implements Parcelable, Cloneable {
     @SdkConstant(SdkConstantType.ACTIVITY_INTENT_ACTION)
     public static final String ACTION_INSERT_OR_EDIT = "android.intent.action.INSERT_OR_EDIT";
 
+    // psw0523 add for fine wifi dongle attached/detached
+    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+    public static final String ACTION_WIFI_DONGLE_ATTACHED = "android.intent.action.ACTION_WIFI_DONGLE_ATTACHED";
+
+    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+    public static final String ACTION_WIFI_DONGLE_DETACHED = "android.intent.action.ACTION_WIFI_DONGLE_DETACHED";
+
+    // psw0523 add for fine bluetooth dongle attached/detached
+    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+    public static final String ACTION_BT_DONGLE_ATTACHED = "android.intent.action.ACTION_BT_DONGLE_ATTACHED";
+
+    @SdkConstant(SdkConstantType.BROADCAST_INTENT_ACTION)
+    public static final String ACTION_BT_DONGLE_DETACHED = "android.intent.action.ACTION_BT_DONGLE_DETACHED";
+
     /**
      * Activity Action: Pick an item from the data, returning what was selected.
      * <p>Input: {@link #getData} is URI containing a directory of data

@@ -2902,6 +2902,9 @@ public abstract class Context {
      */
     public static final String MEDIA_PROJECTION_SERVICE = "media_projection";
 
+    /* psw0523 add for fine usb power control service */
+    public static final String USB_POWER_CONTROL_SERVICE = "USBPowerControl";
+
     /* psw0523 add for fine dna service */
     public static final String DNA_SERVICE = "dna";
 

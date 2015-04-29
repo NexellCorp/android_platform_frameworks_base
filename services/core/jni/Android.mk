@@ -30,6 +30,8 @@ LOCAL_SRC_FILES += \
 # psw0523 add for fine dna service
 LOCAL_SRC_FILES += $(LOCAL_REL_DIR)/DES64.cpp
 LOCAL_SRC_FILES += $(LOCAL_REL_DIR)/com_android_server_DNAManagerService.cpp
+# psw0523 add for fine usb power control service
+LOCAL_SRC_FILES += $(LOCAL_REL_DIR)/com_android_server_USBPowerControl.cpp
 
 include external/stlport/libstlport.mk
 

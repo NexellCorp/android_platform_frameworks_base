@@ -101,6 +101,9 @@ import com.android.server.wm.WindowManagerService;
 // psw0523 add for DNAManager
 import com.android.server.DNAManagerService;
 
+// psw0523 add for USBPowerControlService
+import com.android.server.USBPowerControlService;
+
 import dalvik.system.VMRuntime;
 
 import java.io.File;
@@ -731,6 +734,12 @@ public final class SystemServer {
              */
             Slog.i(TAG, "DNA Service");
             ServiceManager.addService(Context.DNA_SERVICE, new DNAManagerService(context));
+
+            /*
+             * psw0523 add for USBPowerControlService
+             */
+            Slog.i(TAG, "USBPowerControl Service");
+            ServiceManager.addService(Context.USB_POWER_CONTROL_SERVICE, new USBPowerControlService(context));
 
             /*
              * MountService has a few dependencies: Notification Manager and
