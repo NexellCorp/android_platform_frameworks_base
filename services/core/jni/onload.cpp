@@ -42,6 +42,9 @@ int register_android_server_tv_TvInputHal(JNIEnv* env);
 int register_android_server_PersistentDataBlockService(JNIEnv* env);
 int register_android_server_fingerprint_FingerprintService(JNIEnv* env);
 int register_android_server_Watchdog(JNIEnv* env);
+// psw0523 add for fine dna service
+int register_android_server_DNAManagerService(JNIEnv *env);
+int register_android_server_USBPowerControlServer(JNIEnv *env);
 };
 
 using namespace android;
@@ -79,6 +82,11 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* reserved)
     register_android_server_PersistentDataBlockService(env);
     register_android_server_fingerprint_FingerprintService(env);
     register_android_server_Watchdog(env);
+
+    // psw0523 add for fine dna service
+    register_android_server_DNAManagerService(env);
+    // psw0523 add for fine usb power control service
+    register_android_server_USBPowerControlServer(env);
 
     return JNI_VERSION_1_4;
 }

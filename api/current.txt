@@ -7212,6 +7212,7 @@ package android.content {
     field public static final int CONTEXT_RESTRICTED = 4; // 0x4
     field public static final java.lang.String DEVICE_POLICY_SERVICE = "device_policy";
     field public static final java.lang.String DISPLAY_SERVICE = "display";
+    field public static final java.lang.String DNA_SERVICE = "dna";
     field public static final java.lang.String DOWNLOAD_SERVICE = "download";
     field public static final java.lang.String DROPBOX_SERVICE = "dropbox";
     field public static final java.lang.String INPUT_METHOD_SERVICE = "input_method";
@@ -7244,6 +7245,7 @@ package android.content {
     field public static final java.lang.String TEXT_SERVICES_MANAGER_SERVICE = "textservices";
     field public static final java.lang.String TV_INPUT_SERVICE = "tv_input";
     field public static final java.lang.String UI_MODE_SERVICE = "uimode";
+    field public static final java.lang.String USB_POWER_CONTROL_SERVICE = "USBPowerControl";
     field public static final java.lang.String USB_SERVICE = "usb";
     field public static final java.lang.String USER_SERVICE = "user";
     field public static final java.lang.String VIBRATOR_SERVICE = "vibrator";
@@ -7559,6 +7561,8 @@ package android.content {
     field public static final java.lang.String ACTION_BATTERY_LOW = "android.intent.action.BATTERY_LOW";
     field public static final java.lang.String ACTION_BATTERY_OKAY = "android.intent.action.BATTERY_OKAY";
     field public static final java.lang.String ACTION_BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
+    field public static final java.lang.String ACTION_BT_DONGLE_ATTACHED = "android.intent.action.ACTION_BT_DONGLE_ATTACHED";
+    field public static final java.lang.String ACTION_BT_DONGLE_DETACHED = "android.intent.action.ACTION_BT_DONGLE_DETACHED";
     field public static final java.lang.String ACTION_BUG_REPORT = "android.intent.action.BUG_REPORT";
     field public static final java.lang.String ACTION_CALL = "android.intent.action.CALL";
     field public static final java.lang.String ACTION_CALL_BUTTON = "android.intent.action.CALL_BUTTON";
@@ -7660,6 +7664,8 @@ package android.content {
     field public static final java.lang.String ACTION_VOICE_COMMAND = "android.intent.action.VOICE_COMMAND";
     field public static final deprecated java.lang.String ACTION_WALLPAPER_CHANGED = "android.intent.action.WALLPAPER_CHANGED";
     field public static final java.lang.String ACTION_WEB_SEARCH = "android.intent.action.WEB_SEARCH";
+    field public static final java.lang.String ACTION_WIFI_DONGLE_ATTACHED = "android.intent.action.ACTION_WIFI_DONGLE_ATTACHED";
+    field public static final java.lang.String ACTION_WIFI_DONGLE_DETACHED = "android.intent.action.ACTION_WIFI_DONGLE_DETACHED";
     field public static final java.lang.String CATEGORY_ALTERNATIVE = "android.intent.category.ALTERNATIVE";
     field public static final java.lang.String CATEGORY_APP_BROWSER = "android.intent.category.APP_BROWSER";
     field public static final java.lang.String CATEGORY_APP_CALCULATOR = "android.intent.category.APP_CALCULATOR";
@@ -21775,6 +21781,21 @@ package android.os {
 
   public abstract interface IInterface {
     method public abstract android.os.IBinder asBinder();
+  }
+
+  public abstract interface IUSBPowerControl implements android.os.IInterface {
+    method public abstract int USBHostEnableGet() throws android.os.RemoteException;
+    method public abstract int USBHostEnableSet(int) throws android.os.RemoteException;
+    method public abstract int USBPowerControlGet() throws android.os.RemoteException;
+    method public abstract int USBPowerControlSet(int) throws android.os.RemoteException;
+    method public abstract int USBXHCIHostEnableSet(int) throws android.os.RemoteException;
+  }
+
+  public static abstract class IUSBPowerControl.Stub extends android.os.Binder implements android.os.IUSBPowerControl {
+    ctor public IUSBPowerControl.Stub();
+    method public android.os.IBinder asBinder();
+    method public static android.os.IUSBPowerControl asInterface(android.os.IBinder);
+    method public boolean onTransact(int, android.os.Parcel, android.os.Parcel, int) throws android.os.RemoteException;
   }
 
   public final class Looper {
