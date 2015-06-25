@@ -250,14 +250,41 @@ public class ZygoteInit {
     }
 
     static void preload() {
+        // psw0523 fix for avn-quickboot
+        //Log.d(TAG, "begin preload");
+        //preloadClasses();
+        //preloadResources();
+        //preloadOpenGL();
+        //preloadSharedLibraries();
+        //// Ask the WebViewFactory to do any initialization that must run in the zygote process,
+        //// for memory sharing purposes.
+        //WebViewFactory.prepareWebViewInZygote();
+        //Log.d(TAG, "end preload");
+
         Log.d(TAG, "begin preload");
-        preloadClasses();
-        preloadResources();
-        preloadOpenGL();
+        Thread preloadClassThr = new Thread("preloadClass") {
+            @Override
+            public void run() {
+                preloadClasses();
+            }
+        };
+        Thread preloadResourceThr = new Thread("preloadResource") {
+            @Override
+            public void run() {
+                preloadResources();
+            }
+        };
+        //preloadClassThr.setPriority(android.os.Process.THREAD_PRIORITY_FOREGROUND);
+        //preloadResourceThr.setPriority(android.os.Process.THREAD_PRIORITY_FOREGROUND);
+        preloadClassThr.start();
+        preloadResourceThr.start();
         preloadSharedLibraries();
-        // Ask the WebViewFactory to do any initialization that must run in the zygote process,
-        // for memory sharing purposes.
         WebViewFactory.prepareWebViewInZygote();
+        try {
+            preloadResourceThr.join();
+            preloadClassThr.join();
+        } catch (Exception e) {
+        }
         Log.d(TAG, "end preload");
     }
 
