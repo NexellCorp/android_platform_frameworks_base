@@ -75,9 +75,4 @@ interface ICameraDeviceUser
     int waitUntilIdle();
 
     int flush(out LongParcelable lastFrameNumber);
-
-    // psw0523 add
-    /* @hide */
-    void stopPreview();
-    // end psw0523
 }

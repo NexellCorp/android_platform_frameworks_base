@@ -702,23 +702,6 @@ public class CameraDeviceImpl extends CameraDevice {
         }
     }
 
-    // psw0523 add
-    /** @hide **/
-    public void stopPreview() throws CameraAccessException {
-        synchronized(mInterfaceLock) {
-            checkIfCameraClosedOrInError();
-            try {
-                mRemoteDevice.stopPreview();
-            } catch (CameraRuntimeException e) {
-                throw e.asChecked();
-            } catch (RemoteException e) {
-                // impossible
-                return;
-            }
-        }
-    }
-    // end psw0523
-
     private void waitUntilIdle() throws CameraAccessException {
 
         synchronized(mInterfaceLock) {

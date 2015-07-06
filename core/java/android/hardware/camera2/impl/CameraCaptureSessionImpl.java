@@ -239,20 +239,6 @@ public class CameraCaptureSessionImpl extends CameraCaptureSession {
         mDeviceImpl.stopRepeating();
     }
 
-    // psw0523 add
-    /* @hide */
-    @Override
-    public synchronized void stopPreview() throws CameraAccessException {
-        checkNotClosed();
-
-        if (VERBOSE) {
-            Log.d(TAG, mIdString + "stopPreview");
-        }
-
-        mDeviceImpl.stopPreview();
-    }
-    // end psw0523
-
     @Override
     public synchronized void abortCaptures() throws CameraAccessException {
         checkNotClosed();

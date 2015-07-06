@@ -206,18 +206,10 @@ public class MediaFile {
         addFileType("TS", FILE_TYPE_MP2TS, "video/mp2ts");
         addFileType("AVI", FILE_TYPE_AVI, "video/avi");
 
-        //  for FineDigital File Type Add
-        addFileType("M2TS", FILE_TYPE_MP2TS, "video/mp2ts");
-        addFileType("TP", FILE_TYPE_MP2TS, "video/mp2ts");
-        addFileType("VOB", FILE_TYPE_MP2PS, "video/mp2p");
-        addFileType("WMV", FILE_TYPE_WMV, "video/x-ms-wmv", MtpConstants.FORMAT_WMV);
-        addFileType("ASF", FILE_TYPE_ASF, "video/x-ms-asf");
-        /*
         if (isWMVEnabled()) {
             addFileType("WMV", FILE_TYPE_WMV, "video/x-ms-wmv", MtpConstants.FORMAT_WMV);
             addFileType("ASF", FILE_TYPE_ASF, "video/x-ms-asf");
         }
-        */
 
         addFileType("JPG", FILE_TYPE_JPEG, "image/jpeg", MtpConstants.FORMAT_EXIF_JPEG);
         addFileType("JPEG", FILE_TYPE_JPEG, "image/jpeg", MtpConstants.FORMAT_EXIF_JPEG);

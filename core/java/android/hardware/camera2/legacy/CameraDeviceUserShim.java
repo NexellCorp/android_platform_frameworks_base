@@ -605,11 +605,4 @@ public class CameraDeviceUserShim implements ICameraDeviceUser {
         // This is solely intended to be used for in-process binding.
         return null;
     }
-
-    // psw0523 add
-    @Override
-    public void stopPreview() {
-        mLegacyDevice.stopPreview();
-    }
-    // end psw0523
 }

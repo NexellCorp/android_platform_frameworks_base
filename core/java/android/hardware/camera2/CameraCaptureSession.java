@@ -289,10 +289,6 @@ public abstract class CameraCaptureSession implements AutoCloseable {
      */
     public abstract void stopRepeating() throws CameraAccessException;
 
-    // psw0523 add
-    /** hide */
-    public abstract void stopPreview() throws CameraAccessException;
-    // end psw0523
     /**
      * Discard all captures currently pending and in-progress as fast as possible.
      *
