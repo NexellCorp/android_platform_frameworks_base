@@ -289,6 +289,11 @@ public abstract class CameraCaptureSession implements AutoCloseable {
      */
     public abstract void stopRepeating() throws CameraAccessException;
 
+    // PATCH_FOR_SLSIAP
+    /** hide */
+    public abstract void stopPreview() throws CameraAccessException;
+    // END PATCH_FOR_SLSIAP
+
     /**
      * Discard all captures currently pending and in-progress as fast as possible.
      *

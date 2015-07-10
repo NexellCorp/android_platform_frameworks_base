@@ -5316,6 +5316,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             return Surface.ROTATION_0;
         }
 
+        // PATCH_FOR_SLSIAP
+        // TODO : this patch is temporary remedy, You must handle this issue at kernel driver and sensor HAL
+        if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT &&
+            lastRotation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+            Slog.d(TAG, "=====> orientation fix to 1");
+            return 1;
+        }
+
+        if (orientation == 1 && lastRotation == 3) {
+            Slog.d(TAG, "=====> orientation fix to 3");
+            return 3;
+        }
+        // END PATCH_FOR_SLSIAP
+
         synchronized (mLock) {
             int sensorRotation = mOrientationListener.getProposedRotation(); // may be -1
             if (sensorRotation < 0) {

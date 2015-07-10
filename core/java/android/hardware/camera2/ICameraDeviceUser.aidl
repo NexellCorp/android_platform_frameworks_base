@@ -75,4 +75,9 @@ interface ICameraDeviceUser
     int waitUntilIdle();
 
     int flush(out LongParcelable lastFrameNumber);
+
+    // PATCH_FOR_SLSIAP
+    /* @hide */
+    void stopPreview();
+    // PATCH_FOR_SLSIAP
 }

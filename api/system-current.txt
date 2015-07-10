@@ -12875,6 +12875,7 @@ package android.hardware.camera2 {
     method public abstract android.hardware.camera2.CameraDevice getDevice();
     method public abstract int setRepeatingBurst(java.util.List<android.hardware.camera2.CaptureRequest>, android.hardware.camera2.CameraCaptureSession.CaptureCallback, android.os.Handler) throws android.hardware.camera2.CameraAccessException;
     method public abstract int setRepeatingRequest(android.hardware.camera2.CaptureRequest, android.hardware.camera2.CameraCaptureSession.CaptureCallback, android.os.Handler) throws android.hardware.camera2.CameraAccessException;
+    method public abstract void stopPreview() throws android.hardware.camera2.CameraAccessException;
     method public abstract void stopRepeating() throws android.hardware.camera2.CameraAccessException;
   }
 

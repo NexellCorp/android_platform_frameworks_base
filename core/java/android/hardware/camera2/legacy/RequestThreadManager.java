@@ -271,6 +271,13 @@ public class RequestThreadManager {
         }
     }
 
+    // PATCH_FOR_SLSIAP
+    public void forcedStopPreview() {
+        Log.d(TAG, "called forcedStopPreview");
+        stopPreview();
+    }
+    // end PATCH_FOR_SLSIAP
+
     private void startPreview() {
         if (VERBOSE) {
             Log.v(TAG, "startPreview - preview running? " + mPreviewRunning);
@@ -973,6 +980,9 @@ public class RequestThreadManager {
      */
     public void quit() {
         if (!mQuit.getAndSet(true)) {  // Avoid sending messages on dead thread's handler.
+            // PATCH_FOR_SLSIAP
+            stopPreview();
+            // END PATTCH_FOR_SLSIAP
             Handler handler = mRequestThread.waitAndGetHandler();
             handler.sendMessageAtFrontOfQueue(handler.obtainMessage(MSG_CLEANUP));
             mRequestThread.quitSafely();

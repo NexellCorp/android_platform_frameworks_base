@@ -605,4 +605,12 @@ public class CameraDeviceUserShim implements ICameraDeviceUser {
         // This is solely intended to be used for in-process binding.
         return null;
     }
+
+    // PATCH_FOR_SLSIAP
+    @Override
+    public void stopPreview() {
+        mLegacyDevice.stopPreview();
+    }
+    // END PATCH_FOR_SLSIAP
+
 }

@@ -702,6 +702,23 @@ public class CameraDeviceImpl extends CameraDevice {
         }
     }
 
+    // PATCH_FOR_SLSIAP
+    /** @hide **/
+    public void stopPreview() throws CameraAccessException {
+        synchronized(mInterfaceLock) {
+            checkIfCameraClosedOrInError();
+            try {
+                mRemoteDevice.stopPreview();
+            } catch (CameraRuntimeException e) {
+                throw e.asChecked();
+            } catch (RemoteException e) {
+                // impossible
+                return;
+            }
+        }
+    }
+    // END PATCH_FOR_SLSIAP
+
     private void waitUntilIdle() throws CameraAccessException {
 
         synchronized(mInterfaceLock) {

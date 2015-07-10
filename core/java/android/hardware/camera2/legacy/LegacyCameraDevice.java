@@ -432,6 +432,13 @@ public class LegacyCameraDevice implements AutoCloseable {
         return mRequestThreadManager.cancelRepeating(requestId);
     }
 
+    // PATCH_FOR_SLSIAP
+    public void stopPreview() {
+        if (DEBUG) Log.d(TAG, "called stopPreview");
+        mRequestThreadManager.forcedStopPreview();
+    }
+    // END PATCH_FOR_SLSIAP
+
     /**
      * Block until the {@link ICameraDeviceCallbacks#onCameraIdle()} callback is received.
      */

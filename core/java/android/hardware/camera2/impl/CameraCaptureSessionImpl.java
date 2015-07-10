@@ -239,6 +239,20 @@ public class CameraCaptureSessionImpl extends CameraCaptureSession {
         mDeviceImpl.stopRepeating();
     }
 
+    // PATCH_FOR_SLSIAP
+    /* @hide */
+    @Override
+    public synchronized void stopPreview() throws CameraAccessException {
+        checkNotClosed();
+
+        if (VERBOSE) {
+            Log.v(TAG, mIdString + "stopPreview");
+        }
+
+        mDeviceImpl.stopPreview();
+    }
+    // END PATCH_FOR_SLSIAP
+
     @Override
     public synchronized void abortCaptures() throws CameraAccessException {
         checkNotClosed();
