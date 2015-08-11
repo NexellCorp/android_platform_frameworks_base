@@ -99,8 +99,8 @@ import java.util.HashSet;
 public final class ViewRootImpl implements ViewParent,
         View.AttachInfo.Callbacks, HardwareRenderer.HardwareDrawCallbacks {
     private static final String TAG = "ViewRootImpl";
-    private static final boolean DBG = false;
-    private static final boolean LOCAL_LOGV = false;
+    private static final boolean DBG = true;
+    private static final boolean LOCAL_LOGV = true;
     /** @noinspection PointlessBooleanExpression*/
     private static final boolean DEBUG_DRAW = false || LOCAL_LOGV;
     private static final boolean DEBUG_LAYOUT = false || LOCAL_LOGV;
@@ -549,7 +549,7 @@ public final class ViewRootImpl implements ViewParent,
                 mPendingContentInsets.set(mAttachInfo.mContentInsets);
                 mPendingStableInsets.set(mAttachInfo.mStableInsets);
                 mPendingVisibleInsets.set(0, 0, 0, 0);
-                if (DEBUG_LAYOUT) Log.v(TAG, "Added window " + mWindow);
+                if (DEBUG_LAYOUT) Log.d(TAG, "Added window " + mWindow);
                 if (res < WindowManagerGlobal.ADD_OKAY) {
                     mAttachInfo.mRootView = null;
                     mAdded = false;
@@ -907,7 +907,7 @@ public final class ViewRootImpl implements ViewParent,
     @Override
     public ViewParent invalidateChildInParent(int[] location, Rect dirty) {
         checkThread();
-        if (DEBUG_DRAW) Log.v(TAG, "Invalidate child: " + dirty);
+        if (DEBUG_DRAW) Log.d(TAG, "Invalidate child: " + dirty);
 
         if (dirty == null) {
             invalidate();
@@ -1125,7 +1125,7 @@ public final class ViewRootImpl implements ViewParent,
         int childHeightMeasureSpec;
         boolean windowSizeMayChange = false;
 
-        if (DEBUG_ORIENTATION || DEBUG_LAYOUT) Log.v(TAG,
+        if (DEBUG_ORIENTATION || DEBUG_LAYOUT) Log.d(TAG,
                 "Measuring " + host + " in display " + desiredWindowWidth
                 + "x" + desiredWindowHeight + "...");
 
@@ -1141,26 +1141,26 @@ public final class ViewRootImpl implements ViewParent,
             if (mTmpValue.type == TypedValue.TYPE_DIMENSION) {
                 baseSize = (int)mTmpValue.getDimension(packageMetrics);
             }
-            if (DEBUG_DIALOG) Log.v(TAG, "Window " + mView + ": baseSize=" + baseSize);
+            if (DEBUG_DIALOG) Log.d(TAG, "Window " + mView + ": baseSize=" + baseSize);
             if (baseSize != 0 && desiredWindowWidth > baseSize) {
                 childWidthMeasureSpec = getRootMeasureSpec(baseSize, lp.width);
                 childHeightMeasureSpec = getRootMeasureSpec(desiredWindowHeight, lp.height);
                 performMeasure(childWidthMeasureSpec, childHeightMeasureSpec);
-                if (DEBUG_DIALOG) Log.v(TAG, "Window " + mView + ": measured ("
+                if (DEBUG_DIALOG) Log.d(TAG, "Window " + mView + ": measured ("
                         + host.getMeasuredWidth() + "," + host.getMeasuredHeight() + ")");
                 if ((host.getMeasuredWidthAndState()&View.MEASURED_STATE_TOO_SMALL) == 0) {
                     goodMeasure = true;
                 } else {
                     // Didn't fit in that size... try expanding a bit.
                     baseSize = (baseSize+desiredWindowWidth)/2;
-                    if (DEBUG_DIALOG) Log.v(TAG, "Window " + mView + ": next baseSize="
+                    if (DEBUG_DIALOG) Log.d(TAG, "Window " + mView + ": next baseSize="
                             + baseSize);
                     childWidthMeasureSpec = getRootMeasureSpec(baseSize, lp.width);
                     performMeasure(childWidthMeasureSpec, childHeightMeasureSpec);
-                    if (DEBUG_DIALOG) Log.v(TAG, "Window " + mView + ": measured ("
+                    if (DEBUG_DIALOG) Log.d(TAG, "Window " + mView + ": measured ("
                             + host.getMeasuredWidth() + "," + host.getMeasuredHeight() + ")");
                     if ((host.getMeasuredWidthAndState()&View.MEASURED_STATE_TOO_SMALL) == 0) {
-                        if (DEBUG_DIALOG) Log.v(TAG, "Good!");
+                        if (DEBUG_DIALOG) Log.d(TAG, "Good!");
                         goodMeasure = true;
                     }
                 }
@@ -1221,7 +1221,7 @@ public final class ViewRootImpl implements ViewParent,
         if (DBG) {
             System.out.println("======================================");
             System.out.println("performTraversals");
-            host.debug();
+            //host.debug();
         }
 
         if (host == null || !mAdded)
@@ -1305,7 +1305,7 @@ public final class ViewRootImpl implements ViewParent,
             desiredWindowWidth = frame.width();
             desiredWindowHeight = frame.height();
             if (desiredWindowWidth != mWidth || desiredWindowHeight != mHeight) {
-                if (DEBUG_ORIENTATION) Log.v(TAG,
+                if (DEBUG_ORIENTATION) Log.d(TAG,
                         "View " + host + " resized to: " + frame);
                 mFullRedrawNeeded = true;
                 mLayoutRequested = true;
@@ -1353,7 +1353,7 @@ public final class ViewRootImpl implements ViewParent,
                 }
                 if (!mPendingVisibleInsets.equals(mAttachInfo.mVisibleInsets)) {
                     mAttachInfo.mVisibleInsets.set(mPendingVisibleInsets);
-                    if (DEBUG_LAYOUT) Log.v(TAG, "Visible insets changing to: "
+                    if (DEBUG_LAYOUT) Log.d(TAG, "Visible insets changing to: "
                             + mAttachInfo.mVisibleInsets);
                 }
                 if (lp.width == ViewGroup.LayoutParams.WRAP_CONTENT
@@ -1510,7 +1510,7 @@ public final class ViewRootImpl implements ViewParent,
                     mWindowsAnimating = true;
                 }
 
-                if (DEBUG_LAYOUT) Log.v(TAG, "relayout: frame=" + frame.toShortString()
+                if (DEBUG_LAYOUT) Log.d(TAG, "relayout: frame=" + frame.toShortString()
                         + " overscan=" + mPendingOverscanInsets.toShortString()
                         + " content=" + mPendingContentInsets.toShortString()
                         + " visible=" + mPendingVisibleInsets.toShortString()
@@ -1518,7 +1518,7 @@ public final class ViewRootImpl implements ViewParent,
                         + " surface=" + mSurface);
 
                 if (mPendingConfiguration.seq != 0) {
-                    if (DEBUG_CONFIGURATION) Log.v(TAG, "Visible with new config: "
+                    if (DEBUG_CONFIGURATION) Log.d(TAG, "Visible with new config: "
                             + mPendingConfiguration);
                     updateConfiguration(mPendingConfiguration, !mFirst);
                     mPendingConfiguration.seq = 0;
@@ -1596,19 +1596,19 @@ public final class ViewRootImpl implements ViewParent,
 //                        mAttachInfo.mHardwareRenderer.flushLayerUpdates();
                     }
                     mAttachInfo.mContentInsets.set(mPendingContentInsets);
-                    if (DEBUG_LAYOUT) Log.v(TAG, "Content insets changing to: "
+                    if (DEBUG_LAYOUT) Log.d(TAG, "Content insets changing to: "
                             + mAttachInfo.mContentInsets);
                 }
                 if (overscanInsetsChanged) {
                     mAttachInfo.mOverscanInsets.set(mPendingOverscanInsets);
-                    if (DEBUG_LAYOUT) Log.v(TAG, "Overscan insets changing to: "
+                    if (DEBUG_LAYOUT) Log.d(TAG, "Overscan insets changing to: "
                             + mAttachInfo.mOverscanInsets);
                     // Need to relayout with content insets.
                     contentInsetsChanged = true;
                 }
                 if (stableInsetsChanged) {
                     mAttachInfo.mStableInsets.set(mPendingStableInsets);
-                    if (DEBUG_LAYOUT) Log.v(TAG, "Decor insets changing to: "
+                    if (DEBUG_LAYOUT) Log.d(TAG, "Decor insets changing to: "
                             + mAttachInfo.mStableInsets);
                     // Need to relayout with content insets.
                     contentInsetsChanged = true;
@@ -1623,7 +1623,7 @@ public final class ViewRootImpl implements ViewParent,
                 }
                 if (visibleInsetsChanged) {
                     mAttachInfo.mVisibleInsets.set(mPendingVisibleInsets);
-                    if (DEBUG_LAYOUT) Log.v(TAG, "Visible insets changing to: "
+                    if (DEBUG_LAYOUT) Log.d(TAG, "Visible insets changing to: "
                             + mAttachInfo.mVisibleInsets);
                 }
 
@@ -1682,7 +1682,7 @@ public final class ViewRootImpl implements ViewParent,
             } catch (RemoteException e) {
             }
 
-            if (DEBUG_ORIENTATION) Log.v(
+            if (DEBUG_ORIENTATION) Log.d(
                     TAG, "Relayout returned: frame=" + frame + ", surface=" + mSurface);
 
             mAttachInfo.mWindowLeft = frame.left;
@@ -1771,7 +1771,7 @@ public final class ViewRootImpl implements ViewParent,
                     int childWidthMeasureSpec = getRootMeasureSpec(mWidth, lp.width);
                     int childHeightMeasureSpec = getRootMeasureSpec(mHeight, lp.height);
 
-                    if (DEBUG_LAYOUT) Log.v(TAG, "Ooops, something changed!  mWidth="
+                    if (DEBUG_LAYOUT) Log.d(TAG, "Ooops, something changed!  mWidth="
                             + mWidth + " measuredWidth=" + host.getMeasuredWidth()
                             + " mHeight=" + mHeight
                             + " measuredHeight=" + host.getMeasuredHeight()
@@ -1801,7 +1801,7 @@ public final class ViewRootImpl implements ViewParent,
                     }
 
                     if (measureAgain) {
-                        if (DEBUG_LAYOUT) Log.v(TAG,
+                        if (DEBUG_LAYOUT) Log.d(TAG,
                                 "And hey let's measure once more: width=" + width
                                 + " height=" + height);
                         performMeasure(childWidthMeasureSpec, childHeightMeasureSpec);
@@ -1920,15 +1920,15 @@ public final class ViewRootImpl implements ViewParent,
 
         if (mFirst) {
             // handle first focus request
-            if (DEBUG_INPUT_RESIZE) Log.v(TAG, "First: mView.hasFocus()="
+            if (DEBUG_INPUT_RESIZE) Log.d(TAG, "First: mView.hasFocus()="
                     + mView.hasFocus());
             if (mView != null) {
                 if (!mView.hasFocus()) {
                     mView.requestFocus(View.FOCUS_FORWARD);
-                    if (DEBUG_INPUT_RESIZE) Log.v(TAG, "First: requested focused view="
+                    if (DEBUG_INPUT_RESIZE) Log.d(TAG, "First: requested focused view="
                             + mView.findFocus());
                 } else {
-                    if (DEBUG_INPUT_RESIZE) Log.v(TAG, "First: existing focused view="
+                    if (DEBUG_INPUT_RESIZE) Log.d(TAG, "First: existing focused view="
                             + mView.findFocus());
                 }
             }
@@ -2077,7 +2077,7 @@ public final class ViewRootImpl implements ViewParent,
 
         final View host = mView;
         if (DEBUG_ORIENTATION || DEBUG_LAYOUT) {
-            Log.v(TAG, "Laying out " + host + " to (" +
+            Log.d(TAG, "Laying out " + host + " to (" +
                     host.getMeasuredWidth() + ", " + host.getMeasuredHeight() + ")");
         }
 
@@ -2327,11 +2327,11 @@ public final class ViewRootImpl implements ViewParent,
             String thisHash = Integer.toHexString(System.identityHashCode(this));
             long frameTime = nowTime - mFpsPrevTime;
             long totalTime = nowTime - mFpsStartTime;
-            Log.v(TAG, "0x" + thisHash + "\tFrame time:\t" + frameTime);
+            Log.d(TAG, "0x" + thisHash + "\tFrame time:\t" + frameTime);
             mFpsPrevTime = nowTime;
             if (totalTime > 1000) {
                 float fps = (float) mFpsNumFrames * 1000 / totalTime;
-                Log.v(TAG, "0x" + thisHash + "\tFPS:\t" + fps);
+                Log.d(TAG, "0x" + thisHash + "\tFPS:\t" + fps);
                 mFpsStartTime = nowTime;
                 mFpsNumFrames = 0;
             }
@@ -2372,7 +2372,7 @@ public final class ViewRootImpl implements ViewParent,
             }
 
             if (LOCAL_LOGV) {
-                Log.v(TAG, "FINISHED DRAWING: " + mWindowAttributes.getTitle());
+                Log.d(TAG, "FINISHED DRAWING: " + mWindowAttributes.getTitle());
             }
             if (mSurfaceHolder != null && mSurface.isValid()) {
                 mSurfaceHolderCallback.surfaceRedrawNeeded(mSurfaceHolder);
@@ -2470,7 +2470,7 @@ public final class ViewRootImpl implements ViewParent,
         }
 
         if (DEBUG_ORIENTATION || DEBUG_DRAW) {
-            Log.v(TAG, "Draw " + mView + "/"
+            Log.d(TAG, "Draw " + mView + "/"
                     + mWindowAttributes.getTitle()
                     + ": dirty={" + dirty.left + "," + dirty.top
                     + "," + dirty.right + "," + dirty.bottom + "} surface="
@@ -2605,7 +2605,7 @@ public final class ViewRootImpl implements ViewParent,
 
         try {
             if (DEBUG_ORIENTATION || DEBUG_DRAW) {
-                Log.v(TAG, "Surface " + surface + " drawing to bitmap w="
+                Log.d(TAG, "Surface " + surface + " drawing to bitmap w="
                         + canvas.getWidth() + ", h=" + canvas.getHeight());
                 //canvas.drawARGB(255, 255, 0, 0);
             }
@@ -2661,7 +2661,7 @@ public final class ViewRootImpl implements ViewParent,
             }
 
             if (LOCAL_LOGV) {
-                Log.v(TAG, "Surface " + surface + " unlockCanvasAndPost");
+                Log.d(TAG, "Surface " + surface + " unlockCanvasAndPost");
             }
         }
         return true;
@@ -2770,14 +2770,14 @@ public final class ViewRootImpl implements ViewParent,
                 // view is visible.
                 rectangle = null;
             }
-            if (DEBUG_INPUT_RESIZE) Log.v(TAG, "Eval scroll: focus=" + focus
+            if (DEBUG_INPUT_RESIZE) Log.d(TAG, "Eval scroll: focus=" + focus
                     + " rectangle=" + rectangle + " ci=" + ci
                     + " vi=" + vi);
             if (focus == lastScrolledFocus && !mScrollMayChange && rectangle == null) {
                 // Optimization: if the focus hasn't changed since last
                 // time, and no layout has happened, then just leave things
                 // as they are.
-                if (DEBUG_INPUT_RESIZE) Log.v(TAG, "Keeping scroll y="
+                if (DEBUG_INPUT_RESIZE) Log.d(TAG, "Keeping scroll y="
                         + mScrollY + " vi=" + vi.toShortString());
             } else {
                 // We need to determine if the currently focused view is
@@ -2785,51 +2785,51 @@ public final class ViewRootImpl implements ViewParent,
                 // a pan so it can be seen.
                 mLastScrolledFocus = new WeakReference<View>(focus);
                 mScrollMayChange = false;
-                if (DEBUG_INPUT_RESIZE) Log.v(TAG, "Need to scroll?");
+                if (DEBUG_INPUT_RESIZE) Log.d(TAG, "Need to scroll?");
                 // Try to find the rectangle from the focus view.
                 if (focus.getGlobalVisibleRect(mVisRect, null)) {
-                    if (DEBUG_INPUT_RESIZE) Log.v(TAG, "Root w="
+                    if (DEBUG_INPUT_RESIZE) Log.d(TAG, "Root w="
                             + mView.getWidth() + " h=" + mView.getHeight()
                             + " ci=" + ci.toShortString()
                             + " vi=" + vi.toShortString());
                     if (rectangle == null) {
                         focus.getFocusedRect(mTempRect);
-                        if (DEBUG_INPUT_RESIZE) Log.v(TAG, "Focus " + focus
+                        if (DEBUG_INPUT_RESIZE) Log.d(TAG, "Focus " + focus
                                 + ": focusRect=" + mTempRect.toShortString());
                         if (mView instanceof ViewGroup) {
                             ((ViewGroup) mView).offsetDescendantRectToMyCoords(
                                     focus, mTempRect);
                         }
-                        if (DEBUG_INPUT_RESIZE) Log.v(TAG,
+                        if (DEBUG_INPUT_RESIZE) Log.d(TAG,
                                 "Focus in window: focusRect="
                                 + mTempRect.toShortString()
                                 + " visRect=" + mVisRect.toShortString());
                     } else {
                         mTempRect.set(rectangle);
-                        if (DEBUG_INPUT_RESIZE) Log.v(TAG,
+                        if (DEBUG_INPUT_RESIZE) Log.d(TAG,
                                 "Request scroll to rect: "
                                 + mTempRect.toShortString()
                                 + " visRect=" + mVisRect.toShortString());
                     }
                     if (mTempRect.intersect(mVisRect)) {
-                        if (DEBUG_INPUT_RESIZE) Log.v(TAG,
+                        if (DEBUG_INPUT_RESIZE) Log.d(TAG,
                                 "Focus window visible rect: "
                                 + mTempRect.toShortString());
                         if (mTempRect.height() >
                                 (mView.getHeight()-vi.top-vi.bottom)) {
                             // If the focus simply is not going to fit, then
                             // best is probably just to leave things as-is.
-                            if (DEBUG_INPUT_RESIZE) Log.v(TAG,
+                            if (DEBUG_INPUT_RESIZE) Log.d(TAG,
                                     "Too tall; leaving scrollY=" + scrollY);
                         } else if ((mTempRect.top-scrollY) < vi.top) {
                             scrollY -= vi.top - (mTempRect.top-scrollY);
-                            if (DEBUG_INPUT_RESIZE) Log.v(TAG,
+                            if (DEBUG_INPUT_RESIZE) Log.d(TAG,
                                     "Top covered; scrollY=" + scrollY);
                         } else if ((mTempRect.bottom-scrollY)
                                 > (mView.getHeight()-vi.bottom)) {
                             scrollY += (mTempRect.bottom-scrollY)
                                     - (mView.getHeight()-vi.bottom);
-                            if (DEBUG_INPUT_RESIZE) Log.v(TAG,
+                            if (DEBUG_INPUT_RESIZE) Log.d(TAG,
                                     "Bottom covered; scrollY=" + scrollY);
                         }
                         handled = true;
@@ -2839,7 +2839,7 @@ public final class ViewRootImpl implements ViewParent,
         }
 
         if (scrollY != mScrollY) {
-            if (DEBUG_INPUT_RESIZE) Log.v(TAG, "Pan scroll changed: old="
+            if (DEBUG_INPUT_RESIZE) Log.d(TAG, "Pan scroll changed: old="
                     + mScrollY + " , new=" + scrollY);
             if (!immediate && mResizeBuffer == null) {
                 if (mScroller == null) {
@@ -2919,7 +2919,7 @@ public final class ViewRootImpl implements ViewParent,
     @Override
     public void requestChildFocus(View child, View focused) {
         if (DEBUG_INPUT_RESIZE) {
-            Log.v(TAG, "Request child focus: focus now " + focused);
+            Log.d(TAG, "Request child focus: focus now " + focused);
         }
         checkThread();
         scheduleTraversals();
@@ -2928,7 +2928,7 @@ public final class ViewRootImpl implements ViewParent,
     @Override
     public void clearChildFocus(View child) {
         if (DEBUG_INPUT_RESIZE) {
-            Log.v(TAG, "Clearing child focus");
+            Log.d(TAG, "Clearing child focus");
         }
         checkThread();
         scheduleTraversals();
@@ -3023,7 +3023,7 @@ public final class ViewRootImpl implements ViewParent,
     }
 
     void updateConfiguration(Configuration config, boolean force) {
-        if (DEBUG_CONFIGURATION) Log.v(TAG,
+        if (DEBUG_CONFIGURATION) Log.d(TAG,
                 "Applying new config to window "
                 + mWindowAttributes.getTitle()
                 + ": " + config);
@@ -3326,7 +3326,7 @@ public final class ViewRootImpl implements ViewParent,
                 enqueueInputEvent(event, null, QueuedInputEvent.FLAG_UNHANDLED, true);
             } break;
             case MSG_DISPATCH_KEY_FROM_IME: {
-                if (LOCAL_LOGV) Log.v(
+                if (LOCAL_LOGV) Log.d(
                     TAG, "Dispatching key "
                     + msg.obj + " from IME to " + mView);
                 KeyEvent event = (KeyEvent)msg.obj;
@@ -3404,6 +3404,8 @@ public final class ViewRootImpl implements ViewParent,
     boolean ensureTouchMode(boolean inTouchMode) {
         if (DBG) Log.d("touchmode", "ensureTouchMode(" + inTouchMode + "), current "
                 + "touch mode is " + mAttachInfo.mInTouchMode);
+        // MULTIWINDOW
+        if (DBG) Log.d("========>", "packageName: " + mBasePackageName);
         if (mAttachInfo.mInTouchMode == inTouchMode) return false;
 
         // tell the window manager
@@ -3591,7 +3593,7 @@ public final class ViewRootImpl implements ViewParent,
          */
         protected void onDeliverToNext(QueuedInputEvent q) {
             if (DEBUG_INPUT_STAGES) {
-                Log.v(TAG, "Done with " + getClass().getSimpleName() + ". " + q);
+                Log.d(TAG, "Done with " + getClass().getSimpleName() + ". " + q);
             }
             if (mNext != null) {
                 mNext.deliver(q);
@@ -3849,7 +3851,7 @@ public final class ViewRootImpl implements ViewParent,
                 InputMethodManager imm = InputMethodManager.peekInstance();
                 if (imm != null) {
                     final InputEvent event = q.mEvent;
-                    if (DEBUG_IMF) Log.v(TAG, "Sending input event to IME: " + event);
+                    if (DEBUG_IMF) Log.d(TAG, "Sending input event to IME: " + event);
                     int result = imm.dispatchInputEvent(event, q, this, mHandler);
                     if (result == InputMethodManager.DISPATCH_HANDLED) {
                         return FINISH_HANDLED;
@@ -4250,7 +4252,7 @@ public final class ViewRootImpl implements ViewParent,
                     break;
             }
 
-            if (DEBUG_TRACKBALL) Log.v(TAG, "TB X=" + mX.position + " step="
+            if (DEBUG_TRACKBALL) Log.d(TAG, "TB X=" + mX.position + " step="
                     + mX.step + " dir=" + mX.dir + " acc=" + mX.acceleration
                     + " move=" + event.getX()
                     + " / Y=" + mY.position + " step="
@@ -4289,11 +4291,11 @@ public final class ViewRootImpl implements ViewParent,
             if (keycode != 0) {
                 if (movement < 0) movement = -movement;
                 int accelMovement = (int)(movement * accel);
-                if (DEBUG_TRACKBALL) Log.v(TAG, "Move: movement=" + movement
+                if (DEBUG_TRACKBALL) Log.d(TAG, "Move: movement=" + movement
                         + " accelMovement=" + accelMovement
                         + " accel=" + accel);
                 if (accelMovement > movement) {
-                    if (DEBUG_TRACKBALL) Log.v(TAG, "Delivering fake DPAD: "
+                    if (DEBUG_TRACKBALL) Log.d(TAG, "Delivering fake DPAD: "
                             + keycode);
                     movement--;
                     int repeatCount = accelMovement - movement;
@@ -4303,7 +4305,7 @@ public final class ViewRootImpl implements ViewParent,
                             InputDevice.SOURCE_KEYBOARD));
                 }
                 while (movement > 0) {
-                    if (DEBUG_TRACKBALL) Log.v(TAG, "Delivering fake DPAD: "
+                    if (DEBUG_TRACKBALL) Log.d(TAG, "Delivering fake DPAD: "
                             + keycode);
                     movement--;
                     curTime = SystemClock.uptimeMillis();
@@ -4391,7 +4393,7 @@ public final class ViewRootImpl implements ViewParent,
             if (off > 0) {
                 normTime = (long)(off * FAST_MOVE_TIME);
                 if (dir < 0) {
-                    if (DEBUG_TRACKBALL) Log.v(TAG, axis + " reversed to positive!");
+                    if (DEBUG_TRACKBALL) Log.d(TAG, axis + " reversed to positive!");
                     position = 0;
                     step = 0;
                     acceleration = 1;
@@ -4401,7 +4403,7 @@ public final class ViewRootImpl implements ViewParent,
             } else if (off < 0) {
                 normTime = (long)((-off) * FAST_MOVE_TIME);
                 if (dir > 0) {
-                    if (DEBUG_TRACKBALL) Log.v(TAG, axis + " reversed to negative!");
+                    if (DEBUG_TRACKBALL) Log.d(TAG, axis + " reversed to negative!");
                     position = 0;
                     step = 0;
                     acceleration = 1;
@@ -4423,7 +4425,7 @@ public final class ViewRootImpl implements ViewParent,
                     // The user is scrolling rapidly, so increase acceleration.
                     float scale = (normTime-delta) * ACCEL_MOVE_SCALING_FACTOR;
                     if (scale > 1) acc *= scale;
-                    if (DEBUG_TRACKBALL) Log.v(TAG, axis + " accelerate: off="
+                    if (DEBUG_TRACKBALL) Log.d(TAG, axis + " accelerate: off="
                             + off + " normTime=" + normTime + " delta=" + delta
                             + " scale=" + scale + " acc=" + acc);
                     acceleration = acc < MAX_ACCELERATION ? acc : MAX_ACCELERATION;
@@ -4431,7 +4433,7 @@ public final class ViewRootImpl implements ViewParent,
                     // The user is scrolling slowly, so decrease acceleration.
                     float scale = (delta-normTime) * ACCEL_MOVE_SCALING_FACTOR;
                     if (scale > 1) acc /= scale;
-                    if (DEBUG_TRACKBALL) Log.v(TAG, axis + " deccelerate: off="
+                    if (DEBUG_TRACKBALL) Log.d(TAG, axis + " deccelerate: off="
                             + off + " normTime=" + normTime + " delta=" + delta
                             + " scale=" + scale + " acc=" + acc);
                     acceleration = acc > 1 ? acc : 1;
@@ -5486,7 +5488,7 @@ public final class ViewRootImpl implements ViewParent,
 
     void doDie() {
         checkThread();
-        if (LOCAL_LOGV) Log.v(TAG, "DIE in " + this + " of " + mSurface);
+        if (LOCAL_LOGV) Log.d(TAG, "DIE in " + this + " of " + mSurface);
         synchronized (this) {
             if (mRemoved) {
                 return;
@@ -5586,7 +5588,7 @@ public final class ViewRootImpl implements ViewParent,
 
     public void dispatchResized(Rect frame, Rect overscanInsets, Rect contentInsets,
             Rect visibleInsets, Rect stableInsets, boolean reportDraw, Configuration newConfig) {
-        if (DEBUG_LAYOUT) Log.v(TAG, "Resizing " + this + ": frame=" + frame.toShortString()
+        if (DEBUG_LAYOUT) Log.d(TAG, "Resizing " + this + ": frame=" + frame.toShortString()
                 + " contentInsets=" + contentInsets.toShortString()
                 + " visibleInsets=" + visibleInsets.toShortString()
                 + " reportDraw=" + reportDraw);
@@ -5610,7 +5612,7 @@ public final class ViewRootImpl implements ViewParent,
     }
 
     public void dispatchMoved(int newX, int newY) {
-        if (DEBUG_LAYOUT) Log.v(TAG, "Window moved " + this + ": newX=" + newX + " newY=" + newY);
+        if (DEBUG_LAYOUT) Log.d(TAG, "Window moved " + this + ": newX=" + newX + " newY=" + newY);
         if (mTranslator != null) {
             PointF point = new PointF(newX, newY);
             mTranslator.translatePointInScreenToAppWindow(point);

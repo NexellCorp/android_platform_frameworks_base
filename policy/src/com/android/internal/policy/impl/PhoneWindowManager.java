@@ -134,13 +134,13 @@ import static android.view.WindowManagerPolicy.WindowManagerFuncs.CAMERA_LENS_CO
  */
 public class PhoneWindowManager implements WindowManagerPolicy {
     static final String TAG = "WindowManager";
-    static final boolean DEBUG = false;
-    static final boolean localLOGV = false;
-    static final boolean DEBUG_INPUT = false;
-    static final boolean DEBUG_KEYGUARD = false;
-    static final boolean DEBUG_LAYOUT = false;
-    static final boolean DEBUG_STARTING_WINDOW = false;
-    static final boolean DEBUG_WAKEUP = false;
+    static final boolean DEBUG = true;
+    static final boolean localLOGV = true;
+    static final boolean DEBUG_INPUT = true;
+    static final boolean DEBUG_KEYGUARD = true;
+    static final boolean DEBUG_LAYOUT = true;
+    static final boolean DEBUG_STARTING_WINDOW = true;
+    static final boolean DEBUG_WAKEUP = true;
     static final boolean SHOW_STARTING_ANIMATIONS = true;
     static final boolean SHOW_PROCESSES_ON_ALT_MENU = false;
 
@@ -286,6 +286,24 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mNavigationBarOnBottom = true; // is the navigation bar on the bottom *right now*?
     int[] mNavigationBarHeightForRotation = new int[4];
     int[] mNavigationBarWidthForRotation = new int[4];
+
+    // MULTIWINDOW
+    static final String PROPERTY_MULTIWINDOW_ENABLE = "persist.multiwindow_enable";
+    static final String PROPERTY_MULTIWINDOW_MAX_NUM = "persist.multiwindow_max_num";
+    static final String PROPERTY_MULTIWINDOW_POLICY = "persist.multiwindow_policy";
+
+    static final int MULTIWINDOW_POLICY_PRIORITIZED = 0;
+    static final int MULTIWINDOW_POLICY_FIFO = 1;
+
+    boolean mMultiWindowEnable = false;
+    int mMultiWindowMaxNum = 1;
+    int mMultiWindowPolicy = MULTIWINDOW_POLICY_PRIORITIZED;
+    int mCurrentLayoutWindowNumber = 0;
+
+    WindowState mLeftWin = null;
+    WindowState mRightWin = null;
+    // END OF MULTIWINDOW
+
 
     boolean mBootMessageNeedsHiding;
     KeyguardServiceDelegate mKeyguardDelegate;
@@ -713,7 +731,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         @Override
         public void onProposedRotationChanged(int rotation) {
-            if (localLOGV) Slog.v(TAG, "onProposedRotationChanged, rotation=" + rotation);
+            if (localLOGV) Slog.d(TAG, "onProposedRotationChanged, rotation=" + rotation);
             updateRotation(false);
         }
     }
@@ -802,7 +820,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
         //Could have been invoked due to screen turning on or off or
         //change of the currently visible window's orientation
-        if (localLOGV) Slog.v(TAG, "mScreenOnEarly=" + mScreenOnEarly
+        if (localLOGV) Slog.d(TAG, "mScreenOnEarly=" + mScreenOnEarly
                 + ", mAwake=" + mAwake + ", mCurrentAppOrientation=" + mCurrentAppOrientation
                 + ", mOrientationSensorEnabled=" + mOrientationSensorEnabled);
         boolean disable = true;
@@ -812,7 +830,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 //enable listener if not already enabled
                 if (!mOrientationSensorEnabled) {
                     mOrientationListener.enable();
-                    if(localLOGV) Slog.v(TAG, "Enabling listeners");
+                    if(localLOGV) Slog.d(TAG, "Enabling listeners");
                     mOrientationSensorEnabled = true;
                 }
             }
@@ -820,7 +838,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         //check if sensors need to be disabled
         if (disable && mOrientationSensorEnabled) {
             mOrientationListener.disable();
-            if(localLOGV) Slog.v(TAG, "Disabling listeners");
+            if(localLOGV) Slog.d(TAG, "Disabling listeners");
             mOrientationSensorEnabled = false;
         }
     }
@@ -1347,6 +1365,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // Match current screen state.
         if (!mPowerManager.isInteractive()) {
             goingToSleep(WindowManagerPolicy.OFF_BECAUSE_OF_USER);
+        }
+
+        // MULTIWINDOW
+        try {
+            mMultiWindowEnable = "1".equals(SystemProperties.get(PROPERTY_MULTIWINDOW_ENABLE));
+            if (mMultiWindowEnable) {
+                mMultiWindowMaxNum = SystemProperties.getInt(PROPERTY_MULTIWINDOW_MAX_NUM, 2);
+                mMultiWindowPolicy = SystemProperties.getInt(PROPERTY_MULTIWINDOW_POLICY, 0);
+            }
+        } catch (Exception e) {
         }
     }
 
@@ -2133,7 +2161,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     @Override
     public void removeStartingWindow(IBinder appToken, View window) {
-        if (DEBUG_STARTING_WINDOW) Slog.v(TAG, "Removing starting window for " + appToken + ": "
+        if (DEBUG_STARTING_WINDOW) Slog.d(TAG, "Removing starting window for " + appToken + ": "
                 + window + " Callers=" + Debug.getCallers(4));
 
         if (window != null) {
@@ -3391,7 +3419,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mContentLeft = mVoiceContentLeft = mCurLeft = mDockLeft;
                     mContentRight = mVoiceContentRight = mCurRight = mDockRight;
 
-                    if (DEBUG_LAYOUT) Slog.v(TAG, "Status bar: " +
+                    if (DEBUG_LAYOUT) Slog.d(TAG, "Status bar: " +
                         String.format(
                             "dock=[%d,%d][%d,%d] content=[%d,%d][%d,%d] cur=[%d,%d][%d,%d]",
                             mDockLeft, mDockTop, mDockRight, mDockBottom,
@@ -3617,7 +3645,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
             if ((fl & (FLAG_LAYOUT_IN_SCREEN | FLAG_LAYOUT_INSET_DECOR))
                     == (FLAG_LAYOUT_IN_SCREEN | FLAG_LAYOUT_INSET_DECOR)) {
-                if (DEBUG_LAYOUT) Slog.v(TAG, "layoutWindowLw(" + attrs.getTitle()
+                if (DEBUG_LAYOUT) Slog.d(TAG, "layoutWindowLw(" + attrs.getTitle()
                             + "): IN_SCREEN, INSET_DECOR");
                 // This is the case for a normal activity window: we want it
                 // to cover all of the screen space, and it can take care of
@@ -3647,7 +3675,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                                 ? mRestrictedScreenTop+mRestrictedScreenHeight
                                 : mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
 
-                        if (DEBUG_LAYOUT) Slog.v(TAG, String.format(
+                        if (DEBUG_LAYOUT) Slog.d(TAG, String.format(
                                         "Laying out status bar window: (%d,%d - %d,%d)",
                                         pf.left, pf.top, pf.right, pf.bottom));
                     } else if ((fl & FLAG_LAYOUT_IN_OVERSCAN) != 0
@@ -3655,6 +3683,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             && attrs.type <= WindowManager.LayoutParams.LAST_SUB_WINDOW) {
                         // Asking to layout into the overscan region, so give it that pure
                         // unrestricted area.
+                        Slog.d(TAG, "+++++ HEY FLAG_LAYOUT_IN_OVERSCAN");
+
                         pf.left = df.left = of.left = mOverscanScreenLeft;
                         pf.top = df.top = of.top = mOverscanScreenTop;
                         pf.right = df.right = of.right = mOverscanScreenLeft + mOverscanScreenWidth;
@@ -3668,31 +3698,118 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         // application extend into the unrestricted overscan screen area.  We
                         // only do this for application windows to ensure no window that
                         // can be above the nav bar can do this.
-                        pf.left = df.left = mOverscanScreenLeft;
-                        pf.top = df.top = mOverscanScreenTop;
-                        pf.right = df.right = mOverscanScreenLeft + mOverscanScreenWidth;
-                        pf.bottom = df.bottom = mOverscanScreenTop + mOverscanScreenHeight;
-                        // We need to tell the app about where the frame inside the overscan
-                        // is, so it can inset its content by that amount -- it didn't ask
-                        // to actually extend itself into the overscan region.
-                        of.left = mUnrestrictedScreenLeft;
-                        of.top = mUnrestrictedScreenTop;
-                        of.right = mUnrestrictedScreenLeft + mUnrestrictedScreenWidth;
-                        of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
+                        Slog.d(TAG, "+++++ HEY canHideNavigationBar");
+                        // MULTIWINDOW
+                        if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 1) {
+                            //if (win.isGoneForLayoutLw()) {
+                            //if (attrs.type > 1) {
+                            if (win == mRightWin) {
+                                // new window : right
+                                pf.left = df.left = mOverscanScreenLeft + (mOverscanScreenWidth/2);
+                                pf.top = df.top = mOverscanScreenTop;
+                                pf.right = df.right = mOverscanScreenLeft + mOverscanScreenWidth;
+                                pf.bottom = df.bottom = mOverscanScreenTop + mOverscanScreenHeight;
+                                of.left = mUnrestrictedScreenLeft + (mUnrestrictedScreenWidth/2);
+                                of.top = mUnrestrictedScreenTop;
+                                of.right = mUnrestrictedScreenLeft + mUnrestrictedScreenWidth;
+                                of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
+
+                                dcf.left = mSystemLeft + (mSystemRight/2);
+                                dcf.top = mSystemTop;
+                                dcf.right = mSystemRight;
+                                dcf.bottom = mSystemBottom;
+
+                                sf.set(mStableLeft + (mStableRight/2), mStableTop, mStableRight, mStableBottom);
+
+                                Slog.d(TAG, "This is Right, pf:" + pf + ", of:" + of + ",dcf: " + dcf + ",sf: " + sf);
+                            } else if (win == mLeftWin) {
+                                // old window : left
+                                pf.left = df.left = mOverscanScreenLeft;
+                                pf.top = df.top = mOverscanScreenTop;
+                                pf.right = df.right = mOverscanScreenLeft + (mOverscanScreenWidth/2);
+                                pf.bottom = df.bottom = mOverscanScreenTop + mOverscanScreenHeight;
+                                of.left = mUnrestrictedScreenLeft;
+                                of.top = mUnrestrictedScreenTop;
+                                of.right = mUnrestrictedScreenLeft + (mUnrestrictedScreenWidth/2);
+                                of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
+
+                                dcf.left = mSystemLeft;
+                                dcf.top = mSystemTop;
+                                dcf.right = mSystemRight/2;
+                                dcf.bottom = mSystemBottom;
+
+                                sf.set(mStableLeft, mStableTop, mStableRight/2, mStableBottom);
+
+                                Slog.d(TAG, "This is Left, pf:" + pf + ", of:" + of + ",dcf: " + dcf + ",sf: " + sf);
+                            } else {
+                                Slog.e(TAG, "This win is not left nor right!!! " + win);
+                            }
+                        } else {
+                            pf.left = df.left = mOverscanScreenLeft;
+                            pf.top = df.top = mOverscanScreenTop;
+                            pf.right = df.right = mOverscanScreenLeft + mOverscanScreenWidth;
+                            pf.bottom = df.bottom = mOverscanScreenTop + mOverscanScreenHeight;
+                            // We need to tell the app about where the frame inside the overscan
+                            // is, so it can inset its content by that amount -- it didn't ask
+                            // to actually extend itself into the overscan region.
+                            of.left = mUnrestrictedScreenLeft;
+                            of.top = mUnrestrictedScreenTop;
+                            of.right = mUnrestrictedScreenLeft + mUnrestrictedScreenWidth;
+                            of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
+                        }
                     } else {
-                        pf.left = df.left = mRestrictedOverscanScreenLeft;
-                        pf.top = df.top = mRestrictedOverscanScreenTop;
-                        pf.right = df.right = mRestrictedOverscanScreenLeft
+                        // MULTIWINDOW
+                        Slog.d(TAG, "+++++ Check MultiWindow");
+                        // here is normal app
+                        if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 1) {
+                            Slog.d(TAG, "-----> layoutWindowLw, set pf, of");
+                            //if (win.isGoneForLayoutLw()) {
+                            //if (attrs.type > 1) {
+                            if (win == mRightWin) {
+                                // new window : right
+                                //pf.left = df.left = mSystemRight/2;
+                                pf.left = df.left = mRestrictedOverscanScreenLeft + (mRestrictedOverscanScreenWidth/2);
+                                pf.top = df.top = mRestrictedOverscanScreenTop;
+                                pf.right = df.right = mRestrictedOverscanScreenLeft
+                                    + mRestrictedOverscanScreenWidth;
+                                pf.bottom = df.bottom = mRestrictedOverscanScreenTop
+                                    + mRestrictedOverscanScreenHeight;
+                                of.left = mUnrestrictedScreenLeft + (mUnrestrictedScreenWidth/2);
+                                of.top = mUnrestrictedScreenTop;
+                                of.right = mUnrestrictedScreenLeft + mUnrestrictedScreenWidth;
+                                of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
+                                Slog.d(TAG, "This is Right, pf:" + pf + ", of:" + of);
+                            } else if (win == mLeftWin) {
+                                // old window
+                                pf.left = df.left = mRestrictedOverscanScreenLeft;
+                                pf.top = df.top = mRestrictedOverscanScreenTop;
+                                pf.right = df.right = mRestrictedOverscanScreenLeft
+                                    + (mRestrictedOverscanScreenWidth/2);
+                                pf.bottom = df.bottom = mRestrictedOverscanScreenTop
+                                    + mRestrictedOverscanScreenHeight;
+                                of.left = mUnrestrictedScreenLeft;
+                                of.top = mUnrestrictedScreenTop;
+                                of.right = mUnrestrictedScreenLeft + (mUnrestrictedScreenWidth/2);
+                                of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
+                                Slog.d(TAG, "This is Left, pf:" + pf + ", of:" + of);
+                            } else {
+                                Slog.e(TAG, "This win is not left nor right!!! " + win);
+                            }
+                        } else {
+                            pf.left = df.left = mRestrictedOverscanScreenLeft;
+                            pf.top = df.top = mRestrictedOverscanScreenTop;
+                            pf.right = df.right = mRestrictedOverscanScreenLeft
                                 + mRestrictedOverscanScreenWidth;
-                        pf.bottom = df.bottom = mRestrictedOverscanScreenTop
+                            pf.bottom = df.bottom = mRestrictedOverscanScreenTop
                                 + mRestrictedOverscanScreenHeight;
-                        // We need to tell the app about where the frame inside the overscan
-                        // is, so it can inset its content by that amount -- it didn't ask
-                        // to actually extend itself into the overscan region.
-                        of.left = mUnrestrictedScreenLeft;
-                        of.top = mUnrestrictedScreenTop;
-                        of.right = mUnrestrictedScreenLeft + mUnrestrictedScreenWidth;
-                        of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
+                            // We need to tell the app about where the frame inside the overscan
+                            // is, so it can inset its content by that amount -- it didn't ask
+                            // to actually extend itself into the overscan region.
+                            of.left = mUnrestrictedScreenLeft;
+                            of.top = mUnrestrictedScreenTop;
+                            of.right = mUnrestrictedScreenLeft + mUnrestrictedScreenWidth;
+                            of.bottom = mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
+                        }
                     }
 
                     if ((fl & FLAG_FULLSCREEN) == 0) {
@@ -3702,16 +3819,52 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             cf.right = mVoiceContentRight;
                             cf.bottom = mVoiceContentBottom;
                         } else {
-                            if (adjust != SOFT_INPUT_ADJUST_RESIZE) {
-                                cf.left = mDockLeft;
-                                cf.top = mDockTop;
-                                cf.right = mDockRight;
-                                cf.bottom = mDockBottom;
+                            // MULTIWINDOW
+                            // here is normal app
+                            if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 1) {
+                                //if (win.isGoneForLayoutLw()) {
+                                //if (attrs.type > 1) {
+                                if (win == mRightWin) {
+                                    // new window
+                                    if (adjust != SOFT_INPUT_ADJUST_RESIZE) {
+                                        cf.left = mDockRight/2;
+                                        cf.top = mDockTop;
+                                        cf.right = mDockRight;
+                                        cf.bottom = mDockBottom;
+                                    } else {
+                                        cf.left = mContentRight/2;
+                                        cf.top = mContentTop;
+                                        cf.right = mContentRight;
+                                        cf.bottom = mContentBottom;
+                                    }
+                                } else if (win == mLeftWin) {
+                                    // old window
+                                    if (adjust != SOFT_INPUT_ADJUST_RESIZE) {
+                                        cf.left = mDockLeft;
+                                        cf.top = mDockTop;
+                                        cf.right = mDockRight/2;
+                                        cf.bottom = mDockBottom;
+                                    } else {
+                                        cf.left = mContentLeft;
+                                        cf.top = mContentTop;
+                                        cf.right = mContentRight/2;
+                                        cf.bottom = mContentBottom;
+                                    }
+                                } else {
+                                    Slog.e(TAG, "This win is not left nor right!!! " + win);
+                                }
                             } else {
-                                cf.left = mContentLeft;
-                                cf.top = mContentTop;
-                                cf.right = mContentRight;
-                                cf.bottom = mContentBottom;
+                                if (adjust != SOFT_INPUT_ADJUST_RESIZE) {
+                                    cf.left = mDockLeft;
+                                    cf.top = mDockTop;
+                                    cf.right = mDockRight;
+                                    cf.bottom = mDockBottom;
+                                } else {
+                                    cf.left = mContentLeft;
+                                    cf.top = mContentTop;
+                                    cf.right = mContentRight;
+                                    cf.bottom = mContentBottom;
+                                }
                             }
                         }
                     } else {
@@ -3725,19 +3878,48 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         cf.bottom = mRestrictedScreenTop + mRestrictedScreenHeight;
                     }
                     applyStableConstraints(sysUiFl, fl, cf);
-                    if (adjust != SOFT_INPUT_ADJUST_NOTHING) {
-                        vf.left = mCurLeft;
-                        vf.top = mCurTop;
-                        vf.right = mCurRight;
-                        vf.bottom = mCurBottom;
+                    // MULTIWINDOW
+                    if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 1) {
+                        //if (win.isGoneForLayoutLw()) {
+                        //if (attrs.type > 1) {
+                        if (win == mRightWin) {
+                            // new window
+                            if (adjust != SOFT_INPUT_ADJUST_NOTHING) {
+                                vf.left = mCurLeft + mCurRight/2;
+                                vf.top = mCurTop;
+                                vf.right = mCurRight;
+                                vf.bottom = mCurBottom;
+                            } else {
+                                vf.set(cf);
+                            }
+                        } else if (win == mLeftWin) {
+                            // old window
+                            if (adjust != SOFT_INPUT_ADJUST_NOTHING) {
+                                vf.left = mCurLeft;
+                                vf.top = mCurTop;
+                                vf.right = mCurRight/2;
+                                vf.bottom = mCurBottom;
+                            } else {
+                                vf.set(cf);
+                            }
+                        } else {
+                            Slog.e(TAG, "This win is not left nor right!!! " + win);
+                        }
                     } else {
-                        vf.set(cf);
+                        if (adjust != SOFT_INPUT_ADJUST_NOTHING) {
+                            vf.left = mCurLeft;
+                            vf.top = mCurTop;
+                            vf.right = mCurRight;
+                            vf.bottom = mCurBottom;
+                        } else {
+                            vf.set(cf);
+                        }
                     }
                 }
             } else if ((fl & FLAG_LAYOUT_IN_SCREEN) != 0 || (sysUiFl
                     & (View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                             | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION)) != 0) {
-                if (DEBUG_LAYOUT) Slog.v(TAG, "layoutWindowLw(" + attrs.getTitle() +
+                if (DEBUG_LAYOUT) Slog.d(TAG, "layoutWindowLw(" + attrs.getTitle() +
                         "): IN_SCREEN");
                 // A window that has requested to fill the entire screen just
                 // gets everything, period.
@@ -3752,7 +3934,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     pf.bottom = df.bottom = of.bottom = cf.bottom = hasNavBar
                                           ? mRestrictedScreenTop+mRestrictedScreenHeight
                                           : mUnrestrictedScreenTop + mUnrestrictedScreenHeight;
-                    if (DEBUG_LAYOUT) Slog.v(TAG, String.format(
+                    if (DEBUG_LAYOUT) Slog.d(TAG, String.format(
                                     "Laying out IN_SCREEN status bar window: (%d,%d - %d,%d)",
                                     pf.left, pf.top, pf.right, pf.bottom));
                 } else if (attrs.type == TYPE_NAVIGATION_BAR
@@ -3764,7 +3946,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             + mUnrestrictedScreenWidth;
                     pf.bottom = df.bottom = of.bottom = mUnrestrictedScreenTop
                             + mUnrestrictedScreenHeight;
-                    if (DEBUG_LAYOUT) Slog.v(TAG, String.format(
+                    if (DEBUG_LAYOUT) Slog.d(TAG, String.format(
                                     "Laying out navigation bar window: (%d,%d - %d,%d)",
                                     pf.left, pf.top, pf.right, pf.bottom));
                 } else if ((attrs.type == TYPE_SECURE_SYSTEM_OVERLAY
@@ -3847,13 +4029,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     vf.set(cf);
                 }
             } else if (attached != null) {
-                if (DEBUG_LAYOUT) Slog.v(TAG, "layoutWindowLw(" + attrs.getTitle() +
+                if (DEBUG_LAYOUT) Slog.d(TAG, "layoutWindowLw(" + attrs.getTitle() +
                         "): attached to " + attached);
                 // A child window should be placed inside of the same visible
                 // frame that its parent had.
                 setAttachedWindowFrames(win, fl, adjust, attached, false, pf, df, of, cf, vf);
             } else {
-                if (DEBUG_LAYOUT) Slog.v(TAG, "layoutWindowLw(" + attrs.getTitle() +
+                if (DEBUG_LAYOUT) Slog.d(TAG, "layoutWindowLw(" + attrs.getTitle() +
                         "): normal window");
                 // Otherwise, a normal window must be placed inside the content
                 // of all screen decorations.
@@ -3918,7 +4100,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
 
-        if (DEBUG_LAYOUT) Slog.v(TAG, "Compute frame " + attrs.getTitle()
+        if (DEBUG_LAYOUT) Slog.d(TAG, "Compute frame " + attrs.getTitle()
                 + ": sim=#" + Integer.toHexString(sim)
                 + " attach=" + attached + " type=" + attrs.type
                 + String.format(" flags=0x%08x", fl)
@@ -3957,7 +4139,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mCurBottom > top) {
             mCurBottom = top;
         }
-        if (DEBUG_LAYOUT) Slog.v(TAG, "Input method: mDockBottom="
+        if (DEBUG_LAYOUT) Slog.d(TAG, "Input method: mDockBottom="
                 + mDockBottom + " mContentBottom="
                 + mContentBottom + " mCurBottom=" + mCurBottom);
     }
@@ -4098,18 +4280,18 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 if (attrs.x == 0 && attrs.y == 0
                         && attrs.width == WindowManager.LayoutParams.MATCH_PARENT
                         && attrs.height == WindowManager.LayoutParams.MATCH_PARENT) {
-                    if (DEBUG_LAYOUT) Slog.v(TAG, "Fullscreen window: " + win);
+                    if (DEBUG_LAYOUT) Slog.d(TAG, "Fullscreen window: " + win);
                     mTopFullscreenOpaqueWindowState = win;
                     if (!mAppsThatDismissKeyguard.isEmpty() &&
                             mDismissKeyguard == DISMISS_KEYGUARD_NONE) {
-                        if (DEBUG_LAYOUT) Slog.v(TAG,
+                        if (DEBUG_LAYOUT) Slog.d(TAG,
                                 "Setting mDismissKeyguard true by win " + win);
                         mDismissKeyguard = mWinDismissingKeyguard == win ?
                                 DISMISS_KEYGUARD_CONTINUE : DISMISS_KEYGUARD_START;
                         mWinDismissingKeyguard = win;
                         mForceStatusBarFromKeyguard = mShowingLockscreen && mKeyguardSecure;
                     } else if (mAppsToBeHidden.isEmpty() && showWhenLocked) {
-                        if (DEBUG_LAYOUT) Slog.v(TAG,
+                        if (DEBUG_LAYOUT) Slog.d(TAG,
                                 "Setting mHideLockScreen to true by win " + win);
                         mHideLockScreen = true;
                         mForceStatusBarFromKeyguard = false;
@@ -4160,7 +4342,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     + " forcefkg=" + mForceStatusBarFromKeyguard
                     + " top=" + mTopFullscreenOpaqueWindowState);
             if (mForceStatusBar || mForceStatusBarFromKeyguard) {
-                if (DEBUG_LAYOUT) Slog.v(TAG, "Showing status bar: forced");
+                if (DEBUG_LAYOUT) Slog.d(TAG, "Showing status bar: forced");
                 if (mStatusBarController.setBarShowingLw(true)) {
                     changes |= FINISH_LAYOUT_REDO_LAYOUT;
                 }
@@ -4190,14 +4372,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         changes |= FINISH_LAYOUT_REDO_LAYOUT;
                     }
                 } else if (topIsFullscreen) {
-                    if (DEBUG_LAYOUT) Slog.v(TAG, "** HIDING status bar");
+                    if (DEBUG_LAYOUT) Slog.d(TAG, "** HIDING status bar");
                     if (mStatusBarController.setBarShowingLw(false)) {
                         changes |= FINISH_LAYOUT_REDO_LAYOUT;
                     } else {
-                        if (DEBUG_LAYOUT) Slog.v(TAG, "Status bar already hiding");
+                        if (DEBUG_LAYOUT) Slog.d(TAG, "Status bar already hiding");
                     }
                 } else {
-                    if (DEBUG_LAYOUT) Slog.v(TAG, "** SHOWING status bar: top is not fullscreen");
+                    if (DEBUG_LAYOUT) Slog.d(TAG, "** SHOWING status bar: top is not fullscreen");
                     if (mStatusBarController.setBarShowingLw(true)) {
                         changes |= FINISH_LAYOUT_REDO_LAYOUT;
                     }
@@ -4216,7 +4398,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         // Hide the key guard if a visible window explicitly specifies that it wants to be
         // displayed when the screen is locked.
         if (mKeyguardDelegate != null && mStatusBar != null) {
-            if (localLOGV) Slog.v(TAG, "finishPostLayoutPolicyLw: mHideKeyguard="
+            if (localLOGV) Slog.d(TAG, "finishPostLayoutPolicyLw: mHideKeyguard="
                     + mHideLockScreen);
             if (mDismissKeyguard != DISMISS_KEYGUARD_NONE && !mKeyguardSecure) {
                 mKeyguardHidden = true;
@@ -5304,7 +5486,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     @Override
     public int rotationForOrientationLw(int orientation, int lastRotation) {
         if (false) {
-            Slog.v(TAG, "rotationForOrientationLw(orient="
+            Slog.d(TAG, "rotationForOrientationLw(orient="
                         + orientation + ", last=" + lastRotation
                         + "); user=" + mUserRotation + " "
                         + ((mUserRotationMode == WindowManagerPolicy.USER_ROTATION_LOCKED)
@@ -6414,5 +6596,26 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mOrientationListener != null) {
             mOrientationListener.dump(pw, prefix);
         }
+    }
+
+    // MULTIWINDOW
+    @Override
+    public boolean getMultiWindowEnabled() {
+        return mMultiWindowEnable;
+    }
+
+    @Override
+    public void setLayoutWindowNumber(int num) {
+        mCurrentLayoutWindowNumber = num;
+    }
+
+    @Override
+    public void setLeftWindow(WindowState win) {
+        mLeftWin = win;
+    }
+
+    @Override
+    public void setRightWindow(WindowState win) {
+        mRightWin = win;
     }
 }

@@ -256,7 +256,7 @@ final class ActivityStack {
 
     final class ActivityStackHandler extends Handler {
         //public Handler() {
-        //    if (localLOGV) Slog.v(TAG, "Handler started!");
+        //    if (localLOGV) Slog.d(TAG, "Handler started!");
         //}
         ActivityStackHandler(Looper looper) {
             super(looper);
@@ -638,10 +638,23 @@ final class ActivityStack {
 
     void minimalResumeActivityLocked(ActivityRecord r) {
         r.state = ActivityState.RESUMED;
-        if (DEBUG_STATES) Slog.v(TAG, "Moving to RESUMED: " + r
+        if (DEBUG_STATES) Slog.d(TAG, "Moving to RESUMED: " + r
                 + " (starting new instance)");
         r.stopped = false;
-        mResumedActivity = r;
+
+        // MULTIWINDOW
+        Slog.d(TAG, "=====> minimalResumeActivityLocked() --> CHECK getMultiWindowEnabled");
+        if (mStackSupervisor.getMultiWindowEnabled()) {
+            Slog.d(TAG, "MultiWindow Enabled");
+            if (isHomeStack() || numActivities() >= mStackSupervisor.getMultiWindowMaxNum()){
+                // TODO: apply multiwindow_policy
+                Slog.d(TAG, "isHomeStack " + isHomeStack() + ", numActivities: " + numActivities());
+                mResumedActivity = r;
+            }
+        } else {
+            mResumedActivity = r;
+        }
+
         r.task.touchActiveTime();
         mService.addRecentTaskLocked(r.task);
         completeResumeLocked(r);
@@ -708,14 +721,14 @@ final class ActivityStack {
     boolean checkReadyForSleepLocked() {
         if (mResumedActivity != null) {
             // Still have something resumed; can't sleep until it is paused.
-            if (DEBUG_PAUSE) Slog.v(TAG, "Sleep needs to pause " + mResumedActivity);
-            if (DEBUG_USER_LEAVING) Slog.v(TAG, "Sleep => pause with userLeaving=false");
+            if (DEBUG_PAUSE) Slog.d(TAG, "Sleep needs to pause " + mResumedActivity);
+            if (DEBUG_USER_LEAVING) Slog.d(TAG, "Sleep => pause with userLeaving=false");
             startPausingLocked(false, true, false, false);
             return true;
         }
         if (mPausingActivity != null) {
             // Still waiting for something to pause; can't sleep yet.
-            if (DEBUG_PAUSE) Slog.v(TAG, "Sleep still waiting to pause " + mPausingActivity);
+            if (DEBUG_PAUSE) Slog.d(TAG, "Sleep still waiting to pause " + mPausingActivity);
             return true;
         }
 
@@ -797,8 +810,8 @@ final class ActivityStack {
             mStackSupervisor.pauseChildStacks(prev, userLeaving, uiSleeping, resuming, dontWait);
         }
 
-        if (DEBUG_STATES) Slog.v(TAG, "Moving to PAUSING: " + prev);
-        else if (DEBUG_PAUSE) Slog.v(TAG, "Start pausing: " + prev);
+        if (DEBUG_STATES) Slog.d(TAG, "Moving to PAUSING: " + prev);
+        else if (DEBUG_PAUSE) Slog.d(TAG, "Start pausing: " + prev);
         mResumedActivity = null;
         mPausingActivity = prev;
         mLastPausedActivity = prev;
@@ -816,7 +829,7 @@ final class ActivityStack {
         mService.updateCpuStats();
 
         if (prev.app != null && prev.app.thread != null) {
-            if (DEBUG_PAUSE) Slog.v(TAG, "Enqueueing pending pause: " + prev);
+            if (DEBUG_PAUSE) Slog.d(TAG, "Enqueueing pending pause: " + prev);
             try {
                 EventLog.writeEvent(EventLogTags.AM_PAUSE_ACTIVITY,
                         prev.userId, System.identityHashCode(prev),
@@ -851,7 +864,7 @@ final class ActivityStack {
             if (!uiSleeping) {
                 prev.pauseKeyDispatchingLocked();
             } else {
-                if (DEBUG_PAUSE) Slog.v(TAG, "Key dispatch not paused for screen off");
+                if (DEBUG_PAUSE) Slog.d(TAG, "Key dispatch not paused for screen off");
             }
 
             if (dontWait) {
@@ -868,14 +881,14 @@ final class ActivityStack {
                 msg.obj = prev;
                 prev.pauseTime = SystemClock.uptimeMillis();
                 mHandler.sendMessageDelayed(msg, PAUSE_TIMEOUT);
-                if (DEBUG_PAUSE) Slog.v(TAG, "Waiting for pause to complete...");
+                if (DEBUG_PAUSE) Slog.d(TAG, "Waiting for pause to complete...");
                 return true;
             }
 
         } else {
             // This activity failed to schedule the
             // pause, so just treat it as being paused now.
-            if (DEBUG_PAUSE) Slog.v(TAG, "Activity not running, resuming next.");
+            if (DEBUG_PAUSE) Slog.d(TAG, "Activity not running, resuming next.");
             if (!resuming) {
                 mStackSupervisor.getFocusedStack().resumeTopActivityLocked(null);
             }
@@ -884,14 +897,14 @@ final class ActivityStack {
     }
 
     final void activityPausedLocked(IBinder token, boolean timeout) {
-        if (DEBUG_PAUSE) Slog.v(
+        if (DEBUG_PAUSE) Slog.d(
             TAG, "Activity paused: token=" + token + ", timeout=" + timeout);
 
         final ActivityRecord r = isInStackLocked(token);
         if (r != null) {
             mHandler.removeMessages(PAUSE_TIMEOUT_MSG, r);
             if (mPausingActivity == r) {
-                if (DEBUG_STATES) Slog.v(TAG, "Moving to PAUSED: " + r
+                if (DEBUG_STATES) Slog.d(TAG, "Moving to PAUSED: " + r
                         + (timeout ? " (due to timeout)" : " (pause complete)"));
                 completePauseLocked(true);
             } else {
@@ -924,7 +937,7 @@ final class ActivityStack {
             r.updateThumbnailLocked(null, description);
         }
         if (!r.stopped) {
-            if (DEBUG_STATES) Slog.v(TAG, "Moving to STOPPED: " + r + " (stop complete)");
+            if (DEBUG_STATES) Slog.d(TAG, "Moving to STOPPED: " + r + " (stop complete)");
             mHandler.removeMessages(STOP_TIMEOUT_MSG, r);
             r.stopped = true;
             r.state = ActivityState.STOPPED;
@@ -946,19 +959,19 @@ final class ActivityStack {
 
     private void completePauseLocked(boolean resumeNext) {
         ActivityRecord prev = mPausingActivity;
-        if (DEBUG_PAUSE) Slog.v(TAG, "Complete pause: " + prev);
+        if (DEBUG_PAUSE) Slog.d(TAG, "Complete pause: " + prev);
 
         if (prev != null) {
             prev.state = ActivityState.PAUSED;
             if (prev.finishing) {
-                if (DEBUG_PAUSE) Slog.v(TAG, "Executing finish of activity: " + prev);
+                if (DEBUG_PAUSE) Slog.d(TAG, "Executing finish of activity: " + prev);
                 prev = finishCurrentActivityLocked(prev, FINISH_AFTER_VISIBLE, false);
             } else if (prev.app != null) {
-                if (DEBUG_PAUSE) Slog.v(TAG, "Enqueueing pending stop: " + prev);
+                if (DEBUG_PAUSE) Slog.d(TAG, "Enqueueing pending stop: " + prev);
                 if (prev.waitingVisible) {
                     prev.waitingVisible = false;
                     mStackSupervisor.mWaitingVisibleActivities.remove(prev);
-                    if (DEBUG_SWITCH || DEBUG_PAUSE) Slog.v(
+                    if (DEBUG_SWITCH || DEBUG_PAUSE) Slog.d(
                             TAG, "Complete pause, no longer waiting: " + prev);
                 }
                 if (prev.configDestroy) {
@@ -967,7 +980,7 @@ final class ActivityStack {
                     // To juggle the fact that we are also starting a new
                     // instance right now, we need to first completely stop
                     // the current instance before starting the new one.
-                    if (DEBUG_PAUSE) Slog.v(TAG, "Destroying after pause: " + prev);
+                    if (DEBUG_PAUSE) Slog.d(TAG, "Destroying after pause: " + prev);
                     destroyActivityLocked(prev, true, "pause-config");
                 } else if (!hasVisibleBehindActivity()) {
                     // If we were visible then resumeTopActivities will release resources before
@@ -979,14 +992,14 @@ final class ActivityStack {
                         // then give up on things going idle and start clearing
                         // them out. Or if r is the last of activity of the last task the stack
                         // will be empty and must be cleared immediately.
-                        if (DEBUG_PAUSE) Slog.v(TAG, "To many pending stops, forcing idle");
+                        if (DEBUG_PAUSE) Slog.d(TAG, "To many pending stops, forcing idle");
                         mStackSupervisor.scheduleIdleLocked();
                     } else {
                         mStackSupervisor.checkReadyForSleepLocked();
                     }
                 }
             } else {
-                if (DEBUG_PAUSE) Slog.v(TAG, "App died during pause, not stopping: " + prev);
+                if (DEBUG_PAUSE) Slog.d(TAG, "App died during pause, not stopping: " + prev);
                 prev = null;
             }
             mPausingActivity = null;
@@ -1188,7 +1201,7 @@ final class ActivityStack {
         if (top == null) {
             return;
         }
-        if (DEBUG_VISBILITY) Slog.v(
+        if (DEBUG_VISBILITY) Slog.d(
                 TAG, "ensureActivitiesVisible behind " + top
                 + " configChanges=0x" + Integer.toHexString(configChanges));
 
@@ -1222,7 +1235,7 @@ final class ActivityStack {
                 // mLaunchingBehind: Activities launching behind are at the back of the task stack
                 // but must be drawn initially for the animation as though they were visible.
                 if (!behindFullscreen || r.mLaunchTaskBehind) {
-                    if (DEBUG_VISBILITY) Slog.v(
+                    if (DEBUG_VISBILITY) Slog.d(
                             TAG, "Make visible? " + r + " finishing=" + r.finishing
                             + " state=" + r.state);
 
@@ -1236,12 +1249,12 @@ final class ActivityStack {
                         // This activity needs to be visible, but isn't even
                         // running...  get it started, but don't resume it
                         // at this point.
-                        if (DEBUG_VISBILITY) Slog.v(TAG, "Start and freeze screen for " + r);
+                        if (DEBUG_VISBILITY) Slog.d(TAG, "Start and freeze screen for " + r);
                         if (r != starting) {
                             r.startFreezingScreenLocked(r.app, configChanges);
                         }
                         if (!r.visible || r.mLaunchTaskBehind) {
-                            if (DEBUG_VISBILITY) Slog.v(
+                            if (DEBUG_VISBILITY) Slog.d(
                                     TAG, "Starting and making visible: " + r);
                             setVisibile(r, true);
                         }
@@ -1252,7 +1265,7 @@ final class ActivityStack {
                     } else if (r.visible) {
                         // If this activity is already visible, then there is nothing
                         // else to do here.
-                        if (DEBUG_VISBILITY) Slog.v(TAG, "Skipping: already visible at " + r);
+                        if (DEBUG_VISBILITY) Slog.d(TAG, "Skipping: already visible at " + r);
                         r.stopFreezingScreenLocked(false);
                         try {
                             if (r.returningOptions != null) {
@@ -1268,7 +1281,7 @@ final class ActivityStack {
                         if (r.state != ActivityState.RESUMED && r != starting) {
                             // If this activity is paused, tell it
                             // to now show its window.
-                            if (DEBUG_VISBILITY) Slog.v(
+                            if (DEBUG_VISBILITY) Slog.d(
                                     TAG, "Making visible and scheduling visibility: " + r);
                             try {
                                 if (mTranslucentActivityWaiting != null) {
@@ -1294,51 +1307,100 @@ final class ActivityStack {
 
                     if (r.fullscreen) {
                         // At this point, nothing else needs to be shown
-                        if (DEBUG_VISBILITY) Slog.v(TAG, "Fullscreen: at " + r);
+                        if (DEBUG_VISBILITY) Slog.d(TAG, "Fullscreen: at " + r);
                         behindFullscreen = true;
                     } else if (!isHomeStack() && r.frontOfTask && task.isOverHomeStack()) {
-                        if (DEBUG_VISBILITY) Slog.v(TAG, "Showing home: at " + r);
+                        if (DEBUG_VISBILITY) Slog.d(TAG, "Showing home: at " + r);
                         behindFullscreen = true;
                     }
                 } else {
-                    if (DEBUG_VISBILITY) Slog.v(
+                    if (DEBUG_VISBILITY) Slog.d(
                         TAG, "Make invisible? " + r + " finishing=" + r.finishing
                         + " state=" + r.state
                         + " behindFullscreen=" + behindFullscreen);
                     // Now for any activities that aren't visible to the user, make
                     // sure they no longer are keeping the screen frozen.
                     if (r.visible) {
-                        if (DEBUG_VISBILITY) Slog.v(TAG, "Making invisible: " + r);
+                        if (DEBUG_VISBILITY) Slog.d(TAG, "Making invisible: " + r);
                         try {
-                            setVisibile(r, false);
-                            switch (r.state) {
-                                case STOPPING:
-                                case STOPPED:
-                                    if (r.app != null && r.app.thread != null) {
-                                        if (DEBUG_VISBILITY) Slog.v(
-                                                TAG, "Scheduling invisibility: " + r);
-                                        r.app.thread.scheduleWindowVisibility(r.appToken, false);
-                                    }
-                                    break;
+                            // MULTIWINDOW
+                            // this is original
+                            //setVisibile(r, false);
+                            //switch (r.state) {
+                                //case STOPPING:
+                                //case STOPPED:
+                                    //if (r.app != null && r.app.thread != null) {
+                                        //if (DEBUG_VISBILITY) Slog.d(
+                                                //TAG, "Scheduling invisibility: " + r);
+                                        //r.app.thread.scheduleWindowVisibility(r.appToken, false);
+                                    //}
+                                    //break;
 
-                                case INITIALIZING:
-                                case RESUMED:
-                                case PAUSING:
-                                case PAUSED:
-                                    // This case created for transitioning activities from
-                                    // translucent to opaque {@link Activity#convertToOpaque}.
-                                    if (getVisibleBehindActivity() == r) {
-                                        releaseBackgroundResources();
-                                    } else {
-                                        if (!mStackSupervisor.mStoppingActivities.contains(r)) {
-                                            mStackSupervisor.mStoppingActivities.add(r);
+                                //case INITIALIZING:
+                                //case RESUMED:
+                                //case PAUSING:
+                                //case PAUSED:
+                                    //// This case created for transitioning activities from
+                                    //// translucent to opaque {@link Activity#convertToOpaque}.
+                                    //if (getVisibleBehindActivity() == r) {
+                                        //releaseBackgroundResources();
+                                    //} else {
+                                        //if (!mStackSupervisor.mStoppingActivities.contains(r)) {
+                                            //mStackSupervisor.mStoppingActivities.add(r);
+                                        //}
+                                        //mStackSupervisor.scheduleIdleLocked();
+                                    //}
+                                    //break;
+
+                                //default:
+                                    //break;
+                            //}
+                            Slog.d(TAG, "----> visible for MultiWindow!!!");
+                            // TODO : handle old apps
+                            boolean invisible = false;
+                            if (mStackSupervisor.getMultiWindowEnabled()) {
+                                Slog.d(TAG, "MultiWindow Enabled");
+                                //if (isHomeStack() || numActivities() >= mStackSupervisor.getMultiWindowMaxNum()){
+                                if (isHomeStack()) {
+                                    invisible = true;
+                                }
+                            } else {
+                                invisible = true;
+                            }
+
+                            if (invisible) {
+                                setVisibile(r, false);
+                                switch (r.state) {
+                                    case STOPPING:
+                                    case STOPPED:
+                                        if (r.app != null && r.app.thread != null) {
+                                            if (DEBUG_VISBILITY) Slog.d(
+                                                    TAG, "Scheduling invisibility: " + r);
+                                            r.app.thread.scheduleWindowVisibility(r.appToken, false);
                                         }
-                                        mStackSupervisor.scheduleIdleLocked();
-                                    }
-                                    break;
+                                        break;
 
-                                default:
-                                    break;
+                                    case INITIALIZING:
+                                    case RESUMED:
+                                    case PAUSING:
+                                    case PAUSED:
+                                        // This case created for transitioning activities from
+                                        // translucent to opaque {@link Activity#convertToOpaque}.
+                                        if (getVisibleBehindActivity() == r) {
+                                            releaseBackgroundResources();
+                                        } else {
+                                            if (!mStackSupervisor.mStoppingActivities.contains(r)) {
+                                                mStackSupervisor.mStoppingActivities.add(r);
+                                            }
+                                            mStackSupervisor.scheduleIdleLocked();
+                                        }
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                            } else {
+                                 Slog.d(TAG, "Don't invisible for MultiWindow, activity " + r);
                             }
                         } catch (Exception e) {
                             // Just skip on any failure; we'll make it
@@ -1347,7 +1409,7 @@ final class ActivityStack {
                                     + r.intent.getComponent(), e);
                         }
                     } else {
-                        if (DEBUG_VISBILITY) Slog.v(TAG, "Already invisible: " + r);
+                        if (DEBUG_VISBILITY) Slog.d(TAG, "Already invisible: " + r);
                     }
                 }
             }
@@ -1460,6 +1522,9 @@ final class ActivityStack {
     }
 
     final boolean resumeTopActivityInnerLocked(ActivityRecord prev, Bundle options) {
+        // test debugging message
+        Slog.d(TAG, "-----------> resumeTopActivityInnerLocked!!!");
+        // psw0523 HERE : first app run this path
         if (ActivityManagerService.DEBUG_LOCKSCREEN) mService.logLockScreen("");
 
         if (!mService.mBooting && !mService.mBooted) {
@@ -1568,12 +1633,12 @@ final class ActivityStack {
         next.sleeping = false;
         mStackSupervisor.mWaitingVisibleActivities.remove(next);
 
-        if (DEBUG_SWITCH) Slog.v(TAG, "Resuming " + next);
+        if (DEBUG_SWITCH) Slog.d(TAG, "Resuming " + next);
 
         // If we are currently pausing an activity, then don't do anything
         // until that is done.
         if (!mStackSupervisor.allPausedActivitiesComplete()) {
-            if (DEBUG_SWITCH || DEBUG_PAUSE || DEBUG_STATES) Slog.v(TAG,
+            if (DEBUG_SWITCH || DEBUG_PAUSE || DEBUG_STATES) Slog.d(TAG,
                     "resumeTopActivityLocked: Skip resume: some activity pausing.");
             if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
             return false;
@@ -1617,7 +1682,7 @@ final class ActivityStack {
             pausing |= startPausingLocked(userLeaving, false, true, dontWaitForPause);
         }
         if (pausing) {
-            if (DEBUG_SWITCH || DEBUG_STATES) Slog.v(TAG,
+            if (DEBUG_SWITCH || DEBUG_STATES) Slog.d(TAG,
                     "resumeTopActivityLocked: Skip resume: need to start pausing");
             // At this point we want to put the upcoming activity's process
             // at the top of the LRU list, since we know we will be needing it
@@ -1646,7 +1711,7 @@ final class ActivityStack {
             if (!prev.waitingVisible && next != null && !next.nowVisible) {
                 prev.waitingVisible = true;
                 mStackSupervisor.mWaitingVisibleActivities.add(prev);
-                if (DEBUG_SWITCH) Slog.v(
+                if (DEBUG_SWITCH) Slog.d(
                         TAG, "Resuming top, waiting visible to hide: " + prev);
             } else {
                 // The next activity is already visible, so hide the previous
@@ -1659,12 +1724,12 @@ final class ActivityStack {
                 // new one is found to be full-screen or not.
                 if (prev.finishing) {
                     mWindowManager.setAppVisibility(prev.appToken, false);
-                    if (DEBUG_SWITCH) Slog.v(TAG, "Not waiting for visible to hide: "
+                    if (DEBUG_SWITCH) Slog.d(TAG, "Not waiting for visible to hide: "
                             + prev + ", waitingVisible="
                             + (prev != null ? prev.waitingVisible : null)
                             + ", nowVisible=" + next.nowVisible);
                 } else {
-                    if (DEBUG_SWITCH) Slog.v(TAG, "Previous already visible but still waiting to hide: "
+                    if (DEBUG_SWITCH) Slog.d(TAG, "Previous already visible but still waiting to hide: "
                         + prev + ", waitingVisible="
                         + (prev != null ? prev.waitingVisible : null)
                         + ", nowVisible=" + next.nowVisible);
@@ -1689,7 +1754,7 @@ final class ActivityStack {
         boolean anim = true;
         if (prev != null) {
             if (prev.finishing) {
-                if (DEBUG_TRANSITION) Slog.v(TAG,
+                if (DEBUG_TRANSITION) Slog.d(TAG,
                         "Prepare close transition: prev=" + prev);
                 if (mNoAnimActivities.contains(prev)) {
                     anim = false;
@@ -1702,7 +1767,7 @@ final class ActivityStack {
                 mWindowManager.setAppWillBeHidden(prev.appToken);
                 mWindowManager.setAppVisibility(prev.appToken, false);
             } else {
-                if (DEBUG_TRANSITION) Slog.v(TAG, "Prepare open transition: prev=" + prev);
+                if (DEBUG_TRANSITION) Slog.d(TAG, "Prepare open transition: prev=" + prev);
                 if (mNoAnimActivities.contains(next)) {
                     anim = false;
                     mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, false);
@@ -1719,7 +1784,7 @@ final class ActivityStack {
                 mWindowManager.setAppVisibility(prev.appToken, false);
             }
         } else {
-            if (DEBUG_TRANSITION) Slog.v(TAG, "Prepare open transition: no previous");
+            if (DEBUG_TRANSITION) Slog.d(TAG, "Prepare open transition: no previous");
             if (mNoAnimActivities.contains(next)) {
                 anim = false;
                 mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, false);
@@ -1741,7 +1806,7 @@ final class ActivityStack {
 
         ActivityStack lastStack = mStackSupervisor.getLastStack();
         if (next.app != null && next.app.thread != null) {
-            if (DEBUG_SWITCH) Slog.v(TAG, "Resume running: " + next);
+            if (DEBUG_SWITCH) Slog.d(TAG, "Resume running: " + next);
 
             // This activity is now becoming visible.
             mWindowManager.setAppVisibility(next.appToken, true);
@@ -1755,9 +1820,20 @@ final class ActivityStack {
 
             mService.updateCpuStats();
 
-            if (DEBUG_STATES) Slog.v(TAG, "Moving to RESUMED: " + next + " (in existing)");
+            if (DEBUG_STATES) Slog.d(TAG, "Moving to RESUMED: " + next + " (in existing)");
             next.state = ActivityState.RESUMED;
-            mResumedActivity = next;
+            // MULTIWINDOW
+            Slog.d(TAG, "=====> CHECK getMultiWindowEnabled");
+            if (mStackSupervisor.getMultiWindowEnabled()) {
+                Slog.d(TAG, "MultiWindow Enabled");
+                if (isHomeStack() || numActivities() >= mStackSupervisor.getMultiWindowMaxNum()){
+                    // TODO: apply multiwindow_policy
+                    Slog.d(TAG, "isHomeStack " + isHomeStack() + ", numActivities: " + numActivities());
+                    mResumedActivity = next;
+                }
+            } else {
+                mResumedActivity = next;
+            }
             next.task.touchActiveTime();
             mService.addRecentTaskLocked(next.task);
             mService.updateLruProcessLocked(next.app, true, null);
@@ -1806,7 +1882,7 @@ final class ActivityStack {
                 if (a != null) {
                     final int N = a.size();
                     if (!next.finishing && N > 0) {
-                        if (DEBUG_RESULTS) Slog.v(
+                        if (DEBUG_RESULTS) Slog.d(
                                 TAG, "Delivering results to " + next
                                 + ": " + a);
                         next.app.thread.scheduleSendResult(next.appToken, a);
@@ -1833,7 +1909,7 @@ final class ActivityStack {
                 if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: Resumed " + next);
             } catch (Exception e) {
                 // Whoops, need to restart this activity!
-                if (DEBUG_STATES) Slog.v(TAG, "Resume failed; resetting state to "
+                if (DEBUG_STATES) Slog.d(TAG, "Resume failed; resetting state to "
                         + lastState + ": " + next);
                 next.state = lastState;
                 if (lastStack != null) {
@@ -1885,9 +1961,10 @@ final class ActivityStack {
                             next.labelRes, next.icon, next.logo, next.windowFlags,
                             null, true);
                 }
-                if (DEBUG_SWITCH) Slog.v(TAG, "Restarting: " + next);
+                if (DEBUG_SWITCH) Slog.d(TAG, "Restarting: " + next);
             }
             if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: Restarting " + next);
+            // psw0523 HERE : first app run this path
             mStackSupervisor.startSpecificActivityLocked(next, true, true);
         }
 
@@ -1985,7 +2062,7 @@ final class ActivityStack {
         // activity
         if (task == r.task && mTaskHistory.indexOf(task) != (mTaskHistory.size() - 1)) {
             mStackSupervisor.mUserLeaving = false;
-            if (DEBUG_USER_LEAVING) Slog.v(TAG,
+            if (DEBUG_USER_LEAVING) Slog.d(TAG,
                     "startActivity() behind front, mUserLeaving=false");
         }
 
@@ -2010,7 +2087,7 @@ final class ActivityStack {
             if (proc == null || proc.thread == null) {
                 showStartingIcon = true;
             }
-            if (DEBUG_TRANSITION) Slog.v(TAG,
+            if (DEBUG_TRANSITION) Slog.d(TAG,
                     "Prepare open transition: starting " + r);
             if ((r.intent.getFlags()&Intent.FLAG_ACTIVITY_NO_ANIMATION) != 0) {
                 mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, keepCurTransition);
@@ -2182,13 +2259,13 @@ final class ActivityStack {
                     // same task affinity as the one we are moving,
                     // then merge it into the same task.
                     targetTask = bottom.task;
-                    if (DEBUG_TASKS) Slog.v(TAG, "Start pushing activity " + target
+                    if (DEBUG_TASKS) Slog.d(TAG, "Start pushing activity " + target
                             + " out to bottom task " + bottom.task);
                 } else {
                     targetTask = createTaskRecord(mStackSupervisor.getNextTaskId(), target.info,
                             null, null, null, false);
                     targetTask.affinityIntent = target.intent;
-                    if (DEBUG_TASKS) Slog.v(TAG, "Start pushing activity " + target
+                    if (DEBUG_TASKS) Slog.d(TAG, "Start pushing activity " + target
                             + " out to new task " + target.task);
                 }
 
@@ -2213,7 +2290,7 @@ final class ActivityStack {
                     if (DEBUG_ADD_REMOVE) Slog.i(TAG, "Removing activity " + p + " from task="
                             + task + " adding to task=" + targetTask
                             + " Callers=" + Debug.getCallers(4));
-                    if (DEBUG_TASKS) Slog.v(TAG, "Pushing next activity " + p
+                    if (DEBUG_TASKS) Slog.d(TAG, "Pushing next activity " + p
                             + " out to target's task " + target.task);
                     p.setTask(targetTask, null);
                     targetTask.addActivityAtBottom(p);
@@ -2329,7 +2406,7 @@ final class ActivityStack {
                 // in a task that is not currently on top.)
                 if (forceReset || finishOnTaskLaunch) {
                     final int start = replyChainEnd >= 0 ? replyChainEnd : i;
-                    if (DEBUG_TASKS) Slog.v(TAG, "Finishing task at index " + start + " to " + i);
+                    if (DEBUG_TASKS) Slog.d(TAG, "Finishing task at index " + start + " to " + i);
                     for (int srcPos = start; srcPos >= i; --srcPos) {
                         final ActivityRecord p = activities.get(srcPos);
                         if (p.finishing) {
@@ -2344,7 +2421,7 @@ final class ActivityStack {
                     }
 
                     final int start = replyChainEnd >= 0 ? replyChainEnd : i;
-                    if (DEBUG_TASKS) Slog.v(TAG, "Reparenting from task=" + affinityTask + ":"
+                    if (DEBUG_TASKS) Slog.d(TAG, "Reparenting from task=" + affinityTask + ":"
                             + start + "-" + i + " to task=" + task + ":" + taskInsertionPoint);
                     for (int srcPos = start; srcPos >= i; --srcPos) {
                         final ActivityRecord p = activities.get(srcPos);
@@ -2354,7 +2431,7 @@ final class ActivityStack {
                         if (DEBUG_ADD_REMOVE) Slog.i(TAG, "Removing and adding activity " + p
                                 + " to stack at " + task,
                                 new RuntimeException("here").fillInStackTrace());
-                        if (DEBUG_TASKS) Slog.v(TAG, "Pulling activity " + p + " from " + srcPos
+                        if (DEBUG_TASKS) Slog.d(TAG, "Pulling activity " + p + " from " + srcPos
                                 + " in to resetting task " + task);
                         mWindowManager.setAppGroupId(p.appToken, taskId);
                     }
@@ -2447,7 +2524,7 @@ final class ActivityStack {
                     data, r.getUriPermissionsLocked(), r.userId);
         }
 
-        if (DEBUG_RESULTS) Slog.v(TAG, "Send activity result to " + r
+        if (DEBUG_RESULTS) Slog.d(TAG, "Send activity result to " + r
                 + " : who=" + resultWho + " req=" + requestCode
                 + " res=" + resultCode + " data=" + data);
         if (mResumedActivity == r && r.app != null && r.app.thread != null) {
@@ -2505,10 +2582,10 @@ final class ActivityStack {
             r.resumeKeyDispatchingLocked();
             try {
                 r.stopped = false;
-                if (DEBUG_STATES) Slog.v(TAG, "Moving to STOPPING: " + r
+                if (DEBUG_STATES) Slog.d(TAG, "Moving to STOPPING: " + r
                         + " (stop requested)");
                 r.state = ActivityState.STOPPING;
-                if (DEBUG_VISBILITY) Slog.v(
+                if (DEBUG_VISBILITY) Slog.d(
                         TAG, "Stopping visible=" + r.visible + " for " + r);
                 if (!r.visible) {
                     mWindowManager.setAppVisibility(r.appToken, false);
@@ -2526,7 +2603,7 @@ final class ActivityStack {
                 Slog.w(TAG, "Exception thrown during pause", e);
                 // Just in case, assume it to be stopped.
                 r.stopped = true;
-                if (DEBUG_STATES) Slog.v(TAG, "Stop failed; moving to STOPPED: " + r);
+                if (DEBUG_STATES) Slog.d(TAG, "Stop failed; moving to STOPPED: " + r);
                 r.state = ActivityState.STOPPED;
                 if (r.configDestroy) {
                     destroyActivityLocked(r, true, "stop-except");
@@ -2542,7 +2619,7 @@ final class ActivityStack {
     final boolean requestFinishActivityLocked(IBinder token, int resultCode,
             Intent resultData, String reason, boolean oomAdj) {
         ActivityRecord r = isInStackLocked(token);
-        if (DEBUG_RESULTS || DEBUG_STATES) Slog.v(
+        if (DEBUG_RESULTS || DEBUG_STATES) Slog.d(
                 TAG, "Finishing activity token=" + token + " r="
                 + ", result=" + resultCode + ", data=" + resultData
                 + ", reason=" + reason);
@@ -2646,7 +2723,7 @@ final class ActivityStack {
         // send the result
         ActivityRecord resultTo = r.resultTo;
         if (resultTo != null) {
-            if (DEBUG_RESULTS) Slog.v(TAG, "Adding result to " + resultTo
+            if (DEBUG_RESULTS) Slog.d(TAG, "Adding result to " + resultTo
                     + " who=" + r.resultWho + " req=" + r.requestCode
                     + " res=" + resultCode + " data=" + resultData);
             if (resultTo.userId != r.userId) {
@@ -2663,7 +2740,7 @@ final class ActivityStack {
                                      resultData);
             r.resultTo = null;
         }
-        else if (DEBUG_RESULTS) Slog.v(TAG, "No result destination from " + r);
+        else if (DEBUG_RESULTS) Slog.d(TAG, "No result destination from " + r);
 
         // Make sure this HistoryRecord is not holding on to other resources,
         // because clients have remote IPC references to this object so we
@@ -2711,7 +2788,7 @@ final class ActivityStack {
 
         if (mResumedActivity == r) {
             boolean endTask = index <= 0;
-            if (DEBUG_VISBILITY || DEBUG_TRANSITION) Slog.v(TAG,
+            if (DEBUG_VISBILITY || DEBUG_TRANSITION) Slog.d(TAG,
                     "Prepare close transition: finishing " + r);
             mWindowManager.prepareAppTransition(endTask
                     ? AppTransition.TRANSIT_TASK_CLOSE
@@ -2721,8 +2798,8 @@ final class ActivityStack {
             mWindowManager.setAppVisibility(r.appToken, false);
 
             if (mPausingActivity == null) {
-                if (DEBUG_PAUSE) Slog.v(TAG, "Finish needs to pause: " + r);
-                if (DEBUG_USER_LEAVING) Slog.v(TAG, "finish() => pause with userLeaving=false");
+                if (DEBUG_PAUSE) Slog.d(TAG, "Finish needs to pause: " + r);
+                if (DEBUG_USER_LEAVING) Slog.d(TAG, "finish() => pause with userLeaving=false");
                 startPausingLocked(false, false, false, false);
             }
 
@@ -2732,10 +2809,10 @@ final class ActivityStack {
         } else if (r.state != ActivityState.PAUSING) {
             // If the activity is PAUSING, we will complete the finish once
             // it is done pausing; else we can just directly finish it here.
-            if (DEBUG_PAUSE) Slog.v(TAG, "Finish not pausing: " + r);
+            if (DEBUG_PAUSE) Slog.d(TAG, "Finish not pausing: " + r);
             return finishCurrentActivityLocked(r, FINISH_AFTER_PAUSE, oomAdj) == null;
         } else {
-            if (DEBUG_PAUSE) Slog.v(TAG, "Finish waiting for pause of: " + r);
+            if (DEBUG_PAUSE) Slog.d(TAG, "Finish waiting for pause of: " + r);
         }
 
         return false;
@@ -2763,7 +2840,7 @@ final class ActivityStack {
                     mStackSupervisor.checkReadyForSleepLocked();
                 }
             }
-            if (DEBUG_STATES) Slog.v(TAG, "Moving to STOPPING: " + r
+            if (DEBUG_STATES) Slog.d(TAG, "Moving to STOPPING: " + r
                     + " (finish requested)");
             r.state = ActivityState.STOPPING;
             if (oomAdj) {
@@ -2780,7 +2857,7 @@ final class ActivityStack {
             mResumedActivity = null;
         }
         final ActivityState prevState = r.state;
-        if (DEBUG_STATES) Slog.v(TAG, "Moving to FINISHING: " + r);
+        if (DEBUG_STATES) Slog.d(TAG, "Moving to FINISHING: " + r);
         r.state = ActivityState.FINISHING;
 
         if (mode == FINISH_IMMEDIATELY
@@ -2793,7 +2870,7 @@ final class ActivityStack {
             if (activityRemoved) {
                 mStackSupervisor.resumeTopActivitiesLocked();
             }
-            if (DEBUG_CONTAINERS) Slog.d(TAG, 
+            if (DEBUG_CONTAINERS) Slog.d(TAG,
                     "destroyActivityLocked: finishCurrentActivityLocked r=" + r +
                     " destroy returned removed=" + activityRemoved);
             return activityRemoved ? null : r;
@@ -2801,7 +2878,7 @@ final class ActivityStack {
 
         // Need to go through the full pause cycle to get this
         // activity into the stopped state and then finish it.
-        if (localLOGV) Slog.v(TAG, "Enqueueing pending finish: " + r);
+        if (localLOGV) Slog.d(TAG, "Enqueueing pending finish: " + r);
         mStackSupervisor.mFinishingActivities.add(r);
         r.resumeKeyDispatchingLocked();
         mStackSupervisor.getFocusedStack().resumeTopActivityLocked(null);
@@ -2966,9 +3043,9 @@ final class ActivityStack {
         r.frozenBeforeDestroy = false;
 
         if (setState) {
-            if (DEBUG_STATES) Slog.v(TAG, "Moving to DESTROYED: " + r + " (cleaning up)");
+            if (DEBUG_STATES) Slog.d(TAG, "Moving to DESTROYED: " + r + " (cleaning up)");
             r.state = ActivityState.DESTROYED;
-            if (DEBUG_APP) Slog.v(TAG, "Clearing app during cleanUp for activity " + r);
+            if (DEBUG_APP) Slog.d(TAG, "Clearing app during cleanUp for activity " + r);
             r.app = null;
         }
 
@@ -3019,9 +3096,9 @@ final class ActivityStack {
         }
         r.takeFromHistory();
         removeTimeoutsForActivityLocked(r);
-        if (DEBUG_STATES) Slog.v(TAG, "Moving to DESTROYED: " + r + " (removed from history)");
+        if (DEBUG_STATES) Slog.d(TAG, "Moving to DESTROYED: " + r + " (removed from history)");
         r.state = ActivityState.DESTROYED;
-        if (DEBUG_APP) Slog.v(TAG, "Clearing app during remove for activity " + r);
+        if (DEBUG_APP) Slog.d(TAG, "Clearing app during remove for activity " + r);
         r.app = null;
         mWindowManager.removeAppToken(r.appToken);
         if (VALIDATE_TOKENS) {
@@ -3082,7 +3159,7 @@ final class ActivityStack {
                     continue;
                 }
                 if (r.isDestroyable()) {
-                    if (DEBUG_SWITCH) Slog.v(TAG, "Destroying " + r + " in state " + r.state
+                    if (DEBUG_SWITCH) Slog.d(TAG, "Destroying " + r + " in state " + r.state
                             + " resumed=" + mResumedActivity
                             + " pausing=" + mPausingActivity + " for reason " + reason);
                     if (destroyActivityLocked(r, true, reason)) {
@@ -3098,7 +3175,7 @@ final class ActivityStack {
 
     final boolean safelyDestroyActivityLocked(ActivityRecord r, String reason) {
         if (r.isDestroyable()) {
-            if (DEBUG_SWITCH) Slog.v(TAG, "Destroying " + r + " in state " + r.state
+            if (DEBUG_SWITCH) Slog.d(TAG, "Destroying " + r + " in state " + r.state
                     + " resumed=" + mResumedActivity
                     + " pausing=" + mPausingActivity + " for reason " + reason);
             return destroyActivityLocked(r, true, reason);
@@ -3126,7 +3203,7 @@ final class ActivityStack {
             for (int actNdx = 0; actNdx < activities.size(); actNdx++) {
                 final ActivityRecord activity = activities.get(actNdx);
                 if (activity.app == app && activity.isDestroyable()) {
-                    if (DEBUG_RELEASE) Slog.v(TAG, "Destroying " + activity
+                    if (DEBUG_RELEASE) Slog.d(TAG, "Destroying " + activity
                             + " in state " + activity.state + " resumed=" + mResumedActivity
                             + " pausing=" + mPausingActivity + " for reason " + reason);
                     destroyActivityLocked(activity, true, reason);
@@ -3157,7 +3234,7 @@ final class ActivityStack {
      * but then create a new client-side object for this same HistoryRecord.
      */
     final boolean destroyActivityLocked(ActivityRecord r, boolean removeFromApp, String reason) {
-        if (DEBUG_SWITCH || DEBUG_CLEANUP) Slog.v(
+        if (DEBUG_SWITCH || DEBUG_CLEANUP) Slog.d(
             TAG, "Removing activity from " + reason + ": token=" + r
               + ", app=" + (r.app != null ? r.app.processName : "(null)"));
         EventLog.writeEvent(EventLogTags.AM_DESTROY_ACTIVITY,
@@ -3216,15 +3293,15 @@ final class ActivityStack {
             // it in the destroyed state since we are not removing it from the
             // list.
             if (r.finishing && !skipDestroy) {
-                if (DEBUG_STATES) Slog.v(TAG, "Moving to DESTROYING: " + r
+                if (DEBUG_STATES) Slog.d(TAG, "Moving to DESTROYING: " + r
                         + " (destroy requested)");
                 r.state = ActivityState.DESTROYING;
                 Message msg = mHandler.obtainMessage(DESTROY_TIMEOUT_MSG, r);
                 mHandler.sendMessageDelayed(msg, DESTROY_TIMEOUT);
             } else {
-                if (DEBUG_STATES) Slog.v(TAG, "Moving to DESTROYED: " + r + " (destroy skipped)");
+                if (DEBUG_STATES) Slog.d(TAG, "Moving to DESTROYED: " + r + " (destroy skipped)");
                 r.state = ActivityState.DESTROYED;
-                if (DEBUG_APP) Slog.v(TAG, "Clearing app during destroy for activity " + r);
+                if (DEBUG_APP) Slog.d(TAG, "Clearing app during destroy for activity " + r);
                 r.app = null;
             }
         } else {
@@ -3233,9 +3310,9 @@ final class ActivityStack {
                 removeActivityFromHistoryLocked(r, reason + " hadNoApp");
                 removedFromHistory = true;
             } else {
-                if (DEBUG_STATES) Slog.v(TAG, "Moving to DESTROYED: " + r + " (no app)");
+                if (DEBUG_STATES) Slog.d(TAG, "Moving to DESTROYED: " + r + " (no app)");
                 r.state = ActivityState.DESTROYED;
-                if (DEBUG_APP) Slog.v(TAG, "Clearing app during destroy for activity " + r);
+                if (DEBUG_APP) Slog.d(TAG, "Clearing app during destroy for activity " + r);
                 r.app = null;
             }
         }
@@ -3323,15 +3400,15 @@ final class ActivityStack {
     private void removeHistoryRecordsForAppLocked(ArrayList<ActivityRecord> list,
             ProcessRecord app, String listName) {
         int i = list.size();
-        if (DEBUG_CLEANUP) Slog.v(
+        if (DEBUG_CLEANUP) Slog.d(
             TAG, "Removing app " + app + " from list " + listName
             + " with " + i + " entries");
         while (i > 0) {
             i--;
             ActivityRecord r = list.get(i);
-            if (DEBUG_CLEANUP) Slog.v(TAG, "Record #" + i + " " + r);
+            if (DEBUG_CLEANUP) Slog.d(TAG, "Record #" + i + " " + r);
             if (r.app == app) {
-                if (DEBUG_CLEANUP) Slog.v(TAG, "---> REMOVING this entry!");
+                if (DEBUG_CLEANUP) Slog.d(TAG, "---> REMOVING this entry!");
                 list.remove(i);
                 removeTimeoutsForActivityLocked(r);
             }
@@ -3353,14 +3430,14 @@ final class ActivityStack {
 
         // Clean out the history list.
         int i = numActivities();
-        if (DEBUG_CLEANUP) Slog.v(
+        if (DEBUG_CLEANUP) Slog.d(
             TAG, "Removing app " + app + " from history with " + i + " entries");
         for (int taskNdx = mTaskHistory.size() - 1; taskNdx >= 0; --taskNdx) {
             final ArrayList<ActivityRecord> activities = mTaskHistory.get(taskNdx).mActivities;
             for (int activityNdx = activities.size() - 1; activityNdx >= 0; --activityNdx) {
                 final ActivityRecord r = activities.get(activityNdx);
                 --i;
-                if (DEBUG_CLEANUP) Slog.v(
+                if (DEBUG_CLEANUP) Slog.d(
                     TAG, "Record #" + i + " " + r + ": app=" + r.app);
                 if (r.app == app) {
                     boolean remove;
@@ -3402,12 +3479,12 @@ final class ActivityStack {
                     } else {
                         // We have the current state for this activity, so
                         // it can be restarted later when needed.
-                        if (localLOGV) Slog.v(
+                        if (localLOGV) Slog.d(
                             TAG, "Keeping entry, setting app to null");
                         if (r.visible) {
                             hasVisibleActivities = true;
                         }
-                        if (DEBUG_APP) Slog.v(TAG, "Clearing app during removeHistory for activity "
+                        if (DEBUG_APP) Slog.d(TAG, "Clearing app during removeHistory for activity "
                                 + r);
                         r.app = null;
                         r.nowVisible = false;
@@ -3468,7 +3545,7 @@ final class ActivityStack {
 
     final void moveTaskToFrontLocked(TaskRecord tr, ActivityRecord source, Bundle options,
             String reason) {
-        if (DEBUG_SWITCH) Slog.v(TAG, "moveTaskToFront: " + tr);
+        if (DEBUG_SWITCH) Slog.d(TAG, "moveTaskToFront: " + tr);
 
         final int numTasks = mTaskHistory.size();
         final int index = mTaskHistory.indexOf(tr);
@@ -3488,7 +3565,7 @@ final class ActivityStack {
         insertTaskAtTop(tr);
         moveToFront(reason);
 
-        if (DEBUG_TRANSITION) Slog.v(TAG, "Prepare to front transition: task=" + tr);
+        if (DEBUG_TRANSITION) Slog.d(TAG, "Prepare to front transition: task=" + tr);
         if (source != null &&
                 (source.intent.getFlags()&Intent.FLAG_ACTIVITY_NO_ANIMATION) != 0) {
             mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, false);
@@ -3554,7 +3631,7 @@ final class ActivityStack {
             }
         }
 
-        if (DEBUG_TRANSITION) Slog.v(TAG,
+        if (DEBUG_TRANSITION) Slog.d(TAG,
                 "Prepare to back transition: task=" + taskId);
 
         mTaskHistory.remove(tr);
@@ -3618,26 +3695,26 @@ final class ActivityStack {
     final boolean ensureActivityConfigurationLocked(ActivityRecord r,
             int globalChanges) {
         if (mConfigWillChange) {
-            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                     "Skipping config check (will change): " + r);
             return true;
         }
 
-        if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+        if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                 "Ensuring correct configuration: " + r);
 
         // Short circuit: if the two configurations are the exact same
         // object (the common case), then there is nothing to do.
         Configuration newConfig = mService.mConfiguration;
         if (r.configuration == newConfig && !r.forceNewConfig) {
-            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                     "Configuration unchanged in " + r);
             return true;
         }
 
         // We don't worry about activities that are finishing.
         if (r.finishing) {
-            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                     "Configuration doesn't matter in finishing " + r);
             r.stopFreezingScreenLocked(false);
             return true;
@@ -3654,7 +3731,7 @@ final class ActivityStack {
         // activity and do nothing else.
         final int changes = oldConfig.diff(newConfig);
         if (changes == 0 && !r.forceNewConfig) {
-            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                     "Configuration no differences in " + r);
             return true;
         }
@@ -3662,7 +3739,7 @@ final class ActivityStack {
         // If the activity isn't currently running, just leave the new
         // configuration and it will pick that up next time it starts.
         if (r.app == null || r.app.thread == null) {
-            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+            if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                     "Configuration doesn't matter not running " + r);
             r.stopFreezingScreenLocked(false);
             r.forceNewConfig = false;
@@ -3671,7 +3748,7 @@ final class ActivityStack {
 
         // Figure out how to handle the changes between the configurations.
         if (DEBUG_SWITCH || DEBUG_CONFIGURATION) {
-            Slog.v(TAG, "Checking to restart " + r.info.name + ": changed=0x"
+            Slog.d(TAG, "Checking to restart " + r.info.name + ": changed=0x"
                     + Integer.toHexString(changes) + ", handles=0x"
                     + Integer.toHexString(r.info.getRealConfigChanged())
                     + ", newConfig=" + newConfig);
@@ -3682,14 +3759,14 @@ final class ActivityStack {
             r.startFreezingScreenLocked(r.app, globalChanges);
             r.forceNewConfig = false;
             if (r.app == null || r.app.thread == null) {
-                if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+                if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                         "Config is destroying non-running " + r);
                 destroyActivityLocked(r, true, "config");
             } else if (r.state == ActivityState.PAUSING) {
                 // A little annoying: we are waiting for this activity to
                 // finish pausing.  Let's not do anything now, but just
                 // flag that it needs to be restarted when done pausing.
-                if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+                if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                         "Config is skipping already pausing " + r);
                 r.configDestroy = true;
                 return true;
@@ -3698,12 +3775,12 @@ final class ActivityStack {
                 // and we need to restart the top, resumed activity.
                 // Instead of doing the normal handshaking, just say
                 // "restart!".
-                if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+                if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                         "Config is relaunching resumed " + r);
                 relaunchActivityLocked(r, r.configChangeFlags, true);
                 r.configChangeFlags = 0;
             } else {
-                if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.v(TAG,
+                if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.d(TAG,
                         "Config is relaunching non-resumed " + r);
                 relaunchActivityLocked(r, r.configChangeFlags, false);
                 r.configChangeFlags = 0;
@@ -3721,7 +3798,7 @@ final class ActivityStack {
         // it last got.
         if (r.app != null && r.app.thread != null) {
             try {
-                if (DEBUG_CONFIGURATION) Slog.v(TAG, "Sending new config to " + r);
+                if (DEBUG_CONFIGURATION) Slog.d(TAG, "Sending new config to " + r);
                 r.app.thread.scheduleActivityConfigurationChanged(r.appToken);
             } catch (RemoteException e) {
                 // If process died, whatever.
@@ -3740,7 +3817,7 @@ final class ActivityStack {
             results = r.results;
             newIntents = r.newIntents;
         }
-        if (DEBUG_SWITCH) Slog.v(TAG, "Relaunching: " + r
+        if (DEBUG_SWITCH) Slog.d(TAG, "Relaunching: " + r
                 + " with results=" + results + " newIntents=" + newIntents
                 + " andResume=" + andResume);
         EventLog.writeEvent(andResume ? EventLogTags.AM_RELAUNCH_RESUME_ACTIVITY
@@ -3891,7 +3968,7 @@ final class ActivityStack {
                     numRunning++;
                 }
 
-                if (localLOGV) Slog.v(
+                if (localLOGV) Slog.d(
                     TAG, r.intent.getComponent().flattenToShortString()
                     + ": task=" + r.task);
             }
@@ -3934,7 +4011,7 @@ final class ActivityStack {
      */
     boolean handleAppDiedLocked(ProcessRecord app) {
         if (mPausingActivity != null && mPausingActivity.app == app) {
-            if (DEBUG_PAUSE || DEBUG_CLEANUP) Slog.v(TAG,
+            if (DEBUG_PAUSE || DEBUG_CLEANUP) Slog.d(TAG,
                     "App died while pausing: " + mPausingActivity);
             mPausingActivity = null;
         }

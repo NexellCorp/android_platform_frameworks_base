@@ -114,7 +114,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ActivityStackSupervisor implements DisplayListener {
-    static final boolean DEBUG = ActivityManagerService.DEBUG || false;
+    //static final boolean DEBUG = ActivityManagerService.DEBUG || false;
+    static final boolean DEBUG = true;
     static final boolean DEBUG_ADD_REMOVE = DEBUG || false;
     static final boolean DEBUG_APP = DEBUG || false;
     static final boolean DEBUG_CONTAINERS = DEBUG || false;
@@ -303,6 +304,15 @@ public final class ActivityStackSupervisor implements DisplayListener {
         mHandler = new ActivityStackSupervisorHandler(mService.mHandler.getLooper());
     }
 
+    // MULTIWINDOW
+    boolean getMultiWindowEnabled() {
+        return mService.getMultiWindowEnabled();
+    }
+
+    int getMultiWindowMaxNum() {
+         return mService.getMultiWindowMaxNum();
+    }
+
     /**
      * At the time when the constructor runs, the power manager has not yet been
      * initialized.  So we initialize our wakelocks afterwards.
@@ -473,7 +483,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         }
 
         // Don't give up! Look in recents.
-        if (DEBUG_RECENTS) Slog.v(TAG, "Looking for task id=" + id + " in recents");
+        if (DEBUG_RECENTS) Slog.d(TAG, "Looking for task id=" + id + " in recents");
         TaskRecord task = mService.recentTaskForIdLocked(id);
         if (task == null) {
             if (DEBUG_RECENTS) Slog.d(TAG, "\tDidn't find task id=" + id + " in recents");
@@ -875,7 +885,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             }
             stack.mConfigWillChange = config != null
                     && mService.mConfiguration.diff(config) != 0;
-            if (DEBUG_CONFIGURATION) Slog.v(TAG,
+            if (DEBUG_CONFIGURATION) Slog.d(TAG,
                     "Starting activity when config will change = " + stack.mConfigWillChange);
 
             final long origId = Binder.clearCallingIdentity();
@@ -964,7 +974,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
                 mService.enforceCallingPermission(android.Manifest.permission.CHANGE_CONFIGURATION,
                         "updateConfiguration()");
                 stack.mConfigWillChange = false;
-                if (DEBUG_CONFIGURATION) Slog.v(TAG,
+                if (DEBUG_CONFIGURATION) Slog.d(TAG,
                         "Updating to new configuration after starting activity.");
                 mService.updateConfigurationLocked(config, null, false, false);
             }
@@ -1111,7 +1121,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         r.launchCount++;
         r.lastLaunchTime = SystemClock.uptimeMillis();
 
-        if (localLOGV) Slog.v(TAG, "Launching: " + r);
+        if (localLOGV) Slog.d(TAG, "Launching: " + r);
 
         int idx = app.activities.indexOf(r);
         if (idx < 0) {
@@ -1131,7 +1141,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
                 results = r.results;
                 newIntents = r.newIntents;
             }
-            if (DEBUG_SWITCH) Slog.v(TAG, "Launching: " + r
+            if (DEBUG_SWITCH) Slog.d(TAG, "Launching: " + r
                     + " icicle=" + r.icicle
                     + " with results=" + results + " newIntents=" + newIntents
                     + " andResume=" + andResume);
@@ -1238,7 +1248,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             // should look like we asked it to pause+stop (but remain visible),
             // and it has done so and reported back the current icicle and
             // other state.
-            if (DEBUG_STATES) Slog.v(TAG, "Moving to STOPPED: " + r
+            if (DEBUG_STATES) Slog.d(TAG, "Moving to STOPPED: " + r
                     + " (starting in stopped state)");
             r.state = ActivityState.STOPPED;
             r.stopped = true;
@@ -1331,7 +1341,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         ActivityRecord resultRecord = null;
         if (resultTo != null) {
             sourceRecord = isInAnyStackLocked(resultTo);
-            if (DEBUG_RESULTS) Slog.v(
+            if (DEBUG_RESULTS) Slog.d(
                 TAG, "Will send result to " + resultTo + " " + sourceRecord);
             if (sourceRecord != null) {
                 if (requestCode >= 0 && !sourceRecord.finishing) {
@@ -1672,7 +1682,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         // We'll invoke onUserLeaving before onPause only if the launching
         // activity did not explicitly state that this is an automated launch.
         mUserLeaving = (launchFlags & Intent.FLAG_ACTIVITY_NO_USER_ACTION) == 0;
-        if (DEBUG_USER_LEAVING) Slog.v(TAG, "startActivity() => mUserLeaving=" + mUserLeaving);
+        if (DEBUG_USER_LEAVING) Slog.d(TAG, "startActivity() => mUserLeaving=" + mUserLeaving);
 
         // If the caller has asked not to resume at this point, we make note
         // of this in the record so that we can skip it when trying to find
@@ -2076,7 +2086,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
                         newTaskIntent != null ? newTaskIntent : intent,
                         voiceSession, voiceInteractor, !launchTaskBehind /* toTop */),
                         taskToAffiliate);
-                if (DEBUG_TASKS) Slog.v(TAG, "Starting new activity " + r + " in new task " +
+                if (DEBUG_TASKS) Slog.d(TAG, "Starting new activity " + r + " in new task " +
                         r.task);
             } else {
                 r.setTask(reuseTask, taskToAffiliate);
@@ -2143,7 +2153,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             // to keep the new one in the same task as the one that is starting
             // it.
             r.setTask(sourceTask, null);
-            if (DEBUG_TASKS) Slog.v(TAG, "Starting new activity " + r
+            if (DEBUG_TASKS) Slog.d(TAG, "Starting new activity " + r
                     + " in existing task " + r.task + " from source " + sourceRecord);
 
         } else if (inTask != null) {
@@ -2182,7 +2192,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             }
 
             r.setTask(inTask, null);
-            if (DEBUG_TASKS) Slog.v(TAG, "Starting new activity " + r
+            if (DEBUG_TASKS) Slog.d(TAG, "Starting new activity " + r
                     + " in explicit task " + r.task);
 
         } else {
@@ -2195,7 +2205,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             r.setTask(prev != null ? prev.task : targetStack.createTaskRecord(getNextTaskId(),
                             r.info, intent, null, null, true), null);
             mWindowManager.moveTaskToTop(r.task.taskId);
-            if (DEBUG_TASKS) Slog.v(TAG, "Starting new activity " + r
+            if (DEBUG_TASKS) Slog.d(TAG, "Starting new activity " + r
                     + " in new guessed " + r.task);
         }
 
@@ -2267,7 +2277,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
     // Checked.
     final ActivityRecord activityIdleInternalLocked(final IBinder token, boolean fromTimeout,
             Configuration config) {
-        if (localLOGV) Slog.v(TAG, "Activity idle: " + token);
+        if (localLOGV) Slog.d(TAG, "Activity idle: " + token);
 
         ArrayList<ActivityRecord> stops = null;
         ArrayList<ActivityRecord> finishes = null;
@@ -2646,19 +2656,19 @@ public final class ActivityStackSupervisor implements DisplayListener {
             // Restore home stack to top.
             moveHomeStack(true, "restoreRecentTask");
             if (DEBUG_RECENTS)
-                Slog.v(TAG, "Created stack=" + stack + " for recents restoration.");
+                Slog.d(TAG, "Created stack=" + stack + " for recents restoration.");
         }
 
         if (stack == null) {
             // What does this mean??? Not sure how we would get here...
             if (DEBUG_RECENTS)
-                Slog.v(TAG, "Unable to find/create stack to restore recent task=" + task);
+                Slog.d(TAG, "Unable to find/create stack to restore recent task=" + task);
             return false;
         }
 
         stack.addTask(task, false, false);
         if (DEBUG_RECENTS)
-            Slog.v(TAG, "Added restored task=" + task + " to stack=" + stack);
+            Slog.d(TAG, "Added restored task=" + task + " to stack=" + stack);
         final ArrayList<ActivityRecord> activities = task.mActivities;
         for (int activityNdx = activities.size() - 1; activityNdx >= 0; --activityNdx) {
             final ActivityRecord r = activities.get(activityNdx);
@@ -2817,7 +2827,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
 
             if (mStoppingActivities.size() > 0) {
                 // Still need to tell some activities to stop; can't sleep yet.
-                if (DEBUG_PAUSE) Slog.v(TAG, "Sleep still need to stop "
+                if (DEBUG_PAUSE) Slog.d(TAG, "Sleep still need to stop "
                         + mStoppingActivities.size() + " activities");
                 scheduleIdleLocked();
                 dontSleep = true;
@@ -2825,7 +2835,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
 
             if (mGoingToSleepActivities.size() > 0) {
                 // Still need to tell some activities to sleep; can't sleep yet.
-                if (DEBUG_PAUSE) Slog.v(TAG, "Sleep still need to sleep "
+                if (DEBUG_PAUSE) Slog.d(TAG, "Sleep still need to sleep "
                         + mGoingToSleepActivities.size() + " activities");
                 dontSleep = true;
             }
@@ -3077,7 +3087,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         final boolean nowVisible = allResumedActivitiesVisible();
         for (int i=0; i<N; i++) {
             ActivityRecord s = mStoppingActivities.get(i);
-            if (localLOGV) Slog.v(TAG, "Stopping " + s + ": nowVisible="
+            if (localLOGV) Slog.d(TAG, "Stopping " + s + ": nowVisible="
                     + nowVisible + " waitingVisible=" + s.waitingVisible
                     + " finishing=" + s.finishing);
             if (s.waitingVisible && nowVisible) {
@@ -3089,12 +3099,12 @@ public final class ActivityStackSupervisor implements DisplayListener {
                     // so get rid of it.  Otherwise, we need to go through the
                     // normal flow and hide it once we determine that it is
                     // hidden by the activities in front of it.
-                    if (localLOGV) Slog.v(TAG, "Before stopping, can hide: " + s);
+                    if (localLOGV) Slog.d(TAG, "Before stopping, can hide: " + s);
                     mWindowManager.setAppVisibility(s.appToken, false);
                 }
             }
             if ((!s.waitingVisible || mService.isSleepingOrShuttingDown()) && remove) {
-                if (localLOGV) Slog.v(TAG, "Ready to stop: " + s);
+                if (localLOGV) Slog.d(TAG, "Ready to stop: " + s);
                 if (stops == null) {
                     stops = new ArrayList<ActivityRecord>();
                 }
@@ -3351,19 +3361,19 @@ public final class ActivityStackSupervisor implements DisplayListener {
 
     @Override
     public void onDisplayAdded(int displayId) {
-        Slog.v(TAG, "Display added displayId=" + displayId);
+        Slog.d(TAG, "Display added displayId=" + displayId);
         mHandler.sendMessage(mHandler.obtainMessage(HANDLE_DISPLAY_ADDED, displayId, 0));
     }
 
     @Override
     public void onDisplayRemoved(int displayId) {
-        Slog.v(TAG, "Display removed displayId=" + displayId);
+        Slog.d(TAG, "Display removed displayId=" + displayId);
         mHandler.sendMessage(mHandler.obtainMessage(HANDLE_DISPLAY_REMOVED, displayId, 0));
     }
 
     @Override
     public void onDisplayChanged(int displayId) {
-        Slog.v(TAG, "Display changed displayId=" + displayId);
+        Slog.d(TAG, "Display changed displayId=" + displayId);
         mHandler.sendMessage(mHandler.obtainMessage(HANDLE_DISPLAY_CHANGED, displayId, 0));
     }
 
@@ -3993,7 +4003,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         }
 
         private void setSurfaceIfReadyLocked() {
-            if (DEBUG_STACK) Slog.v(TAG, "setSurfaceIfReadyLocked: mDrawn=" + mDrawn +
+            if (DEBUG_STACK) Slog.d(TAG, "setSurfaceIfReadyLocked: mDrawn=" + mDrawn +
                     " mContainerState=" + mContainerState + " mSurface=" + mSurface);
             if (mDrawn && mSurface != null && mContainerState == CONTAINER_STATE_NO_SURFACE) {
                 ((VirtualActivityDisplay) mActivityDisplay).setSurface(mSurface);
@@ -4036,13 +4046,13 @@ public final class ActivityStackSupervisor implements DisplayListener {
         }
 
         void attachActivities(ActivityStack stack) {
-            if (DEBUG_STACK) Slog.v(TAG, "attachActivities: attaching " + stack + " to displayId="
+            if (DEBUG_STACK) Slog.d(TAG, "attachActivities: attaching " + stack + " to displayId="
                     + mDisplayId);
             mStacks.add(stack);
         }
 
         void detachActivitiesLocked(ActivityStack stack) {
-            if (DEBUG_STACK) Slog.v(TAG, "detachActivitiesLocked: detaching " + stack
+            if (DEBUG_STACK) Slog.d(TAG, "detachActivitiesLocked: detaching " + stack
                     + " from displayId=" + mDisplayId);
             mStacks.remove(stack);
         }

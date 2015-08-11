@@ -226,7 +226,7 @@ final class Session extends IWindowSession.Stub
     }
 
     public void finishDrawing(IWindow window) {
-        if (WindowManagerService.localLOGV) Slog.v(
+        if (WindowManagerService.localLOGV) Slog.d(
             WindowManagerService.TAG, "IWindow finishDrawing called for " + window);
         mService.finishDrawingWindow(this, window);
     }
@@ -477,7 +477,7 @@ final class Session extends IWindowSession.Stub
 
     void windowAddedLocked() {
         if (mSurfaceSession == null) {
-            if (WindowManagerService.localLOGV) Slog.v(
+            if (WindowManagerService.localLOGV) Slog.d(
                 WindowManagerService.TAG, "First window added to " + this + ", creating SurfaceSession");
             mSurfaceSession = new SurfaceSession();
             if (WindowManagerService.SHOW_TRANSACTIONS) Slog.i(
@@ -499,7 +499,7 @@ final class Session extends IWindowSession.Stub
         if (mNumWindow <= 0 && mClientDead) {
             mService.mSessions.remove(this);
             if (mSurfaceSession != null) {
-                if (WindowManagerService.localLOGV) Slog.v(
+                if (WindowManagerService.localLOGV) Slog.d(
                     WindowManagerService.TAG, "Last window removed from " + this
                     + ", destroying " + mSurfaceSession);
                 if (WindowManagerService.SHOW_TRANSACTIONS) Slog.i(

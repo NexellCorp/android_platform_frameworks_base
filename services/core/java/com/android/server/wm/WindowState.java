@@ -376,7 +376,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
         DeathRecipient deathRecipient = new DeathRecipient();
         mSeq = seq;
         mEnforceSizeCompat = (mAttrs.privateFlags & PRIVATE_FLAG_COMPATIBLE_WINDOW) != 0;
-        if (WindowManagerService.localLOGV) Slog.v(
+        if (WindowManagerService.localLOGV) Slog.d(
             TAG, "Window " + this + " client=" + c.asBinder()
             + " token=" + token + " (" + mAttrs.token + ")" + " params=" + a);
         try {
@@ -405,7 +405,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
                     + WindowManagerService.TYPE_LAYER_OFFSET;
             mSubLayer = mPolicy.subWindowTypeToLayerLw(a.type);
             mAttachedWindow = attachedWindow;
-            if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.v(TAG, "Adding " + this + " to " + mAttachedWindow);
+            if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.d(TAG, "Adding " + this + " to " + mAttachedWindow);
 
             int children_size = mAttachedWindow.mChildWindows.size();
             if (children_size == 0) {
@@ -488,7 +488,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
     }
 
     void attach() {
-        if (WindowManagerService.localLOGV) Slog.v(
+        if (WindowManagerService.localLOGV) Slog.d(
             TAG, "Attaching " + this + " token=" + mToken
             + ", list=" + mToken.windows);
         mSession.windowAddedLocked();
@@ -659,7 +659,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             }
         }
 
-        if (DEBUG_LAYOUT || WindowManagerService.localLOGV) Slog.v(TAG,
+        if (DEBUG_LAYOUT || WindowManagerService.localLOGV) Slog.d(TAG,
                 "Resolving (mRequestedWidth="
                 + mRequestedWidth + ", mRequestedheight="
                 + mRequestedHeight + ") to" + " (pw=" + pw + ", ph=" + ph
@@ -1095,7 +1095,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
         disposeInputChannel();
 
         if (mAttachedWindow != null) {
-            if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.v(TAG, "Removing " + this + " from " + mAttachedWindow);
+            if (WindowManagerService.DEBUG_ADD_REMOVE) Slog.d(TAG, "Removing " + this + " from " + mAttachedWindow);
             mAttachedWindow.mChildWindows.remove(this);
         }
         mWinAnimator.destroyDeferredSurfaceLocked();
@@ -1186,9 +1186,9 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             // Already showing.
             return false;
         }
-        if (DEBUG_VISIBILITY) Slog.v(TAG, "Policy visibility true: " + this);
+        if (DEBUG_VISIBILITY) Slog.d(TAG, "Policy visibility true: " + this);
         if (doAnimation) {
-            if (DEBUG_VISIBILITY) Slog.v(TAG, "doAnimation: mPolicyVisibility="
+            if (DEBUG_VISIBILITY) Slog.d(TAG, "doAnimation: mPolicyVisibility="
                     + mPolicyVisibility + " mAnimation=" + mWinAnimator.mAnimation);
             if (!mService.okToDisplay()) {
                 doAnimation = false;
@@ -1236,7 +1236,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
         if (doAnimation) {
             mPolicyVisibilityAfterAnim = false;
         } else {
-            if (DEBUG_VISIBILITY) Slog.v(TAG, "Policy visibility false: " + this);
+            if (DEBUG_VISIBILITY) Slog.d(TAG, "Policy visibility false: " + this);
             mPolicyVisibilityAfterAnim = false;
             mPolicyVisibility = false;
             // Window is no longer visible -- make sure if we were waiting
@@ -1329,7 +1329,11 @@ final class WindowState implements WindowManagerPolicy.WindowState {
     }
 
     public void getTouchableRegion(Region outRegion) {
-        final Rect frame = mFrame;
+        // MULTIWINDOW
+        //final Rect frame = mFrame;
+        final Rect frame = mVisibleFrame;
+        // MULTIWINDOW Debugging
+        Slog.d(TAG, "getTouchableRegion frame of package ==> " + mAttrs.packageName + ", frame: " + frame);
         switch (mTouchableInsets) {
             default:
             case ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_FRAME:
@@ -1348,6 +1352,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
                 break;
             }
         }
+        Slog.d(TAG, "--> outRegion " + outRegion);
     }
 
     WindowList getWindowList() {
@@ -1383,7 +1388,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
 
     void reportResized() {
         try {
-            if (DEBUG_RESIZE || DEBUG_ORIENTATION) Slog.v(TAG, "Reporting new frame to " + this
+            if (DEBUG_RESIZE || DEBUG_ORIENTATION) Slog.d(TAG, "Reporting new frame to " + this
                     + ": " + mCompatFrame);
             boolean configChanged = isConfigChanged();
             if ((DEBUG_RESIZE || DEBUG_ORIENTATION || DEBUG_CONFIGURATION) && configChanged) {

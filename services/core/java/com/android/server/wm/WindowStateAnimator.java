@@ -216,7 +216,7 @@ class WindowStateAnimator {
     }
 
     public void setAnimation(Animation anim, long startTime) {
-        if (localLOGV) Slog.v(TAG, "Setting animation in " + this + ": " + anim);
+        if (localLOGV) Slog.d(TAG, "Setting animation in " + this + ": " + anim);
         mAnimating = false;
         mLocalAnimating = false;
         mAnimation = anim;
@@ -278,7 +278,7 @@ class WindowStateAnimator {
         }
         mTransformation.clear();
         final boolean more = mAnimation.getTransformation(currentTime, mTransformation);
-        if (false && DEBUG_ANIM) Slog.v(
+        if (false && DEBUG_ANIM) Slog.d(
             TAG, "Stepped animation in " + this +
             ": more=" + more + ", xform=" + mTransformation);
         return more;
@@ -298,7 +298,7 @@ class WindowStateAnimator {
                 mHasTransformation = true;
                 mHasLocalTransformation = true;
                 if (!mLocalAnimating) {
-                    if (DEBUG_ANIM) Slog.v(
+                    if (DEBUG_ANIM) Slog.d(
                         TAG, "Starting animation in " + this +
                         " @ " + currentTime + ": ww=" + mWin.mFrame.width() +
                         " wh=" + mWin.mFrame.height() +
@@ -321,7 +321,7 @@ class WindowStateAnimator {
                         return true;
                     }
                 }
-                if (DEBUG_ANIM) Slog.v(
+                if (DEBUG_ANIM) Slog.d(
                     TAG, "Finished animation in " + this +
                     " @ " + currentTime);
                 //WindowManagerService.this.dump();
@@ -358,7 +358,7 @@ class WindowStateAnimator {
         }
 
         // Done animating, clean up.
-        if (DEBUG_ANIM) Slog.v(
+        if (DEBUG_ANIM) Slog.d(
             TAG, "Animation done in " + this + ": exiting=" + mWin.mExiting
             + ", reportedVisible="
             + (mWin.mAppToken != null ? mWin.mAppToken.reportedVisible : false));
@@ -379,13 +379,13 @@ class WindowStateAnimator {
         } else if (mIsWallpaper) {
             mAnimLayer += mService.mWallpaperAnimLayerAdjustment;
         }
-        if (DEBUG_LAYERS) Slog.v(TAG, "Stepping win " + this
+        if (DEBUG_LAYERS) Slog.d(TAG, "Stepping win " + this
                 + " anim layer: " + mAnimLayer);
         mHasTransformation = false;
         mHasLocalTransformation = false;
         if (mWin.mPolicyVisibility != mWin.mPolicyVisibilityAfterAnim) {
             if (DEBUG_VISIBILITY) {
-                Slog.v(TAG, "Policy visibility changing after anim in " + this + ": "
+                Slog.d(TAG, "Policy visibility changing after anim in " + this + ": "
                         + mWin.mPolicyVisibilityAfterAnim);
             }
             mWin.mPolicyVisibility = mWin.mPolicyVisibilityAfterAnim;
@@ -410,7 +410,7 @@ class WindowStateAnimator {
                 && mWin.mAppToken != null
                 && mWin.mAppToken.firstWindowDrawn
                 && mWin.mAppToken.startingData != null) {
-            if (DEBUG_STARTING_WINDOW) Slog.v(TAG, "Finish starting "
+            if (DEBUG_STARTING_WINDOW) Slog.d(TAG, "Finish starting "
                     + mWin.mToken + ": first real window done animating");
             mService.mFinishedStarting.add(mWin.mAppToken);
             mService.mH.sendEmptyMessage(H.FINISHED_STARTING);
@@ -436,7 +436,7 @@ class WindowStateAnimator {
     }
 
     void finishExit() {
-        if (WindowManagerService.DEBUG_ANIM) Slog.v(
+        if (WindowManagerService.DEBUG_ANIM) Slog.d(
                 TAG, "finishExit in " + this
                 + ": exiting=" + mWin.mExiting
                 + " remove=" + mWin.mRemoveOnExit
@@ -471,7 +471,7 @@ class WindowStateAnimator {
             return;
         }
 
-        if (WindowManagerService.localLOGV) Slog.v(
+        if (WindowManagerService.localLOGV) Slog.d(
                 TAG, "Exit animation finished in " + this
                 + ": remove=" + mWin.mRemoveOnExit);
         if (mSurfaceControl != null) {
@@ -510,15 +510,15 @@ class WindowStateAnimator {
         final boolean startingWindow =
                 mWin.mAttrs.type == WindowManager.LayoutParams.TYPE_APPLICATION_STARTING;
         if (DEBUG_STARTING_WINDOW && startingWindow) {
-            Slog.v(TAG, "Finishing drawing window " + mWin + ": mDrawState="
+            Slog.d(TAG, "Finishing drawing window " + mWin + ": mDrawState="
                     + drawStateToString());
         }
         if (mDrawState == DRAW_PENDING) {
             if (DEBUG_SURFACE_TRACE || DEBUG_ANIM || SHOW_TRANSACTIONS || DEBUG_ORIENTATION)
-                Slog.v(TAG, "finishDrawingLocked: mDrawState=COMMIT_DRAW_PENDING " + this + " in "
+                Slog.d(TAG, "finishDrawingLocked: mDrawState=COMMIT_DRAW_PENDING " + this + " in "
                         + mSurfaceControl);
             if (DEBUG_STARTING_WINDOW && startingWindow) {
-                Slog.v(TAG, "Draw state now committed in " + mWin);
+                Slog.d(TAG, "Draw state now committed in " + mWin);
             }
             mDrawState = COMMIT_DRAW_PENDING;
             return true;
@@ -569,7 +569,7 @@ class WindowStateAnimator {
             super(s, name, w, h, format, flags);
             mName = name != null ? name : "Not named";
             mSize.set(w, h);
-            if (logSurfaceTrace) Slog.v(SURFACE_TAG, "ctor: " + this + ". Called by "
+            if (logSurfaceTrace) Slog.d(SURFACE_TAG, "ctor: " + this + ". Called by "
                     + Debug.getCallers(3));
             synchronized (sSurfaces) {
                 sSurfaces.add(0, this);
@@ -579,7 +579,7 @@ class WindowStateAnimator {
         @Override
         public void setAlpha(float alpha) {
             if (mSurfaceTraceAlpha != alpha) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "setAlpha(" + alpha + "): OLD:" + this +
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "setAlpha(" + alpha + "): OLD:" + this +
                         ". Called by " + Debug.getCallers(3));
                 mSurfaceTraceAlpha = alpha;
             }
@@ -589,7 +589,7 @@ class WindowStateAnimator {
         @Override
         public void setLayer(int zorder) {
             if (zorder != mLayer) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "setLayer(" + zorder + "): OLD:" + this
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "setLayer(" + zorder + "): OLD:" + this
                         + ". Called by " + Debug.getCallers(3));
                 mLayer = zorder;
             }
@@ -611,7 +611,7 @@ class WindowStateAnimator {
         @Override
         public void setPosition(float x, float y) {
             if (x != mPosition.x || y != mPosition.y) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "setPosition(" + x + "," + y + "): OLD:"
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "setPosition(" + x + "," + y + "): OLD:"
                         + this + ". Called by " + Debug.getCallers(3));
                 mPosition.set(x, y);
             }
@@ -621,7 +621,7 @@ class WindowStateAnimator {
         @Override
         public void setSize(int w, int h) {
             if (w != mSize.x || h != mSize.y) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "setSize(" + w + "," + h + "): OLD:"
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "setSize(" + w + "," + h + "): OLD:"
                         + this + ". Called by " + Debug.getCallers(3));
                 mSize.set(w, h);
             }
@@ -632,7 +632,7 @@ class WindowStateAnimator {
         public void setWindowCrop(Rect crop) {
             if (crop != null) {
                 if (!crop.equals(mWindowCrop)) {
-                    if (logSurfaceTrace) Slog.v(SURFACE_TAG, "setWindowCrop("
+                    if (logSurfaceTrace) Slog.d(SURFACE_TAG, "setWindowCrop("
                             + crop.toShortString() + "): OLD:" + this + ". Called by "
                             + Debug.getCallers(3));
                     mWindowCrop.set(crop);
@@ -644,7 +644,7 @@ class WindowStateAnimator {
         @Override
         public void setLayerStack(int layerStack) {
             if (layerStack != mLayerStack) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "setLayerStack(" + layerStack + "): OLD:"
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "setLayerStack(" + layerStack + "): OLD:"
                         + this + ". Called by " + Debug.getCallers(3));
                 mLayerStack = layerStack;
             }
@@ -654,7 +654,7 @@ class WindowStateAnimator {
         @Override
         public void setOpaque(boolean isOpaque) {
             if (isOpaque != mIsOpaque) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "setOpaque(" + isOpaque + "): OLD:"
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "setOpaque(" + isOpaque + "): OLD:"
                         + this + ". Called by " + Debug.getCallers(3));
                 mIsOpaque = isOpaque;
             }
@@ -664,7 +664,7 @@ class WindowStateAnimator {
         @Override
         public void setMatrix(float dsdx, float dtdx, float dsdy, float dtdy) {
             if (dsdx != mDsdx || dtdx != mDtdx || dsdy != mDsdy || dtdy != mDtdy) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "setMatrix(" + dsdx + "," + dtdx + ","
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "setMatrix(" + dsdx + "," + dtdx + ","
                         + dsdy + "," + dtdy + "): OLD:" + this + ". Called by "
                         + Debug.getCallers(3));
                 mDsdx = dsdx;
@@ -678,7 +678,7 @@ class WindowStateAnimator {
         @Override
         public void hide() {
             if (mShown) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "hide: OLD:" + this + ". Called by "
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "hide: OLD:" + this + ". Called by "
                         + Debug.getCallers(3));
                 mShown = false;
             }
@@ -688,7 +688,7 @@ class WindowStateAnimator {
         @Override
         public void show() {
             if (!mShown) {
-                if (logSurfaceTrace) Slog.v(SURFACE_TAG, "show: OLD:" + this + ". Called by "
+                if (logSurfaceTrace) Slog.d(SURFACE_TAG, "show: OLD:" + this + ". Called by "
                         + Debug.getCallers(3));
                 mShown = true;
             }
@@ -698,7 +698,7 @@ class WindowStateAnimator {
         @Override
         public void destroy() {
             super.destroy();
-            if (logSurfaceTrace) Slog.v(SURFACE_TAG, "destroy: " + this + ". Called by "
+            if (logSurfaceTrace) Slog.d(SURFACE_TAG, "destroy: " + this + ". Called by "
                     + Debug.getCallers(3));
             synchronized (sSurfaces) {
                 sSurfaces.remove(this);
@@ -708,7 +708,7 @@ class WindowStateAnimator {
         @Override
         public void release() {
             super.release();
-            if (logSurfaceTrace) Slog.v(SURFACE_TAG, "release: " + this + ". Called by "
+            if (logSurfaceTrace) Slog.d(SURFACE_TAG, "release: " + this + ". Called by "
                     + Debug.getCallers(3));
             synchronized (sSurfaces) {
                 sSurfaces.remove(this);
@@ -820,7 +820,7 @@ class WindowStateAnimator {
             top -= attrs.surfaceInsets.top;
 
             if (DEBUG_VISIBILITY) {
-                Slog.v(TAG, "Creating surface in session "
+                Slog.d(TAG, "Creating surface in session "
                         + mSession.mSurfaceSession + " window " + this
                         + " w=" + width + " h=" + height
                         + " x=" + left + " y=" + top
@@ -889,7 +889,7 @@ class WindowStateAnimator {
             }
 
             if (WindowManagerService.localLOGV) {
-                Slog.v(TAG, "Got surface: " + mSurfaceControl
+                Slog.d(TAG, "Got surface: " + mSurfaceControl
                         + ", set left=" + w.mFrame.left + " top=" + w.mFrame.top
                         + ", animLayer=" + mAnimLayer);
             }
@@ -928,7 +928,7 @@ class WindowStateAnimator {
                 if (SHOW_LIGHT_TRANSACTIONS) Slog.i(TAG,
                         "<<< CLOSE TRANSACTION createSurfaceLocked");
             }
-            if (WindowManagerService.localLOGV) Slog.v(
+            if (WindowManagerService.localLOGV) Slog.d(
                     TAG, "Created surface " + this);
         }
         return mSurfaceControl;
@@ -1039,7 +1039,7 @@ class WindowStateAnimator {
                     !wallpaperAnimator.mAnimation.getDetachWallpaper()) {
                 attachedTransformation = wallpaperAnimator.mTransformation;
                 if (WindowManagerService.DEBUG_WALLPAPER && attachedTransformation != null) {
-                    Slog.v(TAG, "WP target attached xform: " + attachedTransformation);
+                    Slog.d(TAG, "WP target attached xform: " + attachedTransformation);
                 }
             }
             final AppWindowAnimator wpAppAnimator = wallpaperTarget.mAppToken == null ?
@@ -1049,7 +1049,7 @@ class WindowStateAnimator {
                     && !wpAppAnimator.animation.getDetachWallpaper()) {
                 appTransformation = wpAppAnimator.transformation;
                 if (WindowManagerService.DEBUG_WALLPAPER && appTransformation != null) {
-                    Slog.v(TAG, "WP target app xform: " + appTransformation);
+                    Slog.d(TAG, "WP target app xform: " + appTransformation);
                 }
             }
         }
@@ -1175,7 +1175,7 @@ class WindowStateAnimator {
             }
 
             if ((DEBUG_SURFACE_TRACE || WindowManagerService.localLOGV)
-                    && (mShownAlpha == 1.0 || mShownAlpha == 0.0)) Slog.v(
+                    && (mShownAlpha == 1.0 || mShownAlpha == 0.0)) Slog.d(
                     TAG, "computeShownFrameLocked: Animating " + this + " mAlpha=" + mAlpha
                     + " self=" + (selfTransformation ? mTransformation.getAlpha() : "null")
                     + " attached=" + (attachedTransformation == null ?
@@ -1188,7 +1188,7 @@ class WindowStateAnimator {
             return;
         }
 
-        if (WindowManagerService.localLOGV) Slog.v(
+        if (WindowManagerService.localLOGV) Slog.d(
                 TAG, "computeShownFrameLocked: " + this +
                 " not attached, mAlpha=" + mAlpha);
 
@@ -1464,7 +1464,7 @@ class WindowStateAnimator {
         if (mSurfaceControl == null) {
             if (w.mOrientationChanging) {
                 if (DEBUG_ORIENTATION) {
-                    Slog.v(TAG, "Orientation change skips hidden " + w);
+                    Slog.d(TAG, "Orientation change skips hidden " + w);
                 }
                 w.mOrientationChanging = false;
             }
@@ -1492,7 +1492,7 @@ class WindowStateAnimator {
             // new orientation.
             if (w.mOrientationChanging) {
                 w.mOrientationChanging = false;
-                if (DEBUG_ORIENTATION) Slog.v(TAG,
+                if (DEBUG_ORIENTATION) Slog.d(TAG,
                         "Orientation change skips hidden " + w);
             }
         } else if (mLastLayer != mAnimLayer
@@ -1532,7 +1532,7 @@ class WindowStateAnimator {
                     if (mLastHidden && mDrawState == HAS_DRAWN) {
                         if (WindowManagerService.SHOW_TRANSACTIONS) WindowManagerService.logSurface(w,
                                 "SHOW (performLayout)", null);
-                        if (WindowManagerService.DEBUG_VISIBILITY) Slog.v(TAG, "Showing " + w
+                        if (WindowManagerService.DEBUG_VISIBILITY) Slog.d(TAG, "Showing " + w
                                 + " during relayout");
                         if (showSurfaceRobustlyLocked()) {
                             mLastHidden = false;
@@ -1560,7 +1560,7 @@ class WindowStateAnimator {
             }
         } else {
             if (DEBUG_ANIM && isAnimating()) {
-                Slog.v(TAG, "prepareSurface: No changes in animation for " + this);
+                Slog.d(TAG, "prepareSurface: No changes in animation for " + this);
             }
             displayed = true;
         }
@@ -1570,11 +1570,11 @@ class WindowStateAnimator {
                 if (!w.isDrawnLw()) {
                     mAnimator.mBulkUpdateParams &= ~SET_ORIENTATION_CHANGE_COMPLETE;
                     mAnimator.mLastWindowFreezeSource = w;
-                    if (DEBUG_ORIENTATION) Slog.v(TAG,
+                    if (DEBUG_ORIENTATION) Slog.d(TAG,
                             "Orientation continue waiting for draw in " + w);
                 } else {
                     w.mOrientationChanging = false;
-                    if (DEBUG_ORIENTATION) Slog.v(TAG, "Orientation change complete in " + w);
+                    if (DEBUG_ORIENTATION) Slog.d(TAG, "Orientation change complete in " + w);
                 }
             }
             w.mToken.hasVisible = true;
@@ -1659,7 +1659,7 @@ class WindowStateAnimator {
                 e = new RuntimeException();
                 e.fillInStackTrace();
             }
-            Slog.v(TAG, "performShow on " + this
+            Slog.d(TAG, "performShow on " + this
                     + ": mDrawState=" + mDrawState + " readyForDisplay="
                     + mWin.isReadyForDisplayIgnoringKeyguard()
                     + " starting=" + (mWin.mAttrs.type == TYPE_APPLICATION_STARTING)
@@ -1678,7 +1678,7 @@ class WindowStateAnimator {
                 WindowManagerService.logSurface(mWin, "SHOW (performShowLocked)", null);
             if (DEBUG_VISIBILITY || (DEBUG_STARTING_WINDOW &&
                     mWin.mAttrs.type == WindowManager.LayoutParams.TYPE_APPLICATION_STARTING)) {
-                Slog.v(TAG, "Showing " + this
+                Slog.d(TAG, "Showing " + this
                         + " during animation: policyVis=" + mWin.mPolicyVisibility
                         + " attHidden=" + mWin.mAttachedHidden
                         + " tok.hiddenRequested="
@@ -1697,7 +1697,7 @@ class WindowStateAnimator {
             // Force the show in the next prepareSurfaceLocked() call.
             mLastAlpha = -1;
             if (DEBUG_SURFACE_TRACE || DEBUG_ANIM)
-                Slog.v(TAG, "performShowLocked: mDrawState=HAS_DRAWN in " + this);
+                Slog.d(TAG, "performShowLocked: mDrawState=HAS_DRAWN in " + this);
             mDrawState = HAS_DRAWN;
             mService.scheduleAnimationLocked();
 
@@ -1728,7 +1728,7 @@ class WindowStateAnimator {
 
                 if (mWin.mAppToken.startingData != null) {
                     if (WindowManagerService.DEBUG_STARTING_WINDOW ||
-                            WindowManagerService.DEBUG_ANIM) Slog.v(TAG,
+                            WindowManagerService.DEBUG_ANIM) Slog.d(TAG,
                             "Finish starting " + mWin.mToken
                             + ": first real window is shown, no animation");
                     // If this initial window is animating, stop it -- we
@@ -1762,7 +1762,7 @@ class WindowStateAnimator {
                 mSurfaceShown = true;
                 mSurfaceControl.show();
                 if (mWin.mTurnOnScreen) {
-                    if (DEBUG_VISIBILITY) Slog.v(TAG,
+                    if (DEBUG_VISIBILITY) Slog.d(TAG,
                             "Show surface turning screen on: " + mWin);
                     mWin.mTurnOnScreen = false;
                     mAnimator.mBulkUpdateParams |= SET_TURN_ON_SCREEN;
@@ -1847,7 +1847,7 @@ class WindowStateAnimator {
                     a = mService.mAppTransition.loadAnimationAttr(mWin.mAttrs, attr);
                 }
             }
-            if (WindowManagerService.DEBUG_ANIM) Slog.v(TAG,
+            if (WindowManagerService.DEBUG_ANIM) Slog.d(TAG,
                     "applyAnimation: win=" + this
                     + " anim=" + anim + " attr=0x" + Integer.toHexString(attr)
                     + " a=" + a
@@ -1860,7 +1860,7 @@ class WindowStateAnimator {
                         e = new RuntimeException();
                         e.fillInStackTrace();
                     }
-                    Slog.v(TAG, "Loaded animation " + a + " for " + this, e);
+                    Slog.d(TAG, "Loaded animation " + a + " for " + this, e);
                 }
                 setAnimation(a);
                 mAnimationIsEntrance = isEntrance;
