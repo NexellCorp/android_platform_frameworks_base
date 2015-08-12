@@ -563,30 +563,34 @@ public final class BatteryService extends SystemService {
     }
 
     private void logOutlierLocked(long duration) {
-        ContentResolver cr = mContext.getContentResolver();
-        String dischargeThresholdString = Settings.Global.getString(cr,
-                Settings.Global.BATTERY_DISCHARGE_THRESHOLD);
-        String durationThresholdString = Settings.Global.getString(cr,
-                Settings.Global.BATTERY_DISCHARGE_DURATION_THRESHOLD);
+        // psw0523 fix
+        try {
+            ContentResolver cr = mContext.getContentResolver();
+            String dischargeThresholdString = Settings.Global.getString(cr,
+                    Settings.Global.BATTERY_DISCHARGE_THRESHOLD);
+            String durationThresholdString = Settings.Global.getString(cr,
+                    Settings.Global.BATTERY_DISCHARGE_DURATION_THRESHOLD);
 
-        if (dischargeThresholdString != null && durationThresholdString != null) {
-            try {
-                long durationThreshold = Long.parseLong(durationThresholdString);
-                int dischargeThreshold = Integer.parseInt(dischargeThresholdString);
-                if (duration <= durationThreshold &&
-                        mDischargeStartLevel - mBatteryProps.batteryLevel >= dischargeThreshold) {
-                    // If the discharge cycle is bad enough we want to know about it.
-                    logBatteryStatsLocked();
+            if (dischargeThresholdString != null && durationThresholdString != null) {
+                try {
+                    long durationThreshold = Long.parseLong(durationThresholdString);
+                    int dischargeThreshold = Integer.parseInt(dischargeThresholdString);
+                    if (duration <= durationThreshold &&
+                            mDischargeStartLevel - mBatteryProps.batteryLevel >= dischargeThreshold) {
+                        // If the discharge cycle is bad enough we want to know about it.
+                        logBatteryStatsLocked();
+                            }
+                    if (DEBUG) Slog.v(TAG, "duration threshold: " + durationThreshold +
+                            " discharge threshold: " + dischargeThreshold);
+                    if (DEBUG) Slog.v(TAG, "duration: " + duration + " discharge: " +
+                            (mDischargeStartLevel - mBatteryProps.batteryLevel));
+                } catch (NumberFormatException e) {
+                    Slog.e(TAG, "Invalid DischargeThresholds GService string: " +
+                            durationThresholdString + " or " + dischargeThresholdString);
+                    return;
                 }
-                if (DEBUG) Slog.v(TAG, "duration threshold: " + durationThreshold +
-                        " discharge threshold: " + dischargeThreshold);
-                if (DEBUG) Slog.v(TAG, "duration: " + duration + " discharge: " +
-                        (mDischargeStartLevel - mBatteryProps.batteryLevel));
-            } catch (NumberFormatException e) {
-                Slog.e(TAG, "Invalid DischargeThresholds GService string: " +
-                        durationThresholdString + " or " + dischargeThresholdString);
-                return;
             }
+        } catch (Exception e) {
         }
     }
 
