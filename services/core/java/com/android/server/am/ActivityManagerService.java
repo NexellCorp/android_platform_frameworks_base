@@ -244,7 +244,7 @@ public final class ActivityManagerService extends ActivityManagerNative
 
     static final String TAG = "ActivityManager";
     static final String TAG_MU = "ActivityManagerServiceMU";
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
     static final boolean localLOGV = DEBUG;
     static final boolean DEBUG_BACKUP = localLOGV || false;
     static final boolean DEBUG_BROADCAST = localLOGV || false;

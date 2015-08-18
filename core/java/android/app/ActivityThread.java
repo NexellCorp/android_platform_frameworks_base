@@ -152,16 +152,16 @@ public final class ActivityThread {
     /** @hide */
     public static final String TAG = "ActivityThread";
     private static final android.graphics.Bitmap.Config THUMBNAIL_FORMAT = Bitmap.Config.RGB_565;
-    static final boolean localLOGV = true;
-    static final boolean DEBUG_MESSAGES = true;
+    static final boolean localLOGV = false;
+    static final boolean DEBUG_MESSAGES = false;
     /** @hide */
-    public static final boolean DEBUG_BROADCAST = true;
-    private static final boolean DEBUG_RESULTS = true;
-    private static final boolean DEBUG_BACKUP = true;
-    public static final boolean DEBUG_CONFIGURATION = true;
-    private static final boolean DEBUG_SERVICE = true;
-    private static final boolean DEBUG_MEMORY_TRIM = true;
-    private static final boolean DEBUG_PROVIDER = true;
+    public static final boolean DEBUG_BROADCAST = false;
+    private static final boolean DEBUG_RESULTS = false;
+    private static final boolean DEBUG_BACKUP = false;
+    public static final boolean DEBUG_CONFIGURATION = false;
+    private static final boolean DEBUG_SERVICE = false;
+    private static final boolean DEBUG_MEMORY_TRIM = false;
+    private static final boolean DEBUG_PROVIDER = false;
     private static final long MIN_TIME_BETWEEN_GCS = 5*1000;
     private static final Pattern PATTERN_SEMICOLON = Pattern.compile(";");
     private static final int SQLITE_MEM_RELEASED_EVENT_LOG_TAG = 75003;

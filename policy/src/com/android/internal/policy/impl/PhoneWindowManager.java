@@ -134,13 +134,13 @@ import static android.view.WindowManagerPolicy.WindowManagerFuncs.CAMERA_LENS_CO
  */
 public class PhoneWindowManager implements WindowManagerPolicy {
     static final String TAG = "WindowManager";
-    static final boolean DEBUG = true;
-    static final boolean localLOGV = true;
-    static final boolean DEBUG_INPUT = true;
-    static final boolean DEBUG_KEYGUARD = true;
-    static final boolean DEBUG_LAYOUT = true;
-    static final boolean DEBUG_STARTING_WINDOW = true;
-    static final boolean DEBUG_WAKEUP = true;
+    static final boolean DEBUG = false;
+    static final boolean localLOGV = false;
+    static final boolean DEBUG_INPUT = false;
+    static final boolean DEBUG_KEYGUARD = false;
+    static final boolean DEBUG_LAYOUT = false;
+    static final boolean DEBUG_STARTING_WINDOW = false;
+    static final boolean DEBUG_WAKEUP = false;
     static final boolean SHOW_STARTING_ANIMATIONS = true;
     static final boolean SHOW_PROCESSES_ON_ALT_MENU = false;
 

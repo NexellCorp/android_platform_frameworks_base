@@ -40,7 +40,8 @@ public class SystemUIApplication extends Application {
      * The classes of the stuff to start.
      */
     private final Class<?>[] SERVICES = new Class[] {
-            com.android.systemui.keyguard.KeyguardViewMediator.class,
+        // MULTIWINDOW AVN: disable KeybuardViewMediator
+            //com.android.systemui.keyguard.KeyguardViewMediator.class,
             com.android.systemui.recent.Recents.class,
             com.android.systemui.volume.VolumeUI.class,
             com.android.systemui.statusbar.SystemBars.class,

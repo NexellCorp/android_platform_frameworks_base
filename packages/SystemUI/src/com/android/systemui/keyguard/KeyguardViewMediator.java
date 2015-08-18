@@ -1299,29 +1299,30 @@ public class KeyguardViewMediator extends SystemUI {
      * @see #SHOW
      */
     private void handleShow(Bundle options) {
-        synchronized (KeyguardViewMediator.this) {
-            if (!mSystemReady) {
-                if (DEBUG) Log.d(TAG, "ignoring handleShow because system is not ready.");
-                return;
-            } else {
-                if (DEBUG) Log.d(TAG, "handleShow");
-            }
+        // MULTIWINDOW
+        //synchronized (KeyguardViewMediator.this) {
+            //if (!mSystemReady) {
+                //if (DEBUG) Log.d(TAG, "ignoring handleShow because system is not ready.");
+                //return;
+            //} else {
+                //if (DEBUG) Log.d(TAG, "handleShow");
+            //}
 
-            setShowingLocked(true);
-            mStatusBarKeyguardViewManager.show(options);
-            mHiding = false;
-            resetKeyguardDonePendingLocked();
-            mHideAnimationRun = false;
-            updateActivityLockScreenState();
-            adjustStatusBarLocked();
-            userActivity();
+            //setShowingLocked(true);
+            //mStatusBarKeyguardViewManager.show(options);
+            //mHiding = false;
+            //resetKeyguardDonePendingLocked();
+            //mHideAnimationRun = false;
+            //updateActivityLockScreenState();
+            //adjustStatusBarLocked();
+            //userActivity();
 
-            // Do this at the end to not slow down display of the keyguard.
-            playSounds(true);
+            //// Do this at the end to not slow down display of the keyguard.
+            //playSounds(true);
 
-            mShowKeyguardWakeLock.release();
-        }
-        mKeyguardDisplayManager.show();
+            //mShowKeyguardWakeLock.release();
+        //}
+        //mKeyguardDisplayManager.show();
     }
 
     private final Runnable mKeyguardGoingAwayRunnable = new Runnable() {

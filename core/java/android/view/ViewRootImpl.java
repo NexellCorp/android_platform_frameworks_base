@@ -99,8 +99,8 @@ import java.util.HashSet;
 public final class ViewRootImpl implements ViewParent,
         View.AttachInfo.Callbacks, HardwareRenderer.HardwareDrawCallbacks {
     private static final String TAG = "ViewRootImpl";
-    private static final boolean DBG = true;
-    private static final boolean LOCAL_LOGV = true;
+    private static final boolean DBG = false;
+    private static final boolean LOCAL_LOGV = false;
     /** @noinspection PointlessBooleanExpression*/
     private static final boolean DEBUG_DRAW = false || LOCAL_LOGV;
     private static final boolean DEBUG_LAYOUT = false || LOCAL_LOGV;

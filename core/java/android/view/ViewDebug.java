@@ -74,7 +74,7 @@ public class ViewDebug {
      * Enables detailed logging of drag/drop operations.
      * @hide
      */
-    public static final boolean DEBUG_DRAG = true;
+    public static final boolean DEBUG_DRAG = false;
 
     /**
      * This annotation can be used to mark fields and methods to be dumped by
