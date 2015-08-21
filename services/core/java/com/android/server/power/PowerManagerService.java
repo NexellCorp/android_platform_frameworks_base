@@ -1601,7 +1601,9 @@ public final class PowerManagerService extends SystemService
      * to being fully awake or else go to sleep for good.
      */
     private boolean isItBedTimeYetLocked() {
-        return mBootCompleted && !isBeingKeptAwakeLocked();
+        // psw0523 fix for No Screen Off
+        //return mBootCompleted && !isBeingKeptAwakeLocked();
+        return false;
     }
 
     /**
@@ -1902,29 +1904,32 @@ public final class PowerManagerService extends SystemService
     }
 
     private int getDesiredScreenPolicyLocked() {
-        if (mWakefulness == WAKEFULNESS_ASLEEP) {
-            return DisplayPowerRequest.POLICY_OFF;
-        }
+        // psw0523 fix for No Screen Off
+        //if (mWakefulness == WAKEFULNESS_ASLEEP) {
+            //return DisplayPowerRequest.POLICY_OFF;
+        //}
 
-        if (mWakefulness == WAKEFULNESS_DOZING) {
-            if ((mWakeLockSummary & WAKE_LOCK_DOZE) != 0) {
-                return DisplayPowerRequest.POLICY_DOZE;
-            }
-            if (mDozeAfterScreenOffConfig) {
-                return DisplayPowerRequest.POLICY_OFF;
-            }
-            // Fall through and preserve the current screen policy if not configured to
-            // doze after screen off.  This causes the screen off transition to be skipped.
-        }
+        //if (mWakefulness == WAKEFULNESS_DOZING) {
+            //if ((mWakeLockSummary & WAKE_LOCK_DOZE) != 0) {
+                //return DisplayPowerRequest.POLICY_DOZE;
+            //}
+            //if (mDozeAfterScreenOffConfig) {
+                //return DisplayPowerRequest.POLICY_OFF;
+            //}
+            //// Fall through and preserve the current screen policy if not configured to
+            //// doze after screen off.  This causes the screen off transition to be skipped.
+        //}
 
-        if ((mWakeLockSummary & WAKE_LOCK_SCREEN_BRIGHT) != 0
-                || (mUserActivitySummary & USER_ACTIVITY_SCREEN_BRIGHT) != 0
-                || !mBootCompleted
-                || mScreenBrightnessBoostInProgress) {
-            return DisplayPowerRequest.POLICY_BRIGHT;
-        }
+        //if ((mWakeLockSummary & WAKE_LOCK_SCREEN_BRIGHT) != 0
+                //|| (mUserActivitySummary & USER_ACTIVITY_SCREEN_BRIGHT) != 0
+                //|| !mBootCompleted
+                //|| mScreenBrightnessBoostInProgress) {
+            //return DisplayPowerRequest.POLICY_BRIGHT;
+        //}
 
-        return DisplayPowerRequest.POLICY_DIM;
+        //return DisplayPowerRequest.POLICY_DIM;
+
+        return DisplayPowerRequest.POLICY_BRIGHT;
     }
 
     private final DisplayManagerInternal.DisplayPowerCallbacks mDisplayPowerCallbacks =
