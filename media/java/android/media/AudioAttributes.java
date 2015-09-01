@@ -167,6 +167,7 @@ public final class AudioAttributes implements Parcelable {
      * source, such as audio capture devices.
      */
     public final static int USAGE_VIRTUAL_SOURCE = 15;
+    public final static int USAGE_EXT_SPEAKER = 16;
 
     /**
      * Flag defining a behavior where the audibility of the sound will be ensured by the system.
@@ -381,6 +382,7 @@ public final class AudioAttributes implements Parcelable {
                 case USAGE_ASSISTANCE_SONIFICATION:
                 case USAGE_GAME:
                 case USAGE_VIRTUAL_SOURCE:
+                case USAGE_EXT_SPEAKER:
                      mUsage = usage;
                      break;
                 default:
@@ -472,6 +474,7 @@ public final class AudioAttributes implements Parcelable {
                     mContentType = CONTENT_TYPE_SONIFICATION;
                     break;
                 case AudioSystem.STREAM_MUSIC:
+                case AudioSystem.STREAM_EXT_SPEAKER:
                     mContentType = CONTENT_TYPE_MUSIC;
                     break;
                 case AudioSystem.STREAM_ALARM:
@@ -677,6 +680,8 @@ public final class AudioAttributes implements Parcelable {
                 return new String("USAGE_ASSISTANCE_SONIFICATION");
             case USAGE_GAME:
                 return new String("USAGE_GAME");
+            case USAGE_EXT_SPEAKER:
+                return new String("USAGE_EXT_SPEAKER");
             default:
                 return new String("unknown usage " + usage);
         }
@@ -704,6 +709,8 @@ public final class AudioAttributes implements Parcelable {
                 return USAGE_VOICE_COMMUNICATION_SIGNALLING;
             case AudioSystem.STREAM_TTS:
                 return USAGE_ASSISTANCE_ACCESSIBILITY;
+            case AudioSystem.STREAM_EXT_SPEAKER:
+                return USAGE_EXT_SPEAKER;
             default:
                 return USAGE_UNKNOWN;
         }
@@ -742,6 +749,8 @@ public final class AudioAttributes implements Parcelable {
             case USAGE_NOTIFICATION_COMMUNICATION_DELAYED:
             case USAGE_NOTIFICATION_EVENT:
                 return AudioSystem.STREAM_NOTIFICATION;
+            case USAGE_EXT_SPEAKER:
+                return AudioSystem.STREAM_EXT_SPEAKER;
             case USAGE_UNKNOWN:
             default:
                 return AudioSystem.STREAM_MUSIC;
@@ -764,7 +773,8 @@ public final class AudioAttributes implements Parcelable {
         USAGE_ASSISTANCE_ACCESSIBILITY,
         USAGE_ASSISTANCE_NAVIGATION_GUIDANCE,
         USAGE_ASSISTANCE_SONIFICATION,
-        USAGE_GAME
+        USAGE_GAME,
+        USAGE_EXT_SPEAKER,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AttributeUsage {}
@@ -775,7 +785,7 @@ public final class AudioAttributes implements Parcelable {
         CONTENT_TYPE_SPEECH,
         CONTENT_TYPE_MUSIC,
         CONTENT_TYPE_MOVIE,
-        CONTENT_TYPE_SONIFICATION
+        CONTENT_TYPE_SONIFICATION,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface AttributeContentType {}
