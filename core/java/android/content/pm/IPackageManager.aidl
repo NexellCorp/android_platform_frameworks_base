@@ -387,6 +387,7 @@ interface IPackageManager {
     void enterSafeMode();
     boolean isSafeMode();
     void systemReady();
+    void runSecond();
     boolean hasSystemUidErrors();
 
     /**
