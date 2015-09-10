@@ -621,7 +621,9 @@ public class WindowManagerService extends IWindowManager.Stub
     float mWindowAnimationScaleSetting = 1.0f;
     float mTransitionAnimationScaleSetting = 1.0f;
     float mAnimatorDurationScaleSetting = 1.0f;
-    boolean mAnimationsDisabled = false;
+    // psw0523 fix for AVN MultiWindow
+    // boolean mAnimationsDisabled = false;
+    boolean mAnimationsDisabled = true;
 
     final InputManagerService mInputManager;
     final DisplayManagerInternal mDisplayManagerInternal;
@@ -847,19 +849,20 @@ public class WindowManagerService extends IWindowManager.Stub
 
         mPowerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
         mPowerManagerInternal = LocalServices.getService(PowerManagerInternal.class);
-        mPowerManagerInternal.registerLowPowerModeObserver(
-                new PowerManagerInternal.LowPowerModeListener() {
-            @Override
-            public void onLowPowerModeChanged(boolean enabled) {
-                synchronized (mWindowMap) {
-                    if (mAnimationsDisabled != enabled) {
-                        mAnimationsDisabled = enabled;
-                        dispatchNewAnimatorScaleLocked(null);
-                    }
-                }
-            }
-        });
-        mAnimationsDisabled = mPowerManagerInternal.getLowPowerModeEnabled();
+        // psw0523 fix for AVN
+        // mPowerManagerInternal.registerLowPowerModeObserver(
+        //         new PowerManagerInternal.LowPowerModeListener() {
+        //     @Override
+        //     public void onLowPowerModeChanged(boolean enabled) {
+        //         synchronized (mWindowMap) {
+        //             if (mAnimationsDisabled != enabled) {
+        //                 mAnimationsDisabled = enabled;
+        //                 dispatchNewAnimatorScaleLocked(null);
+        //             }
+        //         }
+        //     }
+        // });
+        // mAnimationsDisabled = mPowerManagerInternal.getLowPowerModeEnabled();
         mScreenFrozenLock = mPowerManager.newWakeLock(
                 PowerManager.PARTIAL_WAKE_LOCK, "SCREEN_FROZEN");
         mScreenFrozenLock.setReferenceCounted(false);
@@ -5661,7 +5664,9 @@ public class WindowManagerService extends IWindowManager.Stub
             hideBootMessagesLocked();
             // If the screen still doesn't come up after 30 seconds, give
             // up and turn it on.
-            mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, 30*1000);
+            // TODO : psw0523 fix for AVN
+            // mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, 30*1000);
+            mH.sendEmptyMessage(H.BOOT_TIMEOUT);
         }
 
         mPolicy.systemBooted();
@@ -8858,11 +8863,13 @@ public class WindowManagerService extends IWindowManager.Stub
 
         boolean behindDream = false;
 
-        // MULTIWINDOW
+        // psw0523 MULTIWINDOW
         if (mPolicy.getMultiWindowEnabled()) {
             int layoutWNum = 0;
             WindowState leftWin = null;
             WindowState rightWin = null;
+            final TaskStack homeStack = mDisplayContents.valueAt(0).getHomeStack();
+            int activityIndex = 0;
             for (i = N-1; i >= 0; i--) {
                 final WindowState win = windows.get(i);
                 final boolean gone = win.isGoneForLayoutLw();
@@ -8872,7 +8879,10 @@ public class WindowManagerService extends IWindowManager.Stub
                         attrs.type <= WindowManager.LayoutParams.LAST_APPLICATION_WINDOW;
                 final String title = attrs.getTitle().toString();
                 final boolean isStarting = title.startsWith("Starting");
+                final boolean isHome = win.getStack() == homeStack;
+                final IApplicationToken token = win.getAppToken();
                 if ((!isStarting)
+                     && (!isHome)
                      && isAppWindow
                      && (!gone || !win.mHaveFrame || win.mLayoutNeeded
                         || ((win.isConfigChanged() || win.setInsetsChanged()) &&
@@ -8880,29 +8890,43 @@ public class WindowManagerService extends IWindowManager.Stub
                              win.mAppToken != null && win.mAppToken.layoutConfigChanges))
                         || win.mAttrs.type == TYPE_UNIVERSE_BACKGROUND)) {
                     layoutWNum++;
+                    try {
+                        activityIndex = token.getIndex();
+                    } catch (RemoteException e) {
+                        Slog.e(TAG, "token getIndex() remote Exception!!!");
+                    }
+                    Slog.d(TAG, "check win " + win);
+                    Slog.d(TAG, "index --> " + activityIndex);
                     if (leftWin == null) {
+                        Slog.d(TAG, "SEQ1 : set left win --> " + win);
                         leftWin = win;
-                        Slog.d(TAG, "setting leftWin " + leftWin);
                     } else {
-                        if (leftWin.mLayer > win.mLayer) {
-                            rightWin = leftWin;
-                            leftWin = win;
-                            Slog.d(TAG, "change l/r left:" + leftWin + ", right:" + rightWin);
-                        } else if (win.mLayer > leftWin.mLayer) {
-                            Slog.d(TAG, "setting rightWin " + rightWin);
-                            rightWin = win;
+                        try {
+                            int oldActivityIndex = leftWin.getAppToken().getIndex();
+                            if (oldActivityIndex > activityIndex) {
+                                rightWin = leftWin;
+                                leftWin = win;
+                                Slog.d(TAG, "SEQ1 : set left win --> " + leftWin);
+                                Slog.d(TAG, "SEQ1 : set right win --> " + rightWin);
+                            } else {
+                                if (rightWin == null) {
+                                    rightWin = win;
+                                    Slog.d(TAG, "SEQ2 : set right win --> " + rightWin);
+                                } else {
+                                    oldActivityIndex = rightWin.getAppToken().getIndex();
+                                    if (activityIndex > oldActivityIndex) {
+                                        Slog.d(TAG, "SEQ3 : set right win --> " + rightWin);
+                                    }
+                                }
+                            }
+                        } catch (RemoteException e) {
+                            Slog.e(TAG, "token getIndex() remote Exception!!!");
                         }
                     }
                 }
             }
-            if (leftWin != null) {
-                Slog.d(TAG, "$$$$ LEFTWIN --> " + leftWin);
-                mPolicy.setLeftWindow(leftWin);
-            }
-            if (rightWin != null) {
-                Slog.d(TAG, "$$$$ RIGHTWIN --> " + rightWin);
-                mPolicy.setRightWindow(rightWin);
-            }
+            mPolicy.setLeftWindow(leftWin);
+            mPolicy.setRightWindow(rightWin);
             Slog.d(TAG, "=====> Current Window Layout Number " + layoutWNum);
             mPolicy.setLayoutWindowNumber(layoutWNum);
         }
@@ -10823,17 +10847,19 @@ public class WindowManagerService extends IWindowManager.Stub
 
     @Override
     public void statusBarVisibilityChanged(int visibility) {
-        if (mContext.checkCallingOrSelfPermission(android.Manifest.permission.STATUS_BAR)
-                != PackageManager.PERMISSION_GRANTED) {
-            throw new SecurityException("Caller does not hold permission "
-                    + android.Manifest.permission.STATUS_BAR);
-        }
-
-        synchronized (mWindowMap) {
-            mLastStatusBarVisibility = visibility;
-            visibility = mPolicy.adjustSystemUiVisibilityLw(visibility);
-            updateStatusBarVisibilityLocked(visibility);
-        }
+        // psw0523 fix for AVN 
+        // if (mContext.checkCallingOrSelfPermission(android.Manifest.permission.STATUS_BAR)
+        //         != PackageManager.PERMISSION_GRANTED) {
+        //     throw new SecurityException("Caller does not hold permission "
+        //             + android.Manifest.permission.STATUS_BAR);
+        // }
+        //
+        // synchronized (mWindowMap) {
+        //     mLastStatusBarVisibility = visibility;
+        //     visibility = mPolicy.adjustSystemUiVisibilityLw(visibility);
+        //     updateStatusBarVisibilityLocked(visibility);
+        // }
+        mPolicy.adjustSystemUiVisibilityLw(visibility);
     }
 
     // TOOD(multidisplay): StatusBar on multiple screens?
