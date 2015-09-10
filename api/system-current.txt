@@ -36043,6 +36043,14 @@ package android.view {
     field public static final int MEASURED_SIZE_MASK = 16777215; // 0xffffff
     field public static final int MEASURED_STATE_MASK = -16777216; // 0xff000000
     field public static final int MEASURED_STATE_TOO_SMALL = 16777216; // 0x1000000
+    field public static final int MULTIWINDOW_CONTROL_CLEAR_MASK = -805306369; // 0xcfffffff
+    field public static final int MULTIWINDOW_CONTROL_VISIBLE = 536870912; // 0x20000000
+    field public static final int MULTIWINDOW_DRAG_CLEAR_MASK = -50331649; // 0xfcffffff
+    field public static final int MULTIWINDOW_DRAG_HIDDEN = 16777216; // 0x1000000
+    field public static final int MULTIWINDOW_DRAG_VISIBLE = 33554432; // 0x2000000
+    field public static final int MULTIWINDOW_MINILAUNCHER_CLEAR_MASK = 1073741823; // 0x3fffffff
+    field public static final int MULTIWINDOW_MINILAUNCHER_HIDDEN = 1073741824; // 0x40000000
+    field public static final int MULTIWINDOW_MINILAUNCHER_VISIBLE = -2147483648; // 0x80000000
     field public static final int NO_ID = -1; // 0xffffffff
     field public static final int OVER_SCROLL_ALWAYS = 0; // 0x0
     field public static final int OVER_SCROLL_IF_CONTENT_SCROLLS = 1; // 0x1
