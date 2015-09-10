@@ -121,9 +121,10 @@ public class SystemServiceManager {
      * @param phase The boot phase to start.
      */
     public void startBootPhase(final int phase) {
-        if (phase <= mCurrentPhase) {
-            throw new IllegalArgumentException("Next phase must be larger than previous");
-        }
+        // psw0523 fix for AVN QuickBoot
+        //if (phase <= mCurrentPhase) {
+            //throw new IllegalArgumentException("Next phase must be larger than previous");
+        //}
         mCurrentPhase = phase;
 
         Slog.i(TAG, "Starting phase " + mCurrentPhase);
