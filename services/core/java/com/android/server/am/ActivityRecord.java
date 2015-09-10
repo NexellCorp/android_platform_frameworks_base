@@ -176,6 +176,9 @@ final class ActivityRecord {
     boolean mLaunchTaskBehind; // this activity is actively being launched with
         // ActivityOptions.setLaunchTaskBehind, will be cleared once launch is completed.
 
+    // psw0523 add for AVN MultiWindow
+    int mIndex;
+
     void dump(PrintWriter pw, String prefix) {
         final long now = SystemClock.uptimeMillis();
         pw.print(prefix); pw.print("packageName="); pw.print(packageName);
@@ -350,6 +353,44 @@ final class ActivityRecord {
                 return activity.getKeyDispatchingTimeout();
             }
             return 0;
+        }
+
+        // psw0523 add for AVN MultiWindow
+        @Override public int pauseActivity(boolean finishing) {
+            ActivityRecord activity = weakActivity.get();
+            if (activity != null) {
+                return activity.pauseActivity(finishing);
+            }
+            return 0;
+        }
+        // psw0523 add for AVN MultiWindow
+        @Override public void setMultiWindowActivity() {
+            ActivityRecord activity = weakActivity.get();
+            if (activity != null) {
+                activity.setMultiWindowActivity();
+            }
+        }
+        // psw0523 add for AVN MultiWindow
+        @Override public void removeMultiWindowActivity() {
+            ActivityRecord activity = weakActivity.get();
+            if (activity != null) {
+                activity.removeMultiWindowActivity();
+            }
+        }
+        // psw0523 add for AVN MultiWindow
+        @Override public int getIndex() {
+            ActivityRecord activity = weakActivity.get();
+            if (activity != null) {
+                return activity.getIndex();
+            }
+            return -1;
+        }
+        // psw0523 add for AVN MultiWindow
+        @Override public void changeLeftRight() {
+            ActivityRecord activity = weakActivity.get();
+            if (activity != null) {
+                activity.changeLeftRight();
+            }
         }
 
         @Override
@@ -1010,6 +1051,39 @@ final class ActivityRecord {
             anrApp = r != null ? r.app : null;
         }
         return service.inputDispatchingTimedOut(anrApp, r, this, false, reason);
+    }
+
+    // psw0523 add for AVN MultiWindow
+    public int pauseActivity(boolean finishing) {
+        synchronized(service) {
+            return task.stack.pauseActivity(this, finishing);
+        }
+    }
+
+    // psw0523 add for AVN MultiWindow
+    public void setMultiWindowActivity() {
+        synchronized(service) {
+            task.stack.setMultiWindowActivity(this);
+        }
+    }
+
+    // psw0523 add for AVN MultiWindow
+    public void removeMultiWindowActivity() {
+        synchronized(service) {
+            task.stack.removeMultiWindowActivity(this);
+        }
+    }
+
+    // psw0523 add for AVN MultiWindow
+    public int getIndex() {
+        return mIndex;
+    }
+
+    // psw0523 add for AVN MultiWindow
+    public void changeLeftRight() {
+        synchronized(service) {
+            task.stack.changeLeftRight();
+        }
     }
 
     /** Returns the key dispatching timeout for this application token. */
