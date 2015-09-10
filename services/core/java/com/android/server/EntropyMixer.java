@@ -110,7 +110,8 @@ public class EntropyMixer extends Binder {
         loadInitialEntropy();
         addDeviceSpecificEntropy();
         addHwRandomEntropy();
-        writeEntropy();
+        // psw0523 disable for AVN QuickBoot
+        //writeEntropy();
         scheduleEntropyWriter();
         IntentFilter broadcastFilter = new IntentFilter(Intent.ACTION_SHUTDOWN);
         broadcastFilter.addAction(Intent.ACTION_POWER_CONNECTED);
