@@ -174,7 +174,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
         inputWindowHandle.name = child.toString();
         final boolean modal = (flags & (WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
                 | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE)) == 0;
-        Slog.d(WindowManagerService.TAG, "addInputWindowHandle Entered --> name: " + inputWindowHandle.name + ", modal: " + modal);
+        //Slog.d(WindowManagerService.TAG, "addInputWindowHandle Entered --> name: " + inputWindowHandle.name + ", modal: " + modal);
         if (modal && child.mAppToken != null) {
             // Limit the outer touch to the activity stack region.
             flags |= WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
@@ -206,8 +206,8 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
         inputWindowHandle.frameRight = frame.right;
         inputWindowHandle.frameBottom = frame.bottom;
         // MULTIWINDOW
-        Slog.d(WindowManagerService.TAG, "addInputWindowHandle win: " + child + ", Frame: " + frame);
-        Slog.d(WindowManagerService.TAG, "visible: " + isVisible + ", hasFocus: " + hasFocus);
+        //Slog.d(WindowManagerService.TAG, "addInputWindowHandle win: " + child + ", Frame: " + frame);
+        //Slog.d(WindowManagerService.TAG, "visible: " + isVisible + ", hasFocus: " + hasFocus);
 
         if (child.mGlobalScale != 1) {
             // If we are scaling the window, input coordinates need
@@ -239,7 +239,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
         }
         mUpdateInputWindowsNeeded = false;
 
-        if (true) Slog.d(WindowManagerService.TAG, ">>>>>> ENTERED updateInputWindowsLw");
+        if (false) Slog.d(WindowManagerService.TAG, ">>>>>> ENTERED updateInputWindowsLw");
 
         // Populate the input window list with information about all of the windows that
         // could potentially receive input.
@@ -329,7 +329,7 @@ final class InputMonitor implements InputManagerService.WindowManagerCallbacks {
         // Clear the list in preparation for the next round.
         clearInputWindowHandlesLw();
 
-        if (true) Slog.d(WindowManagerService.TAG, "<<<<<<< EXITED updateInputWindowsLw");
+        if (false) Slog.d(WindowManagerService.TAG, "<<<<<<< EXITED updateInputWindowsLw");
     }
 
     /* Notifies that the input device configuration has changed. */
