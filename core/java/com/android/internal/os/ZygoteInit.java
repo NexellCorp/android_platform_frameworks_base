@@ -252,14 +252,167 @@ public class ZygoteInit {
     }
 
     static void preload() {
+        //Log.d(TAG, "begin preload");
+        //preloadClasses();
+        //preloadResources();
+        //preloadOpenGL();
+        //preloadSharedLibraries();
+        //// Ask the WebViewFactory to do any initialization that must run in the zygote process,
+        //// for memory sharing purposes.
+        //WebViewFactory.prepareWebViewInZygote();
+        //Log.d(TAG, "end preload");
+        //
+
         Log.d(TAG, "begin preload");
-        preloadClasses();
-        preloadResources();
-        preloadOpenGL();
+
+        preloadClassesPre();
+
+        //Thread preloadClassThr = new Thread("preloadClass") {
+            //@Override
+            //public void run() {
+                //preloadClasses();
+            //}
+        //};
+
+        Thread preloadClassThr1 = new Thread("preloadClass1") {
+             @Override
+             public void run() {
+                 InputStream is;
+                 try {
+                     is = new FileInputStream("/system/etc/preloaded-classes1");
+                 } catch (FileNotFoundException e) {
+                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "1.");
+                     return;
+                 }
+                 preloadClassesCommon(is);
+             }
+        };
+        Thread preloadClassThr2 = new Thread("preloadClass2") {
+             @Override
+             public void run() {
+                 InputStream is;
+                 try {
+                     is = new FileInputStream("/system/etc/preloaded-classes2");
+                 } catch (FileNotFoundException e) {
+                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "2.");
+                     return;
+                 }
+                 preloadClassesCommon(is);
+             }
+        };
+        Thread preloadClassThr3 = new Thread("preloadClass3") {
+             @Override
+             public void run() {
+                 InputStream is;
+                 try {
+                     is = new FileInputStream("/system/etc/preloaded-classes3");
+                 } catch (FileNotFoundException e) {
+                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "3.");
+                     return;
+                 }
+                 preloadClassesCommon(is);
+             }
+        };
+        Thread preloadClassThr4 = new Thread("preloadClass4") {
+             @Override
+             public void run() {
+                 InputStream is;
+                 try {
+                     is = new FileInputStream("/system/etc/preloaded-classes4");
+                 } catch (FileNotFoundException e) {
+                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "4.");
+                     return;
+                 }
+                 preloadClassesCommon(is);
+             }
+        };
+        Thread preloadClassThr5 = new Thread("preloadClass5") {
+             @Override
+             public void run() {
+                 InputStream is;
+                 try {
+                     is = new FileInputStream("/system/etc/preloaded-classes5");
+                 } catch (FileNotFoundException e) {
+                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "5.");
+                     return;
+                 }
+                 preloadClassesCommon(is);
+             }
+        };
+        Thread preloadClassThr6 = new Thread("preloadClass6") {
+             @Override
+             public void run() {
+                 InputStream is;
+                 try {
+                     is = new FileInputStream("/system/etc/preloaded-classes6");
+                 } catch (FileNotFoundException e) {
+                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "6.");
+                     return;
+                 }
+                 preloadClassesCommon(is);
+             }
+        };
+        Thread preloadClassThr7 = new Thread("preloadClass7") {
+             @Override
+             public void run() {
+                 InputStream is;
+                 try {
+                     is = new FileInputStream("/system/etc/preloaded-classes7");
+                 } catch (FileNotFoundException e) {
+                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "7.");
+                     return;
+                 }
+                 preloadClassesCommon(is);
+             }
+        };
+        Thread preloadClassThr8= new Thread("preloadClass8") {
+             @Override
+             public void run() {
+                 InputStream is;
+                 try {
+                     is = new FileInputStream("/system/etc/preloaded-classes8");
+                 } catch (FileNotFoundException e) {
+                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "8.");
+                     return;
+                 }
+                 preloadClassesCommon(is);
+             }
+        };
+
+        Thread preloadResourceThr = new Thread("preloadResource") {
+            @Override
+            public void run() {
+                preloadResources();
+            }
+        };
+        //preloadClassThr.setPriority(android.os.Process.THREAD_PRIORITY_FOREGROUND);
+        //preloadResourceThr.setPriority(android.os.Process.THREAD_PRIORITY_FOREGROUND);
+        //preloadClassThr.start();
+        preloadClassThr1.start();
+        preloadClassThr2.start();
+        preloadClassThr3.start();
+        preloadClassThr4.start();
+        preloadClassThr5.start();
+        preloadClassThr6.start();
+        preloadClassThr7.start();
+        preloadClassThr8.start();
+        preloadResourceThr.start();
         preloadSharedLibraries();
-        // Ask the WebViewFactory to do any initialization that must run in the zygote process,
-        // for memory sharing purposes.
         WebViewFactory.prepareWebViewInZygote();
+        try {
+            preloadResourceThr.join();
+            //preloadClassThr.join();
+            preloadClassThr1.join();
+            preloadClassThr2.join();
+            preloadClassThr3.join();
+            preloadClassThr4.join();
+            preloadClassThr5.join();
+            preloadClassThr6.join();
+            preloadClassThr7.join();
+            preloadClassThr8.join();
+            preloadClassesPost();
+        } catch (Exception e) {
+        }
         Log.d(TAG, "end preload");
     }
 
@@ -275,6 +428,92 @@ public class ZygoteInit {
             EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
         }
     }
+
+    // psw0523 add for AVN Quickboot
+    private static float mDefaultUtilization;
+    private static void preloadClassesPre() {
+        final VMRuntime runtime = VMRuntime.getRuntime();
+
+        // Drop root perms while running static initializers.
+        setEffectiveGroup(UNPRIVILEGED_GID);
+        setEffectiveUser(UNPRIVILEGED_UID);
+
+        // Alter the target heap utilization.  With explicit GCs this
+        // is not likely to have any effect.
+        mDefaultUtilization = runtime.getTargetHeapUtilization();
+        runtime.setTargetHeapUtilization(0.9f);
+
+        // Start with a clean slate.
+        System.gc();
+        runtime.runFinalizationSync();
+        //Debug.startAllocCounting();
+    }
+
+    private static void preloadClassesPost() {
+        final VMRuntime runtime = VMRuntime.getRuntime();
+        // Restore default.
+        runtime.setTargetHeapUtilization(mDefaultUtilization);
+
+        // Fill in dex caches with classes, fields, and methods brought in by preloading.
+        runtime.preloadDexCaches();
+
+        //Debug.stopAllocCounting();
+
+        // Bring back root. We'll need it later.
+        setEffectiveUser(ROOT_UID);
+        setEffectiveGroup(ROOT_GID);
+    }
+
+    private static void preloadClassesCommon(InputStream is) {
+        final VMRuntime runtime = VMRuntime.getRuntime();
+        try {
+            BufferedReader br
+                = new BufferedReader(new InputStreamReader(is), 256);
+
+            int count = 0;
+            String line;
+            while ((line = br.readLine()) != null) {
+                // Skip comments and blank lines.
+                line = line.trim();
+                if (line.startsWith("#") || line.equals("")) {
+                    continue;
+                }
+
+                try {
+                    Class.forName(line);
+                    if (Debug.getGlobalAllocSize() > PRELOAD_GC_THRESHOLD) {
+                        if (false) {
+                            Log.v(TAG,
+                                " GC at " + Debug.getGlobalAllocSize());
+                        }
+                        System.gc();
+                        runtime.runFinalizationSync();
+                        Debug.resetGlobalAllocSize();
+                    }
+                    count++;
+                } catch (ClassNotFoundException e) {
+                    Log.w(TAG, "Class not found for preloading: " + line);
+                } catch (UnsatisfiedLinkError e) {
+                    Log.w(TAG, "Problem preloading " + line + ": " + e);
+                } catch (Throwable t) {
+                    Log.e(TAG, "Error preloading " + line + ".", t);
+                    if (t instanceof Error) {
+                        throw (Error) t;
+                    }
+                    if (t instanceof RuntimeException) {
+                        throw (RuntimeException) t;
+                    }
+                    throw new RuntimeException(t);
+                }
+            }
+
+        } catch (IOException e) {
+            Log.e(TAG, "Error reading " + PRELOADED_CLASSES + ".", e);
+        } finally {
+            IoUtils.closeQuietly(is);
+        }
+    }
+    // end psw0523
 
     /**
      * Performs Zygote process initialization. Loads and initializes
