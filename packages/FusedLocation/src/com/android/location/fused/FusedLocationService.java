@@ -25,10 +25,12 @@ public class FusedLocationService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        if (mProvider == null) {
-            mProvider = new FusedLocationProvider(getApplicationContext());
-        }
-        return mProvider.getBinder();
+        // psw0523 fix for AVN
+        // if (mProvider == null) {
+        //     mProvider = new FusedLocationProvider(getApplicationContext());
+        // }
+        // return mProvider.getBinder();
+        return null;
     }
 
     @Override
