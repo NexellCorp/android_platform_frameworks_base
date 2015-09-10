@@ -92,7 +92,7 @@ import com.android.server.EventLogTags;
 
 public class WallpaperManagerService extends IWallpaperManager.Stub {
     static final String TAG = "WallpaperManagerService";
-    static final boolean DEBUG = false;
+    static final boolean DEBUG = true;
 
     final Object mLock = new Object[0];
 
@@ -471,7 +471,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
     }
     
     public WallpaperManagerService(Context context) {
-        if (DEBUG) Slog.v(TAG, "WallpaperService startup");
+        if (DEBUG) Slog.d(TAG, "WallpaperService startup");
         mContext = context;
         mImageWallpaper = ComponentName.unflattenFromString(
                 context.getResources().getString(R.string.image_wallpaper_component));
@@ -498,48 +498,49 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
     }
 
     public void systemRunning() {
-        if (DEBUG) Slog.v(TAG, "systemReady");
-        WallpaperData wallpaper = mWallpaperMap.get(UserHandle.USER_OWNER);
-        switchWallpaper(wallpaper, null);
-        wallpaper.wallpaperObserver = new WallpaperObserver(wallpaper);
-        wallpaper.wallpaperObserver.startWatching();
-
-        IntentFilter userFilter = new IntentFilter();
-        userFilter.addAction(Intent.ACTION_USER_REMOVED);
-        userFilter.addAction(Intent.ACTION_USER_STOPPING);
-        mContext.registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                String action = intent.getAction();
-                if (Intent.ACTION_USER_REMOVED.equals(action)) {
-                    onRemoveUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE,
-                            UserHandle.USER_NULL));
-                }
-                // TODO: Race condition causing problems when cleaning up on stopping a user.
-                // Comment this out for now.
-                // else if (Intent.ACTION_USER_STOPPING.equals(action)) {
-                //     onStoppingUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE,
-                //             UserHandle.USER_NULL));
-                // }
-            }
-        }, userFilter);
-
-        try {
-            ActivityManagerNative.getDefault().registerUserSwitchObserver(
-                    new IUserSwitchObserver.Stub() {
-                        @Override
-                        public void onUserSwitching(int newUserId, IRemoteCallback reply) {
-                            switchUser(newUserId, reply);
-                        }
-
-                        @Override
-                        public void onUserSwitchComplete(int newUserId) throws RemoteException {
-                        }
-                    });
-        } catch (RemoteException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        if (DEBUG) Slog.d(TAG, "systemReady");
+        // psw0523 fix for AVN
+        // WallpaperData wallpaper = mWallpaperMap.get(UserHandle.USER_OWNER);
+        // switchWallpaper(wallpaper, null);
+        // wallpaper.wallpaperObserver = new WallpaperObserver(wallpaper);
+        // wallpaper.wallpaperObserver.startWatching();
+        //
+        // IntentFilter userFilter = new IntentFilter();
+        // userFilter.addAction(Intent.ACTION_USER_REMOVED);
+        // userFilter.addAction(Intent.ACTION_USER_STOPPING);
+        // mContext.registerReceiver(new BroadcastReceiver() {
+        //     @Override
+        //     public void onReceive(Context context, Intent intent) {
+        //         String action = intent.getAction();
+        //         if (Intent.ACTION_USER_REMOVED.equals(action)) {
+        //             onRemoveUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE,
+        //                     UserHandle.USER_NULL));
+        //         }
+        //         // TODO: Race condition causing problems when cleaning up on stopping a user.
+        //         // Comment this out for now.
+        //         // else if (Intent.ACTION_USER_STOPPING.equals(action)) {
+        //         //     onStoppingUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE,
+        //         //             UserHandle.USER_NULL));
+        //         // }
+        //     }
+        // }, userFilter);
+        //
+        // try {
+        //     ActivityManagerNative.getDefault().registerUserSwitchObserver(
+        //             new IUserSwitchObserver.Stub() {
+        //                 @Override
+        //                 public void onUserSwitching(int newUserId, IRemoteCallback reply) {
+        //                     switchUser(newUserId, reply);
+        //                 }
+        //
+        //                 @Override
+        //                 public void onUserSwitchComplete(int newUserId) throws RemoteException {
+        //                 }
+        //             });
+        // } catch (RemoteException e) {
+        //     // TODO Auto-generated catch block
+        //     e.printStackTrace();
+        // }
     }
 
     /** Called by SystemBackupAgent */
@@ -614,7 +615,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
     }
 
     public void clearWallpaper() {
-        if (DEBUG) Slog.v(TAG, "clearWallpaper");
+        if (DEBUG) Slog.d(TAG, "clearWallpaper");
         synchronized (mLock) {
             clearWallpaperLocked(false, UserHandle.getCallingUserId(), null);
         }
@@ -824,7 +825,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
     public ParcelFileDescriptor setWallpaper(String name) {
         checkPermission(android.Manifest.permission.SET_WALLPAPER);
         synchronized (mLock) {
-            if (DEBUG) Slog.v(TAG, "setWallpaper");
+            if (DEBUG) Slog.d(TAG, "setWallpaper");
             int userId = UserHandle.getCallingUserId();
             WallpaperData wallpaper = mWallpaperMap.get(userId);
             if (wallpaper == null) {
@@ -871,7 +872,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
     public void setWallpaperComponent(ComponentName name) {
         checkPermission(android.Manifest.permission.SET_WALLPAPER_COMPONENT);
         synchronized (mLock) {
-            if (DEBUG) Slog.v(TAG, "setWallpaperComponent name=" + name);
+            if (DEBUG) Slog.d(TAG, "setWallpaperComponent name=" + name);
             int userId = UserHandle.getCallingUserId();
             WallpaperData wallpaper = mWallpaperMap.get(userId);
             if (wallpaper == null) {
@@ -889,19 +890,19 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
     
     boolean bindWallpaperComponentLocked(ComponentName componentName, boolean force,
             boolean fromUser, WallpaperData wallpaper, IRemoteCallback reply) {
-        if (DEBUG) Slog.v(TAG, "bindWallpaperComponentLocked: componentName=" + componentName);
+        if (DEBUG) Slog.d(TAG, "bindWallpaperComponentLocked: componentName=" + componentName);
         // Has the component changed?
         if (!force) {
             if (wallpaper.connection != null) {
                 if (wallpaper.wallpaperComponent == null) {
                     if (componentName == null) {
-                        if (DEBUG) Slog.v(TAG, "bindWallpaperComponentLocked: still using default");
+                        if (DEBUG) Slog.d(TAG, "bindWallpaperComponentLocked: still using default");
                         // Still using default wallpaper.
                         return true;
                     }
                 } else if (wallpaper.wallpaperComponent.equals(componentName)) {
                     // Changing to same wallpaper.
-                    if (DEBUG) Slog.v(TAG, "same wallpaper");
+                    if (DEBUG) Slog.d(TAG, "same wallpaper");
                     return true;
                 }
             }
@@ -915,7 +916,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
                     componentName = mImageWallpaper;
                     //clearWallpaperComponentLocked();
                     //return;
-                    if (DEBUG) Slog.v(TAG, "Using image wallpaper");
+                    if (DEBUG) Slog.d(TAG, "Using image wallpaper");
                 }
             }
             int serviceUserId = wallpaper.userId;
@@ -980,7 +981,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
             }
             
             // Bind the service!
-            if (DEBUG) Slog.v(TAG, "Binding to:" + componentName);
+            if (DEBUG) Slog.d(TAG, "Binding to:" + componentName);
             WallpaperConnection newConn = new WallpaperConnection(wi, wallpaper);
             intent.setComponent(componentName);
             intent.putExtra(Intent.EXTRA_CLIENT_LABEL,
@@ -1010,7 +1011,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
             try {
                 if (wallpaper.userId == mCurrentUserId) {
                     if (DEBUG)
-                        Slog.v(TAG, "Adding window token: " + newConn.mToken);
+                        Slog.d(TAG, "Adding window token: " + newConn.mToken);
                     mIWindowManager.addWindowToken(newConn.mToken,
                             WindowManager.LayoutParams.TYPE_WALLPAPER);
                     mLastWallpaper = wallpaper;
@@ -1046,7 +1047,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
             mContext.unbindService(wallpaper.connection);
             try {
                 if (DEBUG)
-                    Slog.v(TAG, "Removing window token: " + wallpaper.connection.mToken);
+                    Slog.d(TAG, "Removing window token: " + wallpaper.connection.mToken);
                 mIWindowManager.removeWindowToken(wallpaper.connection.mToken);
             } catch (RemoteException e) {
             }
@@ -1171,7 +1172,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
     }
 
     private void loadSettingsLocked(int userId) {
-        if (DEBUG) Slog.v(TAG, "loadSettingsLocked");
+        if (DEBUG) Slog.d(TAG, "loadSettingsLocked");
         
         JournaledFile journal = makeJournaledFile(userId);
         FileInputStream stream = null;
@@ -1216,10 +1217,10 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
                         }
                           
                         if (DEBUG) {
-                            Slog.v(TAG, "mWidth:" + wallpaper.width);
-                            Slog.v(TAG, "mHeight:" + wallpaper.height);
-                            Slog.v(TAG, "mName:" + wallpaper.name);
-                            Slog.v(TAG, "mNextWallpaperComponent:"
+                            Slog.d(TAG, "mWidth:" + wallpaper.width);
+                            Slog.d(TAG, "mHeight:" + wallpaper.height);
+                            Slog.d(TAG, "mName:" + wallpaper.name);
+                            Slog.d(TAG, "mNextWallpaperComponent:"
                                     + wallpaper.nextWallpaperComponent);
                         }
                     }
@@ -1278,7 +1279,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
         }
         // TODO: If necessary, make it work for secondary users as well. This currently assumes
         // restores only to the primary user
-        if (DEBUG) Slog.v(TAG, "settingsRestored");
+        if (DEBUG) Slog.d(TAG, "settingsRestored");
         WallpaperData wallpaper = null;
         boolean success = false;
         synchronized (mLock) {
@@ -1298,13 +1299,13 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
                 // If there's a wallpaper name, we use that.  If that can't be loaded, then we
                 // use the default.
                 if ("".equals(wallpaper.name)) {
-                    if (DEBUG) Slog.v(TAG, "settingsRestored: name is empty");
+                    if (DEBUG) Slog.d(TAG, "settingsRestored: name is empty");
                     success = true;
                 } else {
-                    if (DEBUG) Slog.v(TAG, "settingsRestored: attempting to restore named resource");
+                    if (DEBUG) Slog.d(TAG, "settingsRestored: attempting to restore named resource");
                     success = restoreNamedResourceLocked(wallpaper);
                 }
-                if (DEBUG) Slog.v(TAG, "settingsRestored: success=" + success);
+                if (DEBUG) Slog.d(TAG, "settingsRestored: success=" + success);
                 if (success) {
                     bindWallpaperComponentLocked(wallpaper.nextWallpaperComponent, false, false,
                             wallpaper, null);
@@ -1371,7 +1372,7 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
                     }
                     // mWallpaperObserver will notice the close and send the change broadcast
 
-                    Slog.v(TAG, "Restored wallpaper: " + resName);
+                    Slog.d(TAG, "Restored wallpaper: " + resName);
                     return true;
                 } catch (NameNotFoundException e) {
                     Slog.e(TAG, "Package name " + pkg + " not found");
