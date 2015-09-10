@@ -37,6 +37,11 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
     private static final int SWIPE_FROM_BOTTOM = 2;
     private static final int SWIPE_FROM_RIGHT = 3;
 
+    // psw0523 add for AVN MultiWindow
+    private static final int SWIPE_FROM_RIGHT_AT_TOP = 4;
+    private static final int SWIPE_FROM_LEFT_AT_TOP = 5;
+    private static final int SWIPE_FROM_TOP_AT_MID = 6;
+
     private final int mSwipeStartThreshold;
     private final int mSwipeDistanceThreshold;
     private final Callbacks mCallbacks;
@@ -44,6 +49,10 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
     private final float[] mDownX = new float[MAX_TRACKED_POINTERS];
     private final float[] mDownY = new float[MAX_TRACKED_POINTERS];
     private final long[] mDownTime = new long[MAX_TRACKED_POINTERS];
+
+    // psw0523 add for AVN MultiWindow
+    private float mSwipeFromX;
+    private float mSwipeToX;
 
     int screenHeight;
     int screenWidth;
@@ -99,6 +108,15 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
                     } else if (swipe == SWIPE_FROM_RIGHT) {
                         if (DEBUG) Slog.d(TAG, "Firing onSwipeFromRight");
                         mCallbacks.onSwipeFromRight();
+                    } else if (swipe == SWIPE_FROM_RIGHT_AT_TOP) {
+                        if (DEBUG) Slog.d(TAG, "Firing onSwipeFromRightAtTop");
+                        mCallbacks.onSwipeFromRightAtTop(mSwipeFromX, mSwipeToX);
+                    } else if (swipe == SWIPE_FROM_LEFT_AT_TOP) {
+                        if (DEBUG) Slog.d(TAG, "Firing onSwipeFromLeftAtTop");
+                        mCallbacks.onSwipeFromLeftAtTop(mSwipeFromX, mSwipeToX);
+                    } else if (swipe == SWIPE_FROM_TOP_AT_MID) {
+                        if (DEBUG) Slog.d(TAG, "Firing onSwipeFromTopAtMid");
+                        mCallbacks.onSwipeFromTopAtMid();
                     }
                 }
                 break;
@@ -170,6 +188,36 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         final long elapsed = time - mDownTime[i];
         if (DEBUG) Slog.d(TAG, "pointer " + mDownPointerId[i]
                 + " moved (" + fromX + "->" + x + "," + fromY + "->" + y + ") in " + elapsed);
+        // psw0523 add for AVN MultiWindow
+        final float middleXStart = (screenWidth/2) - 20;
+        final float middleXEnd = (screenWidth/2) + 20;
+        if (DEBUG) Slog.d(TAG, "middleX: " + middleXStart + " -- " + middleXEnd);
+        if (fromY < y 
+                && (fromX >= middleXStart && fromX <= middleXEnd)
+                && (x >= middleXStart && x <= middleXEnd)
+                && elapsed < SWIPE_TIMEOUT_MS) {
+            return SWIPE_FROM_TOP_AT_MID;
+        }
+
+        final float upperYStart = 0;
+        final float upperYEnd = (screenHeight/10)*3;
+        if (fromX < x
+                && (fromY >= upperYStart && fromY <= upperYEnd)
+                && (y >= upperYStart && y <= upperYEnd)
+                && elapsed < SWIPE_TIMEOUT_MS) {
+            mSwipeFromX = fromX;
+            mSwipeToX = x;
+            return SWIPE_FROM_LEFT_AT_TOP;
+        }
+        if (fromX > x
+                && (fromY >= upperYStart && fromY <= upperYEnd)
+                && (y >= upperYStart && y <= upperYEnd)
+                && elapsed < SWIPE_TIMEOUT_MS) {
+            mSwipeFromX = fromX;
+            mSwipeToX = x;
+            return SWIPE_FROM_RIGHT_AT_TOP;
+        }
+
         if (fromY <= mSwipeStartThreshold
                 && y > fromY + mSwipeDistanceThreshold
                 && elapsed < SWIPE_TIMEOUT_MS) {
@@ -193,5 +241,9 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         void onSwipeFromBottom();
         void onSwipeFromRight();
         void onDebug();
+        // psw0523 add for AVN MultiWindow
+        void onSwipeFromRightAtTop(float fromX, float toX);
+        void onSwipeFromLeftAtTop(float fromX, float toX);
+        void onSwipeFromTopAtMid();
     }
 }
