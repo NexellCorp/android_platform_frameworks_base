@@ -2982,12 +2982,17 @@ public final class ActivityThread {
                 r.state = null;
                 r.persistentState = null;
             } catch (Exception e) {
-                if (!mInstrumentation.onException(r.activity, e)) {
-                    throw new RuntimeException(
-                        "Unable to resume activity "
-                        + r.intent.getComponent().toShortString()
-                        + ": " + e.toString(), e);
-                }
+                // psw0523 patch for AVN MultiWindow
+                // if (!mInstrumentation.onException(r.activity, e)) {
+                //     throw new RuntimeException(
+                //         "Unable to resume activity "
+                //         + r.intent.getComponent().toShortString()
+                //         + ": " + e.toString(), e);
+                // }
+                r.paused = false;
+                r.stopped = false;
+                r.state = null;
+                r.persistentState = null;
             }
         }
         return r;
@@ -3253,15 +3258,17 @@ public final class ActivityThread {
             }
 
         } catch (SuperNotCalledException e) {
-            throw e;
+            // psw0523 fix for AVN MultiWindow
+            // throw e;
 
         } catch (Exception e) {
-            if (!mInstrumentation.onException(r.activity, e)) {
-                throw new RuntimeException(
-                        "Unable to pause activity "
-                        + r.intent.getComponent().toShortString()
-                        + ": " + e.toString(), e);
-            }
+            // psw0523 fix for AVN MultiWindow
+            // if (!mInstrumentation.onException(r.activity, e)) {
+            //     throw new RuntimeException(
+            //             "Unable to pause activity "
+            //             + r.intent.getComponent().toShortString()
+            //             + ": " + e.toString(), e);
+            // }
         }
         r.paused = true;
 
