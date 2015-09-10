@@ -25,5 +25,11 @@ interface IApplicationToken
     void windowsGone();
     boolean keyDispatchingTimedOut(String reason);
     long getKeyDispatchingTimeout();
+    /* psw0523 add for AVN MultiWindow */
+    int pauseActivity(boolean finishing);
+    void setMultiWindowActivity();
+    void removeMultiWindowActivity();
+    int getIndex();
+    void changeLeftRight();
 }
 
