@@ -1333,7 +1333,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
         //final Rect frame = mFrame;
         final Rect frame = mVisibleFrame;
         // MULTIWINDOW Debugging
-        Slog.d(TAG, "getTouchableRegion frame of package ==> " + mAttrs.packageName + ", frame: " + frame);
+        //Slog.d(TAG, "getTouchableRegion frame of package ==> " + mAttrs.packageName + ", frame: " + frame);
         switch (mTouchableInsets) {
             default:
             case ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_FRAME:
@@ -1352,7 +1352,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
                 break;
             }
         }
-        Slog.d(TAG, "--> outRegion " + outRegion);
+        //Slog.d(TAG, "--> outRegion " + outRegion);
     }
 
     WindowList getWindowList() {
@@ -1652,5 +1652,49 @@ final class WindowState implements WindowManagerPolicy.WindowState {
                     + " " + mLastTitle + (mExiting ? " EXITING}" : "}");
         }
         return mStringNameCache;
+    }
+
+    // psw0523 add for AVN MultiWindow
+    @Override
+    public void pauseActivityOfWindow(boolean finishing) {
+        if (mAppToken != null && mAppToken.appToken != null) {
+            try {
+                mAppToken.appToken.pauseActivity(finishing);
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    // psw0523 add for AVN MultiWindow
+    @Override
+    public void setMultiWindowActivity() {
+        if (mAppToken != null && mAppToken.appToken != null) {
+            try {
+                mAppToken.appToken.setMultiWindowActivity();
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    // psw0523 add for AVN MultiWindow
+    @Override
+    public void removeMultiWindowActivity() {
+        if (mAppToken != null && mAppToken.appToken != null) {
+            try {
+                mAppToken.appToken.removeMultiWindowActivity();
+            } catch (Exception e) {
+            }
+        }
+    }
+
+    // psw0523 add for AVN MultiWindow
+    @Override
+    public void changeLeftRight() {
+        if (mAppToken != null && mAppToken.appToken != null) {
+            try {
+                mAppToken.appToken.changeLeftRight();
+            } catch (Exception e) {
+            }
+        }
     }
 }
