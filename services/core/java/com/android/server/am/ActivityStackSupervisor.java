@@ -114,8 +114,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ActivityStackSupervisor implements DisplayListener {
-    //static final boolean DEBUG = ActivityManagerService.DEBUG || false;
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = ActivityManagerService.DEBUG || false;
     static final boolean DEBUG_ADD_REMOVE = DEBUG || false;
     static final boolean DEBUG_APP = DEBUG || false;
     static final boolean DEBUG_CONTAINERS = DEBUG || false;
@@ -1879,6 +1878,13 @@ public final class ActivityStackSupervisor implements DisplayListener {
                                 intentActivity.setTaskToAffiliateWith(sourceRecord.task);
                             }
                             movedHome = true;
+                            // psw0523 patch for AVN MultiWindow
+                            if (getMultiWindowEnabled()) {
+                                r.mIndex = intentActivity.mIndex;
+                                Slog.d(TAG, "index matching ---> source: " + intentActivity + ", target: " + r);
+                                Slog.d(TAG, "index --> " + r.mIndex);
+                            }
+
                             targetStack.moveTaskToFrontLocked(intentActivity.task, r, options,
                                     "bringingFoundTaskToFront");
                             if ((launchFlags &
