@@ -282,7 +282,9 @@ public final class ActivityManagerService extends ActivityManagerNative
 
     // Control over CPU and battery monitoring.
     static final long BATTERY_STATS_TIME = 30*60*1000;      // write battery stats every 30 minutes.
-    static final boolean MONITOR_CPU_USAGE = true;
+    // psw0523 patch for AVN
+    // static final boolean MONITOR_CPU_USAGE = true;
+    static final boolean MONITOR_CPU_USAGE = false;
     static final long MONITOR_CPU_MIN_TIME = 5*1000;        // don't sample cpu less than every 5 seconds.
     static final long MONITOR_CPU_MAX_TIME = 0x0fffffff;    // wait possibly forever for next cpu sample.
     static final boolean MONITOR_THREAD_CPU_USAGE = false;
@@ -6226,6 +6228,13 @@ public final class ActivityManagerService extends ActivityManagerNative
         // Let system services know.
         mSystemServiceManager.startBootPhase(SystemService.PHASE_BOOT_COMPLETED);
 
+        // psw0523 add for AVN
+        try {
+            final IPackageManager pm = AppGlobals.getPackageManager();
+            pm.runSecond();
+        } catch (Exception e) {
+        }
+
         synchronized (this) {
             // Ensure that any processes we had put on hold are now started
             // up.
@@ -11020,33 +11029,46 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     private void retrieveSettings() {
-        final ContentResolver resolver = mContext.getContentResolver();
-        String debugApp = Settings.Global.getString(
-            resolver, Settings.Global.DEBUG_APP);
-        boolean waitForDebugger = Settings.Global.getInt(
-            resolver, Settings.Global.WAIT_FOR_DEBUGGER, 0) != 0;
-        boolean alwaysFinishActivities = Settings.Global.getInt(
-            resolver, Settings.Global.ALWAYS_FINISH_ACTIVITIES, 0) != 0;
-        boolean forceRtl = Settings.Global.getInt(
-                resolver, Settings.Global.DEVELOPMENT_FORCE_RTL, 0) != 0;
-        // Transfer any global setting for forcing RTL layout, into a System Property
-        SystemProperties.set(Settings.Global.DEVELOPMENT_FORCE_RTL, forceRtl ? "1":"0");
+        // psw0523 fix for AVN
+        if (false) {
+            final ContentResolver resolver = mContext.getContentResolver();
+            String debugApp = Settings.Global.getString(
+                    resolver, Settings.Global.DEBUG_APP);
+            boolean waitForDebugger = Settings.Global.getInt(
+                    resolver, Settings.Global.WAIT_FOR_DEBUGGER, 0) != 0;
+            boolean alwaysFinishActivities = Settings.Global.getInt(
+                    resolver, Settings.Global.ALWAYS_FINISH_ACTIVITIES, 0) != 0;
+            boolean forceRtl = Settings.Global.getInt(
+                    resolver, Settings.Global.DEVELOPMENT_FORCE_RTL, 0) != 0;
+            // Transfer any global setting for forcing RTL layout, into a System Property
+            SystemProperties.set(Settings.Global.DEVELOPMENT_FORCE_RTL, forceRtl ? "1":"0");
 
-        Configuration configuration = new Configuration();
-        Settings.System.getConfiguration(resolver, configuration);
-        if (forceRtl) {
-            // This will take care of setting the correct layout direction flags
-            configuration.setLayoutDirection(configuration.locale);
-        }
+            Configuration configuration = new Configuration();
+            Settings.System.getConfiguration(resolver, configuration);
+            if (forceRtl) {
+                // This will take care of setting the correct layout direction flags
+                configuration.setLayoutDirection(configuration.locale);
+            }
 
-        synchronized (this) {
-            mDebugApp = mOrigDebugApp = debugApp;
-            mWaitForDebugger = mOrigWaitForDebugger = waitForDebugger;
-            mAlwaysFinishActivities = alwaysFinishActivities;
-            // This happens before any activities are started, so we can
-            // change mConfiguration in-place.
-            updateConfigurationLocked(configuration, null, false, true);
-            if (DEBUG_CONFIGURATION) Slog.d(TAG, "Initial config: " + mConfiguration);
+            synchronized (this) {
+                mDebugApp = mOrigDebugApp = debugApp;
+                mWaitForDebugger = mOrigWaitForDebugger = waitForDebugger;
+                mAlwaysFinishActivities = alwaysFinishActivities;
+                // This happens before any activities are started, so we can
+                // change mConfiguration in-place.
+                updateConfigurationLocked(configuration, null, false, true);
+                if (DEBUG_CONFIGURATION) Slog.d(TAG, "Initial config: " + mConfiguration);
+            }
+        } else {
+            final ContentResolver resolver = mContext.getContentResolver();
+            Configuration configuration = new Configuration();
+            Settings.System.getConfiguration(resolver, configuration);
+            synchronized (this) {
+                mDebugApp = mOrigDebugApp = null;
+                mWaitForDebugger = false;
+                mAlwaysFinishActivities = false;
+                updateConfigurationLocked(configuration, null, false, true);
+            }
         }
     }
 
@@ -11228,9 +11250,13 @@ public final class ActivityManagerService extends ActivityManagerNative
                 return;
             }
 
+            // psw0523 debugging
+            Slog.i(TAG, "systemReady ---> " + mSystemReady);
+
+            // psw0523 AVN Patch
             // Make sure we have the current profile info, since it is needed for
             // security checks.
-            updateCurrentProfileIdsLocked();
+            //updateCurrentProfileIdsLocked();
 
             if (mRecentTasks == null) {
                 mRecentTasks = mTaskPersister.restoreTasksLocked();
@@ -11238,6 +11264,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                 cleanupRecentTasksLocked(UserHandle.USER_ALL);
                 mTaskPersister.startPersisting();
             }
+
+            // psw0523 add AVN
+            mDidUpdate = true;
 
             // Check to see if there are any update receivers to run.
             if (!mDidUpdate) {
@@ -11267,113 +11296,121 @@ public final class ActivityManagerService extends ActivityManagerNative
             mSystemReady = true;
         }
 
-        ArrayList<ProcessRecord> procsToKill = null;
-        synchronized(mPidsSelfLocked) {
-            for (int i=mPidsSelfLocked.size()-1; i>=0; i--) {
-                ProcessRecord proc = mPidsSelfLocked.valueAt(i);
-                if (!isAllowedWhileBooting(proc.info)){
-                    if (procsToKill == null) {
-                        procsToKill = new ArrayList<ProcessRecord>();
-                    }
-                    procsToKill.add(proc);
-                }
-            }
-        }
+        // psw0523 fix AVN
+        //ArrayList<ProcessRecord> procsToKill = null;
+        //synchronized(mPidsSelfLocked) {
+            //for (int i=mPidsSelfLocked.size()-1; i>=0; i--) {
+                //ProcessRecord proc = mPidsSelfLocked.valueAt(i);
+                //if (!isAllowedWhileBooting(proc.info)){
+                    //if (procsToKill == null) {
+                        //procsToKill = new ArrayList<ProcessRecord>();
+                    //}
+                    //procsToKill.add(proc);
+                //}
+            //}
+        //}
 
-        synchronized(this) {
-            if (procsToKill != null) {
-                for (int i=procsToKill.size()-1; i>=0; i--) {
-                    ProcessRecord proc = procsToKill.get(i);
-                    Slog.i(TAG, "Removing system update proc: " + proc);
-                    removeProcessLocked(proc, true, false, "system update done");
-                }
-            }
+        //synchronized(this) {
+            //if (procsToKill != null) {
+                //for (int i=procsToKill.size()-1; i>=0; i--) {
+                    //ProcessRecord proc = procsToKill.get(i);
+                    //Slog.i(TAG, "Removing system update proc: " + proc);
+                    //removeProcessLocked(proc, true, false, "system update done");
+                //}
+            //}
 
-            // Now that we have cleaned up any update processes, we
-            // are ready to start launching real processes and know that
-            // we won't trample on them any more.
-            mProcessesReady = true;
-        }
+            //// Now that we have cleaned up any update processes, we
+            //// are ready to start launching real processes and know that
+            //// we won't trample on them any more.
+            //mProcessesReady = true;
+        //}
+        mProcessesReady = true;
 
         Slog.i(TAG, "System now ready");
-        EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_AMS_READY,
-            SystemClock.uptimeMillis());
+        // psw0523 fix
+        //EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_AMS_READY,
+            //SystemClock.uptimeMillis());
 
-        synchronized(this) {
-            // Make sure we have no pre-ready processes sitting around.
+        //synchronized(this) {
+            //// Make sure we have no pre-ready processes sitting around.
 
-            if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL) {
-                ResolveInfo ri = mContext.getPackageManager()
-                        .resolveActivity(new Intent(Intent.ACTION_FACTORY_TEST),
-                                STOCK_PM_FLAGS);
-                CharSequence errorMsg = null;
-                if (ri != null) {
-                    ActivityInfo ai = ri.activityInfo;
-                    ApplicationInfo app = ai.applicationInfo;
-                    if ((app.flags&ApplicationInfo.FLAG_SYSTEM) != 0) {
-                        mTopAction = Intent.ACTION_FACTORY_TEST;
-                        mTopData = null;
-                        mTopComponent = new ComponentName(app.packageName,
-                                ai.name);
-                    } else {
-                        errorMsg = mContext.getResources().getText(
-                                com.android.internal.R.string.factorytest_not_system);
-                    }
-                } else {
-                    errorMsg = mContext.getResources().getText(
-                            com.android.internal.R.string.factorytest_no_action);
-                }
-                if (errorMsg != null) {
-                    mTopAction = null;
-                    mTopData = null;
-                    mTopComponent = null;
-                    Message msg = Message.obtain();
-                    msg.what = SHOW_FACTORY_ERROR_MSG;
-                    msg.getData().putCharSequence("msg", errorMsg);
-                    mHandler.sendMessage(msg);
-                }
-            }
-        }
+            //if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL) {
+                //ResolveInfo ri = mContext.getPackageManager()
+                        //.resolveActivity(new Intent(Intent.ACTION_FACTORY_TEST),
+                                //STOCK_PM_FLAGS);
+                //CharSequence errorMsg = null;
+                //if (ri != null) {
+                    //ActivityInfo ai = ri.activityInfo;
+                    //ApplicationInfo app = ai.applicationInfo;
+                    //if ((app.flags&ApplicationInfo.FLAG_SYSTEM) != 0) {
+                        //mTopAction = Intent.ACTION_FACTORY_TEST;
+                        //mTopData = null;
+                        //mTopComponent = new ComponentName(app.packageName,
+                                //ai.name);
+                    //} else {
+                        //errorMsg = mContext.getResources().getText(
+                                //com.android.internal.R.string.factorytest_not_system);
+                    //}
+                //} else {
+                    //errorMsg = mContext.getResources().getText(
+                            //com.android.internal.R.string.factorytest_no_action);
+                //}
+                //if (errorMsg != null) {
+                    //mTopAction = null;
+                    //mTopData = null;
+                    //mTopComponent = null;
+                    //Message msg = Message.obtain();
+                    //msg.what = SHOW_FACTORY_ERROR_MSG;
+                    //msg.getData().putCharSequence("msg", errorMsg);
+                    //mHandler.sendMessage(msg);
+                //}
+            //}
+        //}
 
         retrieveSettings();
         loadResourcesOnSystemReady();
 
-        synchronized (this) {
-            readGrantedUriPermissionsLocked();
-        }
+        // psw0523 fix
+        //synchronized (this) {
+            //readGrantedUriPermissionsLocked();
+        //}
 
         if (goingCallback != null) goingCallback.run();
 
-        mBatteryStatsService.noteEvent(BatteryStats.HistoryItem.EVENT_USER_RUNNING_START,
-                Integer.toString(mCurrentUserId), mCurrentUserId);
-        mBatteryStatsService.noteEvent(BatteryStats.HistoryItem.EVENT_USER_FOREGROUND_START,
-                Integer.toString(mCurrentUserId), mCurrentUserId);
+        // psw0523 fix
+        //mBatteryStatsService.noteEvent(BatteryStats.HistoryItem.EVENT_USER_RUNNING_START,
+                //Integer.toString(mCurrentUserId), mCurrentUserId);
+        //mBatteryStatsService.noteEvent(BatteryStats.HistoryItem.EVENT_USER_FOREGROUND_START,
+                //Integer.toString(mCurrentUserId), mCurrentUserId);
         mSystemServiceManager.startUser(mCurrentUserId);
 
         synchronized (this) {
-            if (mFactoryTest != FactoryTest.FACTORY_TEST_LOW_LEVEL) {
-                try {
-                    List apps = AppGlobals.getPackageManager().
-                        getPersistentApplications(STOCK_PM_FLAGS);
-                    if (apps != null) {
-                        int N = apps.size();
-                        int i;
-                        for (i=0; i<N; i++) {
-                            ApplicationInfo info
-                                = (ApplicationInfo)apps.get(i);
-                            if (info != null &&
-                                    !info.packageName.equals("android")) {
-                                addAppLocked(info, false, null /* ABI override */);
-                            }
-                        }
-                    }
-                } catch (RemoteException ex) {
-                    // pm is in same process, this will never happen.
-                }
-            }
+            // psw0523 fix
+            //if (mFactoryTest != FactoryTest.FACTORY_TEST_LOW_LEVEL) {
+                //try {
+                    //List apps = AppGlobals.getPackageManager().
+                        //getPersistentApplications(STOCK_PM_FLAGS);
+                    //if (apps != null) {
+                        //int N = apps.size();
+                        //int i;
+                        //for (i=0; i<N; i++) {
+                            //ApplicationInfo info
+                                //= (ApplicationInfo)apps.get(i);
+                            //if (info != null &&
+                                    //!info.packageName.equals("android")) {
+                                //addAppLocked(info, false, null [> ABI override <]);
+                            //}
+                        //}
+                    //}
+                //} catch (RemoteException ex) {
+                    //// pm is in same process, this will never happen.
+                //}
+            //}
 
             // Start up initial activity.
             mBooting = true;
+            // psw0523 debugging
+            Slog.i(TAG, "call startHomeActivityLocked");
             startHomeActivityLocked(mCurrentUserId, "systemReady");
 
             try {
@@ -11385,10 +11422,11 @@ public final class ActivityManagerService extends ActivityManagerNative
             } catch (RemoteException e) {
             }
 
-            if (!Build.isFingerprintConsistent()) {
-                Slog.e(TAG, "Build fingerprint is not consistent, warning user");
-                mHandler.obtainMessage(SHOW_FINGERPRINT_ERROR_MSG).sendToTarget();
-            }
+            // psw0523 fix
+            //if (!Build.isFingerprintConsistent()) {
+                //Slog.e(TAG, "Build fingerprint is not consistent, warning user");
+                //mHandler.obtainMessage(SHOW_FINGERPRINT_ERROR_MSG).sendToTarget();
+            //}
 
             long ident = Binder.clearCallingIdentity();
             try {
@@ -11417,6 +11455,8 @@ public final class ActivityManagerService extends ActivityManagerNative
             } finally {
                 Binder.restoreCallingIdentity(ident);
             }
+            // psw0523 debugging
+            Slog.i(TAG, "call resumeTopActivitiesLocked");
             mStackSupervisor.resumeTopActivitiesLocked();
             sendUserSwitchBroadcastsLocked(-1, mCurrentUserId);
         }
