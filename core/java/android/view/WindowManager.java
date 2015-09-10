@@ -542,18 +542,6 @@ public interface WindowManager extends ViewManager {
         public static final int TYPE_VOICE_INTERACTION = FIRST_SYSTEM_WINDOW+31;
 
         /**
-         * Window type: Windows for MultiWindow Control
-         * @hide
-         */
-        public static final int TYPE_MULTIWINDOW_CONTROL = FIRST_SYSTEM_WINDOW+32;
-
-        /**
-         * Window type: Windows for MultiWindow MiniLauncher
-         * @hide
-         */
-        public static final int TYPE_MULTIWINDOW_MINILAUNCHER = FIRST_SYSTEM_WINDOW+33;
-
-        /**
          * Window type: Windows that are overlaid <em>only</em> by an {@link
          * android.accessibilityservice.AccessibilityService} for interception of
          * user interactions without changing the windows an accessibility service
@@ -565,6 +553,24 @@ public interface WindowManager extends ViewManager {
          * they are covered by a touchable window.
          */
         public static final int TYPE_ACCESSIBILITY_OVERLAY = FIRST_SYSTEM_WINDOW+32;
+
+        /**
+         * Window type: Windows for MultiWindow Control
+         * @hide
+         */
+        public static final int TYPE_MULTIWINDOW_CONTROL = FIRST_SYSTEM_WINDOW+33;
+
+        /**
+         * Window type: Windows for MultiWindow MiniLauncher
+         * @hide
+         */
+        public static final int TYPE_MULTIWINDOW_MINILAUNCHER = FIRST_SYSTEM_WINDOW+34;
+
+        /**
+         * Window type: Windows for MultiWindow DragControl 
+         * @hide
+         */
+        public static final int TYPE_MULTIWINDOW_DRAGCONTROL = FIRST_SYSTEM_WINDOW+35;
 
         /**
          * End of types of system windows.
