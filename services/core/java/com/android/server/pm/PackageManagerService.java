@@ -219,16 +219,25 @@ import dalvik.system.VMRuntime;
 import libcore.io.IoUtils;
 import libcore.util.EmptyArray;
 
+// psw0523
+// import com.android.server.gson.*;
+// import com.android.server.gson.reflect.*;
+import java.lang.reflect.Type;
+import android.content.pm.PackageParser.Component;
+import android.content.pm.PackageParser.IntentInfo;
+import android.content.pm.PackageParser.Permission;
+import android.content.pm.PackageParser.Activity;
+
 /**
  * Keep track of all those .apks everywhere.
- * 
+ *
  * This is very central to the platform's security; please run the unit
  * tests whenever making modifications here:
- * 
+ *
 mmm frameworks/base/tests/AndroidTests
 adb install -r -f out/target/product/passion/data/app/AndroidTests.apk
 adb shell am instrument -w -e class com.android.unit_tests.PackageManagerTests com.android.unit_tests/android.test.InstrumentationTestRunner
- * 
+ *
  * {@hide}
  */
 public class PackageManagerService extends IPackageManager.Stub {
@@ -274,6 +283,11 @@ public class PackageManagerService extends IPackageManager.Stub {
     static final int SCAN_REQUIRE_KNOWN = 1<<12;
 
     static final int REMOVE_CHATTY = 1<<16;
+
+
+    // psw0523 add
+    PackageParser.Package mLauncher = null;
+    // end psw0523
 
     /**
      * Timeout (in milliseconds) after which the watchdog should declare that
@@ -349,7 +363,8 @@ public class PackageManagerService extends IPackageManager.Stub {
     final DisplayMetrics mMetrics;
     final int mDefParseFlags;
     final String[] mSeparateProcesses;
-    final boolean mIsUpgrade;
+    //final boolean mIsUpgrade;
+    boolean mIsUpgrade = false;
 
     // This is where all application persistent data goes.
     final File mAppDataDir;
@@ -454,7 +469,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     // Packages whose data we have transfered into another package, thus
     // should no longer exist.
     final ArraySet<String> mTransferedPackages = new ArraySet<String>();
-    
+
     // Broadcast actions that are only available to the system.
     final ArraySet<String> mProtectedBroadcasts = new ArraySet<String>();
 
@@ -614,7 +629,8 @@ public class PackageManagerService extends IPackageManager.Stub {
     final SparseArray<PostInstallData> mRunningInstalls = new SparseArray<PostInstallData>();
     int mNextInstallToken = 1;  // nonzero; will be wrapped back to 1 when ++ overflows
 
-    private final String mRequiredVerifierPackage;
+    //private final String mRequiredVerifierPackage;
+    private String mRequiredVerifierPackage = null;
 
     private final PackageUsage mPackageUsage = new PackageUsage();
 
@@ -795,7 +811,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);
             }
         }
-        
+
         void doHandleMessage(Message msg) {
             switch (msg.what) {
                 case INIT_COPY: {
@@ -1284,6 +1300,354 @@ public class PackageManagerService extends IPackageManager.Stub {
         displayManager.getDisplay(Display.DEFAULT_DISPLAY).getMetrics(metrics);
     }
 
+    // psw0523 add for AVN
+    public void runFirst() {
+        Slog.d(TAG, "runFist start =====>");
+        final int scanFlags = SCAN_NO_PATHS | SCAN_DEFER_DEX | SCAN_BOOTING;
+
+        File systemUIApk = new File("/system/priv-app/SystemUI/SystemUI.apk");
+        try {
+            scanPackageLI(systemUIApk,
+                    PackageParser.PARSE_IS_SYSTEM
+                    | PackageParser.PARSE_IS_SYSTEM_DIR
+                    | PackageParser.PARSE_IS_PRIVILEGED
+                    | PackageParser.PARSE_MUST_BE_APK,
+                    scanFlags,
+                    0,
+                    null);
+        } catch (PackageManagerException e) {
+            Slog.e(TAG, "can't find systemUIApk!!!");
+        }
+
+        File settingsProvider = new File("/system/priv-app/SettingsProvider/SettingsProvider.apk");
+        try {
+            scanPackageLI(settingsProvider,
+                    PackageParser.PARSE_IS_SYSTEM
+                    | PackageParser.PARSE_IS_SYSTEM_DIR
+                    | PackageParser.PARSE_IS_PRIVILEGED
+                    | PackageParser.PARSE_MUST_BE_APK,
+                    scanFlags,
+                    0,
+                    null);
+        } catch (PackageManagerException e) {
+            Slog.e(TAG, "can't find SettingsProvider.apk!!!");
+        }
+
+        File f = new File("/system/priv-app/FusedLocation/FusedLocation.apk");
+        try {
+            scanPackageLI(f,
+                    PackageParser.PARSE_IS_SYSTEM
+                    | PackageParser.PARSE_IS_SYSTEM_DIR
+                    | PackageParser.PARSE_IS_PRIVILEGED
+                    | PackageParser.PARSE_MUST_BE_APK,
+                    scanFlags,
+                    0,
+                    null);
+        } catch (PackageManagerException e) {
+            Slog.e(TAG, "can't find FusedLocation!!!");
+        }
+
+        //File launcherApk = new File("/system/app/Launcher3/Launcher3.apk");
+        File launcherApk = new File("/system/app/SampleHome/SampleHome.apk");
+        try {
+            mLauncher = scanPackageLI(launcherApk,
+                    PackageParser.PARSE_IS_SYSTEM
+                    | PackageParser.PARSE_IS_SYSTEM_DIR
+                    | PackageParser.PARSE_MUST_BE_APK,
+                    scanFlags,
+                    0,
+                    null);
+        } catch (PackageManagerException e) {
+            Slog.e(TAG, "can't find launcherApk!!!");
+        }
+
+        //File latinIMEApk = new File("/system/app/LatinIME/LatinIME.apk");
+        //try {
+            //scanPackageLI(latinIMEApk,
+                    //PackageParser.PARSE_IS_SYSTEM
+                    //| PackageParser.PARSE_IS_SYSTEM_DIR
+                    //| PackageParser.PARSE_MUST_BE_APK,
+                    //scanFlags,
+                    //0,
+                    //null);
+        //} catch (PackageManagerException e) {
+            //Slog.e(TAG, "can't find latinIMEApk!!!");
+        //}
+
+        Slog.d(TAG, "runFist end <=====");
+    }
+
+    private void runSecondInner() {
+        Slog.d(TAG, "runSecondInner() ======>");
+        final int scanFlags = SCAN_NO_PATHS | SCAN_DEFER_DEX | SCAN_BOOTING;
+        final File privilegedAppDir = new File(Environment.getRootDirectory(), "priv-app");
+
+        //psw0523 fix : scan only SystemUI
+        scanDirLI(privilegedAppDir, PackageParser.PARSE_IS_SYSTEM
+        | PackageParser.PARSE_IS_SYSTEM_DIR
+        | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
+
+        // Collect ordinary system packages.
+        final File systemAppDir = new File(Environment.getRootDirectory(), "app");
+
+        // psw0523 fix : scan only Launcher3
+        scanDirLI(systemAppDir, PackageParser.PARSE_IS_SYSTEM
+        | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+
+        // Prune any system packages that no longer exist.
+        final List<String> possiblyDeletedUpdatedSystemApps = new ArrayList<String>();
+        final ArrayMap<String, File> expectingBetter = new ArrayMap<>();
+        if (!mOnlyCore) {
+            Slog.i(TAG, "--> start prunFiles...");
+            Iterator<PackageSetting> psit = mSettings.mPackages.values().iterator();
+            while (psit.hasNext()) {
+                PackageSetting ps = psit.next();
+
+                /*
+                 * If this is not a system app, it can't be a
+                 * disable system app.
+                 */
+                if ((ps.pkgFlags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+                    continue;
+                }
+
+                /*
+                 * If the package is scanned, it's not erased.
+                 */
+                final PackageParser.Package scannedPkg = mPackages.get(ps.name);
+                if (scannedPkg != null) {
+                    /*
+                     * If the system app is both scanned and in the
+                     * disabled packages list, then it must have been
+                     * added via OTA. Remove it from the currently
+                     * scanned package so the previously user-installed
+                     * application can be scanned.
+                     */
+                    if (mSettings.isDisabledSystemPackageLPr(ps.name)) {
+                        logCriticalInfo(Log.WARN, "Expecting better updated system app for "
+                                + ps.name + "; removing system app.  Last known codePath="
+                                + ps.codePathString + ", installStatus=" + ps.installStatus
+                                + ", versionCode=" + ps.versionCode + "; scanned versionCode="
+                                + scannedPkg.mVersionCode);
+                        removePackageLI(ps, true);
+                        expectingBetter.put(ps.name, ps.codePath);
+                    }
+
+                    continue;
+                }
+
+                if (!mSettings.isDisabledSystemPackageLPr(ps.name)) {
+                    psit.remove();
+                    logCriticalInfo(Log.WARN, "System package " + ps.name
+                            + " no longer exists; wiping its data");
+                    removeDataDirsLI(ps.name);
+                } else {
+                    final PackageSetting disabledPs = mSettings.getDisabledSystemPkgLPr(ps.name);
+                    if (disabledPs.codePath == null || !disabledPs.codePath.exists()) {
+                        possiblyDeletedUpdatedSystemApps.add(ps.name);
+                    }
+                }
+            }
+            Slog.i(TAG, "<-- end prunFiles...");
+        }
+
+        //look for any incomplete package installations
+        ArrayList<PackageSetting> deletePkgsList = mSettings.getListOfIncompleteInstallPackagesLPr();
+        //clean up list
+        for(int i = 0; i < deletePkgsList.size(); i++) {
+            //clean up here
+            cleanupInstallFailedPackage(deletePkgsList.get(i));
+        }
+        //delete tmp files
+        deleteTempPackageFiles();
+
+        // Remove any shared userIDs that have no associated packages
+        mSettings.pruneSharedUsersLPw();
+
+        if (!mOnlyCore) {
+            Slog.i(TAG, "--> start scanDirLI for apps ...");
+            EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_DATA_SCAN_START,
+                    SystemClock.uptimeMillis());
+            scanDirLI(mAppInstallDir, 0, scanFlags | SCAN_REQUIRE_KNOWN, 0);
+
+            scanDirLI(mDrmAppPrivateInstallDir, PackageParser.PARSE_FORWARD_LOCK,
+                    scanFlags | SCAN_REQUIRE_KNOWN, 0);
+
+            /**
+             * Remove disable package settings for any updated system
+             * apps that were removed via an OTA. If they're not a
+             * previously-updated app, remove them completely.
+             * Otherwise, just revoke their system-level permissions.
+             */
+            for (String deletedAppName : possiblyDeletedUpdatedSystemApps) {
+                PackageParser.Package deletedPkg = mPackages.get(deletedAppName);
+                mSettings.removeDisabledSystemPackageLPw(deletedAppName);
+
+                String msg;
+                if (deletedPkg == null) {
+                    msg = "Updated system package " + deletedAppName
+                        + " no longer exists; wiping its data";
+                    removeDataDirsLI(deletedAppName);
+                } else {
+                    msg = "Updated system app + " + deletedAppName
+                        + " no longer present; removing system privileges for "
+                        + deletedAppName;
+
+                    deletedPkg.applicationInfo.flags &= ~ApplicationInfo.FLAG_SYSTEM;
+
+                    PackageSetting deletedPs = mSettings.mPackages.get(deletedAppName);
+                    deletedPs.pkgFlags &= ~ApplicationInfo.FLAG_SYSTEM;
+                }
+                logCriticalInfo(Log.WARN, msg);
+            }
+
+            /**
+             * Make sure all system apps that we expected to appear on
+             * the userdata partition actually showed up. If they never
+             * appeared, crawl back and revive the system version.
+             */
+            for (int i = 0; i < expectingBetter.size(); i++) {
+                final String packageName = expectingBetter.keyAt(i);
+                if (!mPackages.containsKey(packageName)) {
+                    final File scanFile = expectingBetter.valueAt(i);
+
+                    logCriticalInfo(Log.WARN, "Expected better " + packageName
+                            + " but never showed up; reverting to system");
+
+                    final int reparseFlags;
+                    if (FileUtils.contains(privilegedAppDir, scanFile)) {
+                        reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR
+                            | PackageParser.PARSE_IS_PRIVILEGED;
+                    } else if (FileUtils.contains(systemAppDir, scanFile)) {
+                        reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR;
+                    }
+                    //else if (FileUtils.contains(vendorAppDir, scanFile)) {
+                    //reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                    //| PackageParser.PARSE_IS_SYSTEM_DIR;
+                    //}
+                    //else if (FileUtils.contains(oemAppDir, scanFile)) {
+                    //reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                    //| PackageParser.PARSE_IS_SYSTEM_DIR;
+                    //}
+                    else {
+                        Slog.e(TAG, "Ignoring unexpected fallback path " + scanFile);
+                        continue;
+                    }
+
+                    mSettings.enableSystemPackageLPw(packageName);
+
+                    try {
+                        scanPackageLI(scanFile, reparseFlags, scanFlags, 0, null);
+                    } catch (PackageManagerException e) {
+                        Slog.e(TAG, "Failed to parse original system package: "
+                                + e.getMessage());
+                    }
+                }
+            }
+            Slog.i(TAG, "<-- end scanDirLI for apps ...");
+        }
+
+        // Now that we know all of the shared libraries, update all clients to have
+        // the correct library paths.
+        updateAllSharedLibrariesLPw();
+
+        for (SharedUserSetting setting : mSettings.getAllSharedUsersLPw()) {
+            // NOTE: We ignore potential failures here during a system scan (like
+            // the rest of the commands above) because there's precious little we
+            // can do about it. A settings error is reported, though.
+            adjustCpuAbisForSharedUserLPw(setting.packages, null /* scanned package */,
+                    false /* force dexopt */, false /* defer dexopt */);
+        }
+
+        // Now that we know all the packages we are keeping,
+        // read and update their last usage times.
+        mPackageUsage.readLP();
+
+        //EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_SCAN_END,
+                //SystemClock.uptimeMillis());
+        //Slog.i(TAG, "Time to scan packages: "
+                //+ ((SystemClock.uptimeMillis()-startTime)/1000f)
+                //+ " seconds");
+
+        // If the platform SDK has changed since the last time we booted,
+        // we need to re-grant app permission to catch any new ones that
+        // appear.  This is really a hack, and means that apps can in some
+        // cases get permissions that the user didn't initially explicitly
+        // allow...  it would be nice to have some better way to handle
+        // this situation.
+        final boolean regrantPermissions = mSettings.mInternalSdkPlatform
+            != mSdkVersion;
+        if (regrantPermissions) Slog.i(TAG, "Platform changed from "
+                + mSettings.mInternalSdkPlatform + " to " + mSdkVersion
+                + "; regranting permissions for internal storage");
+        mSettings.mInternalSdkPlatform = mSdkVersion;
+
+        Slog.i(TAG, "--> call updatePermissionLPw()");
+        updatePermissionsLPw(null, null, UPDATE_PERMISSIONS_ALL
+                | (regrantPermissions
+                    ? (UPDATE_PERMISSIONS_REPLACE_PKG|UPDATE_PERMISSIONS_REPLACE_ALL)
+                    : 0));
+        Slog.i(TAG, "<-- end updatePermissionLPw()");
+
+        // If this is the first boot, and it is a normal boot, then
+        // we need to initialize the default preferred apps.
+        if (!mRestoredSettings && !mOnlyCore) {
+            mSettings.readDefaultPreferredAppsLPw(this, 0);
+        }
+
+        // If this is first boot after an OTA, and a normal boot, then
+        // we need to clear code cache directories.
+        mIsUpgrade = !Build.FINGERPRINT.equals(mSettings.mFingerprint);
+        if (mIsUpgrade && !mOnlyCore) {
+            Slog.i(TAG, "Build fingerprint changed; clearing code caches");
+            for (String pkgName : mSettings.mPackages.keySet()) {
+                deleteCodeCacheDirsLI(pkgName);
+            }
+            mSettings.mFingerprint = Build.FINGERPRINT;
+        }
+
+        // All the changes are done during package scanning.
+        mSettings.updateInternalDatabaseVersion();
+
+        // can downgrade to reader
+        mSettings.writeLPr();
+
+        EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_READY,
+                SystemClock.uptimeMillis());
+
+
+        mRequiredVerifierPackage = getRequiredVerifierLPr();
+
+        //try {
+            //IActivityManager am = ActivityManagerNative.getDefault();
+            //if (am != null) {
+                //int[] userIds = am.getRunningUserIds();
+                //Slog.d(TAG, "userids ===> " + userIds);
+            //}
+        //} catch (Exception e) {
+        //}
+
+        for (PackageParser.Package pkg : mPackages.values()) {
+            sendPackageBroadcast(Intent.ACTION_PACKAGE_ADDED,
+                pkg.applicationInfo.packageName, null, null, null, null);
+        }
+    }
+    public final class SecondRunThread extends Thread {
+        public void run() {
+            runSecondInner();
+        }
+    }
+
+    @Override
+    public void runSecond() {
+        //runSecondInner();
+        final SecondRunThread secondRunThread = new SecondRunThread();
+        Slog.d(TAG, "start SecondRunThread!!!");
+        secondRunThread.start();
+    }
+
     public PackageManagerService(Context context, Installer installer,
             boolean factoryTest, boolean onlyCore) {
         EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_START,
@@ -1292,6 +1656,8 @@ public class PackageManagerService extends IPackageManager.Stub {
         if (mSdkVersion <= 0) {
             Slog.w(TAG, "**** ro.build.version.sdk not set!");
         }
+
+        Slog.d(TAG, "================> enter PackageManagerService!!!");
 
         mContext = context;
         mFactoryTest = factoryTest;
@@ -1446,6 +1812,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             /**
              * Ensure all external libraries have had dexopt run on them.
              */
+            Slog.i(TAG, "--> start dexopt for external library");
             if (mSharedLibraries.size() > 0) {
                 // NOTE: For now, we're compiling these system "shared libraries"
                 // (and framework jars) into all available architectures. It's possible
@@ -1481,6 +1848,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                 }
             }
+            Slog.i(TAG, "<-- end dexopt for external library");
 
             File frameworkDir = new File(Environment.getRootDirectory(), "framework");
 
@@ -1499,6 +1867,7 @@ public class PackageManagerService extends IPackageManager.Stub {
              * run from a non-root shell.
              */
             String[] frameworkFiles = frameworkDir.list();
+            Slog.i(TAG, "--> start dexopt for frameworkFiles");
             if (frameworkFiles != null) {
                 // TODO: We could compile these only for the most preferred ABI. We should
                 // first double check that the dex files for these commands are not referenced
@@ -1532,14 +1901,18 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                 }
             }
+            Slog.i(TAG, "<-- end dexopt for frameworkFiles");
 
+            Slog.i(TAG, "--> start scanDirLI...");
             // Collect vendor overlay packages.
             // (Do this before scanning any apps.)
             // For security and version matching reason, only consider
             // overlay packages if they reside in VENDOR_OVERLAY_DIR.
-            File vendorOverlayDir = new File(VENDOR_OVERLAY_DIR);
-            scanDirLI(vendorOverlayDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags | SCAN_TRUSTED_OVERLAY, 0);
+
+            // psw0523 remove
+            //File vendorOverlayDir = new File(VENDOR_OVERLAY_DIR);
+            //scanDirLI(vendorOverlayDir, PackageParser.PARSE_IS_SYSTEM
+                    //| PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags | SCAN_TRUSTED_OVERLAY, 0);
 
             // Find base frameworks (resource packages without code).
             scanDirLI(frameworkDir, PackageParser.PARSE_IS_SYSTEM
@@ -1549,37 +1922,50 @@ public class PackageManagerService extends IPackageManager.Stub {
 
             // Collected privileged system packages.
             final File privilegedAppDir = new File(Environment.getRootDirectory(), "priv-app");
-            scanDirLI(privilegedAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
+
+            // psw0523 fix : scan only SystemUI
+            //scanDirLI(privilegedAppDir, PackageParser.PARSE_IS_SYSTEM
+                    //| PackageParser.PARSE_IS_SYSTEM_DIR
+                    //| PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
+
+            runFirst();
 
             // Collect ordinary system packages.
             final File systemAppDir = new File(Environment.getRootDirectory(), "app");
-            scanDirLI(systemAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
 
+            // psw0523 fix : scan only Launcher3
+            //scanDirLI(systemAppDir, PackageParser.PARSE_IS_SYSTEM
+                    //| PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+
+            // psw0523 remove
             // Collect all vendor packages.
-            File vendorAppDir = new File("/vendor/app");
-            try {
-                vendorAppDir = vendorAppDir.getCanonicalFile();
-            } catch (IOException e) {
-                // failed to look up canonical path, continue with original one
-            }
-            scanDirLI(vendorAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+            //File vendorAppDir = new File("/vendor/app");
+            //try {
+                //vendorAppDir = vendorAppDir.getCanonicalFile();
+            //} catch (IOException e) {
+                //// failed to look up canonical path, continue with original one
+            //}
+            //scanDirLI(vendorAppDir, PackageParser.PARSE_IS_SYSTEM
+                    //| PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
 
+            // psw0523 remove
             // Collect all OEM packages.
-            final File oemAppDir = new File(Environment.getOemDirectory(), "app");
-            scanDirLI(oemAppDir, PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+            //final File oemAppDir = new File(Environment.getOemDirectory(), "app");
+            //scanDirLI(oemAppDir, PackageParser.PARSE_IS_SYSTEM
+                    //| PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+
+            Slog.i(TAG, "<-- end scanDirLI...");
 
             if (DEBUG_UPGRADE) Log.v(TAG, "Running installd update commands");
             mInstaller.moveFiles();
 
+            // psw0523 fix
+            if (false) {
             // Prune any system packages that no longer exist.
             final List<String> possiblyDeletedUpdatedSystemApps = new ArrayList<String>();
             final ArrayMap<String, File> expectingBetter = new ArrayMap<>();
             if (!mOnlyCore) {
+                Slog.i(TAG, "--> start prunFiles...");
                 Iterator<PackageSetting> psit = mSettings.mPackages.values().iterator();
                 while (psit.hasNext()) {
                     PackageSetting ps = psit.next();
@@ -1629,6 +2015,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                         }
                     }
                 }
+                Slog.i(TAG, "<-- end prunFiles...");
             }
 
             //look for any incomplete package installations
@@ -1645,6 +2032,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             mSettings.pruneSharedUsersLPw();
 
             if (!mOnlyCore) {
+                Slog.i(TAG, "--> start scanDirLI for apps ...");
                 EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_DATA_SCAN_START,
                         SystemClock.uptimeMillis());
                 scanDirLI(mAppInstallDir, 0, scanFlags | SCAN_REQUIRE_KNOWN, 0);
@@ -1701,13 +2089,16 @@ public class PackageManagerService extends IPackageManager.Stub {
                         } else if (FileUtils.contains(systemAppDir, scanFile)) {
                             reparseFlags = PackageParser.PARSE_IS_SYSTEM
                                     | PackageParser.PARSE_IS_SYSTEM_DIR;
-                        } else if (FileUtils.contains(vendorAppDir, scanFile)) {
-                            reparseFlags = PackageParser.PARSE_IS_SYSTEM
-                                    | PackageParser.PARSE_IS_SYSTEM_DIR;
-                        } else if (FileUtils.contains(oemAppDir, scanFile)) {
-                            reparseFlags = PackageParser.PARSE_IS_SYSTEM
-                                    | PackageParser.PARSE_IS_SYSTEM_DIR;
-                        } else {
+                        }
+                        //else if (FileUtils.contains(vendorAppDir, scanFile)) {
+                            //reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                                    //| PackageParser.PARSE_IS_SYSTEM_DIR;
+                        //}
+                        //else if (FileUtils.contains(oemAppDir, scanFile)) {
+                            //reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                                    //| PackageParser.PARSE_IS_SYSTEM_DIR;
+                        //}
+                        else {
                             Slog.e(TAG, "Ignoring unexpected fallback path " + scanFile);
                             continue;
                         }
@@ -1722,6 +2113,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                         }
                     }
                 }
+                Slog.i(TAG, "<-- end scanDirLI for apps ...");
             }
 
             // Now that we know all of the shared libraries, update all clients to have
@@ -1758,11 +2150,13 @@ public class PackageManagerService extends IPackageManager.Stub {
                     + mSettings.mInternalSdkPlatform + " to " + mSdkVersion
                     + "; regranting permissions for internal storage");
             mSettings.mInternalSdkPlatform = mSdkVersion;
-            
+
+            Slog.i(TAG, "--> call updatePermissionLPw()");
             updatePermissionsLPw(null, null, UPDATE_PERMISSIONS_ALL
                     | (regrantPermissions
                             ? (UPDATE_PERMISSIONS_REPLACE_PKG|UPDATE_PERMISSIONS_REPLACE_ALL)
                             : 0));
+            Slog.i(TAG, "<-- end updatePermissionLPw()");
 
             // If this is the first boot, and it is a normal boot, then
             // we need to initialize the default preferred apps.
@@ -1792,6 +2186,7 @@ public class PackageManagerService extends IPackageManager.Stub {
 
 
             mRequiredVerifierPackage = getRequiredVerifierLPr();
+            } // psw0523 if false
         } // synchronized (mPackages)
         } // synchronized (mInstallLock)
 
@@ -1801,6 +2196,8 @@ public class PackageManagerService extends IPackageManager.Stub {
         // are all flushed.  Not really needed, but keeps things nice and
         // tidy.
         Runtime.getRuntime().gc();
+
+        Slog.d(TAG, "<================ exit PackageManagerService!!!");
     }
 
     @Override
@@ -1971,7 +2368,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         return out;
     }
-    
+
     @Override
     public String[] canonicalToCurrentPackageNames(String[] names) {
         String[] out = new String[names.length];
@@ -2032,7 +2429,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         pi.protectionLevel = bp.protectionLevel;
         return pi;
     }
-    
+
     @Override
     public PermissionInfo getPermissionInfo(String name, int flags) {
         // reader
@@ -2489,7 +2886,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         return s1.equals(s2);
     }
-    
+
     static boolean comparePermissionInfos(PermissionInfo pi1, PermissionInfo pi2) {
         if (pi1.icon != pi2.icon) return false;
         if (pi1.logo != pi2.logo) return false;
@@ -3354,7 +3751,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         ComponentName comp = intent.getComponent();
         if (comp == null) {
             if (intent.getSelector() != null) {
-                intent = intent.getSelector(); 
+                intent = intent.getSelector();
                 comp = intent.getComponent();
             }
         }
@@ -3671,7 +4068,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         ComponentName comp = intent.getComponent();
         if (comp == null) {
             if (intent.getSelector() != null) {
-                intent = intent.getSelector(); 
+                intent = intent.getSelector();
                 comp = intent.getComponent();
             }
         }
@@ -3722,7 +4119,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         ComponentName comp = intent.getComponent();
         if (comp == null) {
             if (intent.getSelector() != null) {
-                intent = intent.getSelector(); 
+                intent = intent.getSelector();
                 comp = intent.getComponent();
             }
         }
@@ -5401,7 +5798,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                                 + "): packages=" + suid.packages);
                 }
             }
-            
+
             // Check if we are renaming from an original package name.
             PackageSetting origPackage = null;
             String realName = null;
@@ -5421,7 +5818,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                         // it is not already done.
                         pkg.setPackageName(renamed);
                     }
-                    
+
                 } else {
                     for (int i=pkg.mOriginalPackages.size()-1; i>=0; i--) {
                         if ((origPackage = mSettings.peekPackageLPr(
@@ -5451,7 +5848,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                 }
             }
-            
+
             if (mTransferedPackages.contains(pkg.packageName)) {
                 Slog.w(TAG, "Package " + pkg.packageName
                         + " was transferred to another, but its .apk remains");
@@ -5475,24 +5872,24 @@ public class PackageManagerService extends IPackageManager.Stub {
                 // looking up the package under its new name, so getPackageLP
                 // can take care of fiddling things correctly.
                 pkg.setPackageName(origPackage.name);
-                
+
                 // File a report about this.
                 String msg = "New package " + pkgSetting.realName
                         + " renamed to replace old package " + pkgSetting.name;
                 reportSettingsProblem(Log.WARN, msg);
-                
+
                 // Make a note of it.
                 mTransferedPackages.add(origPackage.name);
-                
+
                 // No longer need to retain this.
                 pkgSetting.origPackage = null;
             }
-            
+
             if (realName != null) {
                 // Make a note of it.
                 mTransferedPackages.add(pkg.packageName);
             }
-            
+
             if (mSettings.isDisabledSystemPackageLPr(pkg.packageName)) {
                 pkg.applicationInfo.flags |= ApplicationInfo.FLAG_UPDATED_SYSTEM_APP;
             }
@@ -5601,7 +5998,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         final String pkgName = pkg.packageName;
-        
+
         final long scanFileTime = scanFile.lastModified();
         final boolean forceDex = (scanFlags & SCAN_FORCE_DEX) != 0;
         pkg.applicationInfo.processName = fixProcessName(
@@ -5940,7 +6337,6 @@ public class PackageManagerService extends IPackageManager.Stub {
 
         if ((scanFlags&SCAN_BOOTING) == 0 && pkgSetting.sharedUser != null) {
             // We don't do this here during boot because we can do it all
-            // at once after scanning all existing packages.
             //
             // We also do this *before* we perform dexopt on this package, so that
             // we can avoid redundant dexopts, and also to make sure we've got the
@@ -6057,8 +6453,45 @@ public class PackageManagerService extends IPackageManager.Stub {
 
             // Add the new setting to mSettings
             mSettings.insertPackageSettingLPw(pkgSetting, pkg);
+            // psw0523 test for gson
+            //GsonBuilder builder = new GsonBuilder();
+            //Gson gson = builder.create();
+            //Slog.d(TAG, "gson ---> " + gson);
+            //Slog.d(TAG, "dump ApplicationInfo ===> " + gson.toJson(pkg.applicationInfo));
+            //Slog.d(TAG, "version Name ===> " + gson.toJson(pkg.mVersionName));
+            //Slog.d(TAG, "permissions size: " + pkg.permissions.size());
+            //Slog.d(TAG, "permissionGroups size: " + pkg.permissionGroups.size());
+            //Slog.d(TAG, "activities size: " + pkg.activities.size());
+            ////Slog.d(TAG, "dump permissions ===> " + gson.toJson(pkg.permissions));
+            ////Type permType = new TypeToken<Permission<Component<IntentInfo>>>() {}.getType();
+            //Type permType = new TypeToken<Component<IntentInfo>>() {}.getType();
+            //for (int i=0; i<pkg.permissions.size(); i++) {
+                //Permission perm = pkg.permissions.get(i);
+                //Slog.d(TAG, "permission --> i" + i + " : " + perm);
+                //Slog.d(TAG, "dump permissions " + i + " ===> " + gson.toJson(perm, permType));
+            //}
+            //for (int i=0; i<pkg.activities.size(); i++) {
+                //Activity a = pkg.activities.get(i);
+                //Slog.d(TAG, "activity " + i + " ==> " + a);
+                //Slog.d(TAG, "dump Activity " + i + " ===> " + gson.toJson(a));
+            //}
+            //Slog.d(TAG, "dump permissionGroups ===> " + gson.toJson(pkg.permissionGroups));
+            //Slog.d(TAG, "dump activities ===> " + gson.toJson(pkg.activities));
+            //String dumApp = gson.toJson(pkg.applicationInfo);
+            //pkg.applicationInfo = gson.fromJson(dumpApp, ApplicationInfo.class);
+            //Slog.d(TAG, "GSON DUMP TO JSON =====> ");
+            //String result = gson.toJson(pkg);
+            //Slog.d(TAG, gson.toJson(pkg));
             // Add the new setting to mPackages
             mPackages.put(pkg.applicationInfo.packageName, pkg);
+
+            // psw0523 add for registering to launcher
+            //Bundle extras = new Bundle(1);
+            //extras.putInt(Intent.EXTRA_UID, 1000);
+            //sendPackageBroadcast(Intent.ACTION_PACKAGE_ADDED,
+                //pkg.applicationInfo.packageName, extras, null, null, new int[] {1000});
+            // end ...
+
             // Make sure we don't accidentally delete its data.
             final Iterator<PackageCleanItem> iter = mSettings.mPackagesToBeCleaned.iterator();
             while (iter.hasNext()) {
@@ -7048,7 +7481,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
             }
         }
-        
+
         if (pkgInfo != null) {
             grantPermissionsLPw(pkgInfo, (flags&UPDATE_PERMISSIONS_REPLACE_PKG) != 0, changingPkg);
         }
@@ -7401,7 +7834,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 PackageParser.ActivityIntentInfo info) {
             return packageName.equals(info.activity.owner.packageName);
         }
-        
+
         @Override
         protected ResolveInfo newResult(PackageParser.ActivityIntentInfo info,
                 int match, int userId) {
@@ -7620,7 +8053,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 PackageParser.ServiceIntentInfo info) {
             return packageName.equals(info.service.owner.packageName);
         }
-        
+
         @Override
         protected ResolveInfo newResult(PackageParser.ServiceIntentInfo filter,
                 int match, int userId) {
@@ -10087,7 +10520,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
         return false;
     }
-    
+
     // Utility method that returns the relative package path with respect
     // to the installation directory. Like say for /data/data/com.test-1.apk
     // string com.test-1 is returned.
@@ -12493,7 +12926,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         boolean checkin = false;
 
         String packageName = null;
-        
+
         int opti = 0;
         while (opti < args.length) {
             String opt = args[opti];
