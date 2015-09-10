@@ -249,17 +249,18 @@ public abstract class BaseStatusBar extends SystemUI implements
     protected final ContentObserver mSettingsObserver = new ContentObserver(mHandler) {
         @Override
         public void onChange(boolean selfChange) {
-            final boolean provisioned = 0 != Settings.Global.getInt(
-                    mContext.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0);
-            if (provisioned != mDeviceProvisioned) {
-                mDeviceProvisioned = provisioned;
-                updateNotifications();
-            }
-            final int mode = Settings.Global.getInt(mContext.getContentResolver(),
-                    Settings.Global.ZEN_MODE, Settings.Global.ZEN_MODE_OFF);
-            setZenMode(mode);
-
-            updateLockscreenNotificationSetting();
+            // psw0523 fix for AVN
+            // final boolean provisioned = 0 != Settings.Global.getInt(
+            //         mContext.getContentResolver(), Settings.Global.DEVICE_PROVISIONED, 0);
+            // if (provisioned != mDeviceProvisioned) {
+            //     mDeviceProvisioned = provisioned;
+            //     updateNotifications();
+            // }
+            // final int mode = Settings.Global.getInt(mContext.getContentResolver(),
+            //         Settings.Global.ZEN_MODE, Settings.Global.ZEN_MODE_OFF);
+            // setZenMode(mode);
+            //
+            // updateLockscreenNotificationSetting();
         }
     };
 
@@ -532,8 +533,9 @@ public abstract class BaseStatusBar extends SystemUI implements
         mBarService = IStatusBarService.Stub.asInterface(
                 ServiceManager.getService(Context.STATUS_BAR_SERVICE));
 
-        mRecents = getComponent(RecentsComponent.class);
-        mRecents.setCallback(this);
+        // psw0523 fix for AVN
+        //mRecents = getComponent(RecentsComponent.class);
+        //mRecents.setCallback(this);
 
         final Configuration currentConfig = mContext.getResources().getConfiguration();
         mLocale = currentConfig.locale;
@@ -579,13 +581,14 @@ public abstract class BaseStatusBar extends SystemUI implements
         }
 
         // Set up the initial notification state.
-        try {
-            mNotificationListener.registerAsSystemService(mContext,
-                    new ComponentName(mContext.getPackageName(), getClass().getCanonicalName()),
-                    UserHandle.USER_ALL);
-        } catch (RemoteException e) {
-            Log.e(TAG, "Unable to register notification listener", e);
-        }
+        // psw0523 fix for AVN 
+        // try {
+        //     mNotificationListener.registerAsSystemService(mContext,
+        //             new ComponentName(mContext.getPackageName(), getClass().getCanonicalName()),
+        //             UserHandle.USER_ALL);
+        // } catch (RemoteException e) {
+        //     Log.e(TAG, "Unable to register notification listener", e);
+        // }
 
 
         if (DEBUG) {
@@ -602,13 +605,14 @@ public abstract class BaseStatusBar extends SystemUI implements
         mCurrentUserId = ActivityManager.getCurrentUser();
         setHeadsUpUser(mCurrentUserId);
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_USER_SWITCHED);
-        filter.addAction(Intent.ACTION_USER_ADDED);
-        filter.addAction(BANNER_ACTION_CANCEL);
-        filter.addAction(BANNER_ACTION_SETUP);
-        filter.addAction(DevicePolicyManager.ACTION_DEVICE_POLICY_MANAGER_STATE_CHANGED);
-        mContext.registerReceiver(mBroadcastReceiver, filter);
+        // psw0523 fix for AVN
+        // IntentFilter filter = new IntentFilter();
+        // filter.addAction(Intent.ACTION_USER_SWITCHED);
+        // filter.addAction(Intent.ACTION_USER_ADDED);
+        // filter.addAction(BANNER_ACTION_CANCEL);
+        // filter.addAction(BANNER_ACTION_SETUP);
+        // filter.addAction(DevicePolicyManager.ACTION_DEVICE_POLICY_MANAGER_STATE_CHANGED);
+        // mContext.registerReceiver(mBroadcastReceiver, filter);
 
         updateCurrentProfilesCache();
     }
