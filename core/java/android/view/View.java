@@ -2608,6 +2608,23 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     /**
      * @hide
      *
+     * MULTIWINDOW
+     */
+    public static final int MULTIWINDOW_CONTROL_HIDDEN       = 0x10000000;
+    public static final int MULTIWINDOW_CONTROL_VISIBLE      = 0x20000000;
+    public static final int MULTIWINDOW_CONTROL_CLEAR_MASK   = 0xcfffffff;
+
+    public static final int MULTIWINDOW_MINILAUNCHER_HIDDEN  = 0x40000000;
+    public static final int MULTIWINDOW_MINILAUNCHER_VISIBLE = 0x80000000;
+    public static final int MULTIWINDOW_MINILAUNCHER_CLEAR_MASK = 0x3fffffff;
+
+    public static final int MULTIWINDOW_DRAG_HIDDEN          = 0x01000000;
+    public static final int MULTIWINDOW_DRAG_VISIBLE         = 0x02000000;
+    public static final int MULTIWINDOW_DRAG_CLEAR_MASK      = 0xfcffffff;
+
+    /**
+     * @hide
+     *
      * NOTE: This flag may only be used in subtreeSystemUiVisibility. It is masked
      * out of the public fields to keep the undefined bits out of the developer's way.
      *
