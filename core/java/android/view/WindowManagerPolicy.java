@@ -357,6 +357,14 @@ public interface WindowManagerPolicy {
          * @return true if window is on default display.
          */
         public boolean isDefaultDisplay();
+
+        /**
+         * psw0523 add for AVN MultiWindow
+         */
+        public void pauseActivityOfWindow(boolean finishing);
+        public void setMultiWindowActivity();
+        public void removeMultiWindowActivity();
+        public void changeLeftRight();
     }
 
     /**
