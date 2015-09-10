@@ -89,8 +89,6 @@ import android.view.animation.AnimationUtils;
 
 import com.android.internal.R;
 import com.android.internal.policy.PolicyManager;
-//import com.android.internal.policy.impl.keyguard.KeyguardServiceDelegate;
-//import com.android.internal.policy.impl.keyguard.KeyguardServiceDelegate.ShowListener;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.widget.PointerLocationView;
 import com.android.server.LocalServices;
@@ -112,18 +110,28 @@ import static android.view.WindowManagerPolicy.WindowManagerFuncs.CAMERA_LENS_CO
 import static android.view.WindowManagerPolicy.WindowManagerFuncs.CAMERA_LENS_UNCOVERED;
 import static android.view.WindowManagerPolicy.WindowManagerFuncs.CAMERA_LENS_COVERED;
 
+
 public class MultiWindowManager implements WindowManagerPolicy {
     /**
      * Debug options
      */
     static final String TAG = "MultiWindowManager";
-    static final boolean DEBUG = true;
-    static final boolean DEBUG_INPUT = true;
-    static final boolean DEBUG_LAYOUT = true;
-    static final boolean DEBUG_STARTING_WINDOW = true;
+    static final boolean DEBUG = false;
+    static final boolean DEBUG_INPUT = false;
+    static final boolean DEBUG_LAYOUT = false;
+    static final boolean DEBUG_STARTING_WINDOW = false;
+    static final boolean DEBUG_MULTIWINDOW = false;
 
     // HACK : if false, don't show starting window, default change to false
     static final boolean SHOW_STARTING_ANIMATIONS = false;
+
+    /**
+     * layout sizes for SystemUI
+     */
+    static final int MULTIWINDOW_SYSTEMUI_WIDTH = 64;
+    static final int MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN = 220;
+    static final int MINILAUNCHER_LAYOUT_PERCENT_BY_10 = 6; // 60%
+    static final int DRAGCONTROL_LAYOUT_PERCENT_BY_10 = 3; // 30%
 
     /**
      * key hooking
@@ -203,7 +211,12 @@ public class MultiWindowManager implements WindowManagerPolicy {
      * Message
      */
     private static final int MSG_WINDOW_MANAGER_DRAWN_COMPLETE = 1;
+    private static final int MSG_HIDE_MULTIWINDOW_CONTROL = 2;
+    private static final int MSG_HIDE_MINILAUNCHER = 3;
+    private static final int MSG_HIDE_DRAGCONTROL = 4;
 
+    private static final int MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS = 3000;
+    private static final int MULTIWINDOW_MINILAUNCHER_SHOW_TIMEOUT_MS = 5000;
     /**
      * Message Handler
      */
@@ -213,6 +226,36 @@ public class MultiWindowManager implements WindowManagerPolicy {
              switch (msg.what) {
                  case MSG_WINDOW_MANAGER_DRAWN_COMPLETE:
                      break;
+                 case MSG_HIDE_MULTIWINDOW_CONTROL:
+                     if (DEBUG) Slog.d(TAG, "MSG_HIDE_MULTIWINDOW_CONTROL");
+
+                     if (isShowMultiWindowControl()) { 
+                         int visibility = mMultiWindowVisibility;
+                         visibility &= View.MULTIWINDOW_CONTROL_CLEAR_MASK;
+                         visibility |= View.MULTIWINDOW_CONTROL_HIDDEN;
+                         updateSystemUIVisibility(visibility, mMultiWindowControl);
+                    }
+                    break;
+                 case MSG_HIDE_MINILAUNCHER:
+                    if (DEBUG) Slog.d(TAG, "MSG_HIDE_MINILAUNCHER");
+
+                    if (isShowMiniLauncher()) {
+                        int visibility = mMultiWindowVisibility;
+                        visibility &= View.MULTIWINDOW_MINILAUNCHER_CLEAR_MASK;
+                        visibility |= View.MULTIWINDOW_MINILAUNCHER_HIDDEN;
+                        updateSystemUIVisibility(visibility, mMultiWindowMiniLauncher);
+                    }
+                    break;
+                case MSG_HIDE_DRAGCONTROL:
+                    if (DEBUG) Slog.d(TAG, "MSG_HIDE_DRAGCONTROL");
+
+                    if (isShowDragControl()) {
+                        int visibility = mMultiWindowVisibility;
+                        visibility &= View.MULTIWINDOW_DRAG_CLEAR_MASK;
+                        visibility |= View.MULTIWINDOW_DRAG_HIDDEN;
+                        updateSystemUIVisibility(visibility, mMultiWindowDragControl);
+                    }
+                    break;
              }
          }
     }
@@ -258,26 +301,116 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
     WindowState mMultiWindowControl = null;
     WindowState mMultiWindowMiniLauncher = null;
+    WindowState mMultiWindowDragControl = null;
+    int mMultiWindowVisibility = 0;
 
-    // TODO : flags
-    private final BarController mMultiWindowControlBarController = new BarController("MultiWindowControl",
-            0, // View.STATUS_BAR_TRANSIENT
-            0, // View.STATUS_BAR_UNHIDE
-            0, // View.STATUS_BAR_TRANSLUCENT
-            0, // StatusBarManager.WINDOW_STATUS_BAR
-            0); // WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-
-    private final BarController mMultiWindowMiniLauncherBarController = new BarController("MultiWindowMiniLauncher",
-            0, // View.STATUS_BAR_TRANSIENT
-            0, // View.STATUS_BAR_UNHIDE
-            0, // View.STATUS_BAR_TRANSLUCENT
-            0, // StatusBarManager.WINDOW_STATUS_BAR
-            0); // WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
-    // END OF MULTIWINDOW
+    Handler mHandler;
+    final Object mServiceAcquireLock = new Object();
+    IStatusBarService mStatusBarService;
 
     /**
      * Private Functions
      */
+    private IStatusBarService getStatusBarService() {
+      synchronized (mServiceAcquireLock) {
+        if (mStatusBarService == null) {
+          mStatusBarService = IStatusBarService.Stub.asInterface(
+              ServiceManager.getService("statusbar"));
+        }
+        return mStatusBarService;
+      }
+    }
+
+    private boolean isShowMultiWindowControl() {
+        int vis = mMultiWindowVisibility;
+        return (vis & View.MULTIWINDOW_CONTROL_VISIBLE) == View.MULTIWINDOW_CONTROL_VISIBLE;
+    }
+
+    private boolean isShowMiniLauncher() {
+        int vis = mMultiWindowVisibility;
+        return (vis & View.MULTIWINDOW_MINILAUNCHER_VISIBLE) == View.MULTIWINDOW_MINILAUNCHER_VISIBLE;
+    }
+
+    private boolean isShowDragControl() {
+        int vis = mMultiWindowVisibility;
+        return (vis & View.MULTIWINDOW_DRAG_VISIBLE) == View.MULTIWINDOW_DRAG_VISIBLE;
+    }
+
+    private boolean isShowSystemUI() {
+        int vis = mMultiWindowVisibility;
+        return isShowMultiWindowControl() || isShowMiniLauncher() || isShowDragControl();
+    }
+
+    private void updateSystemUIVisibility(int vis, WindowState win) {
+      if (vis != mMultiWindowVisibility) {
+        mMultiWindowVisibility = vis;
+        if (DEBUG) Slog.d(TAG, "updateSystemUIVisibility: vis " + vis + ", win " + win);
+        try {
+          IStatusBarService statusbar = getStatusBarService();
+          if (statusbar != null) {
+            statusbar.setSystemUiVisibility(vis, 0xffffffff, win.toString());
+            synchronized (mWindowManagerFuncs.getWindowManagerLock()) {
+              if (isShowSystemUI()) {
+                if (!win.isDisplayedLw()) {
+                  win.showLw(true);
+                }
+              } else {
+                if (win.isDisplayedLw()) {
+                  win.hideLw(true);
+                }
+              }
+            }
+          }
+        } catch (RemoteException e) {
+          mStatusBarService = null;
+        }
+      }
+    }
+
+    private void showSystemUI(WindowState swipeTarget) {
+      final WindowState win = swipeTarget;
+      mHandler.post(new Runnable() {
+        @Override
+        public void run() {
+          int visibility = mMultiWindowVisibility;
+          if (win == mMultiWindowControl) {
+              visibility &= View.MULTIWINDOW_CONTROL_CLEAR_MASK;
+              visibility |= View.MULTIWINDOW_CONTROL_VISIBLE;
+          } else if (win == mMultiWindowMiniLauncher) {
+              visibility &= View.MULTIWINDOW_MINILAUNCHER_CLEAR_MASK;
+              visibility |= View.MULTIWINDOW_MINILAUNCHER_VISIBLE;
+          } else if (win == mMultiWindowDragControl) {
+              visibility &= View.MULTIWINDOW_DRAG_CLEAR_MASK;
+              visibility |= View.MULTIWINDOW_DRAG_VISIBLE;
+          }
+
+          updateSystemUIVisibility(visibility, win);
+        }
+      });
+    }
+
+    private void hideSystemUI(WindowState win, long delayMillis) {
+        int msg = -1;
+        if (win == mMultiWindowControl) {
+            msg = MSG_HIDE_MULTIWINDOW_CONTROL;
+        } else if (win == mMultiWindowMiniLauncher) {
+            msg = MSG_HIDE_MINILAUNCHER;
+        } else if (win == mMultiWindowDragControl) {
+            msg = MSG_HIDE_DRAGCONTROL;
+        }
+
+        if (msg != -1) {
+            mHandler.removeMessages(msg);
+            if (delayMillis != 0)
+                mHandler.sendMessageDelayed(mHandler.obtainMessage(msg), delayMillis);
+            else
+                mHandler.sendMessage(mHandler.obtainMessage(msg));
+        }
+    }
+
+    private void hideSystemUI(WindowState win) {
+        hideSystemUI(win, 0);
+    }
 
     /**
      * Public Interface
@@ -304,7 +437,71 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                     @Override
                     public void onSwipeFromRight() {
-                        // requestTransientBars(xxx)
+                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromRight ---> ");
+                      showSystemUI(mMultiWindowControl);
+                      hideSystemUI(mMultiWindowControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
+                    }
+                    @Override
+                    public void onSwipeFromRightAtTop(float fromX, float toX) {
+                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromRightAtTop ---> " + "from: " + fromX + ", to: " + toX);
+
+                      if (isShowDragControl()) {
+                          long hideDelay = MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS;
+                          if (mCurrentLayoutWindowNumber > 1) {
+                              if (fromX < (mSystemRight/2)) {
+                                  // remove left win
+                                  if (mLeftWin != null) {
+                                      mLeftWin.pauseActivityOfWindow(true);
+                                      hideDelay = 0;
+                                  }
+                              } else if (fromX > (mSystemRight/2)) {
+                                  // change left, right
+                                  if (mLeftWin != null) {
+                                      mLeftWin.changeLeftRight();
+                                      hideDelay = 0;
+                                  }
+                              }
+                          } else if (mLeftWin != null) {
+                              mLeftWin.pauseActivityOfWindow(true);
+                              hideDelay = 0;
+                          }
+                          hideSystemUI(mMultiWindowDragControl, hideDelay);
+                      }
+                    }
+                    @Override
+                    public void onSwipeFromLeftAtTop(float fromX, float toX) {
+                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromLeftAtTop ---> " + "from: " + fromX + ", to: " + toX);
+
+                      if (isShowDragControl()) {
+                          long hideDelay = MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS;
+                          if (mCurrentLayoutWindowNumber > 1) {
+                              if (fromX > (mSystemRight/2)) {
+                                  // remove right win
+                                  if (mRightWin != null) {
+                                      mRightWin.pauseActivityOfWindow(true);
+                                      hideDelay = 0;
+                                  }
+                              } else if (fromX < (mSystemRight/2)) {
+                                  // change left, right
+                                  if (mLeftWin != null) {
+                                      mLeftWin.changeLeftRight();
+                                      hideDelay = 0;
+                                  }
+                              }
+                          } else if (mLeftWin != null) {
+                              mLeftWin.pauseActivityOfWindow(true);
+                              hideDelay = 0;
+                          }
+                          hideSystemUI(mMultiWindowDragControl, hideDelay);
+                      }
+                    }
+                    @Override
+                    public void onSwipeFromTopAtMid() {
+                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromTopAtMid ---> ");
+                      if (mCurrentLayoutWindowNumber > 0) {
+                          showSystemUI(mMultiWindowDragControl);
+                          hideSystemUI(mMultiWindowDragControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
+                      }
                     }
                     @Override
                     public void onDebug() {
@@ -321,6 +518,12 @@ public class MultiWindowManager implements WindowManagerPolicy {
             }
         } catch (Exception e) {
         }
+
+        mMultiWindowVisibility = View.MULTIWINDOW_CONTROL_HIDDEN 
+            | View.MULTIWINDOW_MINILAUNCHER_HIDDEN
+            | View.MULTIWINDOW_DRAG_HIDDEN;
+
+        mHandler = new PolicyHandler();
     }
 
     @Override
@@ -442,6 +645,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
             case TYPE_UNIVERSE_BACKGROUND:
             case TYPE_VOLUME_OVERLAY:
             case TYPE_PRIVATE_PRESENTATION:
+            case TYPE_MULTIWINDOW_CONTROL:
+            case TYPE_MULTIWINDOW_MINILAUNCHER:
                 break;
         }
 
@@ -526,6 +731,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
             // changes the device volume
             return 19;
         case TYPE_NAVIGATION_BAR:
+        case TYPE_MULTIWINDOW_CONTROL:
+        case TYPE_MULTIWINDOW_MINILAUNCHER:
             // the navigation bar, if available, shows atop most things
             return 20;
         case TYPE_NAVIGATION_BAR_PANEL:
@@ -784,14 +991,18 @@ public class MultiWindowManager implements WindowManagerPolicy {
             case TYPE_MULTIWINDOW_CONTROL:
                 if (mMultiWindowControl != null && mMultiWindowControl.isAlive())
                     return WindowManagerGlobal.ADD_MULTIPLE_SINGLETON;
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "prepareAddWindowLw --> add MultiWindowControl " + win);
                 mMultiWindowControl = win;
-                mMultiWindowControlBarController.setWindow(win);
                 break;
             case TYPE_MULTIWINDOW_MINILAUNCHER:
                 if (mMultiWindowMiniLauncher != null && mMultiWindowMiniLauncher.isAlive())
                     return WindowManagerGlobal.ADD_MULTIPLE_SINGLETON;
                 mMultiWindowMiniLauncher = win;
-                mMultiWindowMiniLauncherBarController.setWindow(win);
+                break;
+            case TYPE_MULTIWINDOW_DRAGCONTROL:
+                if (mMultiWindowDragControl != null && mMultiWindowDragControl.isAlive())
+                    return WindowManagerGlobal.ADD_MULTIPLE_SINGLETON;
+                mMultiWindowDragControl = win;
                 break;
         }
         return WindowManagerGlobal.ADD_OKAY;
@@ -802,10 +1013,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
     public void removeWindowLw(WindowState win) {
         if (mMultiWindowControl == win) {
             mMultiWindowControl = null;
-            mMultiWindowControlBarController.setWindow(null);
         } else if (mMultiWindowMiniLauncher == win) {
             mMultiWindowMiniLauncher = null;
-            mMultiWindowMiniLauncherBarController.setWindow(null);
         }
     }
 
@@ -907,8 +1116,38 @@ public class MultiWindowManager implements WindowManagerPolicy {
     @Override
     public int adjustSystemUiVisibilityLw(int visibility) {
         // TODO : handle MultiWindowControl, MultiWindowMiniLauncher
-        mMultiWindowControlBarController.adjustSystemUiVisibilityLw(mLastSystemUiFlags, visibility);
-        mMultiWindowMiniLauncherBarController.adjustSystemUiVisibilityLw(mLastSystemUiFlags, visibility);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "adjustSystemUiVisibilityLw : vis " + visibility);
+
+        if (isShowMultiWindowControl()) {
+            if ((visibility & View.MULTIWINDOW_CONTROL_HIDDEN) == View.MULTIWINDOW_CONTROL_HIDDEN) {
+                hideSystemUI(mMultiWindowControl);
+            }
+        } else {
+            if ((visibility & View.MULTIWINDOW_CONTROL_VISIBLE) == View.MULTIWINDOW_CONTROL_VISIBLE) {
+                showSystemUI(mMultiWindowControl);
+            }
+        }
+
+        if (isShowMiniLauncher()) {
+            if ((visibility & View.MULTIWINDOW_MINILAUNCHER_HIDDEN) == View.MULTIWINDOW_MINILAUNCHER_HIDDEN) {
+                hideSystemUI(mMultiWindowMiniLauncher);
+            }
+        } else {
+            if ((visibility & View.MULTIWINDOW_CONTROL_VISIBLE) == View.MULTIWINDOW_CONTROL_VISIBLE) {
+                showSystemUI(mMultiWindowMiniLauncher);
+            }
+        }
+
+        if (isShowDragControl()) {
+            if ((visibility & View.MULTIWINDOW_DRAG_HIDDEN) == View.MULTIWINDOW_DRAG_HIDDEN) {
+                hideSystemUI(mMultiWindowDragControl);
+            }
+        } else {
+            if ((visibility & View.MULTIWINDOW_DRAG_VISIBLE) == View.MULTIWINDOW_DRAG_VISIBLE) {
+                showSystemUI(mMultiWindowDragControl);
+            }
+        }
+
         return visibility;
     }
 
@@ -931,6 +1170,9 @@ public class MultiWindowManager implements WindowManagerPolicy {
         mSystemTop = 0;
         mSystemRight = displayWidth;
         mSystemBottom = displayHeight;
+
+        mSystemGestures.screenWidth = displayWidth;
+        mSystemGestures.screenHeight = displayHeight;
         // TODO : handle MultiWindowControl, MultiWindowMiniLauncher
 
         if (DEBUG_LAYOUT) Slog.d(TAG, "beginLayoutLw: ["
@@ -956,8 +1198,6 @@ public class MultiWindowManager implements WindowManagerPolicy {
     public void layoutWindowLw(WindowState win, WindowState attached) {
         // core function
         // TODO : handle input method window
-        if ((win == mMultiWindowControl) || (win == mMultiWindowMiniLauncher))
-            return;
 
         if (DEBUG_LAYOUT) Slog.d(TAG, "layoutWindowLw");
 
@@ -969,10 +1209,71 @@ public class MultiWindowManager implements WindowManagerPolicy {
         Rect decorFrame = new Rect();
         Rect stableFrame = new Rect();
 
-        parentFrame.left = mSystemLeft;
-        parentFrame.top = mSystemTop;
-        parentFrame.right = mSystemRight;
-        parentFrame.bottom = mSystemBottom;
+        if (win == mMultiWindowControl) {
+            parentFrame.left = mSystemRight - MULTIWINDOW_SYSTEMUI_WIDTH;
+            parentFrame.top = mSystemTop + MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN;
+            parentFrame.right = mSystemRight;
+            parentFrame.bottom = mSystemBottom - MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN;
+        } else if (win == mMultiWindowMiniLauncher) {
+            int width = (int)((mSystemRight/10)*MINILAUNCHER_LAYOUT_PERCENT_BY_10);
+            int height = (int)((mSystemBottom/10)*MINILAUNCHER_LAYOUT_PERCENT_BY_10);
+            parentFrame.left = (mSystemRight - width)/2;
+            parentFrame.top = (mSystemBottom - height)/2;
+            parentFrame.right = parentFrame.left + width;
+            parentFrame.bottom = parentFrame.top + height;
+        } else if (win == mMultiWindowDragControl) {
+            parentFrame.left = mSystemLeft;
+            parentFrame.top = mSystemTop;
+            parentFrame.right = mSystemRight;
+            parentFrame.bottom = (int)((mSystemBottom/10)*DRAGCONTROL_LAYOUT_PERCENT_BY_10);
+        } else {
+            // normal window
+            if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 1) {
+                if (win == mRightWin) {
+                    parentFrame.left = mSystemLeft + (mSystemRight/2);
+                    parentFrame.top = mSystemTop;
+                    parentFrame.right = mSystemRight;
+                    parentFrame.bottom = mSystemBottom;
+                } else if (win == mLeftWin) {
+                    parentFrame.left = mSystemLeft;
+                    parentFrame.top = mSystemTop;
+                    parentFrame.right = mSystemRight/2;
+                    parentFrame.bottom = mSystemBottom;
+                } else {
+                    final WindowManager.LayoutParams attrs = win.getAttrs();
+                    if (attrs.getTitle().toString().startsWith("Starting")) {
+                        parentFrame.left = mSystemLeft;
+                        parentFrame.top = mSystemTop;
+                        parentFrame.right = mSystemRight;
+                        parentFrame.bottom = mSystemBottom;
+                    } else {
+                        Slog.e(TAG, "Error: window is not left nor right nor Starting!!! " + win);
+                        Slog.e(TAG, "title: " + attrs.getTitle().toString());
+                        Slog.e(TAG, "Attached Window ? " + attached);
+                    }
+                }
+            } else if (mMultiWindowEnable == false && mCurrentLayoutWindowNumber > 1) {
+                if (DEBUG_LAYOUT) Slog.d(TAG, "MultiWindowEnable Control ===> win " + win);
+                if (win == mLeftWin) {
+                    if (DEBUG_LAYOUT) Slog.d(TAG, "Only LeftWin Active!!!");
+                    parentFrame.left = mSystemLeft;
+                    parentFrame.top = mSystemTop;
+                    parentFrame.right = mSystemRight;
+                    parentFrame.bottom = mSystemBottom;
+                } else if (win == mRightWin) {
+                    // Slog.d(TAG, "hide RightWin " + mRightWin);
+                    // win.hideLw(true);
+                } else {
+                    if (DEBUG_LAYOUT) Slog.d(TAG, "hide other window --> " + win);
+                    win.hideLw(true);
+                }
+            } else {
+                parentFrame.left = mSystemLeft;
+                parentFrame.top = mSystemTop;
+                parentFrame.right = mSystemRight;
+                parentFrame.bottom = mSystemBottom;
+            }
+        }
 
         displayFrame.set(parentFrame);
         overscanFrame.set(parentFrame);
@@ -1055,11 +1356,36 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
         final boolean isInjected = (policyFlags & WindowManagerPolicy.FLAG_INJECTED) != 0;
 
-        if (DEBUG_INPUT) {
+        if (down) {
+            if (keyCode == 96) {
+                // multiwindow control
+                if (mMultiWindowEnable) {
+                    mMultiWindowEnable = false;
+                    if (mRightWin != null) {
+                        mRightWin.hideLw(true);
+                    }
+                } else {
+                    mMultiWindowEnable = true;
+                    if (mRightWin != null) {
+                        mRightWin.showLw(true);
+                    }
+                }
+                if (DEBUG) Slog.d(TAG, "=======> MultiWindowControl : enable ? " + mMultiWindowEnable);
+                hideSystemUI(mMultiWindowControl);
+            } else if (keyCode == 97) {
+                // minilauncher button
+                if (!isShowMiniLauncher()) {
+                    hideSystemUI(mMultiWindowControl);
+                    showSystemUI(mMultiWindowMiniLauncher);
+                    hideSystemUI(mMultiWindowMiniLauncher, MULTIWINDOW_MINILAUNCHER_SHOW_TIMEOUT_MS);
+                }
+            }
+        }
+
+        if (DEBUG_INPUT)
             Log.d(TAG, "interceptKeyTq keycode=" + keyCode
                     + " interactive=" + interactive
                     + " policyFlags=" + Integer.toHexString(policyFlags));
-        }
 
         return 0;
     }
