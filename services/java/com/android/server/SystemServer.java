@@ -575,12 +575,22 @@ public final class SystemServer {
             reportWtf("making Display Manager Service ready", e);
         }
 
+        AssetAtlasService atlas = null;
+        try {
+            Slog.i(TAG, "Assets Atlas Service");
+            atlas = new AssetAtlasService(context);
+            ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
+        } catch (Throwable e) {
+            reportWtf("starting AssetAtlasService", e);
+        }
+
         final MountService mountServiceF = mountService;
         final InputManagerService inputManagerF = inputManager;
         final WallpaperManagerService wallpaperF = wallpaper;
         final StatusBarManagerService statusBarF = statusBar;
         final InputMethodManagerService immF = imm;
         final TextServicesManagerService textServiceManagerServiceF = tsms;
+        final AssetAtlasService atlasF = atlas;
 
         // We now tell the activity manager it is okay to run third party
         // code.  It will call back into us once it has gotten to the state
@@ -601,20 +611,6 @@ public final class SystemServer {
                 }
 
                 try {
-                    startSystemUi(context);
-                } catch (Throwable e) {
-                    reportWtf("starting System UI", e);
-                }
-                try {
-                    if (mountServiceF != null) mountServiceF.systemReady();
-                } catch (Throwable e) {
-                    reportWtf("making Mount Service ready", e);
-                }
-
-                mSystemServiceManager.startBootPhase(
-                        SystemService.PHASE_THIRD_PARTY_APPS_CAN_START);
-
-                try {
                     if (wallpaperF != null) wallpaperF.systemRunning();
                 } catch (Throwable e) {
                     reportWtf("Notifying WallpaperService running", e);
@@ -624,6 +620,23 @@ public final class SystemServer {
                     if (immF != null) immF.systemRunning(statusBarF);
                 } catch (Throwable e) {
                     reportWtf("Notifying InputMethodService running", e);
+                }
+
+                try {
+                    if (atlasF != null) atlasF.systemRunning();
+                } catch (Throwable e) {
+                    reportWtf("Notifying AssetAtlasService running", e);
+                }
+
+                try {
+                    startSystemUi(context);
+                } catch (Throwable e) {
+                    reportWtf("starting System UI", e);
+                }
+                try {
+                    if (mountServiceF != null) mountServiceF.systemReady();
+                } catch (Throwable e) {
+                    reportWtf("making Mount Service ready", e);
                 }
 
                 try {
@@ -640,6 +653,8 @@ public final class SystemServer {
                     reportWtf("Notifying InputManagerService running", e);
                 }
 
+                mSystemServiceManager.startBootPhase(
+                        SystemService.PHASE_THIRD_PARTY_APPS_CAN_START);
             }
         });
     }
@@ -740,7 +755,7 @@ public final class SystemServer {
         LocationManagerService location = null;
         CountryDetectorService countryDetector = null;
         LockSettingsService lockSettings = null;
-        AssetAtlasService atlas = null;
+        // AssetAtlasService atlas = null;
         MediaRouterService mediaRouter = null;
 
         // Bring up services needed for UI.
@@ -976,13 +991,13 @@ public final class SystemServer {
         // Dreams (interactive idle-time views, a/k/a screen savers, and doze mode)
         mSystemServiceManager.startService(DreamManagerService.class);
 
-        try {
-            Slog.i(TAG, "Assets Atlas Service");
-            atlas = new AssetAtlasService(context);
-            ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
-        } catch (Throwable e) {
-            reportWtf("starting AssetAtlasService", e);
-        }
+        // try {
+        //     Slog.i(TAG, "Assets Atlas Service");
+        //     atlas = new AssetAtlasService(context);
+        //     ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
+        // } catch (Throwable e) {
+        //     reportWtf("starting AssetAtlasService", e);
+        // }
 
         if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_PRINTING)) {
             mSystemServiceManager.startService(PRINT_MANAGER_SERVICE_CLASS);
@@ -1061,7 +1076,7 @@ public final class SystemServer {
         final CountryDetectorService countryDetectorF = countryDetector;
         final NetworkTimeUpdateService networkTimeUpdaterF = networkTimeUpdater;
         final CommonTimeManagementService commonTimeMgmtServiceF = commonTimeMgmtService;
-        final AssetAtlasService atlasF = atlas;
+        // final AssetAtlasService atlasF = atlas;
         final TelephonyRegistry telephonyRegistryF = telephonyRegistry;
         final MediaRouterService mediaRouterF = mediaRouter;
         final AudioService audioServiceF = audioService;
@@ -1131,11 +1146,11 @@ public final class SystemServer {
             //reportWtf("Notifying InputMethodService running", e);
         //}
 
-        try {
-            if (atlasF != null) atlasF.systemRunning();
-        } catch (Throwable e) {
-            reportWtf("Notifying AssetAtlasService running", e);
-        }
+        // try {
+        //     if (atlasF != null) atlasF.systemRunning();
+        // } catch (Throwable e) {
+        //     reportWtf("Notifying AssetAtlasService running", e);
+        // }
         try {
             if (telephonyRegistryF != null) telephonyRegistryF.systemRunning();
         } catch (Throwable e) {

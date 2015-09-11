@@ -1361,18 +1361,18 @@ public class PackageManagerService extends IPackageManager.Stub {
             Slog.e(TAG, "can't find launcherApk!!!");
         }
 
-        //File latinIMEApk = new File("/system/app/LatinIME/LatinIME.apk");
-        //try {
-            //scanPackageLI(latinIMEApk,
-                    //PackageParser.PARSE_IS_SYSTEM
-                    //| PackageParser.PARSE_IS_SYSTEM_DIR
-                    //| PackageParser.PARSE_MUST_BE_APK,
-                    //scanFlags,
-                    //0,
-                    //null);
-        //} catch (PackageManagerException e) {
-            //Slog.e(TAG, "can't find latinIMEApk!!!");
-        //}
+        File latinIMEApk = new File("/system/app/LatinIME/LatinIME.apk");
+        try {
+            scanPackageLI(latinIMEApk,
+                    PackageParser.PARSE_IS_SYSTEM
+                    | PackageParser.PARSE_IS_SYSTEM_DIR
+                    | PackageParser.PARSE_MUST_BE_APK,
+                    scanFlags,
+                    0,
+                    null);
+        } catch (PackageManagerException e) {
+            Slog.e(TAG, "can't find latinIMEApk!!!");
+        }
 
         Slog.d(TAG, "runFist end <=====");
     }
