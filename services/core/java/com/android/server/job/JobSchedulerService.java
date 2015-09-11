@@ -271,7 +271,8 @@ public class JobSchedulerService extends com.android.server.SystemService
         mControllers.add(ConnectivityController.get(this));
         mControllers.add(TimeController.get(this));
         mControllers.add(IdleController.get(this));
-        mControllers.add(BatteryController.get(this));
+        // psw0523 fix for AVN
+        // mControllers.add(BatteryController.get(this));
 
         mHandler = new JobHandler(context.getMainLooper());
         mJobSchedulerStub = new JobSchedulerStub();

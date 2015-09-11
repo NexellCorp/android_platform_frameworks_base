@@ -380,7 +380,7 @@ public final class SystemServer {
         mSystemServiceManager.startService(LightsService.class);
 
         // Tracks the battery level.  Requires LightService.
-        mSystemServiceManager.startService(BatteryService.class);
+        // mSystemServiceManager.startService(BatteryService.class);
 
         // Tracks application usage stats.
         mSystemServiceManager.startService(UsageStatsService.class);

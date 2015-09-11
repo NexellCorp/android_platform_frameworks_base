@@ -487,7 +487,8 @@ public final class PowerManagerService extends SystemService
             mDreamManager = getLocalService(DreamManagerInternal.class);
             mDisplayManagerInternal = getLocalService(DisplayManagerInternal.class);
             mPolicy = getLocalService(WindowManagerPolicy.class);
-            mBatteryManagerInternal = getLocalService(BatteryManagerInternal.class);
+            // psw0523 fix for AVN
+            // mBatteryManagerInternal = getLocalService(BatteryManagerInternal.class);
 
             PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
             mScreenBrightnessSettingMinimum = pm.getMinimumScreenBrightnessSetting();
@@ -1257,10 +1258,16 @@ public final class PowerManagerService extends SystemService
             final boolean wasPowered = mIsPowered;
             final int oldPlugType = mPlugType;
             final boolean oldLevelLow = mBatteryLevelLow;
-            mIsPowered = mBatteryManagerInternal.isPowered(BatteryManager.BATTERY_PLUGGED_ANY);
-            mPlugType = mBatteryManagerInternal.getPlugType();
-            mBatteryLevel = mBatteryManagerInternal.getBatteryLevel();
-            mBatteryLevelLow = mBatteryManagerInternal.getBatteryLevelLow();
+            //  psw0523 fix for AVN
+            // mIsPowered = mBatteryManagerInternal.isPowered(BatteryManager.BATTERY_PLUGGED_ANY);
+            // mPlugType = mBatteryManagerInternal.getPlugType();
+            // mBatteryLevel = mBatteryManagerInternal.getBatteryLevel();
+            // mBatteryLevelLow = mBatteryManagerInternal.getBatteryLevelLow();
+
+            mIsPowered = true;
+            mPlugType = BatteryManager.BATTERY_PLUGGED_AC;
+            mBatteryLevel = 100;
+            mBatteryLevelLow = false;
 
             if (DEBUG_SPEW) {
                 Slog.d(TAG, "updateIsPoweredLocked: wasPowered=" + wasPowered
@@ -1352,12 +1359,14 @@ public final class PowerManagerService extends SystemService
     private void updateStayOnLocked(int dirty) {
         if ((dirty & (DIRTY_BATTERY_STATE | DIRTY_SETTINGS)) != 0) {
             final boolean wasStayOn = mStayOn;
-            if (mStayOnWhilePluggedInSetting != 0
-                    && !isMaximumScreenOffTimeoutFromDeviceAdminEnforcedLocked()) {
-                mStayOn = mBatteryManagerInternal.isPowered(mStayOnWhilePluggedInSetting);
-            } else {
-                mStayOn = false;
-            }
+            // psw0523 fix for AVN
+            // if (mStayOnWhilePluggedInSetting != 0
+            //         && !isMaximumScreenOffTimeoutFromDeviceAdminEnforcedLocked()) {
+            //     mStayOn = mBatteryManagerInternal.isPowered(mStayOnWhilePluggedInSetting);
+            // } else {
+            //     mStayOn = false;
+            // }
+            mStayOn = true;
 
             if (mStayOn != wasStayOn) {
                 mDirty |= DIRTY_STAY_ON;
