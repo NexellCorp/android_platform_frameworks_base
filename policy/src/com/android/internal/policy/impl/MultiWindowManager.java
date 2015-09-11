@@ -116,11 +116,11 @@ public class MultiWindowManager implements WindowManagerPolicy {
      * Debug options
      */
     static final String TAG = "MultiWindowManager";
-    static final boolean DEBUG = false;
-    static final boolean DEBUG_INPUT = false;
-    static final boolean DEBUG_LAYOUT = false;
-    static final boolean DEBUG_STARTING_WINDOW = false;
-    static final boolean DEBUG_MULTIWINDOW = false;
+    static final boolean DEBUG = true;
+    static final boolean DEBUG_INPUT = true;
+    static final boolean DEBUG_LAYOUT = true;
+    static final boolean DEBUG_STARTING_WINDOW = true;
+    static final boolean DEBUG_MULTIWINDOW = true;
 
     // HACK : if false, don't show starting window, default change to false
     static final boolean SHOW_STARTING_ANIMATIONS = false;
@@ -384,6 +384,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
               visibility |= View.MULTIWINDOW_DRAG_VISIBLE;
           }
 
+          if (DEBUG) Slog.d(TAG, "showSystemUI --> win " + win);
           updateSystemUIVisibility(visibility, win);
         }
       });
@@ -431,6 +432,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 new SystemGesturesPointerEventListener.Callbacks() {
                     @Override
                     public void onSwipeFromTop() {
+                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromTop ---> ");
                     }
                     @Override
                     public void onSwipeFromBottom() {
