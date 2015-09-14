@@ -500,47 +500,47 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
     public void systemRunning() {
         if (DEBUG) Slog.d(TAG, "systemReady");
         // psw0523 fix for AVN
-        // WallpaperData wallpaper = mWallpaperMap.get(UserHandle.USER_OWNER);
-        // switchWallpaper(wallpaper, null);
-        // wallpaper.wallpaperObserver = new WallpaperObserver(wallpaper);
-        // wallpaper.wallpaperObserver.startWatching();
-        //
-        // IntentFilter userFilter = new IntentFilter();
-        // userFilter.addAction(Intent.ACTION_USER_REMOVED);
-        // userFilter.addAction(Intent.ACTION_USER_STOPPING);
-        // mContext.registerReceiver(new BroadcastReceiver() {
-        //     @Override
-        //     public void onReceive(Context context, Intent intent) {
-        //         String action = intent.getAction();
-        //         if (Intent.ACTION_USER_REMOVED.equals(action)) {
-        //             onRemoveUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE,
-        //                     UserHandle.USER_NULL));
-        //         }
-        //         // TODO: Race condition causing problems when cleaning up on stopping a user.
-        //         // Comment this out for now.
-        //         // else if (Intent.ACTION_USER_STOPPING.equals(action)) {
-        //         //     onStoppingUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE,
-        //         //             UserHandle.USER_NULL));
-        //         // }
-        //     }
-        // }, userFilter);
-        //
-        // try {
-        //     ActivityManagerNative.getDefault().registerUserSwitchObserver(
-        //             new IUserSwitchObserver.Stub() {
-        //                 @Override
-        //                 public void onUserSwitching(int newUserId, IRemoteCallback reply) {
-        //                     switchUser(newUserId, reply);
-        //                 }
-        //
-        //                 @Override
-        //                 public void onUserSwitchComplete(int newUserId) throws RemoteException {
-        //                 }
-        //             });
-        // } catch (RemoteException e) {
-        //     // TODO Auto-generated catch block
-        //     e.printStackTrace();
-        // }
+        WallpaperData wallpaper = mWallpaperMap.get(UserHandle.USER_OWNER);
+        switchWallpaper(wallpaper, null);
+        wallpaper.wallpaperObserver = new WallpaperObserver(wallpaper);
+        wallpaper.wallpaperObserver.startWatching();
+
+        IntentFilter userFilter = new IntentFilter();
+        userFilter.addAction(Intent.ACTION_USER_REMOVED);
+        userFilter.addAction(Intent.ACTION_USER_STOPPING);
+        mContext.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (Intent.ACTION_USER_REMOVED.equals(action)) {
+                    onRemoveUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE,
+                            UserHandle.USER_NULL));
+                }
+                // TODO: Race condition causing problems when cleaning up on stopping a user.
+                // Comment this out for now.
+                // else if (Intent.ACTION_USER_STOPPING.equals(action)) {
+                //     onStoppingUser(intent.getIntExtra(Intent.EXTRA_USER_HANDLE,
+                //             UserHandle.USER_NULL));
+                // }
+            }
+        }, userFilter);
+
+        try {
+            ActivityManagerNative.getDefault().registerUserSwitchObserver(
+                    new IUserSwitchObserver.Stub() {
+                        @Override
+                        public void onUserSwitching(int newUserId, IRemoteCallback reply) {
+                            switchUser(newUserId, reply);
+                        }
+
+                        @Override
+                        public void onUserSwitchComplete(int newUserId) throws RemoteException {
+                        }
+                    });
+        } catch (RemoteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     /** Called by SystemBackupAgent */
