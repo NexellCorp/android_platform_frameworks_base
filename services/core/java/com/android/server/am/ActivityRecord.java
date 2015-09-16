@@ -392,6 +392,13 @@ final class ActivityRecord {
                 activity.changeLeftRight();
             }
         }
+        // psw0523 add for AVN MultiWindow
+        @Override public void restoreDefaultActivity() {
+            ActivityRecord activity = weakActivity.get();
+            if (activity != null) {
+                activity.restoreDefaultActivity();
+            }
+        }
 
         @Override
         public String toString() {
@@ -1083,6 +1090,13 @@ final class ActivityRecord {
     public void changeLeftRight() {
         synchronized(service) {
             task.stack.changeLeftRight();
+        }
+    }
+    // psw0523 add for AVN MultiWindow
+    public void restoreDefaultActivity() {
+        synchronized(service) {
+            // windowsVisible();
+            task.stack.restoreDefaultActivity();
         }
     }
 

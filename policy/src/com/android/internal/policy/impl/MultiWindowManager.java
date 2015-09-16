@@ -118,7 +118,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
     static final String TAG = "MultiWindowManager";
     static final boolean DEBUG = true;
     static final boolean DEBUG_INPUT = true;
-    static final boolean DEBUG_LAYOUT = true;
+    static final boolean DEBUG_LAYOUT = false;
     static final boolean DEBUG_STARTING_WINDOW = true;
     static final boolean DEBUG_MULTIWINDOW = true;
 
@@ -298,6 +298,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
     WindowState mLeftWin = null;
     WindowState mRightWin = null;
+    // for restore LeftWin
+    WindowState mPrevLeftWin = null;
 
     WindowState mMultiWindowControl = null;
     WindowState mMultiWindowMiniLauncher = null;
@@ -433,6 +435,10 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     @Override
                     public void onSwipeFromTop() {
                       if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromTop ---> ");
+                      if (mCurrentLayoutWindowNumber > 0) {
+                          showSystemUI(mMultiWindowDragControl);
+                          hideSystemUI(mMultiWindowDragControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
+                      }
                     }
                     @Override
                     public void onSwipeFromBottom() {
@@ -453,7 +459,10 @@ public class MultiWindowManager implements WindowManagerPolicy {
                               if (fromX < (mSystemRight/2)) {
                                   // remove left win
                                   if (mLeftWin != null) {
+                                      mPrevLeftWin = mLeftWin;
+                                      Slog.d(TAG, "Backup LeftWin --> " + mPrevLeftWin);
                                       mLeftWin.pauseActivityOfWindow(true);
+                                      // mLeftWin.pauseActivityOfWindow(false);
                                       hideDelay = 0;
                                   }
                               } else if (fromX > (mSystemRight/2)) {
@@ -491,7 +500,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
                                   }
                               }
                           } else if (mLeftWin != null) {
-                              mLeftWin.pauseActivityOfWindow(true);
+                              // mLeftWin.pauseActivityOfWindow(true);
+                              if (mPrevLeftWin != null) {
+                                Slog.d(TAG, "Restore leftWin --> " + mPrevLeftWin);
+                                mPrevLeftWin.showLw(true);
+                                mPrevLeftWin.restoreDefaultActivity();
+                                mPrevLeftWin = null;
+                              }
                               hideDelay = 0;
                           }
                           hideSystemUI(mMultiWindowDragControl, hideDelay);
@@ -1202,6 +1217,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
         // TODO : handle input method window
 
         if (DEBUG_LAYOUT) Slog.d(TAG, "layoutWindowLw");
+        Slog.d(TAG, "layoutWindowLw : win " + win);
+        Slog.d(TAG, "attached " + attached);
 
         Rect parentFrame = new Rect();
         Rect displayFrame = new Rect();
@@ -1243,15 +1260,36 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     parentFrame.bottom = mSystemBottom;
                 } else {
                     final WindowManager.LayoutParams attrs = win.getAttrs();
-                    if (attrs.getTitle().toString().startsWith("Starting")) {
+                    final String title = attrs.getTitle().toString();
+                    if (title.startsWith("Starting")) {
+                        parentFrame.left = mSystemLeft;
+                        parentFrame.top = mSystemTop;
+                        parentFrame.right = mSystemRight;
+                        parentFrame.bottom = mSystemBottom;
+                    } else if (title.startsWith("Toast")) {
                         parentFrame.left = mSystemLeft;
                         parentFrame.top = mSystemTop;
                         parentFrame.right = mSystemRight;
                         parentFrame.bottom = mSystemBottom;
                     } else {
                         Slog.e(TAG, "Error: window is not left nor right nor Starting!!! " + win);
-                        Slog.e(TAG, "title: " + attrs.getTitle().toString());
+                        Slog.e(TAG, "title: " + title);
                         Slog.e(TAG, "Attached Window ? " + attached);
+                        if (attached != null) {
+                          if (attached == mLeftWin) {
+                            parentFrame.left = mSystemLeft;
+                            parentFrame.top = mSystemTop;
+                            parentFrame.right = mSystemRight/2;
+                            parentFrame.bottom = mSystemBottom;
+                          } else if (attached == mRightWin) {
+                            parentFrame.left = mSystemLeft + (mSystemRight/2);
+                            parentFrame.top = mSystemTop;
+                            parentFrame.right = mSystemRight;
+                            parentFrame.bottom = mSystemBottom;
+                          } else {
+                            Slog.e(TAG, "Attached Window is not left nor right!!! ---> do nothing");
+                          }
+                        }
                     }
                 }
             } else if (mMultiWindowEnable == false && mCurrentLayoutWindowNumber > 1) {

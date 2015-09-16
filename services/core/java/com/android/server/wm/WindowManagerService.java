@@ -162,18 +162,21 @@ import java.util.List;
 public class WindowManagerService extends IWindowManager.Stub
         implements Watchdog.Monitor, WindowManagerPolicy.WindowManagerFuncs {
     static final String TAG = "WindowManager";
-    static final boolean DEBUG = false;
+    // psw0523 debugging
+    static final boolean DEBUG = true;
     static final boolean DEBUG_ADD_REMOVE = false;
     static final boolean DEBUG_FOCUS = false;
     static final boolean DEBUG_FOCUS_LIGHT = DEBUG_FOCUS || false;
     static final boolean DEBUG_ANIM = false;
     static final boolean DEBUG_KEYGUARD = false;
-    static final boolean DEBUG_LAYOUT = false;
+    // static final boolean DEBUG_LAYOUT = false;
+    static final boolean DEBUG_LAYOUT = true;
     static final boolean DEBUG_RESIZE = false;
     static final boolean DEBUG_LAYERS = false;
     static final boolean DEBUG_INPUT = false;
     static final boolean DEBUG_INPUT_METHOD = false;
-    static final boolean DEBUG_VISIBILITY = false;
+    // static final boolean DEBUG_VISIBILITY = false;
+    static final boolean DEBUG_VISIBILITY = true;
     static final boolean DEBUG_WINDOW_MOVEMENT = false;
     static final boolean DEBUG_TOKEN_MOVEMENT = false;
     static final boolean DEBUG_ORIENTATION = false;

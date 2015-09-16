@@ -171,6 +171,8 @@ final class ActivityStack {
     int mOtherActivityIndex = 0;
     int mLastActivityRecordIndex = 0;
     ActivityRecord mBackupDefaultActivity = null;
+    // for restore default Activity
+    ActivityRecord mPrevDefaultActivity = null;
 
     /**
      * Animations that for the current transition have requested not to
@@ -930,11 +932,11 @@ final class ActivityStack {
             completePauseLocked(true);
         }
 
-        if (finishing) {
+        // if (finishing) {
             removeMultiWindowActivity(r);
             Slog.d(TAG, "removed from MultiWindowActivities : " + r);
             Slog.d(TAG, "MultiWindowActivities count : " + mMultiWindowActivities.size());
-        }
+        // }
 
         return 0;
     }
@@ -954,6 +956,12 @@ final class ActivityStack {
         synchronized(mService) {
             if (mMultiWindowActivities.contains(r)) {
                 Slog.d(TAG, "====================> removeMultiWindowActivity: r  " + r);
+                if (r.mIndex == mDefaultActivityIndex) {
+                  Slog.d(TAG, "mPrevDefaultActivity --> " + r);
+                  mPrevDefaultActivity = r;
+                  Slog.d(TAG, "change default index : " + mDefaultActivityIndex + " --> " + mOtherActivityIndex);
+                  mDefaultActivityIndex = mOtherActivityIndex;
+                }
                 mMultiWindowActivities.remove(r);
                 if (mMultiWindowActivities.isEmpty()) {
                     Slog.d(TAG, "reset MultiWindow Indexes");
@@ -989,66 +997,72 @@ final class ActivityStack {
         Slog.d(TAG, "task ---> " + r.task);
         Slog.d(TAG, "activity --> " + r);
         synchronized(mService) {
-            if (mMultiWindowActivities.isEmpty()) {
-                mDefaultActivityIndex = r.mIndex;
-                mMultiWindowActivities.add(r);
-                Slog.d(TAG, "Set Left Activity ==> " + r);
-                Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-            } else {
-                if (mMultiWindowActivities.size() == 1) {
-                    ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
-                    if (defaultActivity == null) {
-                        Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
-                    }
-                    if (defaultActivity != null && r.task == defaultActivity.task) {
-                        Slog.d(TAG, "---------> Same Task with defaultActivity");
-                        Slog.d(TAG, "default " + defaultActivity);
-                        Slog.d(TAG, "new " + r);
-                        r.mIndex = mDefaultActivityIndex;
-                        // mDefaultActivityIndex = r.mIndex;
-                        if (r != mBackupDefaultActivity)
-                            mBackupDefaultActivity = mMultiWindowActivities.get(0);
-                        mMultiWindowActivities.remove(0);
-                        mMultiWindowActivities.add(r);
-                        Slog.d(TAG, "Activity switch in Same Task");
-                        Slog.d(TAG, "Set Left Activity ==> " + r);
-                        Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-                    } else {
-                        mOtherActivityIndex = r.mIndex;
-                        mMultiWindowActivities.add(r);
-                        Slog.d(TAG, "Set Right Activity ==> " + r);
-                    }
-                } else {
-                    // check left task
-                    ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
-                    if (defaultActivity == null) {
-                        Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
-                    }
-                    if (defaultActivity != null && r.task == defaultActivity.task) {
-                        r.mIndex = mDefaultActivityIndex;
-                        if (r != mBackupDefaultActivity)
-                            mBackupDefaultActivity = defaultActivity;
-                        mMultiWindowActivities.remove(defaultActivity);
-                        mMultiWindowActivities.add(r);
-                        Slog.d(TAG, "Activity switch in Same Task");
-                        Slog.d(TAG, "Set Left Activity ==> " + r);
-                        Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-                    } else {
-                        if (r.mIndex > mOtherActivityIndex) {
-                            ActivityRecord otherActivity = getMultiWindowActivityByIndex(mOtherActivityIndex);
-                            if (otherActivity != null) {
-                                mMultiWindowActivities.remove(otherActivity);
-                                Slog.d(TAG, "removed from MultiWindowActivities --> " + otherActivity);
-                                Slog.d(TAG, "Set Right Activity ==> " + r);
-                                otherActivity.mIndex = getLastIndexOfActivityRecord();
-                                mOtherActivityIndex = r.mIndex;
-                                mMultiWindowActivities.add(r);
-                            }
-                        } else {
-                            Slog.e(TAG, "How can handle new activity record ---> " + r);
-                        }
-                    }
+          if (mMultiWindowActivities.isEmpty()) {
+            mDefaultActivityIndex = r.mIndex;
+            mMultiWindowActivities.add(r);
+            Slog.d(TAG, "Set Left Activity ==> " + r);
+            Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
+          } else {
+              if (mMultiWindowActivities.size() == 1) {
+                ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
+                if (defaultActivity == null) {
+                  Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
                 }
+                if (defaultActivity != null && r.task == defaultActivity.task) {
+                  Slog.d(TAG, "---------> Same Task with defaultActivity");
+                  Slog.d(TAG, "default " + defaultActivity);
+                  Slog.d(TAG, "new " + r);
+                  r.mIndex = mDefaultActivityIndex;
+                  // mDefaultActivityIndex = r.mIndex;
+                  if (r != mBackupDefaultActivity)
+                    mBackupDefaultActivity = mMultiWindowActivities.get(0);
+                  mMultiWindowActivities.remove(0);
+                  mMultiWindowActivities.add(r);
+                  Slog.d(TAG, "Activity switch in Same Task");
+                  Slog.d(TAG, "Set Left Activity ==> " + r);
+                  Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
+                } else {
+                  if (r.mIndex < mOtherActivityIndex) {
+                    mOtherActivityIndex = mDefaultActivityIndex;
+                    mDefaultActivityIndex = r.mIndex;
+                    Slog.d(TAG, "Set Left Activity ==> " + r);
+                  } else {
+                    mOtherActivityIndex = r.mIndex;
+                    Slog.d(TAG, "Set Right Activity ==> " + r);
+                  }
+                  mMultiWindowActivities.add(r);
+                }
+              } else {
+                // check left task
+                ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
+                if (defaultActivity == null) {
+                  Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
+                }
+                if (defaultActivity != null && r.task == defaultActivity.task) {
+                  r.mIndex = mDefaultActivityIndex;
+                  if (r != mBackupDefaultActivity)
+                    mBackupDefaultActivity = defaultActivity;
+                  mMultiWindowActivities.remove(defaultActivity);
+                  mMultiWindowActivities.add(r);
+                  Slog.d(TAG, "Activity switch in Same Task");
+                  Slog.d(TAG, "Set Left Activity ==> " + r);
+                  Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
+                } else {
+                  if (r.mIndex > mOtherActivityIndex) {
+                    ActivityRecord otherActivity = getMultiWindowActivityByIndex(mOtherActivityIndex);
+                    if (otherActivity != null) {
+                      mMultiWindowActivities.remove(otherActivity);
+                      Slog.d(TAG, "removed from MultiWindowActivities --> " + otherActivity);
+                      Slog.d(TAG, "Set Right Activity ==> " + r);
+                      otherActivity.mIndex = getLastIndexOfActivityRecord();
+                      mOtherActivityIndex = r.mIndex;
+                      mMultiWindowActivities.add(r);
+                    }
+                  } else {
+                    Slog.e(TAG, "How can handle new activity record ---> " + r);
+                  }
+                }
+              }
             }
         }
     }
@@ -1071,6 +1085,38 @@ final class ActivityStack {
             }
         }
         Slog.d(TAG, "End of ChangeLeftRight");
+    }
+
+    // psw0523 add for AVN MultiWindow
+    final void restoreDefaultActivity() {
+        Slog.d(TAG, "restoreDefaultActivity ----> ");
+        synchronized(mService) {
+          if (mMultiWindowActivities.size() == 1 && mPrevDefaultActivity != null) {
+            // ActivityRecord leftActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
+            // Slog.d(TAG, "change left " + leftActivity);
+            // Slog.d(TAG, "To " + mPrevDefaultActivity);
+            // int prevIndex = mPrevDefaultActivity.mIndex;
+            // if (prevIndex < mDefaultActivityIndex) {
+            //   leftActivity.mIndex = mDefaultActivityIndex;
+            //   mDefaultActivityIndex = prevIndex;
+            // } else {
+            //   leftActivity.mIndex = mPrevDefaultActivity.mIndex;
+            //   mPrevDefaultActivity.mIndex = mDefaultActivityIndex;
+            // }
+            // mWindowManager.setAppVisibility(mPrevDefaultActivity.appToken, true);
+            // startActivityLocked(mPrevDefaultActivity, false, true, true, null);
+            // startActivityLocked(mPrevDefaultActivity, true, true, true, null);
+            startPrevDefaultActivity();
+            // mMultiWindowActivities.clear();
+            // mMultiWindowActivities.add(mPrevDefaultActivity);
+            // mMultiWindowActivities.add(leftActivity);
+            // mOtherActivityIndex = leftActivity.mIndex;
+            // mPrevDefaultActivity = null;
+            // Slog.d(TAG, "default index : " + mDefaultActivityIndex + ", other index : " + mOtherActivityIndex);
+            // mWindowManager.executeAppTransition();
+          }
+        }
+        Slog.d(TAG, "End of restoreDefaultActivity");
     }
 
     final void activityPausedLocked(IBinder token, boolean timeout) {
@@ -1649,6 +1695,7 @@ final class ActivityStack {
     final boolean resumeTopActivityLocked(ActivityRecord prev, Bundle options) {
         if (mStackSupervisor.inResumeTopActivity) {
             // Don't even start recursing.
+            Slog.d(TAG, "resumeTopActivityLocked : StackSupervisor inResumeTopActivity");
             return false;
         }
 
@@ -1668,7 +1715,7 @@ final class ActivityStack {
     }
 
     final boolean resumeTopActivityInnerLocked(ActivityRecord prev, Bundle options) {
-        // Slog.d(TAG, "-----------> resumeTopActivityInnerLocked!!!");
+        Slog.d(TAG, "-----------> resumeTopActivityInnerLocked " + prev);
         // psw0523 HERE : first app run this path
         if (ActivityManagerService.DEBUG_LOCKSCREEN) mService.logLockScreen("");
 
@@ -1689,6 +1736,7 @@ final class ActivityStack {
 
         // Find the first activity that is not finishing.
         final ActivityRecord next = topRunningActivityLocked(null);
+        Slog.d(TAG, "next " + next);
 
         // Remember how we'll process this pause/resume situation, and ensure
         // that the state is reset however we wind up proceeding.
@@ -1716,6 +1764,7 @@ final class ActivityStack {
                     mStackSupervisor.allResumedActivitiesComplete()) {
             // Make sure we have executed any pending transitions, since there
             // should be nothing left to do at this point.
+            Slog.d(TAG, "Already resumed " + next);
             mWindowManager.executeAppTransition();
             mNoAnimActivities.clear();
             ActivityOptions.abort(options);
@@ -2118,6 +2167,458 @@ final class ActivityStack {
         return true;
     }
 
+    final boolean resumeDefaultActivity(ActivityRecord prev) {
+        Slog.d(TAG, "-----------> resumeDefaultActivity " + prev);
+
+        // Slog.d(TAG, "finishing ? " + prev.finishing);
+        Bundle options = null;
+        ActivityRecord parent = mActivityContainer.mParentActivity;
+        if ((parent != null && parent.state != ActivityState.RESUMED) ||
+                !mActivityContainer.isAttachedLocked()) {
+            // Do not resume this stack if its parent is not resumed.
+            // TODO: If in a loop, make sure that parent stack resumeTopActivity is called 1st.
+            Slog.d(TAG, "return false here 1");
+            return false;
+        }
+
+        cancelInitializingActivities();
+
+        // Find the first activity that is not finishing.
+        final ActivityRecord next = topRunningActivityLocked(null);
+        Slog.d(TAG, "next " + next);
+        if (next != prev) {
+            Slog.e(TAG, "Prev Task is not TOP!!!");
+            return false;
+        }
+
+        // Remember how we'll process this pause/resume situation, and ensure
+        // that the state is reset however we wind up proceeding.
+        final boolean userLeaving = mStackSupervisor.mUserLeaving;
+        mStackSupervisor.mUserLeaving = false;
+
+        final TaskRecord prevTask = prev != null ? prev.task : null;
+        if (next == null) {
+            // There are no more activities!  Let's just start up the
+            // Launcher...
+            ActivityOptions.abort(options);
+            if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: No more activities go home");
+            if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+            // Only resume home if on home display
+            final int returnTaskType = prevTask == null || !prevTask.isOverHomeStack() ?
+                    HOME_ACTIVITY_TYPE : prevTask.getTaskToReturnTo();
+            return isOnHomeDisplay() &&
+                    mStackSupervisor.resumeHomeStackTask(returnTaskType, prev, "noMoreActivities");
+        }
+
+        next.delayedResume = false;
+
+        // If the top activity is the resumed one, nothing to do.
+        if (mResumedActivity == next && next.state == ActivityState.RESUMED &&
+                    mStackSupervisor.allResumedActivitiesComplete()) {
+            // Make sure we have executed any pending transitions, since there
+            // should be nothing left to do at this point.
+            Slog.d(TAG, "Already resumed " + next);
+            mWindowManager.executeAppTransition();
+            mNoAnimActivities.clear();
+            ActivityOptions.abort(options);
+            if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: Top activity resumed " + next);
+            if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+            return false;
+        }
+
+        final TaskRecord nextTask = next.task;
+        if (prevTask != null && prevTask.stack == this &&
+                prevTask.isOverHomeStack() && prev.finishing && prev.frontOfTask) {
+            if (DEBUG_STACK)  mStackSupervisor.validateTopActivitiesLocked();
+            if (prevTask == nextTask) {
+                prevTask.setFrontOfTask();
+            } else if (prevTask != topTask()) {
+                // This task is going away but it was supposed to return to the home stack.
+                // Now the task above it has to return to the home task instead.
+                final int taskNdx = mTaskHistory.indexOf(prevTask) + 1;
+                mTaskHistory.get(taskNdx).setTaskToReturnTo(HOME_ACTIVITY_TYPE);
+            } else if (!isOnHomeDisplay()) {
+                return false;
+            } else if (!isHomeStack()){
+                if (DEBUG_STATES) Slog.d(TAG,
+                        "resumeTopActivityLocked: Launching home next");
+                final int returnTaskType = prevTask == null || !prevTask.isOverHomeStack() ?
+                        HOME_ACTIVITY_TYPE : prevTask.getTaskToReturnTo();
+                return mStackSupervisor.resumeHomeStackTask(returnTaskType, prev, "prevFinished");
+            }
+        }
+
+        // If we are sleeping, and there is no resumed activity, and the top
+        // activity is paused, well that is the state we want.
+        if (mService.isSleepingOrShuttingDown()
+                && mLastPausedActivity == next
+                && mStackSupervisor.allPausedActivitiesComplete()) {
+            // Make sure we have executed any pending transitions, since there
+            // should be nothing left to do at this point.
+            mWindowManager.executeAppTransition();
+            mNoAnimActivities.clear();
+            ActivityOptions.abort(options);
+            if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: Going to sleep and all paused");
+            if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+            return false;
+        }
+
+        // Make sure that the user who owns this activity is started.  If not,
+        // we will just leave it as is because someone should be bringing
+        // another user's activities to the top of the stack.
+        if (mService.mStartedUsers.get(next.userId) == null) {
+            Slog.w(TAG, "Skipping resume of top activity " + next
+                    + ": user " + next.userId + " is stopped");
+            if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+            return false;
+        }
+
+        // The activity may be waiting for stop, but that is no longer
+        // appropriate for it.
+        mStackSupervisor.mStoppingActivities.remove(next);
+        mStackSupervisor.mGoingToSleepActivities.remove(next);
+        next.sleeping = false;
+        mStackSupervisor.mWaitingVisibleActivities.remove(next);
+
+        if (DEBUG_SWITCH) Slog.d(TAG, "Resuming " + next);
+
+        // If we are currently pausing an activity, then don't do anything
+        // until that is done.
+        if (!mStackSupervisor.allPausedActivitiesComplete()) {
+            if (DEBUG_SWITCH || DEBUG_PAUSE || DEBUG_STATES) Slog.d(TAG,
+                    "resumeTopActivityLocked: Skip resume: some activity pausing.");
+            if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+            return false;
+        }
+
+        // Okay we are now going to start a switch, to 'next'.  We may first
+        // have to pause the current activity, but this is an important point
+        // where we have decided to go to 'next' so keep track of that.
+        // XXX "App Redirected" dialog is getting too many false positives
+        // at this point, so turn off for now.
+        if (false) {
+            if (mLastStartedActivity != null && !mLastStartedActivity.finishing) {
+                long now = SystemClock.uptimeMillis();
+                final boolean inTime = mLastStartedActivity.startTime != 0
+                        && (mLastStartedActivity.startTime + START_WARN_TIME) >= now;
+                final int lastUid = mLastStartedActivity.info.applicationInfo.uid;
+                final int nextUid = next.info.applicationInfo.uid;
+                if (inTime && lastUid != nextUid
+                        && lastUid != next.launchedFromUid
+                        && mService.checkPermission(
+                                android.Manifest.permission.STOP_APP_SWITCHES,
+                                -1, next.launchedFromUid)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    mService.showLaunchWarningLocked(mLastStartedActivity, next);
+                } else {
+                    next.startTime = now;
+                    mLastStartedActivity = next;
+                }
+            } else {
+                next.startTime = SystemClock.uptimeMillis();
+                mLastStartedActivity = next;
+            }
+        }
+
+        // We need to start pausing the current activity so the top one
+        // can be resumed...
+        boolean dontWaitForPause = (next.info.flags&ActivityInfo.FLAG_RESUME_WHILE_PAUSING) != 0;
+        boolean pausing = mStackSupervisor.pauseBackStacks(userLeaving, true, dontWaitForPause);
+        if (mResumedActivity != null) {
+            if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: Pausing " + mResumedActivity);
+            pausing |= startPausingLocked(userLeaving, false, true, dontWaitForPause);
+        }
+        if (pausing) {
+            if (DEBUG_SWITCH || DEBUG_STATES) Slog.d(TAG,
+                    "resumeTopActivityLocked: Skip resume: need to start pausing");
+            // At this point we want to put the upcoming activity's process
+            // at the top of the LRU list, since we know we will be needing it
+            // very soon and it would be a waste to let it get killed if it
+            // happens to be sitting towards the end.
+            if (next.app != null && next.app.thread != null) {
+                mService.updateLruProcessLocked(next.app, true, null);
+            }
+            if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+            return true;
+        }
+
+        // If the most recent activity was noHistory but was only stopped rather
+        // than stopped+finished because the device went to sleep, we need to make
+        // sure to finish it as we're making a new activity topmost.
+        if (mService.isSleeping() && mLastNoHistoryActivity != null &&
+                !mLastNoHistoryActivity.finishing) {
+            if (DEBUG_STATES) Slog.d(TAG, "no-history finish of " + mLastNoHistoryActivity +
+                    " on new resume");
+            requestFinishActivityLocked(mLastNoHistoryActivity.appToken, Activity.RESULT_CANCELED,
+                    null, "no-history", false);
+            mLastNoHistoryActivity = null;
+        }
+
+        if (prev != null && prev != next) {
+            if (!prev.waitingVisible && next != null && !next.nowVisible) {
+                prev.waitingVisible = true;
+                mStackSupervisor.mWaitingVisibleActivities.add(prev);
+                if (DEBUG_SWITCH) Slog.d(
+                        TAG, "Resuming top, waiting visible to hide: " + prev);
+            } else {
+                // The next activity is already visible, so hide the previous
+                // activity's windows right now so we can show the new one ASAP.
+                // We only do this if the previous is finishing, which should mean
+                // it is on top of the one being resumed so hiding it quickly
+                // is good.  Otherwise, we want to do the normal route of allowing
+                // the resumed activity to be shown so we can decide if the
+                // previous should actually be hidden depending on whether the
+                // new one is found to be full-screen or not.
+                if (prev.finishing) {
+                    mWindowManager.setAppVisibility(prev.appToken, false);
+                    if (DEBUG_SWITCH) Slog.d(TAG, "Not waiting for visible to hide: "
+                            + prev + ", waitingVisible="
+                            + (prev != null ? prev.waitingVisible : null)
+                            + ", nowVisible=" + next.nowVisible);
+                } else {
+                    if (DEBUG_SWITCH) Slog.d(TAG, "Previous already visible but still waiting to hide: "
+                        + prev + ", waitingVisible="
+                        + (prev != null ? prev.waitingVisible : null)
+                        + ", nowVisible=" + next.nowVisible);
+                }
+            }
+        }
+
+        // Launching this app's activity, make sure the app is no longer
+        // considered stopped.
+        try {
+            AppGlobals.getPackageManager().setPackageStoppedState(
+                    next.packageName, false, next.userId); /* TODO: Verify if correct userid */
+        } catch (RemoteException e1) {
+        } catch (IllegalArgumentException e) {
+            Slog.w(TAG, "Failed trying to unstop package "
+                    + next.packageName + ": " + e);
+        }
+
+        // We are starting up the next activity, so tell the window manager
+        // that the previous one will be hidden soon.  This way it can know
+        // to ignore it when computing the desired screen orientation.
+        boolean anim = true;
+        if (prev != null) {
+            if (prev.finishing) {
+                if (DEBUG_TRANSITION) Slog.d(TAG,
+                        "Prepare close transition: prev=" + prev);
+                if (mNoAnimActivities.contains(prev)) {
+                    anim = false;
+                    mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, false);
+                } else {
+                    mWindowManager.prepareAppTransition(prev.task == next.task
+                            ? AppTransition.TRANSIT_ACTIVITY_CLOSE
+                            : AppTransition.TRANSIT_TASK_CLOSE, false);
+                }
+                mWindowManager.setAppWillBeHidden(prev.appToken);
+                mWindowManager.setAppVisibility(prev.appToken, false);
+            } else {
+                if (DEBUG_TRANSITION) Slog.d(TAG, "Prepare open transition: prev=" + prev);
+                if (mNoAnimActivities.contains(next)) {
+                    anim = false;
+                    mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, false);
+                } else {
+                    mWindowManager.prepareAppTransition(prev.task == next.task
+                            ? AppTransition.TRANSIT_ACTIVITY_OPEN
+                            : next.mLaunchTaskBehind
+                                    ? AppTransition.TRANSIT_TASK_OPEN_BEHIND
+                                    : AppTransition.TRANSIT_TASK_OPEN, false);
+                }
+            }
+            if (false) {
+                mWindowManager.setAppWillBeHidden(prev.appToken);
+                mWindowManager.setAppVisibility(prev.appToken, false);
+            }
+        } else {
+            if (DEBUG_TRANSITION) Slog.d(TAG, "Prepare open transition: no previous");
+            if (mNoAnimActivities.contains(next)) {
+                anim = false;
+                mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, false);
+            } else {
+                mWindowManager.prepareAppTransition(AppTransition.TRANSIT_ACTIVITY_OPEN, false);
+            }
+        }
+
+        Bundle resumeAnimOptions = null;
+        if (anim) {
+            ActivityOptions opts = next.getOptionsForTargetActivityLocked();
+            if (opts != null) {
+                resumeAnimOptions = opts.toBundle();
+            }
+            next.applyOptionsLocked();
+        } else {
+            next.clearOptionsLocked();
+        }
+
+        ActivityStack lastStack = mStackSupervisor.getLastStack();
+        if (next.app != null && next.app.thread != null) {
+            if (DEBUG_SWITCH) Slog.d(TAG, "Resume running: " + next);
+
+            // This activity is now becoming visible.
+            mWindowManager.setAppVisibility(next.appToken, true);
+
+            // schedule launch ticks to collect information about slow apps.
+            next.startLaunchTickingLocked();
+
+            ActivityRecord lastResumedActivity =
+                    lastStack == null ? null :lastStack.mResumedActivity;
+            ActivityState lastState = next.state;
+
+            mService.updateCpuStats();
+
+            if (DEBUG_STATES) Slog.d(TAG, "Moving to RESUMED: " + next + " (in existing)");
+            next.state = ActivityState.RESUMED;
+            // MULTIWINDOW
+            // Slog.d(TAG, "=====> CHECK getMultiWindowEnabled");
+            // if (mStackSupervisor.getMultiWindowEnabled()) {
+            //     // Slog.d(TAG, "MultiWindow Enabled");
+            //     if (isHomeStack() || numActivities() >= mStackSupervisor.getMultiWindowMaxNum()){
+            //         // TODO: apply multiwindow_policy
+            //         Slog.d(TAG, "isHomeStack " + isHomeStack() + ", numActivities: " + numActivities());
+            //         mResumedActivity = next;
+            //     }
+            // } else {
+            //     mResumedActivity = next;
+            // }
+            mResumedActivity = next;
+            next.task.touchActiveTime();
+            mService.addRecentTaskLocked(next.task);
+            mService.updateLruProcessLocked(next.app, true, null);
+            updateLRUListLocked(next);
+            mService.updateOomAdjLocked();
+
+            // Have the window manager re-evaluate the orientation of
+            // the screen based on the new activity order.
+            boolean notUpdated = true;
+            if (mStackSupervisor.isFrontStack(this)) {
+                Configuration config = mWindowManager.updateOrientationFromAppTokens(
+                        mService.mConfiguration,
+                        next.mayFreezeScreenLocked(next.app) ? next.appToken : null);
+                if (config != null) {
+                    next.frozenBeforeDestroy = true;
+                }
+                notUpdated = !mService.updateConfigurationLocked(config, next, false, false);
+            }
+
+            if (notUpdated) {
+                // The configuration update wasn't able to keep the existing
+                // instance of the activity, and instead started a new one.
+                // We should be all done, but let's just make sure our activity
+                // is still at the top and schedule another run if something
+                // weird happened.
+                ActivityRecord nextNext = topRunningActivityLocked(null);
+                if (DEBUG_SWITCH || DEBUG_STATES) Slog.i(TAG,
+                        "Activity config changed during resume: " + next
+                        + ", new next: " + nextNext);
+                if (nextNext != next) {
+                    // Do over!
+                    mStackSupervisor.scheduleResumeTopActivities();
+                }
+                if (mStackSupervisor.reportResumedActivityLocked(next)) {
+                    mNoAnimActivities.clear();
+                    if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+                    return true;
+                }
+                if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+                return false;
+            }
+
+            try {
+                // Deliver all pending results.
+                ArrayList<ResultInfo> a = next.results;
+                if (a != null) {
+                    final int N = a.size();
+                    if (!next.finishing && N > 0) {
+                        if (DEBUG_RESULTS) Slog.d(
+                                TAG, "Delivering results to " + next
+                                + ": " + a);
+                        next.app.thread.scheduleSendResult(next.appToken, a);
+                    }
+                }
+
+                if (next.newIntents != null) {
+                    next.app.thread.scheduleNewIntent(next.newIntents, next.appToken);
+                }
+
+                EventLog.writeEvent(EventLogTags.AM_RESUME_ACTIVITY, next.userId,
+                        System.identityHashCode(next), next.task.taskId, next.shortComponentName);
+
+                next.sleeping = false;
+                mService.showAskCompatModeDialogLocked(next);
+                next.app.pendingUiClean = true;
+                next.app.forceProcessStateUpTo(ActivityManager.PROCESS_STATE_TOP);
+                next.clearOptionsLocked();
+                next.app.thread.scheduleResumeActivity(next.appToken, next.app.repProcState,
+                        mService.isNextTransitionForward(), resumeAnimOptions);
+
+                mStackSupervisor.checkReadyForSleepLocked();
+
+                if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: Resumed " + next);
+            } catch (Exception e) {
+                // Whoops, need to restart this activity!
+                if (DEBUG_STATES) Slog.d(TAG, "Resume failed; resetting state to "
+                        + lastState + ": " + next);
+                next.state = lastState;
+                if (lastStack != null) {
+                    lastStack.mResumedActivity = lastResumedActivity;
+                }
+                Slog.i(TAG, "Restarting because process died: " + next);
+                if (!next.hasBeenLaunched) {
+                    next.hasBeenLaunched = true;
+                } else  if (SHOW_APP_STARTING_PREVIEW && lastStack != null &&
+                        mStackSupervisor.isFrontStack(lastStack)) {
+                    mWindowManager.setAppStartingWindow(
+                            next.appToken, next.packageName, next.theme,
+                            mService.compatibilityInfoForPackageLocked(next.info.applicationInfo),
+                            next.nonLocalizedLabel, next.labelRes, next.icon, next.logo,
+                            next.windowFlags, null, true);
+                }
+                mStackSupervisor.startSpecificActivityLocked(next, true, false);
+                if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+                return true;
+            }
+
+            // From this point on, if something goes wrong there is no way
+            // to recover the activity.
+            try {
+                next.visible = true;
+                completeResumeLocked(next);
+            } catch (Exception e) {
+                // If any exception gets thrown, toss away this
+                // activity and try the next one.
+                Slog.w(TAG, "Exception thrown during resume of " + next, e);
+                requestFinishActivityLocked(next.appToken, Activity.RESULT_CANCELED, null,
+                        "resume-exception", true);
+                if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+                return true;
+            }
+            next.stopped = false;
+
+        } else {
+            // Whoops, need to restart this activity!
+            if (!next.hasBeenLaunched) {
+                next.hasBeenLaunched = true;
+            } else {
+                if (SHOW_APP_STARTING_PREVIEW) {
+                    mWindowManager.setAppStartingWindow(
+                            next.appToken, next.packageName, next.theme,
+                            mService.compatibilityInfoForPackageLocked(
+                                    next.info.applicationInfo),
+                            next.nonLocalizedLabel,
+                            next.labelRes, next.icon, next.logo, next.windowFlags,
+                            null, true);
+                }
+                if (DEBUG_SWITCH) Slog.d(TAG, "Restarting: " + next);
+            }
+            if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: Restarting " + next);
+            // psw0523 HERE : first app run this path
+            mStackSupervisor.startSpecificActivityLocked(next, true, true);
+        }
+
+        if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
+        return true;
+    }
     private void insertTaskAtTop(TaskRecord task) {
         // If this is being moved to the top by another activity or being launched from the home
         // activity, set mOnTopOfHome accordingly.
@@ -2156,8 +2657,8 @@ final class ActivityStack {
         TaskRecord rTask = r.task;
         final int taskId = rTask.taskId;
         // psw0523 debugging for AVN MultiWindow
-        // Slog.d(TAG, "startActivityLocked --> r " + r);
-        // Slog.d(TAG, "newTask --> " + newTask + ", doResume " + doResume + ", keepCurTransition " + keepCurTransition);
+        Slog.d(TAG, "startActivityLocked --> r " + r);
+        Slog.d(TAG, "newTask --> " + newTask + ", doResume " + doResume + ", keepCurTransition " + keepCurTransition);
 
         // mLaunchTaskBehind tasks get placed at the back of the task stack.
         if (!r.mLaunchTaskBehind && (taskForIdLocked(taskId) == null || newTask)) {
@@ -2252,10 +2753,10 @@ final class ActivityStack {
             }
 
             // psw0523 patch for AVN MultiWindow
-            int activityIndex = getLastIndexOfActivityRecord();
-            r.mIndex = activityIndex;
-            // Slog.d(TAG, "addAppToken ===> " + r);
-            // Slog.d(TAG, "mIndex " + r.mIndex);
+            r.mIndex = getLastIndexOfActivityRecord();
+
+            Slog.d(TAG, "addAppToken ===> " + r);
+            Slog.d(TAG, "mIndex " + r.mIndex);
             mWindowManager.addAppToken(task.mActivities.indexOf(r),
                     r.appToken, r.task.taskId, mStackId, r.info.screenOrientation, r.fullscreen,
                     (r.info.flags & ActivityInfo.FLAG_SHOW_ON_LOCK_SCREEN) != 0, r.userId,
@@ -2326,6 +2827,113 @@ final class ActivityStack {
 
         if (doResume) {
             mStackSupervisor.resumeTopActivitiesLocked(this, r, options);
+        }
+    }
+
+    // psw0523 add for AVN MultiWindow
+    final void startPrevDefaultActivity() {
+        if (mPrevDefaultActivity == null)
+            return;
+        ActivityRecord r = mPrevDefaultActivity;
+        mPrevDefaultActivity = null;
+        boolean newTask = true;
+        boolean doResume = true;
+        boolean keepCurTransition = true;
+        Bundle options = null;
+
+        TaskRecord rTask = r.task;
+        final int taskId = rTask.taskId;
+        // psw0523 debugging for AVN MultiWindow
+        Slog.d(TAG, "startPrevDefaultActivity --> r " + r);
+
+        // mLaunchTaskBehind tasks get placed at the back of the task stack.
+        if (!r.mLaunchTaskBehind && (taskForIdLocked(taskId) == null || newTask)) {
+            // Last activity in task had been removed or ActivityManagerService is reusing task.
+            // Insert or replace.
+            // Might not even be in.
+            Slog.d(TAG, "task to top");
+            r.finishing = false;
+            insertTaskAtTop(rTask);
+            mWindowManager.moveTaskToTop(taskId);
+        }
+        TaskRecord task = null;
+        // Place a new activity at top of stack, so it is next to interact
+        // with the user.
+
+        // If we are not placing the new activity frontmost, we do not want
+        // to deliver the onUserLeaving callback to the actual frontmost
+        // activity
+        if (task == r.task && mTaskHistory.indexOf(task) != (mTaskHistory.size() - 1)) {
+            mStackSupervisor.mUserLeaving = false;
+            if (DEBUG_USER_LEAVING) Slog.d(TAG,
+                    "startActivity() behind front, mUserLeaving=false");
+        }
+
+        task = r.task;
+
+        task.addActivityToTop(r);
+        task.setFrontOfTask();
+
+        r.putInHistory();
+        if (!isHomeStack() || numActivities() > 0) {
+            // We want to show the starting preview window if we are
+            // switching to a new task, or the next activity's process is
+            // not currently running.
+            boolean showStartingIcon = newTask;
+            ProcessRecord proc = r.app;
+            if (proc == null) {
+                proc = mService.mProcessNames.get(r.processName, r.info.applicationInfo.uid);
+            }
+            if (proc == null || proc.thread == null) {
+                showStartingIcon = true;
+            }
+            if (DEBUG_TRANSITION) Slog.d(TAG,
+                    "Prepare open transition: starting " + r);
+            if ((r.intent.getFlags()&Intent.FLAG_ACTIVITY_NO_ANIMATION) != 0) {
+                mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, keepCurTransition);
+                mNoAnimActivities.add(r);
+            } else {
+                mWindowManager.prepareAppTransition(newTask
+                        ? r.mLaunchTaskBehind
+                                ? AppTransition.TRANSIT_TASK_OPEN_BEHIND
+                                : AppTransition.TRANSIT_TASK_OPEN
+                        : AppTransition.TRANSIT_ACTIVITY_OPEN, keepCurTransition);
+                mNoAnimActivities.remove(r);
+            }
+
+            Slog.d(TAG, "addAppToken ===> " + r);
+            Slog.d(TAG, "mIndex " + r.mIndex);
+            mWindowManager.addAppToken(task.mActivities.indexOf(r),
+                    r.appToken, r.task.taskId, mStackId, r.info.screenOrientation, r.fullscreen,
+                    (r.info.flags & ActivityInfo.FLAG_SHOW_ON_LOCK_SCREEN) != 0, r.userId,
+                    r.info.configChanges, task.voiceSession != null, r.mLaunchTaskBehind);
+
+            updateMultiWindowActivities(r);
+
+            boolean doShow = true;
+            // if (newTask) {
+            //     // Even though this activity is starting fresh, we still need
+            //     // to reset it to make sure we apply affinities to move any
+            //     // existing activities from other tasks in to it.
+            //     // If the caller has requested that the target task be
+            //     // reset, then do so.
+            //     if ((r.intent.getFlags() & Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED) != 0) {
+            //         resetTaskIfNeededLocked(r, r);
+            //         doShow = topRunningNonDelayedActivityLocked(null) == r;
+            //     }
+            // } else if (options != null && new ActivityOptions(options).getAnimationType()
+            //         == ActivityOptions.ANIM_SCENE_TRANSITION) {
+            //     doShow = false;
+            // }
+            mWindowManager.setAppVisibility(r.appToken, true);
+            ensureActivitiesVisibleLocked(null, 0);
+        }
+        // if (VALIDATE_TOKENS) {
+        //     validateAppTokensLocked();
+        // }
+
+        if (doResume) {
+            resumeDefaultActivity(r);
         }
     }
 
@@ -2790,7 +3398,8 @@ final class ActivityStack {
 
         // psw0523 patch for AVN MultiWindow
         if (mStackSupervisor.getMultiWindowEnabled()) {
-            if (mBackupDefaultActivity != null && r.task == mBackupDefaultActivity.task) {
+            if (mBackupDefaultActivity != null && r != mBackupDefaultActivity && r.task == mBackupDefaultActivity.task) {
+              Slog.d(TAG, "requestFinishAcivityLocked : r --> " + r);
                 Slog.d(TAG, "restore mBackupDefaultActivity --> " + mBackupDefaultActivity);
                 updateMultiWindowActivities(mBackupDefaultActivity);
                 mBackupDefaultActivity = null;
