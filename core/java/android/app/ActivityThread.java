@@ -3233,10 +3233,11 @@ public final class ActivityThread {
                 // isn't resumed.
                 return null;
             }
-            RuntimeException e = new RuntimeException(
-                    "Performing pause of activity that is not resumed: "
-                    + r.intent.getComponent().toShortString());
-            Slog.e(TAG, e.getMessage(), e);
+            // psw0523 fix for AVN
+            // RuntimeException e = new RuntimeException(
+            //         "Performing pause of activity that is not resumed: "
+            //         + r.intent.getComponent().toShortString());
+            // Slog.e(TAG, e.getMessage(), e);
         }
         if (finished) {
             r.activity.mFinished = true;
