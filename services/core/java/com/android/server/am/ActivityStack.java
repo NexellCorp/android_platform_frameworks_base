@@ -996,74 +996,99 @@ final class ActivityStack {
         Slog.d(TAG, "updateMultiWindowActivities ---> ");
         Slog.d(TAG, "task ---> " + r.task);
         Slog.d(TAG, "activity --> " + r);
+        Slog.d(TAG, "name --> " + r.shortComponentName);
+
+        if (isHomeStack()) {
+            return;
+        }
+
+        // handle Brightness Dialog
+        if (r.shortComponentName.startsWith("com.android.systemui/.settings.BrightnessDialog")) {
+            Slog.d(TAG, "This is BrighnessDialog, Do nothing!!!");
+            return;
+        }
+
         synchronized(mService) {
-          if (mMultiWindowActivities.isEmpty()) {
-            mDefaultActivityIndex = r.mIndex;
-            mMultiWindowActivities.add(r);
-            Slog.d(TAG, "Set Left Activity ==> " + r);
-            Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-          } else {
-              if (mMultiWindowActivities.size() == 1) {
-                ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
-                if (defaultActivity == null) {
-                  Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
-                }
-                if (defaultActivity != null && r.task == defaultActivity.task) {
-                  Slog.d(TAG, "---------> Same Task with defaultActivity");
-                  Slog.d(TAG, "default " + defaultActivity);
-                  Slog.d(TAG, "new " + r);
-                  r.mIndex = mDefaultActivityIndex;
-                  // mDefaultActivityIndex = r.mIndex;
-                  if (r != mBackupDefaultActivity)
-                    mBackupDefaultActivity = mMultiWindowActivities.get(0);
-                  mMultiWindowActivities.remove(0);
-                  mMultiWindowActivities.add(r);
-                  Slog.d(TAG, "Activity switch in Same Task");
-                  Slog.d(TAG, "Set Left Activity ==> " + r);
-                  Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-                } else {
-                  if (r.mIndex < mOtherActivityIndex) {
-                    mOtherActivityIndex = mDefaultActivityIndex;
-                    mDefaultActivityIndex = r.mIndex;
-                    Slog.d(TAG, "Set Left Activity ==> " + r);
-                  } else {
-                    mOtherActivityIndex = r.mIndex;
-                    Slog.d(TAG, "Set Right Activity ==> " + r);
-                  }
-                  mMultiWindowActivities.add(r);
-                }
-              } else {
-                // check left task
-                ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
-                if (defaultActivity == null) {
-                  Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
-                }
-                if (defaultActivity != null && r.task == defaultActivity.task) {
-                  r.mIndex = mDefaultActivityIndex;
-                  if (r != mBackupDefaultActivity)
-                    mBackupDefaultActivity = defaultActivity;
-                  mMultiWindowActivities.remove(defaultActivity);
-                  mMultiWindowActivities.add(r);
-                  Slog.d(TAG, "Activity switch in Same Task");
-                  Slog.d(TAG, "Set Left Activity ==> " + r);
-                  Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-                } else {
-                  if (r.mIndex > mOtherActivityIndex) {
-                    ActivityRecord otherActivity = getMultiWindowActivityByIndex(mOtherActivityIndex);
-                    if (otherActivity != null) {
-                      mMultiWindowActivities.remove(otherActivity);
-                      Slog.d(TAG, "removed from MultiWindowActivities --> " + otherActivity);
-                      Slog.d(TAG, "Set Right Activity ==> " + r);
-                      otherActivity.mIndex = getLastIndexOfActivityRecord();
-                      mOtherActivityIndex = r.mIndex;
-                      mMultiWindowActivities.add(r);
+            if (mMultiWindowActivities.isEmpty()) {
+                mDefaultActivityIndex = r.mIndex;
+                mMultiWindowActivities.add(r);
+                Slog.d(TAG, "Set Left Activity ==> " + r);
+                Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
+            } else {
+                if (mMultiWindowActivities.size() == 1) {
+                    ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
+                    if (defaultActivity == null) {
+                        Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
                     }
-                  } else {
-                    Slog.e(TAG, "How can handle new activity record ---> " + r);
-                  }
+                    if (defaultActivity != null && r.task == defaultActivity.task) {
+                        Slog.d(TAG, "---------> Same Task with defaultActivity");
+                        Slog.d(TAG, "default " + defaultActivity);
+                        Slog.d(TAG, "new " + r);
+                        r.mIndex = mDefaultActivityIndex;
+                        // mDefaultActivityIndex = r.mIndex;
+                        if (r != mBackupDefaultActivity)
+                            mBackupDefaultActivity = mMultiWindowActivities.get(0);
+                        mMultiWindowActivities.remove(0);
+                        mMultiWindowActivities.add(r);
+                        Slog.d(TAG, "Activity switch in Same Task");
+                        Slog.d(TAG, "Set Left Activity ==> " + r);
+                        Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
+                    } else {
+                        if (r.mIndex < mOtherActivityIndex) {
+                            mOtherActivityIndex = mDefaultActivityIndex;
+                            mDefaultActivityIndex = r.mIndex;
+                            Slog.d(TAG, "Set Left Activity ==> " + r);
+                        } else {
+                            mOtherActivityIndex = r.mIndex;
+                            Slog.d(TAG, "Set Right Activity ==> " + r);
+                        }
+                        mMultiWindowActivities.add(r);
+                    }
+                } else {
+                    // check left task
+                    ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
+                    if (defaultActivity == null) {
+                        Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
+                    }
+                    if (defaultActivity != null && r.task == defaultActivity.task) {
+                        r.mIndex = mDefaultActivityIndex;
+                        if (r != mBackupDefaultActivity)
+                            mBackupDefaultActivity = defaultActivity;
+                        mMultiWindowActivities.remove(defaultActivity);
+                        mMultiWindowActivities.add(r);
+                        Slog.d(TAG, "Activity switch in Same Task");
+                        Slog.d(TAG, "Set Left Activity ==> " + r);
+                        Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
+                    } else {
+                        if (r.mIndex > mOtherActivityIndex) {
+                            ActivityRecord otherActivity = getMultiWindowActivityByIndex(mOtherActivityIndex);
+                            if (otherActivity != null) {
+                                mMultiWindowActivities.remove(otherActivity);
+                                Slog.d(TAG, "removed from MultiWindowActivities --> " + otherActivity);
+                                Slog.d(TAG, "Set Right Activity ==> " + r);
+                                otherActivity.mIndex = getLastIndexOfActivityRecord();
+                                mOtherActivityIndex = r.mIndex;
+                                mMultiWindowActivities.add(r);
+                            }
+                        } else {
+                            Slog.e(TAG, "How can handle new activity record ---> " + r);
+                        }
+                    }
                 }
-              }
             }
+        }
+
+        mWindowManager.clearMultiWindowAppToken();
+
+        ActivityRecord r1 = getMultiWindowActivityByIndex(mDefaultActivityIndex);
+        ActivityRecord r2 = getMultiWindowActivityByIndex(mOtherActivityIndex);
+        if (r1 != null) {
+            Slog.d(TAG, "add MultiWindow Left --> " + r1);
+            mWindowManager.addMultiWindowAppToken(r1.appToken, mStackId, 0);
+        }
+        if (r2 != null) {
+            Slog.d(TAG, "add MultiWindow Right --> " + r2);
+            mWindowManager.addMultiWindowAppToken(r2.appToken, mStackId, 1);
         }
     }
 
