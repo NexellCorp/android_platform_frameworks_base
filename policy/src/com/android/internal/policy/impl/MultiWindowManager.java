@@ -1298,21 +1298,6 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         }
                     }
                 }
-            } else if (mMultiWindowEnable == false && mCurrentLayoutWindowNumber > 1) {
-                if (DEBUG_LAYOUT) Slog.d(TAG, "MultiWindowEnable Control ===> win " + win);
-                if (win == mLeftWin) {
-                    if (DEBUG_LAYOUT) Slog.d(TAG, "Only LeftWin Active!!!");
-                    parentFrame.left = mSystemLeft;
-                    parentFrame.top = mSystemTop;
-                    parentFrame.right = mSystemRight;
-                    parentFrame.bottom = mSystemBottom;
-                } else if (win == mRightWin) {
-                    // Slog.d(TAG, "hide RightWin " + mRightWin);
-                    // win.hideLw(true);
-                } else {
-                    if (DEBUG_LAYOUT) Slog.d(TAG, "hide other window --> " + win);
-                    win.hideLw(true);
-                }
             } else {
                 parentFrame.left = mSystemLeft;
                 parentFrame.top = mSystemTop;
@@ -1321,12 +1306,22 @@ public class MultiWindowManager implements WindowManagerPolicy {
             }
         }
 
-        displayFrame.set(parentFrame);
-        overscanFrame.set(parentFrame);
-        contentFrame.set(parentFrame);
-        visibleFrame.set(parentFrame);
-        decorFrame.set(parentFrame);
-        stableFrame.set(parentFrame);
+        if (mMultiWindowEnable == false && attached != null) {
+            contentFrame.set(attached.getContentFrameLw());
+            displayFrame.set(attached.getDisplayFrameLw());
+            overscanFrame.set(attached.getOverscanFrameLw());
+            visibleFrame.set(attached.getVisibleFrameLw());
+            decorFrame.set(parentFrame);
+            stableFrame.set(parentFrame);
+            parentFrame.set(attached.getFrameLw());
+        } else {
+            displayFrame.set(parentFrame);
+            overscanFrame.set(parentFrame);
+            contentFrame.set(parentFrame);
+            visibleFrame.set(parentFrame);
+            decorFrame.set(parentFrame);
+            stableFrame.set(parentFrame);
+        }
 
         win.computeFrameLw(parentFrame,
                 displayFrame,
