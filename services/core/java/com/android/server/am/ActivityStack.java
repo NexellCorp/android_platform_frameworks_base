@@ -170,7 +170,14 @@ final class ActivityStack {
     int mDefaultActivityIndex = 0;
     int mOtherActivityIndex = 0;
     int mLastActivityRecordIndex = 0;
+    ActivityRecord mFirstActivity = null;
+    ActivityRecord mSecondActivity = null;
+    ActivityRecord mThirdActivity = null;
+    ActivityRecord mFourthActivity = null;
     ActivityRecord mBackupDefaultActivity = null;
+    ActivityRecord mBackupFirstActivity = null;
+    ActivityRecord mBackupSecondActivity = null;
+    final ArrayList<ActivityRecord> mBackupActivities = new ArrayList<ActivityRecord>();
     // for restore default Activity
     ActivityRecord mPrevDefaultActivity = null;
 
@@ -908,13 +915,28 @@ final class ActivityStack {
     }
 
     // psw0523 add for AVN MultiWindow
+    final void backupMultiWindowActivity(ActivityRecord r) {
+        if (r == mFirstActivity) {
+            Slog.d(TAG, "backupMultiWindowActivity First --> " + r);
+            mBackupFirstActivity = r;
+        } else if (r == mSecondActivity) {
+            Slog.d(TAG, "backupMultiWindowActivity Second --> " + r);
+            mBackupSecondActivity = r;
+        } else {
+            Slog.e(TAG, "Activity r is not MultiWindow!!! " + r);
+        }
+    }
+
+    // psw0523 add for AVN MultiWindow
+    // finishing flag is backup for restore
     final int pauseActivity(ActivityRecord r, boolean finishing) {
         Slog.d(TAG, "pauseActivity --> " + r);
         mPausingActivity = r;
         // test code for exiting left
         mResumedActivity = r;
         // end test
-        r.finishing = finishing;
+        // r.finishing = finishing;
+        r.finishing = true;
 
         if (r.app != null && r.app.thread != null) {
             try {
@@ -932,11 +954,10 @@ final class ActivityStack {
             completePauseLocked(true);
         }
 
-        // if (finishing) {
-            removeMultiWindowActivity(r);
-            Slog.d(TAG, "removed from MultiWindowActivities : " + r);
-            Slog.d(TAG, "MultiWindowActivities count : " + mMultiWindowActivities.size());
-        // }
+        if (!finishing)
+            backupMultiWindowActivity(r);
+
+        removeMultiWindowActivity(r);
 
         return 0;
     }
@@ -951,26 +972,23 @@ final class ActivityStack {
         }
     }
 
-    // psw0523 add for AVN MultiWindow
     final void removeMultiWindowActivity(ActivityRecord r) {
         synchronized(mService) {
-            if (mMultiWindowActivities.contains(r)) {
-                Slog.d(TAG, "====================> removeMultiWindowActivity: r  " + r);
-                if (r.mIndex == mDefaultActivityIndex) {
-                  Slog.d(TAG, "mPrevDefaultActivity --> " + r);
-                  mPrevDefaultActivity = r;
-                  Slog.d(TAG, "change default index : " + mDefaultActivityIndex + " --> " + mOtherActivityIndex);
-                  mDefaultActivityIndex = mOtherActivityIndex;
-                }
-                mMultiWindowActivities.remove(r);
-                if (mMultiWindowActivities.isEmpty()) {
-                    Slog.d(TAG, "reset MultiWindow Indexes");
-                    mDefaultActivityIndex = 0;
-                    mOtherActivityIndex = 0;
-                }
+            if (mFirstActivity == r) {
+                mFirstActivity = mSecondActivity;
+                mSecondActivity = null;
+                Slog.d(TAG, "removeMultiWindowActivity: Set First " + mFirstActivity);
+            } else if (mSecondActivity == r) {
+                mSecondActivity = null;
+                Slog.d(TAG, "removeMultiWindowActivity: Set Second " + mSecondActivity);
+            } else {
+                Slog.d(TAG, "removeMultiWindowActivity: doNothing --> " + r);
             }
+
+            setMultiWindowAppToken();
         }
     }
+
 
     // psw0523 add for AVN MultiWindow
     public int getLastIndexOfActivityRecord() {
@@ -992,131 +1010,99 @@ final class ActivityStack {
     }
 
     // psw0523 add for AVN MultiWindow
+    final void setMultiWindowAppToken() {
+        mWindowManager.clearMultiWindowAppToken();
+        if (mFirstActivity != null)
+            mWindowManager.addMultiWindowAppToken(mFirstActivity.appToken, mStackId, 0);
+        if (mSecondActivity != null)
+            mWindowManager.addMultiWindowAppToken(mSecondActivity.appToken, mStackId, 1);
+    }
+
+    // psw0523 add for AVN MultiWindow
     final void updateMultiWindowActivities(ActivityRecord r) {
         Slog.d(TAG, "updateMultiWindowActivities ---> ");
         Slog.d(TAG, "task ---> " + r.task);
         Slog.d(TAG, "activity --> " + r);
+        Slog.d(TAG, "name --> " + r.shortComponentName);
+
+        if (isHomeStack()) {
+            return;
+        }
+
+        // handle Brightness Dialog
+        if (r.shortComponentName.startsWith("com.android.systemui/.settings.BrightnessDialog")) {
+            Slog.d(TAG, "This is BrighnessDialog, Do nothing!!!");
+            return;
+        }
+
         synchronized(mService) {
-          if (mMultiWindowActivities.isEmpty()) {
-            mDefaultActivityIndex = r.mIndex;
-            mMultiWindowActivities.add(r);
-            Slog.d(TAG, "Set Left Activity ==> " + r);
-            Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-          } else {
-              if (mMultiWindowActivities.size() == 1) {
-                ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
-                if (defaultActivity == null) {
-                  Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
-                }
-                if (defaultActivity != null && r.task == defaultActivity.task) {
-                  Slog.d(TAG, "---------> Same Task with defaultActivity");
-                  Slog.d(TAG, "default " + defaultActivity);
-                  Slog.d(TAG, "new " + r);
-                  r.mIndex = mDefaultActivityIndex;
-                  // mDefaultActivityIndex = r.mIndex;
-                  if (r != mBackupDefaultActivity)
-                    mBackupDefaultActivity = mMultiWindowActivities.get(0);
-                  mMultiWindowActivities.remove(0);
-                  mMultiWindowActivities.add(r);
-                  Slog.d(TAG, "Activity switch in Same Task");
-                  Slog.d(TAG, "Set Left Activity ==> " + r);
-                  Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-                } else {
-                  if (r.mIndex < mOtherActivityIndex) {
-                    mOtherActivityIndex = mDefaultActivityIndex;
-                    mDefaultActivityIndex = r.mIndex;
-                    Slog.d(TAG, "Set Left Activity ==> " + r);
-                  } else {
-                    mOtherActivityIndex = r.mIndex;
-                    Slog.d(TAG, "Set Right Activity ==> " + r);
-                  }
-                  mMultiWindowActivities.add(r);
-                }
-              } else {
-                // check left task
-                ActivityRecord defaultActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
-                if (defaultActivity == null) {
-                  Slog.e(TAG, "-------------------> Error : Why can't find defaultActivity? index:" + mDefaultActivityIndex  + ", count: " + mMultiWindowActivities.size());
-                }
-                if (defaultActivity != null && r.task == defaultActivity.task) {
-                  r.mIndex = mDefaultActivityIndex;
-                  if (r != mBackupDefaultActivity)
-                    mBackupDefaultActivity = defaultActivity;
-                  mMultiWindowActivities.remove(defaultActivity);
-                  mMultiWindowActivities.add(r);
-                  Slog.d(TAG, "Activity switch in Same Task");
-                  Slog.d(TAG, "Set Left Activity ==> " + r);
-                  Slog.d(TAG, "----> default index " + mDefaultActivityIndex);
-                } else {
-                  if (r.mIndex > mOtherActivityIndex) {
-                    ActivityRecord otherActivity = getMultiWindowActivityByIndex(mOtherActivityIndex);
-                    if (otherActivity != null) {
-                      mMultiWindowActivities.remove(otherActivity);
-                      Slog.d(TAG, "removed from MultiWindowActivities --> " + otherActivity);
-                      Slog.d(TAG, "Set Right Activity ==> " + r);
-                      otherActivity.mIndex = getLastIndexOfActivityRecord();
-                      mOtherActivityIndex = r.mIndex;
-                      mMultiWindowActivities.add(r);
+            if (mFirstActivity == null) {
+                mFirstActivity = r;
+                Slog.d(TAG, "Set First Activity ==> " + r);
+            } else {
+                if (r.task == mFirstActivity.task) {
+                    Slog.d(TAG, "Same Task with FirstActivity");
+                    r.mIndex = mFirstActivity.mIndex;
+                    if (!mBackupActivities.contains(mFirstActivity)) {
+                        mBackupActivities.add(mFirstActivity);
                     }
-                  } else {
-                    Slog.e(TAG, "How can handle new activity record ---> " + r);
-                  }
+                    Slog.d(TAG, "Change First by Same Task: from " + mFirstActivity + " to " + r);
+                    mFirstActivity = r;
+                } else {
+                    if (r.mIndex < mFirstActivity.mIndex) {
+                        Slog.d(TAG, "Change First by index: from " + mFirstActivity + " to " + r);
+                        mSecondActivity = mFirstActivity;
+                        mFirstActivity = r;
+                    } else {
+                        Slog.d(TAG, "Set Second Activity ==> " + r);
+                        if (mSecondActivity != null) {
+                            Slog.d(TAG, "pauseActivity prev SecondActivity --> " + mSecondActivity);
+                            pauseActivity(mSecondActivity, true);
+                        }
+                        mSecondActivity = r;
+                    }
                 }
-              }
             }
+
+            setMultiWindowAppToken();
         }
     }
 
-    // psw0523 add for AVN MultiWindow
     final void changeLeftRight() {
         Slog.d(TAG, "changeLeftRight ----> ");
         synchronized(mService) {
-            if (mMultiWindowActivities.size() >= 2) {
-                ActivityRecord leftActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
-                ActivityRecord rightActivity = getMultiWindowActivityByIndex(mOtherActivityIndex);
-                Slog.d(TAG, "leftActivity --> " + leftActivity);
-                Slog.d(TAG, "rightActivity --> " + rightActivity);
-                leftActivity.mIndex = mOtherActivityIndex;
-                rightActivity.mIndex = mDefaultActivityIndex;
-                mMultiWindowActivities.clear();
-                mMultiWindowActivities.add(rightActivity);
-                mMultiWindowActivities.add(leftActivity);
-                mWindowManager.executeAppTransition();
+            if (mFirstActivity != null && mSecondActivity != null) {
+                int index = mFirstActivity.mIndex;
+                ActivityRecord r = mFirstActivity;
+                mFirstActivity.mIndex = mSecondActivity.mIndex;
+                mSecondActivity.mIndex = index;
+                
+                mFirstActivity = mSecondActivity;
+                mSecondActivity = r;
+
+                setMultiWindowAppToken();
             }
         }
         Slog.d(TAG, "End of ChangeLeftRight");
     }
 
     // psw0523 add for AVN MultiWindow
-    final void restoreDefaultActivity() {
-        Slog.d(TAG, "restoreDefaultActivity ----> ");
+    final void restoreActivity(ActivityRecord r) {
+        Slog.d(TAG, "restoreActivity ----> " + r);
         synchronized(mService) {
-          if (mMultiWindowActivities.size() == 1 && mPrevDefaultActivity != null) {
-            // ActivityRecord leftActivity = getMultiWindowActivityByIndex(mDefaultActivityIndex);
-            // Slog.d(TAG, "change left " + leftActivity);
-            // Slog.d(TAG, "To " + mPrevDefaultActivity);
-            // int prevIndex = mPrevDefaultActivity.mIndex;
-            // if (prevIndex < mDefaultActivityIndex) {
-            //   leftActivity.mIndex = mDefaultActivityIndex;
-            //   mDefaultActivityIndex = prevIndex;
-            // } else {
-            //   leftActivity.mIndex = mPrevDefaultActivity.mIndex;
-            //   mPrevDefaultActivity.mIndex = mDefaultActivityIndex;
-            // }
-            // mWindowManager.setAppVisibility(mPrevDefaultActivity.appToken, true);
-            // startActivityLocked(mPrevDefaultActivity, false, true, true, null);
-            // startActivityLocked(mPrevDefaultActivity, true, true, true, null);
-            startPrevDefaultActivity();
-            // mMultiWindowActivities.clear();
-            // mMultiWindowActivities.add(mPrevDefaultActivity);
-            // mMultiWindowActivities.add(leftActivity);
-            // mOtherActivityIndex = leftActivity.mIndex;
-            // mPrevDefaultActivity = null;
-            // Slog.d(TAG, "default index : " + mDefaultActivityIndex + ", other index : " + mOtherActivityIndex);
-            // mWindowManager.executeAppTransition();
-          }
+            if (r == mBackupFirstActivity) {
+                Slog.d(TAG, "restore FirstActivity");
+                mBackupFirstActivity = null;
+                startPrevActivity(r);
+            } else if (r == mBackupSecondActivity) {
+                Slog.d(TAG, "restore SecondActivity");
+                mBackupSecondActivity = null;
+                startPrevActivity(r);
+            } else {
+                Slog.e(TAG, "Error: Activity is not MultiWindow Activity!!! ");
+            }
         }
-        Slog.d(TAG, "End of restoreDefaultActivity");
+        Slog.d(TAG, "End of restoreActivity");
     }
 
     final void activityPausedLocked(IBinder token, boolean timeout) {
@@ -1552,7 +1538,7 @@ final class ActivityStack {
                                     Slog.d(TAG, "home activity making to invisible");
                                     invisible = true;
                                 }
-                                if (!mMultiWindowActivities.contains(r)) {
+                                if (!isMultiWindowActivity(r)) {
                                     Slog.d(TAG, "activity is not MultiWindowActivity making to invisible --> r " + r);
                                     invisible = true;
                                 }
@@ -1765,7 +1751,8 @@ final class ActivityStack {
             // Make sure we have executed any pending transitions, since there
             // should be nothing left to do at this point.
             Slog.d(TAG, "Already resumed " + next);
-            mWindowManager.executeAppTransition();
+            // psw0523 test for AVN MultiWindow
+            // mWindowManager.executeAppTransition();
             mNoAnimActivities.clear();
             ActivityOptions.abort(options);
             if (DEBUG_STATES) Slog.d(TAG, "resumeTopActivityLocked: Top activity resumed " + next);
@@ -2831,11 +2818,15 @@ final class ActivityStack {
     }
 
     // psw0523 add for AVN MultiWindow
-    final void startPrevDefaultActivity() {
-        if (mPrevDefaultActivity == null)
-            return;
-        ActivityRecord r = mPrevDefaultActivity;
-        mPrevDefaultActivity = null;
+    final boolean isMultiWindowActivity(ActivityRecord r) {
+        if (r == mFirstActivity ||
+            r == mSecondActivity)
+            return true;
+        return false;
+    }
+
+    // psw0523 add for AVN MultiWindow
+    final void startPrevActivity(ActivityRecord r) {
         boolean newTask = true;
         boolean doResume = true;
         boolean keepCurTransition = true;
@@ -2843,8 +2834,7 @@ final class ActivityStack {
 
         TaskRecord rTask = r.task;
         final int taskId = rTask.taskId;
-        // psw0523 debugging for AVN MultiWindow
-        Slog.d(TAG, "startPrevDefaultActivity --> r " + r);
+        Slog.d(TAG, "startPrevActivity --> r " + r);
 
         // mLaunchTaskBehind tasks get placed at the back of the task stack.
         if (!r.mLaunchTaskBehind && (taskForIdLocked(taskId) == null || newTask)) {
@@ -3398,12 +3388,22 @@ final class ActivityStack {
 
         // psw0523 patch for AVN MultiWindow
         if (mStackSupervisor.getMultiWindowEnabled()) {
-            if (mBackupDefaultActivity != null && r != mBackupDefaultActivity && r.task == mBackupDefaultActivity.task) {
-              Slog.d(TAG, "requestFinishAcivityLocked : r --> " + r);
-                Slog.d(TAG, "restore mBackupDefaultActivity --> " + mBackupDefaultActivity);
-                updateMultiWindowActivities(mBackupDefaultActivity);
-                mBackupDefaultActivity = null;
+            Slog.d(TAG, "requestFinishActivityLocked --> " + r);
+            if (mBackupActivities.size() > 0) {
+                int lastIndex = mBackupActivities.size() - 1;
+                ActivityRecord prevActivity = mBackupActivities.get(lastIndex);
+                if (r != prevActivity && r.task == prevActivity.task) {
+                    Slog.d(TAG, "prevActivity --> " + prevActivity);
+                    mBackupActivities.remove(prevActivity);
+                    updateMultiWindowActivities(prevActivity);
+                }
             }
+            // if (mBackupDefaultActivity != null && r != mBackupDefaultActivity && r.task == mBackupDefaultActivity.task) {
+            //     Slog.d(TAG, "requestFinishAcivityLocked : r --> " + r);
+            //     Slog.d(TAG, "restore mBackupDefaultActivity --> " + mBackupDefaultActivity);
+            //     updateMultiWindowActivities(mBackupDefaultActivity);
+            //     mBackupDefaultActivity = null;
+            // }
         }
 
         finishActivityLocked(r, resultCode, resultData, reason, oomAdj);
@@ -4366,9 +4366,11 @@ final class ActivityStack {
 
         // psw0523 add for AVN MultiWindow
         if (mStackSupervisor.getMultiWindowEnabled()) {
-            if (source.mIndex > 0 && !mMultiWindowActivities.contains(source)) {
-                updateMultiWindowActivities(source);
-            }
+            // if (source.mIndex > 0 && !mMultiWindowActivities.contains(source)) {
+            //     updateMultiWindowActivities(source);
+            // }
+            Slog.d(TAG, "moveTaskToFrontLocked: call updateMultiWindowActivities --> " + source);
+            updateMultiWindowActivities(source);
         }
 
         mStackSupervisor.resumeTopActivitiesLocked();

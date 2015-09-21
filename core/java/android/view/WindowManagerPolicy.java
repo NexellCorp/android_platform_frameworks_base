@@ -365,7 +365,7 @@ public interface WindowManagerPolicy {
         public void setMultiWindowActivity();
         public void removeMultiWindowActivity();
         public void changeLeftRight();
-        public void restoreDefaultActivity();
+        public void restoreActivity();
     }
 
     /**

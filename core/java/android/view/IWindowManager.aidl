@@ -263,4 +263,10 @@ interface IWindowManager
      * @return The frame statistics or null if the window does not exist.
      */
     WindowContentFrameStats getWindowContentFrameStats(IBinder token);
+
+    /**
+     * psw0523 add for AVN MultiWindow
+     */
+    void addMultiWindowAppToken(IApplicationToken token, int stackId, int index);
+    void clearMultiWindowAppToken();
 }

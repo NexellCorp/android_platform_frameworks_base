@@ -124,12 +124,14 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
     // HACK : if false, don't show starting window, default change to false
     static final boolean SHOW_STARTING_ANIMATIONS = false;
+    // static final boolean SHOW_STARTING_ANIMATIONS = true;
 
     /**
      * layout sizes for SystemUI
      */
     static final int MULTIWINDOW_SYSTEMUI_WIDTH = 64;
-    static final int MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN = 220;
+    // static final int MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN = 220;
+    static final int MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN = 188;
     static final int MINILAUNCHER_LAYOUT_PERCENT_BY_10 = 6; // 60%
     static final int DRAGCONTROL_LAYOUT_PERCENT_BY_10 = 3; // 30%
 
@@ -300,6 +302,10 @@ public class MultiWindowManager implements WindowManagerPolicy {
     WindowState mRightWin = null;
     // for restore LeftWin
     WindowState mPrevLeftWin = null;
+    WindowState mPrevRightWin = null;
+
+    boolean mIsLeftFull = false;
+    boolean mIsRightFull = false;
 
     WindowState mMultiWindowControl = null;
     WindowState mMultiWindowMiniLauncher = null;
@@ -500,13 +506,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
                                   }
                               }
                           } else if (mLeftWin != null) {
-                              // mLeftWin.pauseActivityOfWindow(true);
-                              if (mPrevLeftWin != null) {
-                                Slog.d(TAG, "Restore leftWin --> " + mPrevLeftWin);
-                                mPrevLeftWin.showLw(true);
-                                mPrevLeftWin.restoreDefaultActivity();
-                                mPrevLeftWin = null;
-                              }
+                              mLeftWin.pauseActivityOfWindow(true);
+                              // if (mPrevLeftWin != null) {
+                              //   Slog.d(TAG, "Restore leftWin --> " + mPrevLeftWin);
+                              //   mPrevLeftWin.showLw(true);
+                              //   mPrevLeftWin.restoreDefaultActivity();
+                              //   mPrevLeftWin = null;
+                              // }
                               hideDelay = 0;
                           }
                           hideSystemUI(mMultiWindowDragControl, hideDelay);
@@ -1398,21 +1404,48 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
         if (down) {
             if (keyCode == 96) {
-                // multiwindow control
-                if (mMultiWindowEnable) {
-                    mMultiWindowEnable = false;
+                // multiwindow control leftfull
+                if (!mIsLeftFull) {
+                    // on left full
                     if (mRightWin != null) {
-                        mRightWin.hideLw(true);
+                        Slog.d(TAG, "On Left Full");
+                        mRightWin.pauseActivityOfWindow(false);
+                        mPrevRightWin = mRightWin;
+                        mIsLeftFull = true;
                     }
                 } else {
-                    mMultiWindowEnable = true;
-                    if (mRightWin != null) {
-                        mRightWin.showLw(true);
+                    // off left full
+                    if (mPrevRightWin != null) {
+                        Slog.d(TAG, "Off Left Full");
+                        mPrevRightWin.restoreActivity();
+                        mPrevRightWin = null;
+                        mIsLeftFull = false;
                     }
                 }
-                if (DEBUG) Slog.d(TAG, "=======> MultiWindowControl : enable ? " + mMultiWindowEnable);
+
                 hideSystemUI(mMultiWindowControl);
             } else if (keyCode == 97) {
+                // multiwindow control rightfull
+                if (!mIsRightFull) {
+                    // on Right full
+                    if (mLeftWin != null && mRightWin != null) {
+                        Slog.d(TAG, "On Right Full");
+                        mLeftWin.pauseActivityOfWindow(false);
+                        mPrevLeftWin = mLeftWin;
+                        mIsRightFull = true;
+                    }
+                } else {
+                    // off Right full
+                    if (mPrevLeftWin != null) {
+                        Slog.d(TAG, "Off Right Full");
+                        mPrevLeftWin.restoreActivity();
+                        mPrevLeftWin = null;
+                        mIsRightFull = false;
+                    }
+                }
+
+                hideSystemUI(mMultiWindowControl);
+            } else if (keyCode == 98) {
                 // minilauncher button
                 if (!isShowMiniLauncher()) {
                     hideSystemUI(mMultiWindowControl);

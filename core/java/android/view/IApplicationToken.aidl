@@ -31,6 +31,6 @@ interface IApplicationToken
     void removeMultiWindowActivity();
     int getIndex();
     void changeLeftRight();
-    void restoreDefaultActivity();
+    void restoreActivity();
 }
 

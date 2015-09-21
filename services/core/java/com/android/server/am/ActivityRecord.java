@@ -393,10 +393,10 @@ final class ActivityRecord {
             }
         }
         // psw0523 add for AVN MultiWindow
-        @Override public void restoreDefaultActivity() {
+        @Override public void restoreActivity() {
             ActivityRecord activity = weakActivity.get();
             if (activity != null) {
-                activity.restoreDefaultActivity();
+                activity.restoreActivity();
             }
         }
 
@@ -1093,10 +1093,10 @@ final class ActivityRecord {
         }
     }
     // psw0523 add for AVN MultiWindow
-    public void restoreDefaultActivity() {
+    public void restoreActivity() {
         synchronized(service) {
             // windowsVisible();
-            task.stack.restoreDefaultActivity();
+            task.stack.restoreActivity(this);
         }
     }
 

@@ -1700,10 +1700,10 @@ final class WindowState implements WindowManagerPolicy.WindowState {
 
     // psw0523 add for AVN MultiWindow
     @Override
-    public void restoreDefaultActivity() {
+    public void restoreActivity() {
         if (mAppToken != null && mAppToken.appToken != null) {
             try {
-                mAppToken.appToken.restoreDefaultActivity();
+                mAppToken.appToken.restoreActivity();
             } catch (Exception e) {
             }
         }

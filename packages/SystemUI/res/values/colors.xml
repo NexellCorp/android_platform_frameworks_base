@@ -32,7 +32,7 @@
     <drawable name="recents_callout_line">#99ffffff</drawable>
     <drawable name="heads_up_notification_bg_pressed">#ff33B5E5</drawable>
     <drawable name="multiwindow_drag_control_background">@color/multiwindow_drag_control_color</drawable>
-    <color name="multiwindow_drag_control_color">#66ff0000</color><!-- 40$ red -->
+    <color name="multiwindow_drag_control_color">#AA3300CC</color><!-- 40$ Blue -->
     <color name="batterymeter_frame_color">#66FFFFFF</color><!-- 40% white -->
     <color name="batterymeter_charge_color">#FFFFFFFF</color>
     <color name="batterymeter_bolt_color">#FFFFFFFF</color>
