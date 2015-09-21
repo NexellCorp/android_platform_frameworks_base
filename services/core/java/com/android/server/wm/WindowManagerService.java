@@ -162,21 +162,18 @@ import java.util.List;
 public class WindowManagerService extends IWindowManager.Stub
         implements Watchdog.Monitor, WindowManagerPolicy.WindowManagerFuncs {
     static final String TAG = "WindowManager";
-    // psw0523 debugging
-    static final boolean DEBUG = true;
+    static final boolean DEBUG = false;
     static final boolean DEBUG_ADD_REMOVE = false;
     static final boolean DEBUG_FOCUS = false;
     static final boolean DEBUG_FOCUS_LIGHT = DEBUG_FOCUS || false;
     static final boolean DEBUG_ANIM = false;
     static final boolean DEBUG_KEYGUARD = false;
-    // static final boolean DEBUG_LAYOUT = false;
-    static final boolean DEBUG_LAYOUT = true;
+    static final boolean DEBUG_LAYOUT = false;
     static final boolean DEBUG_RESIZE = false;
     static final boolean DEBUG_LAYERS = false;
     static final boolean DEBUG_INPUT = false;
     static final boolean DEBUG_INPUT_METHOD = false;
-    // static final boolean DEBUG_VISIBILITY = false;
-    static final boolean DEBUG_VISIBILITY = true;
+    static final boolean DEBUG_VISIBILITY = false;
     static final boolean DEBUG_WINDOW_MOVEMENT = false;
     static final boolean DEBUG_TOKEN_MOVEMENT = false;
     static final boolean DEBUG_ORIENTATION = false;
@@ -443,6 +440,11 @@ public class WindowManagerService extends IWindowManager.Stub
      * psw0523 add for AVN MultiWindow
      */
     final ArrayList<IApplicationToken> mMultiWindowTokens = new ArrayList<IApplicationToken>();
+    IApplicationToken mFirstWindowToken = null;
+    IApplicationToken mSecondWindowToken = null;
+    IApplicationToken mThirdWindowToken = null;
+    IApplicationToken mFourthWindowToken = null;
+    int mMultiWinNum = 0;
 
     /**
      * Used when rebuilding window list to keep track of windows that have
@@ -3697,15 +3699,26 @@ public class WindowManagerService extends IWindowManager.Stub
     public void addMultiWindowAppToken(IApplicationToken token, int stackId, int index) {
         // must be called after clearMultiWindowAppToken()
         // mMultiWindowTokens.set(index, token);
-        Slog.d(TAG, "addMultiWindow --> index " + index + ", token " + token);
-        mMultiWindowTokens.add(token);
+        // mMultiWindowTokens.add(token);
+        if (index == 0) {
+            Slog.d(TAG, "addMultiWindow --> Set First " + token);
+            mFirstWindowToken = token;
+            mMultiWinNum++;
+        } else if (index == 1) {
+            Slog.d(TAG, "addMultiWindow --> Set Second " + token);
+            mSecondWindowToken = token;
+            mMultiWinNum++;
+        }
     }
 
     // psw0523 add for AVN MultiWindow
     @Override
     public void clearMultiWindowAppToken() {
         Slog.d(TAG, "clearMultiWindowAppToken()");
-        mMultiWindowTokens.clear();
+        // mMultiWindowTokens.clear();
+        mFirstWindowToken = null;
+        mSecondWindowToken = null;
+        mMultiWinNum = 0;
     }
 
     @Override
@@ -8842,99 +8855,19 @@ public class WindowManagerService extends IWindowManager.Stub
         Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
     }
 
-    // private final void setCurrentMultiWindow(WindowList windows, int N) {
-    //     int i;
-    //     int layoutWNum = 0;
-    //     WindowState leftWin = null;
-    //     WindowState rightWin = null;
-    //     final TaskStack homeStack = mDisplayContents.valueAt(0).getHomeStack();
-    //     int activityIndex = 0;
-    //     for (i = N-1; i >= 0; i--) {
-    //         final WindowState win = windows.get(i);
-    //         final boolean gone = win.isGoneForLayoutLw();
-    //         final WindowManager.LayoutParams attrs = win.getAttrs();
-    //         final boolean isAppWindow =
-    //             attrs.type >= WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW &&
-    //             attrs.type <= WindowManager.LayoutParams.LAST_APPLICATION_WINDOW;
-    //         final String title = attrs.getTitle().toString();
-    //         final boolean isStarting = title.startsWith("Starting");
-    //         final boolean isBrightnessDlg = title.endsWith("BrightnessDialog");
-    //         final boolean isHome = win.getStack() == homeStack;
-    //         final IApplicationToken token = win.getAppToken();
-    //         Slog.d(TAG, "check win " + win);
-    //         Slog.d(TAG, "attrs " + attrs);
-    //         Slog.d(TAG, "gone " + gone);
-    //         Slog.d(TAG, "title " + title);
-    //         if ((!isStarting)
-    //                 && (!isBrightnessDlg)
-    //                 && (!isHome)
-    //                 && isAppWindow
-    //                 && (!gone || !win.mHaveFrame || win.mLayoutNeeded
-    //                    || ((win.isConfigChanged() || win.setInsetsChanged()) &&
-    //                        ((win.mAttrs.privateFlags & PRIVATE_FLAG_KEYGUARD) != 0 ||
-    //                         win.mAppToken != null && win.mAppToken.layoutConfigChanges))
-    //                    || win.mAttrs.type == TYPE_UNIVERSE_BACKGROUND)) {
-    //             layoutWNum++;
-    //             try {
-    //                 activityIndex = token.getIndex();
-    //             } catch (RemoteException e) {
-    //                 Slog.e(TAG, "token getIndex() remote Exception!!!");
-    //             }
-    //             // Slog.d(TAG, "check win " + win);
-    //             // Slog.d(TAG, "attrs " + attrs);
-    //             Slog.d(TAG, "index --> " + activityIndex);
-    //             if (leftWin == null) {
-    //                 Slog.d(TAG, "SEQ1 : set left win --> " + win);
-    //                 leftWin = win;
-    //             } else {
-    //                 try {
-    //                     int oldActivityIndex = leftWin.getAppToken().getIndex();
-    //                     if (oldActivityIndex > activityIndex) {
-    //                         rightWin = leftWin;
-    //                         leftWin = win;
-    //                         Slog.d(TAG, "SEQ1 : set left win --> " + leftWin);
-    //                         Slog.d(TAG, "SEQ1 : set right win --> " + rightWin);
-    //                     } else {
-    //                         if (rightWin == null) {
-    //                             rightWin = win;
-    //                             Slog.d(TAG, "SEQ2 : set right win --> " + rightWin);
-    //                         } else {
-    //                             oldActivityIndex = rightWin.getAppToken().getIndex();
-    //                             if (activityIndex > oldActivityIndex) {
-    //                                 Slog.d(TAG, "SEQ3 : set right win --> " + rightWin);
-    //                             }
-    //                         }
-    //                     }
-    //                 } catch (RemoteException e) {
-    //                     Slog.e(TAG, "token getIndex() remote Exception!!!");
-    //                 }
-    //             }
-    //         }
-    //     }
-    //     mPolicy.setLeftWindow(leftWin);
-    //     mPolicy.setRightWindow(rightWin);
-    //     Slog.d(TAG, "=====> Current Window Layout Number " + layoutWNum);
-    //     mPolicy.setLayoutWindowNumber(layoutWNum);
-    // }
-
     private final void setCurrentMultiWindow(WindowList windows, int N) {
+        if (mMultiWinNum == 0)
+            return;
+
         int i;
         int multiWinNum = 0;
         WindowState leftWin = null;
         WindowState rightWin = null;
-        IApplicationToken leftToken = null; 
-        IApplicationToken rightToken = null;
+        IApplicationToken leftToken = mFirstWindowToken; 
+        IApplicationToken rightToken = mSecondWindowToken;
 
-        int multiWindowTokenNum = mMultiWindowTokens.size();
-        if (multiWindowTokenNum == 0)
-            return;
-
-        if (multiWindowTokenNum > 1) {
-            rightToken = mMultiWindowTokens.get(1);
-        } 
-        if (multiWindowTokenNum > 0) {
-            leftToken = mMultiWindowTokens.get(0);
-        }
+        Slog.d(TAG, "leftToken --> " + leftToken);
+        Slog.d(TAG, "rightToken --> " + rightToken);
 
         for (i = N-1; i >= 0; i--) {
             final WindowState win = windows.get(i);
@@ -8945,10 +8878,10 @@ public class WindowManagerService extends IWindowManager.Stub
 
             Slog.d(TAG, "check win --> " + win);
             Slog.d(TAG, "check token --> " + token);
-            if (token == leftToken) {
+            if (leftToken != null && token == leftToken) {
                 leftWin = win;
                 multiWinNum++;
-            } else if (token == rightToken) {
+            } else if (rightToken != null && token == rightToken) {
                 rightWin = win;
                 multiWinNum++;
             }
@@ -8960,8 +8893,8 @@ public class WindowManagerService extends IWindowManager.Stub
         Slog.d(TAG, "rightWin --> " + rightWin);
         mPolicy.setLeftWindow(leftWin);
         mPolicy.setRightWindow(rightWin);
-        Slog.d(TAG, "=====> Current MultiWindow Num " + multiWinNum);
-        mPolicy.setLayoutWindowNumber(multiWinNum);
+        Slog.d(TAG, "=====> Current MultiWindow Num " + mMultiWinNum);
+        mPolicy.setLayoutWindowNumber(mMultiWinNum);
     }
 
     private final void performLayoutLockedInner(final DisplayContent displayContent,

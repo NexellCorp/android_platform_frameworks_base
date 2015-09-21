@@ -189,19 +189,19 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         if (DEBUG) Slog.d(TAG, "pointer " + mDownPointerId[i]
                 + " moved (" + fromX + "->" + x + "," + fromY + "->" + y + ") in " + elapsed);
         // psw0523 add for AVN MultiWindow
-        final float middleXStart = (screenWidth/2) - 20;
-        final float middleXEnd = (screenWidth/2) + 20;
-        if (DEBUG) Slog.d(TAG, "middleX: " + middleXStart + " -- " + middleXEnd);
-        if (fromY < y 
-                && (fromX >= middleXStart && fromX <= middleXEnd)
-                && (x >= middleXStart && x <= middleXEnd)
-                && elapsed < SWIPE_TIMEOUT_MS) {
-            return SWIPE_FROM_TOP_AT_MID;
-        }
+        // final float middleXStart = (screenWidth/2) - 20;
+        // final float middleXEnd = (screenWidth/2) + 20;
+        // if (DEBUG) Slog.d(TAG, "middleX: " + middleXStart + " -- " + middleXEnd);
+        // if (fromY < y 
+        //         && (fromX >= middleXStart && fromX <= middleXEnd)
+        //         && (x >= middleXStart && x <= middleXEnd)
+        //         && elapsed < SWIPE_TIMEOUT_MS) {
+        //     return SWIPE_FROM_TOP_AT_MID;
+        // }
 
         final float upperYStart = 0;
         final float upperYEnd = (screenHeight/10)*3;
-        if (fromX < x
+        if (fromX < x - 50
                 && (fromY >= upperYStart && fromY <= upperYEnd)
                 && (y >= upperYStart && y <= upperYEnd)
                 && elapsed < SWIPE_TIMEOUT_MS) {
@@ -209,7 +209,7 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
             mSwipeToX = x;
             return SWIPE_FROM_LEFT_AT_TOP;
         }
-        if (fromX > x
+        if (fromX > x + 50
                 && (fromY >= upperYStart && fromY <= upperYEnd)
                 && (y >= upperYStart && y <= upperYEnd)
                 && elapsed < SWIPE_TIMEOUT_MS) {

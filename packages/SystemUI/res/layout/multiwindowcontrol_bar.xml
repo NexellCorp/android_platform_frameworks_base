@@ -20,20 +20,29 @@
             android:id="@+id/multiwin_buttons"
             android:animateLayoutChanges="true"
             >
-            <!-- <View -->
-            <!--     android:layout_width="match_parent" -->
-            <!--     android:layout_height="200dp" -->
-            <!--     android:layout_weight="0" -->
-            <!--     android:visibility="invisible" -->
-            <!--     /> -->
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_control"
+            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_control_leftfull"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
-                android:src="@drawable/ic_sysbar_multiwin"
+                android:src="@drawable/ic_sysbar_multiwindow_leftfull"
                 systemui:keyCode="96"
                 android:layout_weight="0"
                 android:scaleType="center"
-                android:contentDescription="@string/accessibility_multiwin"
+                android:contentDescription="@string/accessibility_multiwin_leftfull"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
+            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_control_rightfull"
+                android:layout_width="match_parent"
+                android:layout_height="64dp"
+                android:src="@drawable/ic_sysbar_multiwindow_rightfull"
+                systemui:keyCode="97"
+                android:layout_weight="0"
+                android:scaleType="center"
+                android:contentDescription="@string/accessibility_multiwin_rightfull"
                 />
             <View
                 android:layout_width="match_parent"
@@ -45,18 +54,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:src="@drawable/ic_sysbar_launcher"
-                systemui:keyCode="97"
+                systemui:keyCode="98"
                 android:layout_weight="0"
                 android:scaleType="center"
                 android:contentDescription="@string/accessibility_minilauncher"
                 />
-            <!-- <View -->
-            <!--     android:layout_width="match_parent" -->
-            <!--     android:layout_height="160dp" -->
-            <!--     android:layout_weight="0" -->
-            <!--     android:visibility="invisible" -->
-            <!--     /> -->
-            <!--  -->
         </LinearLayout>
 
     </FrameLayout>
