@@ -1440,7 +1440,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 }
 
                 hideSystemUI(mMultiWindowControl);
-            } else if (keyCode == 98) {
+            } else if (keyCode == 131) {
                 // minilauncher button
                 if (!isShowMiniLauncher()) {
                     hideSystemUI(mMultiWindowControl);

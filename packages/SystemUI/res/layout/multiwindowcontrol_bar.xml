@@ -54,7 +54,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:src="@drawable/ic_sysbar_launcher"
-                systemui:keyCode="98"
+                systemui:keyCode="131"
                 android:layout_weight="0"
                 android:scaleType="center"
                 android:contentDescription="@string/accessibility_minilauncher"
