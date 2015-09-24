@@ -214,6 +214,10 @@
     <string name="accessibility_multiwin_leftfull">MultiWindowLeftFull</string>
     <string name="accessibility_multiwin_rightfull">MultiWindowRightFull</string>
     <string name="accessibility_minilauncher">MiniLauncher</string>
+    <string name="accessibility_floating_exit">FloatingExit</string>
+    <string name="accessibility_floating_docking">FloatingDocking</string>
+    <string name="accessibility_floating_sizedown">FloatingSizeDown</string>
+    <string name="accessibility_floating_sizeup">FloatingSizeUp</string>
     <!-- Click action label for accessibility for the unlock button. [CHAR LIMIT=NONE] -->
     <string name="unlock_label">unlock</string>
     <!-- Click action label for accessibility for the phone button. [CHAR LIMIT=NONE] -->
