@@ -21,38 +21,29 @@
             android:animateLayoutChanges="true"
             android:gravity="right"
             >
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_floating_exit"
-                android:layout_width="64dp"
-                android:layout_height="match_parent"
-                android:src="@drawable/ic_sysbar_floatingwindow_exit"
-                systemui:keyCode="101"
-                android:layout_weight="0"
-                android:scaleType="center"
-                android:contentDescription="@string/accessibility_floating_exit"
-                />
             <View
-                android:layout_width="32dp"
+                android:layout_width="80dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_floating_docking"
-                android:layout_width="64dp"
+            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_floating_sizeup"
+                android:layout_width="40dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_sysbar_floatingwindow_docking"
-                systemui:keyCode="100"
+                android:src="@drawable/ic_sysbar_floatingwindow_sizeup"
+                systemui:keyCode="98"
                 android:layout_weight="0"
                 android:scaleType="center"
-                android:contentDescription="@string/accessibility_floating_docking"
+                android:contentDescription="@string/accessibility_floating_sizeup"
                 />
             <View
-                android:layout_width="32dp"
+                android:layout_width="8dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
             <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_floating_sizedown"
-                android:layout_width="64dp"
+                android:layout_width="40dp"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_sysbar_floatingwindow_sizedown"
                 systemui:keyCode="99"
@@ -61,21 +52,41 @@
                 android:contentDescription="@string/accessibility_floating_sizedown"
                 />
             <View
-                android:layout_width="32dp"
+                android:layout_width="8dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:visibility="invisible"
                 />
-            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_floating_sizeup"
-                android:layout_width="64dp"
+            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_floating_docking"
+                android:layout_width="40dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_sysbar_floatingwindow_sizeup"
-                systemui:keyCode="98"
+                android:src="@drawable/ic_sysbar_floatingwindow_docking"
+                systemui:keyCode="100"
                 android:layout_weight="0"
                 android:scaleType="center"
-                android:contentDescription="@string/accessibility_floating_sizeup"
+                android:contentDescription="@string/accessibility_floating_docking"
                 />
-
+            <View
+                android:layout_width="8dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
+            <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/multiwin_floating_exit"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_sysbar_floatingwindow_exit"
+                systemui:keyCode="101"
+                android:layout_weight="0"
+                android:scaleType="center"
+                android:contentDescription="@string/accessibility_floating_exit"
+                />
+            <View
+                android:layout_width="8dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:visibility="invisible"
+                />
         </LinearLayout>
 
     </FrameLayout>

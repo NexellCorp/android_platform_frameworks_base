@@ -102,6 +102,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
+import java.lang.Math;
+
 import static android.view.WindowManager.LayoutParams.*;
 import static android.view.WindowManagerPolicy.WindowManagerFuncs.LID_ABSENT;
 import static android.view.WindowManagerPolicy.WindowManagerFuncs.LID_OPEN;
@@ -347,6 +349,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
     private final int[] mFloatingMovePointerId = new int[MAX_FLOATING_MOVE_TRACKING_POINTERS];
     private final float[] mFloatingDownX = new float[MAX_FLOATING_MOVE_TRACKING_POINTERS];
     private final float[] mFloatingDownY = new float[MAX_FLOATING_MOVE_TRACKING_POINTERS];
+    private float mFloatingWindowX;
+    private float mFloatingWindowY;
     private int mFloatingDownPointers = 0;
     private int mFloatingWindowState = FLOATING_WINDOW_STATE_NONE;
 
@@ -492,12 +496,14 @@ public class MultiWindowManager implements WindowManagerPolicy {
     }
 
     private void moveFloatingWindow(int xDiff, int yDiff) {
+        // Slog.d(TAG, "moveFloatingWindow: xDiff " + xDiff + ", yDiff " + yDiff);
         int nextLeft = mFloatingWindowLeft + xDiff;
         int nextTop = mFloatingWindowTop + yDiff;
-        Slog.d(TAG, "moveFloatingWindow : [" + mFloatingWindowLeft + "," + mFloatingWindowTop + "] --> [" + nextLeft + "," + nextTop + "]");
+        // Slog.d(TAG, "moveFloatingWindow : [" + mFloatingWindowLeft + "," + mFloatingWindowTop + "] --> [" + nextLeft + "," + nextTop + "]");
         mFloatingWindowLeft = nextLeft;
         mFloatingWindowTop = nextTop;
         try {
+            mWindowManager.prepareAppTransition(10, false);
             mWindowManager.executeAppTransition();
         } catch (Exception e) {
         }
@@ -651,7 +657,9 @@ public class MultiWindowManager implements WindowManagerPolicy {
                                 if (isShowFloatingControl()) {
                                     Slog.d(TAG, "ACTION_DOWN On FloatingControl: x " + x + ", y " + y);
                                     mFloatingDownPointers = 0;
-                                    captureFloatingControlDown(event, 0);
+                                    // captureFloatingControlDown(event, 0);
+                                    mFloatingWindowX = x;
+                                    mFloatingWindowY = y;
                                     mHandler.removeMessages(MSG_HIDE_FLOATINGCONTROL);
                                     mFloatingWindowState = FLOATING_WINDOW_STATE_MOVING;
                                 }
@@ -664,19 +672,23 @@ public class MultiWindowManager implements WindowManagerPolicy {
                                     final int lastPointer = pointerCount - 1;
                                     final float lastX = event.getX(lastPointer);
                                     final float lastY = event.getY(lastPointer);
-                                    Slog.d(TAG, "Move Event: x " + lastX + ", y " + lastY);
-                                    int xDiff = (int)(mFloatingDownX[0] - lastX);
-                                    int yDiff = (int)(mFloatingDownY[0] - lastY);
-                                    moveFloatingWindow(xDiff, yDiff);
-                                } else {
-                                    Slog.e(TAG, "Why get MotionEvent.ACTION_MOVE when FloatingWindow State is not moving?");
+                                    Slog.v(TAG, "Move Event: x " + lastX + ", y " + lastY);
+                                    int xDiff = (int)(lastX - mFloatingWindowX);
+                                    int yDiff = (int)(lastY - mFloatingWindowY);
+                                    if (Math.abs(xDiff) > 5 || Math.abs(yDiff) > 5) {
+                                        mFloatingWindowX = lastX;
+                                        mFloatingWindowY = lastY;
+                                        moveFloatingWindow(xDiff, yDiff);
+                                    }
+                                // } else {
+                                //     Slog.e(TAG, "Why get MotionEvent.ACTION_MOVE when FloatingWindow State is not moving?");
                                 }
                             }
                         } else if (action == MotionEvent.ACTION_UP) {
                             if (isShowFloatingControl()) {
                                 Slog.d(TAG, "ACTION_UP On FloatingControl");
                                 mFloatingWindowState = FLOATING_WINDOW_STATE_NONE;
-                                hideSystemUI(mMultiWindowDragControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
+                                hideSystemUI(mMultiWindowFloatingControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
                             }
                         }
                     }
@@ -1436,14 +1448,14 @@ public class MultiWindowManager implements WindowManagerPolicy {
                             mFloatingWindowTop = mSystemBottom/2 - (mSystemBottom/2 - FLOATING_WINDOW_DEFAULT_HEIGHT)/2;
                         }
                         mFloatingWindowRight =
-                            parentFrame.left + FLOATING_WINDOW_DEFAULT_WIDTH + (mFloatingWindowScaleFactor * FLOATING_WINDOW_SCALE_WIDTH_FACTOR);
+                            mFloatingWindowLeft + FLOATING_WINDOW_DEFAULT_WIDTH + (mFloatingWindowScaleFactor * FLOATING_WINDOW_SCALE_WIDTH_FACTOR);
                         if (mFloatingWindowRight > mSystemRight) {
                             int margin = mFloatingWindowRight - mSystemRight;
                             mFloatingWindowLeft -= margin;
                             mFloatingWindowRight -= margin;
                         }
                         mFloatingWindowBottom =
-                            parentFrame.top + FLOATING_WINDOW_DEFAULT_HEIGHT + (mFloatingWindowScaleFactor * FLOATING_WINDOW_SCALE_HEIGHT_FACTOR);
+                            mFloatingWindowTop + FLOATING_WINDOW_DEFAULT_HEIGHT + (mFloatingWindowScaleFactor * FLOATING_WINDOW_SCALE_HEIGHT_FACTOR);
                         if (mFloatingWindowBottom > mSystemBottom) {
                             int margin = mFloatingWindowBottom - mSystemBottom;
                             mFloatingWindowTop -= margin;
@@ -1455,11 +1467,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         parentFrame.right = mFloatingWindowRight;
                         parentFrame.bottom = mFloatingWindowBottom;
                         Slog.d(TAG, "Floating Layout --> " + mFloatingWindowLeft + "," + mFloatingWindowTop + "," + mFloatingWindowRight + "," + mFloatingWindowBottom);
+                        // Slog.d(TAG, "Floating Window Base Layer --> " + win.mBaseLayer);
                     } else if (win == mLeftWin) {
                         parentFrame.left = mSystemLeft;
                         parentFrame.top = mSystemTop;
                         parentFrame.right = mSystemRight;
                         parentFrame.bottom = mSystemBottom;
+                        // Slog.d(TAG, "Left Window Base Layer --> " + win.mBaseLayer);
                     } else {
                         Slog.e(TAG, "How can I deal this window when floating mode ? win --> " + win);
                     }
@@ -1688,9 +1702,10 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         int floatingWindowHeight = mFloatingWindowBottom - mFloatingWindowTop;
                         if (((floatingWindowWidth + FLOATING_WINDOW_SCALE_WIDTH_FACTOR) < mSystemRight) 
                             && ((floatingWindowHeight + FLOATING_WINDOW_SCALE_HEIGHT_FACTOR) < mSystemBottom)) {
-                            Slog.d(TAG, "FloatingWindow Size Up");
                             mFloatingWindowScaleFactor++;
+                            Slog.d(TAG, "FloatingWindow Size Up: scaleFactor --> " + mFloatingWindowScaleFactor);
                             try {
+                                mWindowManager.prepareAppTransition(10, false);
                                 mWindowManager.executeAppTransition();
                             } catch (Exception e) {
                             }
@@ -1705,9 +1720,10 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         int floatingWindowHeight = mFloatingWindowBottom - mFloatingWindowTop;
                         if (((floatingWindowWidth - FLOATING_WINDOW_SCALE_WIDTH_FACTOR) >= FLOATING_WINDOW_DEFAULT_WIDTH) 
                             && ((floatingWindowHeight - FLOATING_WINDOW_SCALE_HEIGHT_FACTOR) >= FLOATING_WINDOW_DEFAULT_HEIGHT)) {
-                            Slog.d(TAG, "FloatingWindow Size Down");
                             mFloatingWindowScaleFactor--;
+                            Slog.d(TAG, "FloatingWindow Size Down: scaleFactor --> " + mFloatingWindowScaleFactor);
                             try {
+                                mWindowManager.prepareAppTransition(10, false);
                                 mWindowManager.executeAppTransition();
                             } catch (Exception e) {
                             }
