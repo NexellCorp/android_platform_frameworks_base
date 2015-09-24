@@ -2622,6 +2622,10 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     public static final int MULTIWINDOW_DRAG_VISIBLE         = 0x02000000;
     public static final int MULTIWINDOW_DRAG_CLEAR_MASK      = 0xfcffffff;
 
+    public static final int MULTIWINDOW_FLOATING_HIDDEN      = 0x04000000;
+    public static final int MULTIWINDOW_FLOATING_VISIBLE     = 0x08000000;
+    public static final int MULTIWINDOW_FLOATING_CLEAR_MASK  = 0xf3ffffff;
+
     /**
      * @hide
      *

@@ -53,6 +53,8 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
     // psw0523 add for AVN MultiWindow
     private float mSwipeFromX;
     private float mSwipeToX;
+    
+    private boolean mTrackingEnabled = false;
 
     int screenHeight;
     int screenWidth;
@@ -78,6 +80,11 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
 
     @Override
     public void onPointerEvent(MotionEvent event) {
+        // psw0523 add for AVN MultiWindow FloatingMode
+        if (mTrackingEnabled) {
+            mCallbacks.onTracking(event);
+        }
+
         switch (event.getActionMasked()) {
             case MotionEvent.ACTION_DOWN:
                 mSwipeFireable = true;
@@ -128,6 +135,27 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
             default:
                 if (DEBUG) Slog.d(TAG, "Ignoring " + event);
         }
+    }
+
+    // psw0523 add for AVN MultiWindow, Floating Mode
+    public float getLastX() {
+        if (mDownPointers > 0) {
+            return mDownX[mDownPointers - 1];
+        }
+        return 0;
+    }
+
+    // psw0523 add for AVN MultiWindow, Floating Mode
+    public float getLastY() {
+        if (mDownPointers > 0) {
+            return mDownY[mDownPointers - 1];
+        }
+        return 0;
+    }
+
+    // psw0523 add for AVN MultiWindow, Floating Mode
+    public void enableTracking(boolean enable) {
+        mTrackingEnabled = enable;
     }
 
     private void captureDown(MotionEvent event, int pointerIndex) {
@@ -245,5 +273,7 @@ public class SystemGesturesPointerEventListener implements PointerEventListener 
         void onSwipeFromRightAtTop(float fromX, float toX);
         void onSwipeFromLeftAtTop(float fromX, float toX);
         void onSwipeFromTopAtMid();
+        // psw0523 add for AVN MultiWindow, FloatingMode
+        void onTracking(MotionEvent event);
     }
 }

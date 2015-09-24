@@ -573,6 +573,12 @@ public interface WindowManager extends ViewManager {
         public static final int TYPE_MULTIWINDOW_DRAGCONTROL = FIRST_SYSTEM_WINDOW+35;
 
         /**
+         * Window type: Windows for MultiWindow FloatingControl 
+         * @hide
+         */
+        public static final int TYPE_MULTIWINDOW_FLOATINGCONTROL = FIRST_SYSTEM_WINDOW+36;
+
+        /**
          * End of types of system windows.
          */
         public static final int LAST_SYSTEM_WINDOW      = 2999;

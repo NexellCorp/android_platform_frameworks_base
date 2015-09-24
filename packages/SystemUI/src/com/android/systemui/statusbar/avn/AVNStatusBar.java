@@ -52,6 +52,8 @@ public class AVNStatusBar extends BaseStatusBar {
 
     private MultiWindowDragControlView mDragControl = null;
 
+    private FloatingWindowControlView mFloatingControl = null;
+
     private void addMultiWindowControlBar() {
         if (DEBUG) Slog.d(TAG, "addMultiWindowControlBar: " + mControlBar);
         if (mControlBar == null) return;
@@ -64,6 +66,9 @@ public class AVNStatusBar extends BaseStatusBar {
 
         mDragControl.setVisibility(View.GONE);
         mWindowManager.addView(mDragControl, getMultiWindowDragControlLayoutParams());
+
+        mFloatingControl.setVisibility(View.GONE);
+        mWindowManager.addView(mFloatingControl, getMultiWindowFloatingControlLayoutParams());
     }
 
     private WindowManager.LayoutParams getMultiWindowControlBarLayoutParams() {
@@ -121,6 +126,27 @@ public class AVNStatusBar extends BaseStatusBar {
         }
 
         lp.setTitle("MultiWindowDragControl");
+        lp.windowAnimations = 0;
+        return lp;
+    }
+
+    private WindowManager.LayoutParams getMultiWindowFloatingControlLayoutParams() {
+        WindowManager.LayoutParams lp = new WindowManager.LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.TYPE_MULTIWINDOW_FLOATINGCONTROL,
+                    0
+                    | WindowManager.LayoutParams.FLAG_TOUCHABLE_WHEN_WAKING
+                    | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                    | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL
+                    | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                    | WindowManager.LayoutParams.FLAG_SPLIT_TOUCH,
+                PixelFormat.TRANSLUCENT);
+
+        if (ActivityManager.isHighEndGfx()) {
+            lp.flags |= WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
+        }
+
+        lp.setTitle("MultiWindowFloatingControl");
         lp.windowAnimations = 0;
         return lp;
     }
@@ -198,6 +224,12 @@ public class AVNStatusBar extends BaseStatusBar {
           mDragControl.setVisibility(View.VISIBLE);
       } else if ((vis & View.MULTIWINDOW_DRAG_HIDDEN) == View.MULTIWINDOW_DRAG_HIDDEN) {
           mDragControl.setVisibility(View.GONE);
+      }
+
+      if ((vis & View.MULTIWINDOW_FLOATING_VISIBLE) == View.MULTIWINDOW_FLOATING_VISIBLE) {
+          mFloatingControl.setVisibility(View.VISIBLE);
+      } else if ((vis & View.MULTIWINDOW_FLOATING_HIDDEN) == View.MULTIWINDOW_FLOATING_HIDDEN) {
+          mFloatingControl.setVisibility(View.GONE);
       }
     }
 
@@ -302,6 +334,11 @@ public class AVNStatusBar extends BaseStatusBar {
         mDragControl = (MultiWindowDragControlView) View.inflate(mContext, R.layout.multiwindow_dragcontrol, null);
         if (mDragControl == null) {
           Slog.e(TAG, "FATAL ERROR : failed to create MultiWindowDragControlView");
+        }
+
+        mFloatingControl = (FloatingWindowControlView) View.inflate(mContext, R.layout.multiwindow_floatingcontrol, null);
+        if (mFloatingControl == null) {
+            Slog.e(TAG, "FATAL ERROR : failed to create FloatingWindowControlView");
         }
 
         mMiniLauncher = (MiniLauncherView) View.inflate(mContext, R.layout.minilauncher, null);
