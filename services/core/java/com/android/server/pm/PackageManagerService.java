@@ -1374,6 +1374,20 @@ public class PackageManagerService extends IPackageManager.Stub {
             Slog.e(TAG, "can't find latinIMEApk!!!");
         }
 
+        // MediaProvider
+        try {
+            scanPackageLI(new File("/system/priv-app/MediaProvider/MediaProvider.apk"),
+                    PackageParser.PARSE_IS_SYSTEM
+                    | PackageParser.PARSE_IS_SYSTEM_DIR
+                    | PackageParser.PARSE_IS_PRIVILEGED
+                    | PackageParser.PARSE_MUST_BE_APK,
+                    scanFlags,
+                    0,
+                    null);
+        } catch (PackageManagerException e) {
+            Slog.e(TAG, "can't find MediaProvider!!!");
+        }
+
         Slog.d(TAG, "runFist end <=====");
     }
 
