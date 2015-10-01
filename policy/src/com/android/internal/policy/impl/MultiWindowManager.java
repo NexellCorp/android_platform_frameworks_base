@@ -285,6 +285,9 @@ public class MultiWindowManager implements WindowManagerPolicy {
     WindowManagerInternal mWindowManagerInternal;
     ButtonActionManager mButtonActionManager;
     SystemGesturesPointerEventListener mSystemGestures;
+    PowerManager mPowerManager;
+    boolean mScreenOff = false;
+    Intent mHomeIntent;
 
     Display mDisplay;
 
@@ -710,6 +713,12 @@ public class MultiWindowManager implements WindowManagerPolicy {
             | View.MULTIWINDOW_DRAG_HIDDEN;
 
         mHandler = new PolicyHandler();
+
+        mPowerManager = (PowerManager)context.getSystemService(Context.POWER_SERVICE);
+
+        mHomeIntent = new Intent(Intent.ACTION_MAIN, null);
+        mHomeIntent.addCategory(Intent.CATEGORY_HOME);
+        mHomeIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
     }
 
     @Override
@@ -1623,8 +1632,11 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
         final boolean isInjected = (policyFlags & WindowManagerPolicy.FLAG_INJECTED) != 0;
 
+        boolean handled = false;
+
         if (down) {
             if (keyCode == 96) {
+                handled = true;
                 // multiwindow control leftfull
                 if (!mIsLeftFull) {
                     // on left full
@@ -1646,6 +1658,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
                 hideSystemUI(mMultiWindowControl);
             } else if (keyCode == 97) {
+                handled = true;
                 // multiwindow control rightfull
                 if (!mIsRightFull) {
                     // on Right full
@@ -1667,6 +1680,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
                 hideSystemUI(mMultiWindowControl);
             } else if (keyCode == 131) {
+                handled = true;
                 // minilauncher button
                 if (!isShowMiniLauncher()) {
                     hideSystemUI(mMultiWindowControl);
@@ -1674,6 +1688,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     hideSystemUI(mMultiWindowMiniLauncher, MULTIWINDOW_MINILAUNCHER_SHOW_TIMEOUT_MS);
                 }
             } else if (keyCode == 100) {
+                handled = true;
                 // floating docking 
                 if (mIsFloatingMode) {
                     Slog.d(TAG, "Off FloatingWindow Mode");
@@ -1685,6 +1700,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                 }
             } else if (keyCode == 101) {
+                handled = true;
                 // floating exit
                 if (mIsFloatingMode) {
                     Slog.d(TAG, "FloatingWindow exit");
@@ -1695,6 +1711,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                 }
             } else if (keyCode == 98) {
+                handled = true;
                 // floating size up
                 if (mIsFloatingMode) {
                     if (mRightWin != null) {
@@ -1713,6 +1730,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                 }
             } else if (keyCode == 99) {
+                handled = true;
                 // floating size down
                 if (mIsFloatingMode) {
                     if (mRightWin != null) {
@@ -1730,6 +1748,43 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         }
                     }
                 }
+            } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                handled = true;
+                MediaSessionLegacyHelper.getHelper(mContext).sendVolumeKeyEvent(event, false);
+            } else if (keyCode == KeyEvent.KEYCODE_POWER) {
+                handled = true;
+                if (mScreenOff) {
+                    // turn on
+                    mScreenOff = false;
+                    mPowerManager.wakeUp(event.getDownTime());
+                } else {
+                    // turn off
+                    mScreenOff = true;
+                    mPowerManager.goToSleep(event.getDownTime(), PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON, 0);
+                }
+            } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+                handled = true;
+                mContext.startActivityAsUser(mHomeIntent, UserHandle.CURRENT);
+            }
+        } else {
+            // up
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                handled = true;
+                // MediaSessionLegacyHelper.getHelper(mContext).sendVolumeKeyEvent(event, false);
+            } else if (keyCode == KeyEvent.KEYCODE_POWER) {
+                handled = true;
+                // if (mScreenOff) {
+                //     // turn on
+                //     mScreenOff = false;
+                //     mPowerManager.wakeUp(event.getDownTime());
+                // } else {
+                //     // turn off
+                //     mScreenOff = true;
+                //     mPowerManager.goToSleep(event.getDownTime(), PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON, 0);
+                // }
+            } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+                handled = true;
+                // mContext.startActivityAsUser(mHomeIntent, UserHandle.CURRENT);
             }
         }
 
@@ -1738,7 +1793,10 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     + " interactive=" + interactive
                     + " policyFlags=" + Integer.toHexString(policyFlags));
 
-        return 0;
+        if (handled)
+            return 0;
+        else
+            return ACTION_PASS_TO_USER;
     }
 
     /** {@inheritDoc} */
