@@ -44,6 +44,9 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+// psw0523 add for AVN factory reset
+import java.lang.Process;
+
 import org.apache.harmony.security.asn1.BerInputStream;
 import org.apache.harmony.security.pkcs7.ContentInfo;
 import org.apache.harmony.security.pkcs7.SignedData;
@@ -368,6 +371,18 @@ public class RecoverySystem {
         rebootWipeUserData(context, shutdown, context.getPackageName());
     }
 
+    // psw0523 add for AVN Factory Reset
+    private static void doCommand(String cmd) {
+        try {
+            Log.d(TAG, "run " + cmd);
+            String[] cmds = {"/system/bin/sh", "-c", cmd};
+            Process p = Runtime.getRuntime().exec(cmds);
+            p.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Reboots the device and wipes the user data and cache
      * partitions.  This is sometimes called a "factory reset", which
@@ -407,6 +422,17 @@ public class RecoverySystem {
 
         // Block until the ordered broadcast has completed.
         condition.block();
+
+        // psw0523 add for AVN Factory Reset
+        // doCommand("rm -rf /cache#<{(|");
+        // doCommand("rm -rf /data#<{(|");
+        // doCommand("sync");
+        doCommand("setprop ctl.start factory_reset");
+        try {
+            Thread.sleep(3000);
+        } catch (Exception e) {
+            Log.e(TAG, "Error in Thread.sleep()");
+        }
 
         String shutdownArg = null;
         if (shutdown) {
