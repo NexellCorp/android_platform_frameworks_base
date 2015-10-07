@@ -290,6 +290,9 @@ public class SurfaceView extends View {
         int height = mRequestedHeight >= 0
                 ? resolveSizeAndState(mRequestedHeight, heightMeasureSpec, 0)
                 : getDefaultSize(0, heightMeasureSpec);
+        // psw0523 debugging
+        // Log.d(TAG, "onMeasure --> MeasureSpec " + widthMeasureSpec + ", " + heightMeasureSpec);
+        // Log.d(TAG, "          --> Result " + width + ", " + height);
         setMeasuredDimension(width, height);
     }
 
@@ -297,6 +300,8 @@ public class SurfaceView extends View {
     @Override
     protected boolean setFrame(int left, int top, int right, int bottom) {
         boolean result = super.setFrame(left, top, right, bottom);
+        // psw0523 debugging
+        // Log.d(TAG, "setFrame ---> " + left + "," + top + "," + right + "," + bottom);
         updateWindow(false, false);
         return result;
     }
@@ -542,6 +547,10 @@ public class SurfaceView extends View {
                     final int surfaceHeight = mSurfaceFrame.bottom;
                     realSizeChanged = mLastSurfaceWidth != surfaceWidth
                             || mLastSurfaceHeight != surfaceHeight;
+                    // psw0523 debugging
+                    // Log.i(TAG, "realSizeChanged ---> " + realSizeChanged);
+                    // Log.i(TAG, "last: " + mLastSurfaceWidth + ", " + mLastSurfaceHeight);
+                    // Log.i(TAG, "changed: " + surfaceWidth + ", " + surfaceHeight);
                     mLastSurfaceWidth = surfaceWidth;
                     mLastSurfaceHeight = surfaceHeight;
                 } finally {
@@ -588,8 +597,12 @@ public class SurfaceView extends View {
                                 callbacks = getSurfaceCallbacks();
                             }
                             for (SurfaceHolder.Callback c : callbacks) {
+                                // psw0523 debugging
+                                // Log.i(TAG, "call surfaceChanged callback of SurfaceHolder");
                                 c.surfaceChanged(mSurfaceHolder, mFormat, myWidth, myHeight);
                             }
+                            // psw0523 fix for AVN MultiWindow 
+                            redrawNeeded = true;
                         }
                         if (redrawNeeded) {
                             if (DEBUG) Log.i(TAG, "surfaceRedrawNeeded");
@@ -734,6 +747,8 @@ public class SurfaceView extends View {
 
         @Override
         public void setFixedSize(int width, int height) {
+            // psw0523 debugging
+            // Log.d(TAG, "setFixedSize ============> " + width + ", " + height);
             if (mRequestedWidth != width || mRequestedHeight != height) {
                 mRequestedWidth = width;
                 mRequestedHeight = height;
