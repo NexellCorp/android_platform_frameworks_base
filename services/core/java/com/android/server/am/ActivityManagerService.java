@@ -8164,10 +8164,11 @@ public final class ActivityManagerService extends ActivityManagerNative
                 }
             }
         }
-        if (!allowed) {
-            Slog.w(TAG, caller + ": caller " + callingUid
-                    + " does not hold GET_TASKS; limiting output");
-        }
+        // psw0523 fix for AVN
+        // if (!allowed) {
+        //     Slog.w(TAG, caller + ": caller " + callingUid
+        //             + " does not hold GET_TASKS; limiting output");
+        // }
         return allowed;
     }
 
