@@ -1708,4 +1708,23 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             }
         }
     }
+
+    // psw0523 add for AVN MultiWindow, Support Multi ActivityRecord
+    @Override
+    public int getTaskId() {
+        if (mAppToken != null && mAppToken.appToken != null) {
+            try {
+                return mAppToken.appToken.getTaskId();
+            } catch (Exception e) {
+                return -1;
+            }
+        }
+        return -1;
+    }
+
+    // psw0523 add for AVN MultiWindow, Support fast Floating Window Size Up/Down
+    @Override
+    public void setLayoutNeeded(boolean needed) {
+        mLayoutNeeded = needed;
+    }
 }

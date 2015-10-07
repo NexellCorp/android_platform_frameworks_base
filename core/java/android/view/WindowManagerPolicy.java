@@ -366,6 +366,8 @@ public interface WindowManagerPolicy {
         public void removeMultiWindowActivity();
         public void changeLeftRight();
         public void restoreActivity();
+        public int getTaskId();
+        public void setLayoutNeeded(boolean needed);
     }
 
     /**

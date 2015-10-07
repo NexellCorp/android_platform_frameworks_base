@@ -32,5 +32,6 @@ interface IApplicationToken
     int getIndex();
     void changeLeftRight();
     void restoreActivity();
+    int getTaskId();
 }
 

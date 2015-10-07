@@ -399,6 +399,14 @@ final class ActivityRecord {
                 activity.restoreActivity();
             }
         }
+        // psw0523 add for AVN MultiWindow, gaodedaohang map Multi ActivityInfo
+        @Override public int getTaskId() {
+            ActivityRecord activity = weakActivity.get();
+            if (activity != null) {
+                return activity.task.taskId; 
+            }
+            return -1;
+        }
 
         @Override
         public String toString() {
