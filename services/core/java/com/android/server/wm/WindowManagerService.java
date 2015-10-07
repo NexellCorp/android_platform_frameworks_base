@@ -4120,7 +4120,9 @@ public class WindowManagerService extends IWindowManager.Stub
                 mStartingIconInTransition = false;
                 mSkipAppTransitionAnimation = false;
                 mH.removeMessages(H.APP_TRANSITION_TIMEOUT);
-                mH.sendEmptyMessageDelayed(H.APP_TRANSITION_TIMEOUT, 5000);
+                // psw0523 test 
+                // mH.sendEmptyMessageDelayed(H.APP_TRANSITION_TIMEOUT, 5000);
+                mH.sendEmptyMessageDelayed(H.APP_TRANSITION_TIMEOUT, 1000);
             }
         }
     }
