@@ -1603,8 +1603,72 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
         // if (mMultiWindowEnable == false && attached != null) {
         if (attached != null) {
-            int which = whichTask(attached);
-            if (which != TASK_UNKNOWN) {
+            if (mMultiWindowEnable) {
+                int which = whichTask(attached);
+                if (which != TASK_UNKNOWN) {
+                    contentFrame.set(attached.getContentFrameLw());
+                    displayFrame.set(attached.getDisplayFrameLw());
+                    overscanFrame.set(attached.getOverscanFrameLw());
+                    visibleFrame.set(attached.getVisibleFrameLw());
+                    decorFrame.set(parentFrame);
+                    stableFrame.set(parentFrame);
+                    parentFrame.set(attached.getFrameLw());
+
+                    // psw0523 test
+                    if ((!mIsFloatingMode) && mCurrentLayoutWindowNumber > 1 && which == TASK_LEFT) {
+                        final WindowManager.LayoutParams attachedAttrs = attached.getAttrs();
+                        final String attachedTitle = attachedAttrs.getTitle().toString();
+                        if (attachedTitle.startsWith("com.autonavi.xmgd.navigator/com.autonavi.xmgd.navigator.Map")) {
+                            Slog.d(TAG, "This is Test Code ---> Fixup for Navi!!!");
+                            int factor = -256;
+                            contentFrame.left = factor;
+                            displayFrame.left = factor;
+                            overscanFrame.left = factor;
+                            visibleFrame.left = factor;
+                            decorFrame.left = factor;
+                            stableFrame.left = factor;
+                            parentFrame.left = factor;
+                            int right = 768;
+                            contentFrame.right = right;
+                            displayFrame.right = right;
+                            overscanFrame.right = right;
+                            visibleFrame.right = right;
+                            decorFrame.right = right;
+                            stableFrame.right = right;
+                            parentFrame.right = right;
+                        }
+                    }
+                    Slog.d(TAG, "Attached set ---> ");
+                    Slog.d(TAG, "content --> " + contentFrame);
+                    Slog.d(TAG, "display --> " + displayFrame);
+                    Slog.d(TAG, "overscan --> " + overscanFrame);
+                    Slog.d(TAG, "visible --> " + visibleFrame);
+                    Slog.d(TAG, "decor --> " + decorFrame);
+                    Slog.d(TAG, "stable --> " + stableFrame);
+                    Slog.d(TAG, "parent --> " + parentFrame);
+                } else {
+                    Slog.e(TAG, "attached win is not left nor right --> " + attached);
+                    if (mCurrentLayoutWindowNumber == 1 && mLeftWin == null) {
+                        Slog.d(TAG, "set to default");
+                        parentFrame.right = mSystemRight;
+                        parentFrame.bottom = mSystemBottom;
+                        parentFrame.left = 0;
+                        parentFrame.top = 0;
+                    } else {
+                        parentFrame.right = mSystemRight;
+                        parentFrame.bottom = mSystemBottom;
+                        parentFrame.left = parentFrame.right - 48;
+                        parentFrame.top = parentFrame.bottom - 32;
+                    }
+
+                    displayFrame.set(parentFrame);
+                    overscanFrame.set(parentFrame);
+                    contentFrame.set(parentFrame);
+                    visibleFrame.set(parentFrame);
+                    decorFrame.set(parentFrame);
+                    stableFrame.set(parentFrame);
+                }
+            } else {
                 contentFrame.set(attached.getContentFrameLw());
                 displayFrame.set(attached.getDisplayFrameLw());
                 overscanFrame.set(attached.getOverscanFrameLw());
@@ -1612,60 +1676,6 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 decorFrame.set(parentFrame);
                 stableFrame.set(parentFrame);
                 parentFrame.set(attached.getFrameLw());
-
-                // psw0523 test
-                if ((!mIsFloatingMode) && mCurrentLayoutWindowNumber > 1 && which == TASK_LEFT) {
-                    final WindowManager.LayoutParams attachedAttrs = attached.getAttrs();
-                    final String attachedTitle = attachedAttrs.getTitle().toString();
-                    if (attachedTitle.startsWith("com.autonavi.xmgd.navigator/com.autonavi.xmgd.navigator.Map")) {
-                        Slog.d(TAG, "This is Test Code ---> Fixup for Navi!!!");
-                        int factor = -256;
-                        contentFrame.left = factor;
-                        displayFrame.left = factor;
-                        overscanFrame.left = factor;
-                        visibleFrame.left = factor;
-                        decorFrame.left = factor;
-                        stableFrame.left = factor;
-                        parentFrame.left = factor;
-                        int right = 768;
-                        contentFrame.right = right;
-                        displayFrame.right = right;
-                        overscanFrame.right = right;
-                        visibleFrame.right = right;
-                        decorFrame.right = right;
-                        stableFrame.right = right;
-                        parentFrame.right = right;
-                    }
-                }
-                Slog.d(TAG, "Attached set ---> ");
-                Slog.d(TAG, "content --> " + contentFrame);
-                Slog.d(TAG, "display --> " + displayFrame);
-                Slog.d(TAG, "overscan --> " + overscanFrame);
-                Slog.d(TAG, "visible --> " + visibleFrame);
-                Slog.d(TAG, "decor --> " + decorFrame);
-                Slog.d(TAG, "stable --> " + stableFrame);
-                Slog.d(TAG, "parent --> " + parentFrame);
-            } else {
-                Slog.e(TAG, "attached win is not left nor right --> " + attached);
-                if (mCurrentLayoutWindowNumber == 1 && mLeftWin == null) {
-                    Slog.d(TAG, "set to default");
-                    parentFrame.right = mSystemRight;
-                    parentFrame.bottom = mSystemBottom;
-                    parentFrame.left = 0;
-                    parentFrame.top = 0;
-                } else {
-                    parentFrame.right = mSystemRight;
-                    parentFrame.bottom = mSystemBottom;
-                    parentFrame.left = parentFrame.right - 48;
-                    parentFrame.top = parentFrame.bottom - 32;
-                }
-
-                displayFrame.set(parentFrame);
-                overscanFrame.set(parentFrame);
-                contentFrame.set(parentFrame);
-                visibleFrame.set(parentFrame);
-                decorFrame.set(parentFrame);
-                stableFrame.set(parentFrame);
             }
         } else {
             displayFrame.set(parentFrame);
