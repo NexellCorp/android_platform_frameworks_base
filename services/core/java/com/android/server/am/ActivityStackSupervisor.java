@@ -30,6 +30,7 @@ import static com.android.server.am.ActivityManagerService.DEBUG_STACK;
 import static com.android.server.am.ActivityManagerService.DEBUG_SWITCH;
 import static com.android.server.am.ActivityManagerService.DEBUG_TASKS;
 import static com.android.server.am.ActivityManagerService.DEBUG_USER_LEAVING;
+import static com.android.server.am.ActivityManagerService.DEBUG_MULTIWINDOW;
 import static com.android.server.am.ActivityManagerService.FIRST_SUPERVISOR_STACK_MSG;
 import static com.android.server.am.ActivityManagerService.TAG;
 import static com.android.server.am.ActivityRecord.HOME_ACTIVITY_TYPE;
@@ -1881,8 +1882,8 @@ public final class ActivityStackSupervisor implements DisplayListener {
                             // psw0523 patch for AVN MultiWindow
                             if (getMultiWindowEnabled()) {
                                 r.mIndex = intentActivity.mIndex;
-                                Slog.d(TAG, "index matching ---> source: " + intentActivity + ", target: " + r);
-                                Slog.d(TAG, "index --> " + r.mIndex);
+                                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "index matching ---> source: " + intentActivity + ", target: " + r);
+                                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "index --> " + r.mIndex);
                             }
 
                             targetStack.moveTaskToFrontLocked(intentActivity.task, r, options,

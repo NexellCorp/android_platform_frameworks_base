@@ -277,6 +277,8 @@ public final class ActivityManagerService extends ActivityManagerNative
     static final boolean DEBUG_PSS = localLOGV || false;
     static final boolean DEBUG_LOCKSCREEN = localLOGV || false;
     static final boolean DEBUG_RECENTS = localLOGV || false;
+    // psw0523 add for debugging multiwindow
+    static final boolean DEBUG_MULTIWINDOW = localLOGV || false;
     static final boolean VALIDATE_TOKENS = false;
     static final boolean SHOW_ACTIVITY_START_TIME = true;
 
@@ -11252,7 +11254,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
 
             // psw0523 debugging
-            Slog.i(TAG, "systemReady ---> " + mSystemReady);
+            if (DEBUG) Slog.i(TAG, "systemReady ---> " + mSystemReady);
 
             // psw0523 AVN Patch
             // Make sure we have the current profile info, since it is needed for
@@ -11327,7 +11329,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         //}
         mProcessesReady = true;
 
-        Slog.i(TAG, "System now ready");
+        if (DEBUG) Slog.i(TAG, "System now ready");
         // psw0523 fix
         //EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_AMS_READY,
             //SystemClock.uptimeMillis());
@@ -11411,7 +11413,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             // Start up initial activity.
             mBooting = true;
             // psw0523 debugging
-            Slog.i(TAG, "call startHomeActivityLocked");
+            if (DEBUG) Slog.i(TAG, "call startHomeActivityLocked");
             startHomeActivityLocked(mCurrentUserId, "systemReady");
 
             try {
@@ -11457,7 +11459,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 Binder.restoreCallingIdentity(ident);
             }
             // psw0523 debugging
-            Slog.i(TAG, "call resumeTopActivitiesLocked");
+            if (DEBUG_MULTIWINDOW) Slog.i(TAG, "call resumeTopActivitiesLocked");
             mStackSupervisor.resumeTopActivitiesLocked();
             sendUserSwitchBroadcastsLocked(-1, mCurrentUserId);
         }

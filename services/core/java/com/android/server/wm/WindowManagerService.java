@@ -194,6 +194,8 @@ public class WindowManagerService extends IWindowManager.Stub
     static final boolean DEBUG_TASK_MOVEMENT = false;
     static final boolean DEBUG_STACK = false;
     static final boolean DEBUG_DISPLAY = false;
+    // psw0523 add for debugging multiwindow
+    static final boolean DEBUG_MULTIWINDOW = false;
     static final boolean SHOW_SURFACE_ALLOC = false;
     static final boolean SHOW_TRANSACTIONS = false;
     static final boolean SHOW_LIGHT_TRANSACTIONS = false || SHOW_TRANSACTIONS;
@@ -3701,11 +3703,11 @@ public class WindowManagerService extends IWindowManager.Stub
         // mMultiWindowTokens.set(index, token);
         // mMultiWindowTokens.add(token);
         if (index == 0) {
-            Slog.d(TAG, "addMultiWindow --> Set First " + token);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "addMultiWindow --> Set First " + token);
             mFirstWindowToken = token;
             mMultiWinNum++;
         } else if (index == 1) {
-            Slog.d(TAG, "addMultiWindow --> Set Second " + token);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "addMultiWindow --> Set Second " + token);
             mSecondWindowToken = token;
             mMultiWinNum++;
         }
@@ -3714,7 +3716,7 @@ public class WindowManagerService extends IWindowManager.Stub
     // psw0523 add for AVN MultiWindow
     @Override
     public void clearMultiWindowAppToken() {
-        Slog.d(TAG, "clearMultiWindowAppToken()");
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "clearMultiWindowAppToken()");
         // mMultiWindowTokens.clear();
         mFirstWindowToken = null;
         mSecondWindowToken = null;
@@ -8868,8 +8870,8 @@ public class WindowManagerService extends IWindowManager.Stub
         IApplicationToken leftToken = mFirstWindowToken; 
         IApplicationToken rightToken = mSecondWindowToken;
 
-        Slog.d(TAG, "leftToken --> " + leftToken);
-        Slog.d(TAG, "rightToken --> " + rightToken);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "leftToken --> " + leftToken);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "rightToken --> " + rightToken);
 
         for (i = N-1; i >= 0; i--) {
             final WindowState win = windows.get(i);
@@ -8878,8 +8880,8 @@ public class WindowManagerService extends IWindowManager.Stub
             if (token == null)
                 continue;
 
-            Slog.d(TAG, "check win --> " + win);
-            Slog.d(TAG, "check token --> " + token);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "check win --> " + win);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "check token --> " + token);
             if (leftToken != null && token == leftToken) {
                 leftWin = win;
                 multiWinNum++;
@@ -8891,11 +8893,11 @@ public class WindowManagerService extends IWindowManager.Stub
             if (leftWin != null && rightWin != null)
                 break;
         }
-        Slog.d(TAG, "leftWin --> " + leftWin);
-        Slog.d(TAG, "rightWin --> " + rightWin);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "leftWin --> " + leftWin);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "rightWin --> " + rightWin);
         mPolicy.setLeftWindow(leftWin);
         mPolicy.setRightWindow(rightWin);
-        Slog.d(TAG, "=====> Current MultiWindow Num " + mMultiWinNum);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "=====> Current MultiWindow Num " + mMultiWinNum);
         mPolicy.setLayoutWindowNumber(mMultiWinNum);
     }
 

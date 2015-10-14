@@ -118,15 +118,18 @@ public class MultiWindowManager implements WindowManagerPolicy {
      * Debug options
      */
     static final String TAG = "MultiWindowManager";
-    static final boolean DEBUG = true;
-    static final boolean DEBUG_INPUT = true;
-    static final boolean DEBUG_LAYOUT = false;
-    static final boolean DEBUG_STARTING_WINDOW = true;
-    static final boolean DEBUG_MULTIWINDOW = true;
+    static final boolean DEBUG = false;
+    static final boolean DEBUG_INPUT = DEBUG || false;
+    static final boolean DEBUG_LAYOUT = DEBUG || false;
+    static final boolean DEBUG_STARTING_WINDOW = DEBUG || false;
+    static final boolean DEBUG_MULTIWINDOW = DEBUG || false;
+    static final boolean DEBUG_MESSAGE = DEBUG || false;
+    static final boolean DEBUG_SYSTEM_UI = DEBUG || false;
+    static final boolean DEBUG_FLOATING_WINDOW = DEBUG || false;
+    static final boolean DEBUG_GESTURE = DEBUG || false;
 
     // HACK : if false, don't show starting window, default change to false
     static final boolean SHOW_STARTING_ANIMATIONS = false;
-    // static final boolean SHOW_STARTING_ANIMATIONS = true;
 
     /**
      * layout sizes for SystemUI
@@ -141,14 +144,52 @@ public class MultiWindowManager implements WindowManagerPolicy {
     /**
      * key hooking
      */
+    /* define actions */
     static final int ACTION_DO_NOTHING = 0;
     static final int ACTION_LCD_ON_OFF = 1;
-    static final int ACTION_MUTE_ON_OFF = 2;
-    static final int ACTION_VOLUME_UP = 3;
-    static final int ACTION_VOLUME_DOWN = 4;
-    static final int ACTION_MINI_LAUNCHER = 5;
-    static final int ACTION_GO_HOME = 6;
-    static final int ACTION_LAUNCH_OTHER = 7;
+    static final int ACTION_GO_HOME = 2;
+    static final int ACTION_BACK = 3;
+    static final int ACTION_MINILAUNCHER = 4;
+    static final int ACTION_MASTER_MUTE_TOGGLE = 10;
+    static final int ACTION_SUB_MUTE_TOGGLE = 11;
+    static final int ACTION_STREAM0_VOLUME_UP = 20;
+    static final int ACTION_STREAM1_VOLUME_UP = 21;
+    static final int ACTION_STREAM2_VOLUME_UP = 22;
+    static final int ACTION_STREAM3_VOLUME_UP = 23;
+    static final int ACTION_STREAM4_VOLUME_UP = 24;
+    static final int ACTION_STREAM5_VOLUME_UP = 25;
+    static final int ACTION_STREAM6_VOLUME_UP = 26;
+    static final int ACTION_STREAM7_VOLUME_UP = 27;
+    static final int ACTION_STREAM8_VOLUME_UP = 28;
+    static final int ACTION_STREAM0_VOLUME_DOWN = 30;
+    static final int ACTION_STREAM1_VOLUME_DOWN = 31;
+    static final int ACTION_STREAM2_VOLUME_DOWN = 32;
+    static final int ACTION_STREAM3_VOLUME_DOWN = 33;
+    static final int ACTION_STREAM4_VOLUME_DOWN = 34;
+    static final int ACTION_STREAM5_VOLUME_DOWN = 35;
+    static final int ACTION_STREAM6_VOLUME_DOWN = 36;
+    static final int ACTION_STREAM7_VOLUME_DOWN = 37;
+    static final int ACTION_STREAM8_VOLUME_DOWN = 38;
+    static final int ACTION_WINDOW0_EXIT = 40;
+    static final int ACTION_WINDOW1_EXIT = 41;
+    static final int ACTION_CHANGE_WINDOW_0_1 = 50;
+    static final int ACTION_WINDOW0_TOGGLE_FULL = 60;
+    static final int ACTION_WINDOW1_TOGGLE_FULL = 61;
+    static final int ACTION_WINDOW0_TOGGLE_FLOATING = 70;
+    static final int ACTION_WINDOW1_TOGGLE_FLOATING = 71;
+    static final int ACTION_WINDOW0_MOVE_UP = 80;
+    static final int ACTION_WINDOW1_MOVE_UP = 81;
+    static final int ACTION_WINDOW0_MOVE_DOWN = 90;
+    static final int ACTION_WINDOW1_MOVE_DOWN = 91;
+    static final int ACTION_WINDOW0_MOVE_LEFT = 100;
+    static final int ACTION_WINDOW1_MOVE_LEFT = 101;
+    static final int ACTION_WINDOW0_MOVE_RIGHT = 110;
+    static final int ACTION_WINDOW1_MOVE_RIGHT = 111;
+    static final int ACTION_WINDOW0_SIZE_UP = 120;
+    static final int ACTION_WINDOW1_SIZE_UP = 121;
+    static final int ACTION_WINDOW0_SIZE_DOWN = 130;
+    static final int ACTION_WINDOW1_SIZE_DOWN = 131;
+    static final int ACTION_LAUNCH_APP = 140;
 
     private class ButtonAction {
         int mShortPressAction = 0;
@@ -177,11 +218,11 @@ public class MultiWindowManager implements WindowManagerPolicy {
         }
 
         public int runShort() {
-            return 0;
+            return runCommon(mShortPressAction, mShortPressLaunchApp);
         }
 
         public int runLong() {
-            return 0;
+            return runCommon(mLongPressAction, mLongPressLaunchApp);
         }
 
         public int runDouble() {
@@ -233,7 +274,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                  case MSG_WINDOW_MANAGER_DRAWN_COMPLETE:
                      break;
                  case MSG_HIDE_MULTIWINDOW_CONTROL:
-                     if (DEBUG) Slog.d(TAG, "MSG_HIDE_MULTIWINDOW_CONTROL");
+                     if (DEBUG_MESSAGE) Slog.d(TAG, "MSG_HIDE_MULTIWINDOW_CONTROL");
 
                      if (isShowMultiWindowControl()) { 
                          int visibility = mMultiWindowVisibility;
@@ -243,7 +284,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                     break;
                  case MSG_HIDE_MINILAUNCHER:
-                    if (DEBUG) Slog.d(TAG, "MSG_HIDE_MINILAUNCHER");
+                    if (DEBUG_MESSAGE) Slog.d(TAG, "MSG_HIDE_MINILAUNCHER");
 
                     if (isShowMiniLauncher()) {
                         int visibility = mMultiWindowVisibility;
@@ -253,7 +294,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                     break;
                 case MSG_HIDE_DRAGCONTROL:
-                    if (DEBUG) Slog.d(TAG, "MSG_HIDE_DRAGCONTROL");
+                    if (DEBUG_MESSAGE) Slog.d(TAG, "MSG_HIDE_DRAGCONTROL");
 
                     if (isShowDragControl()) {
                         int visibility = mMultiWindowVisibility;
@@ -263,7 +304,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                     break;
                 case MSG_HIDE_FLOATINGCONTROL:
-                    if (DEBUG) Slog.d(TAG, "MSG_HIDE_FLOATINGCONTROL");
+                    if (DEBUG_MESSAGE) Slog.d(TAG, "MSG_HIDE_FLOATINGCONTROL");
 
                     if (isShowFloatingControl()) {
                         int visibility = mMultiWindowVisibility;
@@ -402,7 +443,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
     private void updateSystemUIVisibility(int vis, WindowState win) {
       if (vis != mMultiWindowVisibility) {
         mMultiWindowVisibility = vis;
-        if (DEBUG) Slog.d(TAG, "updateSystemUIVisibility: vis " + vis + ", win " + win);
+        if (DEBUG_SYSTEM_UI) Slog.d(TAG, "updateSystemUIVisibility: vis " + vis + ", win " + win);
         try {
           IStatusBarService statusbar = getStatusBarService();
           if (statusbar != null) {
@@ -445,7 +486,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
               visibility |= View.MULTIWINDOW_FLOATING_VISIBLE;
           }
 
-          if (DEBUG) Slog.d(TAG, "showSystemUI --> win " + win);
+          if (DEBUG_SYSTEM_UI) Slog.d(TAG, "showSystemUI --> win " + win);
           updateSystemUIVisibility(visibility, win);
         }
       });
@@ -499,12 +540,12 @@ public class MultiWindowManager implements WindowManagerPolicy {
     }
 
     private void moveFloatingWindow(int xDiff, int yDiff) {
-        // Slog.d(TAG, "moveFloatingWindow: xDiff " + xDiff + ", yDiff " + yDiff);
+        if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "moveFloatingWindow: xDiff " + xDiff + ", yDiff " + yDiff);
         int nextLeft = mFloatingWindowLeft + xDiff;
         int nextTop = mFloatingWindowTop + yDiff;
         int nextRight = mFloatingWindowRight + xDiff;
         int nextBottom = mFloatingWindowBottom + yDiff;
-        // Slog.d(TAG, "moveFloatingWindow : [" + mFloatingWindowLeft + "," + mFloatingWindowTop + "] --> [" + nextLeft + "," + nextTop + "]");
+        if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "moveFloatingWindow : [" + mFloatingWindowLeft + "," + mFloatingWindowTop + "] --> [" + nextLeft + "," + nextTop + "]");
         mFloatingWindowLeft = nextLeft;
         mFloatingWindowTop = nextTop;
         mFloatingWindowRight = nextRight;
@@ -544,7 +585,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
             // check taskId
             int which = whichTask(win);
             if (which == TASK_LEFT) {
-                Slog.d(TAG, "Task same to Left");
+                if (DEBUG_LAYOUT) Slog.d(TAG, "Task same to Left");
                 parentFrame.left = mSystemLeft;
                 parentFrame.top = mSystemTop;
                 parentFrame.right = mSystemRight/2;
@@ -552,18 +593,18 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
                 // psw0523 test for Navi
                 if (title.startsWith("com.autonavi.xmgd.navigator/com.autonavi.xmgd.navigator.Map")) {
-                    Slog.d(TAG, "Fixup for NAVI");
+                    Slog.e(TAG, "Fixup for autonavi");
                     parentFrame.left = -256;
                     parentFrame.right = 768;
                 }
             } else if (which == TASK_RIGHT) {
-                Slog.d(TAG, "Task same to Right");
+                if (DEBUG_LAYOUT) Slog.d(TAG, "Task same to Right");
                 parentFrame.left = mSystemLeft + (mSystemRight/2);
                 parentFrame.top = mSystemTop;
                 parentFrame.right = mSystemRight;
                 parentFrame.bottom = mSystemBottom;
             } else {
-                Slog.d(TAG, "Unknown Task");
+                if (DEBUG_LAYOUT) Slog.d(TAG, "Unknown Task");
                 parentFrame.left = mSystemLeft;
                 parentFrame.top = mSystemTop;
                 parentFrame.right = mSystemRight;
@@ -588,7 +629,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
         parentFrame.top = mFloatingWindowTop;
         parentFrame.right = mFloatingWindowRight;
         parentFrame.bottom = mFloatingWindowBottom;
-        Slog.d(TAG, "Floating Layout --> " + mFloatingWindowLeft + "," + mFloatingWindowTop + "," + mFloatingWindowRight + "," + mFloatingWindowBottom);
+        if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Floating Layout --> " + mFloatingWindowLeft + "," + mFloatingWindowTop + "," + mFloatingWindowRight + "," + mFloatingWindowBottom);
     }
 
     /**
@@ -633,13 +674,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 new SystemGesturesPointerEventListener.Callbacks() {
                     @Override
                     public void onSwipeFromTop() {
-                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromTop ---> ");
+                      if (DEBUG_GESTURE) Slog.d(TAG, "onSwipeFromTop ---> ");
                       if (mCurrentLayoutWindowNumber > 0) {
                           if (mCurrentLayoutWindowNumber > 1
                               && (!mIsFloatingMode)
                               && isShowDragControl()
                               && mSystemGestures.getLastX() > (mSystemRight/2)) {
-                              Slog.d(TAG, "Enter to FloatingMode!!!");
+                              if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Enter to FloatingMode!!!");
                               mIsFloatingMode = true;
                               hideSystemUI(mMultiWindowDragControl);
                               mSystemGestures.enableTracking(true);
@@ -658,13 +699,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                     @Override
                     public void onSwipeFromRight() {
-                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromRight ---> ");
+                      if (DEBUG_GESTURE) Slog.d(TAG, "onSwipeFromRight ---> ");
                       showSystemUI(mMultiWindowControl);
                       hideSystemUI(mMultiWindowControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
                     }
                     @Override
                     public void onSwipeFromRightAtTop(float fromX, float toX) {
-                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromRightAtTop ---> " + "from: " + fromX + ", to: " + toX);
+                      if (DEBUG_GESTURE) Slog.d(TAG, "onSwipeFromRightAtTop ---> " + "from: " + fromX + ", to: " + toX);
 
                       if (isShowDragControl()) {
                           long hideDelay = MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS;
@@ -673,7 +714,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                                   // remove left win
                                   if (mLeftWin != null) {
                                       mPrevLeftWin = mLeftWin;
-                                      Slog.d(TAG, "Backup LeftWin --> " + mPrevLeftWin);
+                                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Backup LeftWin --> " + mPrevLeftWin);
                                       mLeftWin.pauseActivityOfWindow(true);
                                       // mLeftWin.pauseActivityOfWindow(false);
                                       hideDelay = 0;
@@ -694,7 +735,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                     @Override
                     public void onSwipeFromLeftAtTop(float fromX, float toX) {
-                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromLeftAtTop ---> " + "from: " + fromX + ", to: " + toX);
+                      if (DEBUG_GESTURE) Slog.d(TAG, "onSwipeFromLeftAtTop ---> " + "from: " + fromX + ", to: " + toX);
 
                       if (isShowDragControl()) {
                           long hideDelay = MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS;
@@ -714,12 +755,6 @@ public class MultiWindowManager implements WindowManagerPolicy {
                               }
                           } else if (mLeftWin != null) {
                               mLeftWin.pauseActivityOfWindow(true);
-                              // if (mPrevLeftWin != null) {
-                              //   Slog.d(TAG, "Restore leftWin --> " + mPrevLeftWin);
-                              //   mPrevLeftWin.showLw(true);
-                              //   mPrevLeftWin.restoreDefaultActivity();
-                              //   mPrevLeftWin = null;
-                              // }
                               hideDelay = 0;
                           }
                           hideSystemUI(mMultiWindowDragControl, hideDelay);
@@ -727,7 +762,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     }
                     @Override
                     public void onSwipeFromTopAtMid() {
-                      if (DEBUG_MULTIWINDOW) Slog.d(TAG, "onSwipeFromTopAtMid ---> ");
+                      if (DEBUG_GESTURE) Slog.d(TAG, "onSwipeFromTopAtMid ---> ");
                       if (mCurrentLayoutWindowNumber > 0) {
                           showSystemUI(mMultiWindowDragControl);
                           hideSystemUI(mMultiWindowDragControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
@@ -749,7 +784,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                             y = event.getY(0);
                             if (x > mFloatingWindowLeft && x < mFloatingWindowRight
                                 && y > mFloatingWindowTop && y < mFloatingWindowBottom) {
-                                Slog.d(TAG, "ACTION_DOWN On Floating Window: x " + x + ", y " + y);
+                                if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "ACTION_DOWN On Floating Window: x " + x + ", y " + y);
                                 // show SystemUI
                                 if (isShowFloatingControl()) {
                                     hideSystemUI(mMultiWindowFloatingControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
@@ -760,7 +795,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                             } else if (x > mFloatingWindowLeft && x < mFloatingWindowRight
                                        && y > (mFloatingWindowTop - FLOATINGCONTROL_SYSTEMUI_HEIGHT) && y < mFloatingWindowTop) {
                                 if (isShowFloatingControl()) {
-                                    Slog.d(TAG, "ACTION_DOWN On FloatingControl: x " + x + ", y " + y);
+                                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "ACTION_DOWN On FloatingControl: x " + x + ", y " + y);
                                     mFloatingDownPointers = 0;
                                     // captureFloatingControlDown(event, 0);
                                     mFloatingWindowX = x;
@@ -791,7 +826,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                             }
                         } else if (action == MotionEvent.ACTION_UP) {
                             if (isShowFloatingControl()) {
-                                Slog.d(TAG, "ACTION_UP On FloatingControl");
+                                if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "ACTION_UP On FloatingControl");
                                 mFloatingWindowState = FLOATING_WINDOW_STATE_NONE;
                                 hideSystemUI(mMultiWindowFloatingControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
                             }
@@ -1418,7 +1453,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
     @Override
     public int adjustSystemUiVisibilityLw(int visibility) {
         // TODO : handle MultiWindowControl, MultiWindowMiniLauncher
-        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "adjustSystemUiVisibilityLw : vis " + visibility);
+        if (DEBUG_SYSTEM_UI) Slog.d(TAG, "adjustSystemUiVisibilityLw : vis " + visibility);
 
         if (isShowMultiWindowControl()) {
             if ((visibility & View.MULTIWINDOW_CONTROL_HIDDEN) == View.MULTIWINDOW_CONTROL_HIDDEN) {
@@ -1511,9 +1546,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
         // core function
         // TODO : handle input method window
 
-        if (DEBUG_LAYOUT) Slog.d(TAG, "layoutWindowLw");
-        Slog.d(TAG, "layoutWindowLw : win " + win);
-        Slog.d(TAG, "attached " + attached);
+        if (DEBUG_LAYOUT) Slog.d(TAG, "layoutWindowLw : win " + win);
+        if (DEBUG_LAYOUT) Slog.d(TAG, "attached " + attached);
 
         Rect parentFrame = new Rect();
         Rect displayFrame = new Rect();
@@ -1560,17 +1594,16 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         parentFrame.top = mSystemTop;
                         parentFrame.right = mSystemRight;
                         parentFrame.bottom = mSystemBottom;
-                        // Slog.d(TAG, "Left Window Base Layer --> " + win.mBaseLayer);
                     } else {
                         int which = whichTask(win);
                         if (which == TASK_LEFT) {
-                            Slog.d(TAG, "Floating Mode --> Task same to Left");
+                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Floating Mode --> Task same to Left");
                             parentFrame.left = mSystemLeft;
                             parentFrame.top = mSystemTop;
                             parentFrame.right = mSystemRight;
                             parentFrame.bottom = mSystemBottom;
                         } else if (which == TASK_RIGHT) {
-                            Slog.d(TAG, "Floating Mode --> Task same to Right");
+                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Floating Mode --> Task same to Right");
                             layoutFloating(parentFrame);
                         } else {
                             Slog.e(TAG, "How can I deal this window when floating mode ? win --> " + win);
@@ -1619,7 +1652,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         final WindowManager.LayoutParams attachedAttrs = attached.getAttrs();
                         final String attachedTitle = attachedAttrs.getTitle().toString();
                         if (attachedTitle.startsWith("com.autonavi.xmgd.navigator/com.autonavi.xmgd.navigator.Map")) {
-                            Slog.d(TAG, "This is Test Code ---> Fixup for Navi!!!");
+                            Slog.e(TAG, "This is Test Code ---> Fixup for autonavi!!!");
                             int factor = -256;
                             contentFrame.left = factor;
                             displayFrame.left = factor;
@@ -1638,23 +1671,26 @@ public class MultiWindowManager implements WindowManagerPolicy {
                             parentFrame.right = right;
                         }
                     }
-                    Slog.d(TAG, "Attached set ---> ");
-                    Slog.d(TAG, "content --> " + contentFrame);
-                    Slog.d(TAG, "display --> " + displayFrame);
-                    Slog.d(TAG, "overscan --> " + overscanFrame);
-                    Slog.d(TAG, "visible --> " + visibleFrame);
-                    Slog.d(TAG, "decor --> " + decorFrame);
-                    Slog.d(TAG, "stable --> " + stableFrame);
-                    Slog.d(TAG, "parent --> " + parentFrame);
+                    if (DEBUG_LAYOUT) {
+                        Slog.d(TAG, "Attached set ---> ");
+                        Slog.d(TAG, "content --> " + contentFrame);
+                        Slog.d(TAG, "display --> " + displayFrame);
+                        Slog.d(TAG, "overscan --> " + overscanFrame);
+                        Slog.d(TAG, "visible --> " + visibleFrame);
+                        Slog.d(TAG, "decor --> " + decorFrame);
+                        Slog.d(TAG, "stable --> " + stableFrame);
+                        Slog.d(TAG, "parent --> " + parentFrame);
+                    }
                 } else {
                     Slog.e(TAG, "attached win is not left nor right --> " + attached);
                     if (mCurrentLayoutWindowNumber == 1 && mLeftWin == null) {
-                        Slog.d(TAG, "set to default");
+                        Slog.e(TAG, "set to default");
                         parentFrame.right = mSystemRight;
                         parentFrame.bottom = mSystemBottom;
                         parentFrame.left = 0;
                         parentFrame.top = 0;
                     } else {
+                        Slog.e(TAG, "set to small right down corner");
                         parentFrame.right = mSystemRight;
                         parentFrame.bottom = mSystemBottom;
                         parentFrame.left = parentFrame.right - 48;
@@ -1732,7 +1768,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
     @Override
     public int focusChangedLw(WindowState lastFocus, WindowState newFocus) {
         // TODO : handle MultiWindowControl, MultiWindowMiniLauncher?
-        if (DEBUG_LAYOUT) Slog.d(TAG, "focusChangedLw last=" + lastFocus + ", new=" + newFocus);
+        if (DEBUG) Slog.d(TAG, "focusChangedLw last=" + lastFocus + ", new=" + newFocus);
         return 0;
     }
 
@@ -1769,7 +1805,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 if (!mIsLeftFull) {
                     // on left full
                     if (mRightWin != null) {
-                        Slog.d(TAG, "On Left Full");
+                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "On Left Full");
                         mRightWin.pauseActivityOfWindow(false);
                         mPrevRightWin = mRightWin;
                         mIsLeftFull = true;
@@ -1777,7 +1813,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 } else {
                     // off left full
                     if (mPrevRightWin != null) {
-                        Slog.d(TAG, "Off Left Full");
+                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Off Left Full");
                         mPrevRightWin.restoreActivity();
                         mPrevRightWin = null;
                         mIsLeftFull = false;
@@ -1792,7 +1828,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 if (!mIsRightFull) {
                     // on Right full
                     if (mLeftWin != null && mRightWin != null) {
-                        Slog.d(TAG, "On Right Full");
+                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "On Right Full");
                         mLeftWin.pauseActivityOfWindow(false);
                         mPrevLeftWin = mLeftWin;
                         mIsRightFull = true;
@@ -1800,7 +1836,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 } else {
                     // off Right full
                     if (mPrevLeftWin != null) {
-                        Slog.d(TAG, "Off Right Full");
+                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Off Right Full");
                         mPrevLeftWin.restoreActivity();
                         mPrevLeftWin = null;
                         mIsRightFull = false;
@@ -1821,7 +1857,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 handled = true;
                 // floating docking 
                 if (mIsFloatingMode) {
-                    Slog.d(TAG, "Off FloatingWindow Mode");
+                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Off FloatingWindow Mode");
                     mIsFloatingMode = false;
                     mSystemGestures.enableTracking(false);
                     hideSystemUI(mMultiWindowFloatingControl);
@@ -1834,7 +1870,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                 handled = true;
                 // floating exit
                 if (mIsFloatingMode) {
-                    Slog.d(TAG, "FloatingWindow exit");
+                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow exit");
                     if (isShowFloatingControl())
                         hideSystemUI(mMultiWindowFloatingControl);
                     if (mRightWin != null) {
@@ -1850,23 +1886,19 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         int floatingWindowHeight = mFloatingWindowBottom - mFloatingWindowTop;
                         if (((floatingWindowWidth + FLOATING_WINDOW_SCALE_WIDTH_FACTOR) < mSystemRight) 
                             && ((floatingWindowHeight + FLOATING_WINDOW_SCALE_HEIGHT_FACTOR) < mSystemBottom)) {
-                            //synchronized (mWindowManagerFuncs.getWindowManagerLock()) {
-                                Slog.d(TAG, "FloatingWindow Size Up: scaleFactor --> " + mFloatingWindowScaleFactor);
-                                try {
-                                    // TRANSIT_TASK_TO_FRONT
-                                    // mWindowManager.prepareAppTransition(10, false);
-                                    // TRANSIT_TASK_IN_PLACE
-                                    mFloatingWindowScaleFactor++;
-                                    mRightWin.setLayoutNeeded(true);
-                                    mWindowManager.prepareAppTransition(17, false);
-                                    mWindowManager.executeAppTransition();
-                                } catch (Exception e) {
-                                    mFloatingWindowScaleFactor--;
-                                }
-                                //hideSystemUI(mMultiWindowFloatingControl);
-                                // moveFloatingWindow(0, 0);
-                                Slog.d(TAG, "Size Up End");
-                            //}
+                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow Size Up: scaleFactor --> " + mFloatingWindowScaleFactor);
+                            try {
+                                // TRANSIT_TASK_TO_FRONT
+                                // mWindowManager.prepareAppTransition(10, false);
+                                // TRANSIT_TASK_IN_PLACE
+                                mFloatingWindowScaleFactor++;
+                                mRightWin.setLayoutNeeded(true);
+                                mWindowManager.prepareAppTransition(17, false);
+                                mWindowManager.executeAppTransition();
+                            } catch (Exception e) {
+                                mFloatingWindowScaleFactor--;
+                            }
+                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Size Up End");
                         }
                     }
                 }
@@ -1879,21 +1911,17 @@ public class MultiWindowManager implements WindowManagerPolicy {
                         int floatingWindowHeight = mFloatingWindowBottom - mFloatingWindowTop;
                         if (((floatingWindowWidth - FLOATING_WINDOW_SCALE_WIDTH_FACTOR) >= FLOATING_WINDOW_DEFAULT_WIDTH) 
                             && ((floatingWindowHeight - FLOATING_WINDOW_SCALE_HEIGHT_FACTOR) >= FLOATING_WINDOW_DEFAULT_HEIGHT)) {
-                            //synchronized (mWindowManagerFuncs.getWindowManagerLock()) {
-                                Slog.d(TAG, "FloatingWindow Size Down: scaleFactor --> " + mFloatingWindowScaleFactor);
-                                try {
-                                    // mWindowManager.prepareAppTransition(10, false);
-                                    mFloatingWindowScaleFactor--;
-                                    mRightWin.setLayoutNeeded(true);
-                                    mWindowManager.prepareAppTransition(17, false);
-                                    mWindowManager.executeAppTransition();
-                                } catch (Exception e) {
-                                    mFloatingWindowScaleFactor++;
-                                }
-                                //hideSystemUI(mMultiWindowFloatingControl);
-                                // moveFloatingWindow(0, 0);
-                                Slog.d(TAG, "Size Down End");
-                            //}
+                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow Size Down: scaleFactor --> " + mFloatingWindowScaleFactor);
+                            try {
+                                // mWindowManager.prepareAppTransition(10, false);
+                                mFloatingWindowScaleFactor--;
+                                mRightWin.setLayoutNeeded(true);
+                                mWindowManager.prepareAppTransition(17, false);
+                                mWindowManager.executeAppTransition();
+                            } catch (Exception e) {
+                                mFloatingWindowScaleFactor++;
+                            }
+                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Size Down End");
                         }
                     }
                 }
@@ -2064,13 +2092,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     @Override
     public void systemReady() {
-        Slog.d(TAG, "systemReady");
+        if (DEBUG) Slog.d(TAG, "systemReady");
     }
 
     /** {@inheritDoc} */
     @Override
     public void systemBooted() {
-        Slog.d(TAG, "systemBooted");
+        if (DEBUG) Slog.d(TAG, "systemBooted");
         mSystemBooted = true;
     }
 
@@ -2100,7 +2128,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     @Override
     public void enableScreenAfterBoot() {
-        Slog.d(TAG, "enableScreenAfterBoot");
+        if (DEBUG) Slog.d(TAG, "enableScreenAfterBoot");
     }
 
     @Override

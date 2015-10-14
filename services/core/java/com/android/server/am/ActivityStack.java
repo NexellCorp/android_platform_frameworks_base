@@ -28,6 +28,7 @@ import static com.android.server.am.ActivityManagerService.DEBUG_TASKS;
 import static com.android.server.am.ActivityManagerService.DEBUG_TRANSITION;
 import static com.android.server.am.ActivityManagerService.DEBUG_USER_LEAVING;
 import static com.android.server.am.ActivityManagerService.DEBUG_VISBILITY;
+import static com.android.server.am.ActivityManagerService.DEBUG_MULTIWINDOW;
 import static com.android.server.am.ActivityManagerService.VALIDATE_TOKENS;
 
 import static com.android.server.am.ActivityRecord.HOME_ACTIVITY_TYPE;
@@ -920,10 +921,10 @@ final class ActivityStack {
     // psw0523 add for AVN MultiWindow
     final void backupMultiWindowActivity(ActivityRecord r) {
         if (r == mFirstActivity) {
-            Slog.d(TAG, "backupMultiWindowActivity First --> " + r);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "backupMultiWindowActivity First --> " + r);
             mBackupFirstActivity = r;
         } else if (r == mSecondActivity) {
-            Slog.d(TAG, "backupMultiWindowActivity Second --> " + r);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "backupMultiWindowActivity Second --> " + r);
             mBackupSecondActivity = r;
         } else {
             Slog.e(TAG, "Activity r is not MultiWindow!!! " + r);
@@ -933,7 +934,7 @@ final class ActivityStack {
     // psw0523 add for AVN MultiWindow
     // finishing flag is backup for restore
     final int pauseActivity(ActivityRecord r, boolean finishing) {
-        Slog.d(TAG, "pauseActivity --> " + r);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "pauseActivity --> " + r);
         mPausingActivity = r;
         // test code for exiting left
         mResumedActivity = r;
@@ -1010,7 +1011,7 @@ final class ActivityStack {
     final void setMultiWindowActivity(ActivityRecord r) {
         synchronized(mService) {
             if (!mMultiWindowActivities.contains(r)) {
-                Slog.d(TAG, "====================> setMultiWindowActivity: r  " + r);
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "====================> setMultiWindowActivity: r  " + r);
                 mMultiWindowActivities.add(r);
             }
         }
@@ -1021,12 +1022,12 @@ final class ActivityStack {
             if (mFirstActivity == r) {
                 mFirstActivity = mSecondActivity;
                 mSecondActivity = null;
-                Slog.d(TAG, "removeMultiWindowActivity: Set First " + mFirstActivity);
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "removeMultiWindowActivity: Set First " + mFirstActivity);
             } else if (mSecondActivity == r) {
                 mSecondActivity = null;
-                Slog.d(TAG, "removeMultiWindowActivity: Set Second " + mSecondActivity);
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "removeMultiWindowActivity: Set Second " + mSecondActivity);
             } else {
-                Slog.d(TAG, "removeMultiWindowActivity: doNothing --> " + r);
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "removeMultiWindowActivity: doNothing --> " + r);
             }
 
             setMultiWindowAppToken();
@@ -1064,10 +1065,12 @@ final class ActivityStack {
 
     // psw0523 add for AVN MultiWindow
     final void updateMultiWindowActivities(ActivityRecord r, boolean isStackRestore) {
-        Slog.d(TAG, "updateMultiWindowActivities ---> ");
-        Slog.d(TAG, "task ---> " + r.task);
-        Slog.d(TAG, "activity --> " + r);
-        Slog.d(TAG, "name --> " + r.shortComponentName);
+        if (DEBUG_MULTIWINDOW) {
+            Slog.d(TAG, "updateMultiWindowActivities ---> ");
+            Slog.d(TAG, "task ---> " + r.task);
+            Slog.d(TAG, "activity --> " + r);
+            Slog.d(TAG, "name --> " + r.shortComponentName);
+        }
 
         if (isHomeStack()) {
             return;
@@ -1075,7 +1078,7 @@ final class ActivityStack {
 
         // handle Brightness Dialog
         if (r.shortComponentName.startsWith("com.android.systemui/.settings.BrightnessDialog")) {
-            Slog.d(TAG, "This is BrighnessDialog, Do nothing!!!");
+            Slog.e(TAG, "This is BrighnessDialog, Do nothing!!!");
             return;
         }
 
@@ -1175,21 +1178,21 @@ final class ActivityStack {
 
     // psw0523 add for AVN MultiWindow
     final void restoreActivity(ActivityRecord r) {
-        Slog.d(TAG, "restoreActivity ----> " + r);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "restoreActivity ----> " + r);
         synchronized(mService) {
             if (r == mBackupFirstActivity) {
-                Slog.d(TAG, "restore FirstActivity");
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "restore FirstActivity");
                 mBackupFirstActivity = null;
                 startPrevActivity(r);
             } else if (r == mBackupSecondActivity) {
-                Slog.d(TAG, "restore SecondActivity");
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "restore SecondActivity");
                 mBackupSecondActivity = null;
                 startPrevActivity(r);
             } else {
                 Slog.e(TAG, "Error: Activity is not MultiWindow Activity!!! ");
             }
         }
-        Slog.d(TAG, "End of restoreActivity");
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "End of restoreActivity");
     }
 
     final void activityPausedLocked(IBinder token, boolean timeout) {
@@ -1792,7 +1795,7 @@ final class ActivityStack {
     }
 
     final boolean resumeTopActivityInnerLocked(ActivityRecord prev, Bundle options) {
-        Slog.d(TAG, "-----------> resumeTopActivityInnerLocked " + prev);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "-----------> resumeTopActivityInnerLocked " + prev);
         // psw0523 HERE : first app run this path
         if (ActivityManagerService.DEBUG_LOCKSCREEN) mService.logLockScreen("");
 
@@ -1815,7 +1818,7 @@ final class ActivityStack {
         // psw0523 remove final
         // final ActivityRecord next = topRunningActivityLocked(null);
         ActivityRecord next = topRunningActivityLocked(null);
-        Slog.d(TAG, "next " + next);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "next " + next);
 
         // Remember how we'll process this pause/resume situation, and ensure
         // that the state is reset however we wind up proceeding.
@@ -1843,9 +1846,7 @@ final class ActivityStack {
                     mStackSupervisor.allResumedActivitiesComplete()) {
             // Make sure we have executed any pending transitions, since there
             // should be nothing left to do at this point.
-            Slog.d(TAG, "Already resumed " + next);
-            // psw0523 test for AVN MultiWindow
-            // mWindowManager.executeAppTransition();
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Already resumed " + next);
             // psw0523 add for mForceResumeActivity
             if (mForceResumeActivity == null) {
                 mNoAnimActivities.clear();
@@ -1854,7 +1855,7 @@ final class ActivityStack {
                 if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
                 return false;
             } else {
-                Slog.d(TAG, "set next --> " + mForceResumeActivity);
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "set next --> " + mForceResumeActivity);
                 next = mForceResumeActivity;
                 mForceResumeActivity = null;
                 next.delayedResume = false;
@@ -1916,17 +1917,14 @@ final class ActivityStack {
         next.sleeping = false;
         mStackSupervisor.mWaitingVisibleActivities.remove(next);
 
-        // psw0523 debugging
-        // if (DEBUG_SWITCH) Slog.d(TAG, "Resuming " + next);
-        Slog.d(TAG, "Resuming " + next);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Resuming " + next);
 
         // If we are currently pausing an activity, then don't do anything
         // until that is done.
         if (!mStackSupervisor.allPausedActivitiesComplete()) {
-            // psw0523 debugging
             if (DEBUG_SWITCH || DEBUG_PAUSE || DEBUG_STATES) Slog.d(TAG,
                     "resumeTopActivityLocked: Skip resume: some activity pausing.");
-            Slog.d(TAG, "resumeTopActivityLocked: Skip resume: some activity pausing.");
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "resumeTopActivityLocked: Skip resume: some activity pausing.");
             if (DEBUG_STACK) mStackSupervisor.validateTopActivitiesLocked();
             return false;
         }
@@ -2750,8 +2748,8 @@ final class ActivityStack {
         TaskRecord rTask = r.task;
         final int taskId = rTask.taskId;
         // psw0523 debugging for AVN MultiWindow
-        Slog.d(TAG, "startActivityLocked --> r " + r);
-        Slog.d(TAG, "newTask --> " + newTask + ", doResume " + doResume + ", keepCurTransition " + keepCurTransition);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "startActivityLocked --> r " + r);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "newTask --> " + newTask + ", doResume " + doResume + ", keepCurTransition " + keepCurTransition);
 
         // mLaunchTaskBehind tasks get placed at the back of the task stack.
         if (!r.mLaunchTaskBehind && (taskForIdLocked(taskId) == null || newTask)) {
@@ -2848,8 +2846,8 @@ final class ActivityStack {
             // psw0523 patch for AVN MultiWindow
             r.mIndex = getLastIndexOfActivityRecord();
 
-            Slog.d(TAG, "addAppToken ===> " + r);
-            Slog.d(TAG, "mIndex " + r.mIndex);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "addAppToken ===> " + r);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "mIndex " + r.mIndex);
             mWindowManager.addAppToken(task.mActivities.indexOf(r),
                     r.appToken, r.task.taskId, mStackId, r.info.screenOrientation, r.fullscreen,
                     (r.info.flags & ActivityInfo.FLAG_SHOW_ON_LOCK_SCREEN) != 0, r.userId,
@@ -2940,7 +2938,7 @@ final class ActivityStack {
 
         TaskRecord rTask = r.task;
         final int taskId = rTask.taskId;
-        Slog.d(TAG, "startPrevActivity --> r " + r);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "startPrevActivity --> r " + r);
 
         // mLaunchTaskBehind tasks get placed at the back of the task stack.
         if (!r.mLaunchTaskBehind && (taskForIdLocked(taskId) == null || newTask)) {
@@ -2998,8 +2996,8 @@ final class ActivityStack {
                 mNoAnimActivities.remove(r);
             }
 
-            Slog.d(TAG, "addAppToken ===> " + r);
-            Slog.d(TAG, "mIndex " + r.mIndex);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "addAppToken ===> " + r);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "mIndex " + r.mIndex);
             mWindowManager.addAppToken(task.mActivities.indexOf(r),
                     r.appToken, r.task.taskId, mStackId, r.info.screenOrientation, r.fullscreen,
                     (r.info.flags & ActivityInfo.FLAG_SHOW_ON_LOCK_SCREEN) != 0, r.userId,
@@ -3657,11 +3655,11 @@ final class ActivityStack {
 
         // psw0523 add for AVN MultiWindow
         if (mStackSupervisor.getMultiWindowEnabled()) {
-            Slog.d(TAG, "requestFinishActivityLocked --> " + r);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "requestFinishActivityLocked --> " + r);
             if (reason.startsWith("crashed")) {
                 if (r.task != null) {
                     if (mFirstActivity != null && mFirstActivity.task == r.task) {
-                        Slog.d(TAG, "FirstActivity is crashed");
+                        Slog.e(TAG, "FirstActivity is crashed");
                         mFirstActivity = mSecondActivity;
                         mActivityStackForDefault.clear();
                         for (int i = 0; i < mActivityStackForSecond.size(); i++) {
@@ -3671,7 +3669,7 @@ final class ActivityStack {
                         mActivityStackForSecond.clear();
                         setMultiWindowAppToken();
                     } else if (mSecondActivity != null && mSecondActivity.task == r.task) {
-                        Slog.d(TAG, "SecondActivity is crashed");
+                        Slog.e(TAG, "SecondActivity is crashed");
                         mSecondActivity = null;
                         mActivityStackForSecond.clear();
                         setMultiWindowAppToken();
@@ -3682,7 +3680,7 @@ final class ActivityStack {
                     int lastIndex = mActivityStackForDefault.size() - 1;
                     ActivityRecord prevActivity = mActivityStackForDefault.get(lastIndex);
                     if (r != prevActivity && r.task == prevActivity.task) {
-                        Slog.d(TAG, "prevActivity for First --> " + prevActivity);
+                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "prevActivity for First --> " + prevActivity);
                         mActivityStackForDefault.remove(prevActivity);
                         updateMultiWindowActivities(prevActivity, true);
                     }
@@ -3692,10 +3690,10 @@ final class ActivityStack {
                     ActivityRecord prevActivity = mActivityStackForSecond.get(lastIndex);
                     // debugging
                     for (int i = 0; i < mActivityStackForSecond.size(); i++) {
-                        Slog.d(TAG, "ActivityStackForSecond index " + i + " ----> " + mActivityStackForSecond.get(i));
+                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "ActivityStackForSecond index " + i + " ----> " + mActivityStackForSecond.get(i));
                     }
                     if (r != prevActivity && r.task == prevActivity.task) {
-                        Slog.d(TAG, "prevActivity for Second --> " + prevActivity);
+                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "prevActivity for Second --> " + prevActivity);
                         mActivityStackForSecond.remove(prevActivity);
                         updateMultiWindowActivities(prevActivity, true);
                     }
@@ -4489,9 +4487,8 @@ final class ActivityStack {
             String reason) {
         if (DEBUG_SWITCH) Slog.d(TAG, "moveTaskToFront: " + tr);
 
-        // psw0523 debugging
-        // Slog.d(TAG, "source --> " + source);
-        // Slog.d(TAG, "source index --> " + source.mIndex);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "source --> " + source);
+        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "source index --> " + source.mIndex);
 
         final int numTasks = mTaskHistory.size();
         final int index = mTaskHistory.indexOf(tr);
@@ -4516,9 +4513,8 @@ final class ActivityStack {
                 (source.intent.getFlags()&Intent.FLAG_ACTIVITY_NO_ANIMATION) != 0) {
             mWindowManager.prepareAppTransition(AppTransition.TRANSIT_NONE, false);
             ActivityRecord r = topRunningActivityLocked(null);
-            // psw0523 debugging
-            // Slog.d(TAG, "moveTaskToFrontLocked : topRunningActivity --> r " + r);
-            // Slog.d(TAG, "r index --> " + r.mIndex);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "moveTaskToFrontLocked : topRunningActivity --> r " + r);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "r index --> " + r.mIndex);
             if (r != null) {
                 mNoAnimActivities.add(r);
             }
