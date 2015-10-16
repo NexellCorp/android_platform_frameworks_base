@@ -141,10 +141,10 @@
         <!-- started from PhoneWindowManager
              TODO: Should have an android:permission attribute -->
         <!-- psw0523 fix : block this services -->
-        <!-- <service android:name=".screenshot.TakeScreenshotService" -->
-        <!--     android:process=":screenshot" -->
-        <!--     android:exported="false" /> -->
-        <!--  -->
+        <service android:name=".screenshot.TakeScreenshotService"
+            android:process=":screenshot"
+            android:exported="false" />
+
         <!-- <service android:name=".LoadAverageService" -->
         <!--         android:exported="true" /> -->
         <!--  -->

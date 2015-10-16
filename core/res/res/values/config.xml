@@ -2028,4 +2028,70 @@
 
     <!-- Whether to start in touch mode -->
     <bool name="config_defaultInTouchMode">true</bool>
+
+    <!-- Nexell AVN MultiWindow Key-Action Mapping Table default -->
+    <!-- item -->
+    <!-- keyCode,pressType,action,actionArg -->
+    <!-- keyCode : type int -> frameworks/base/core/java/android/view/keyEvent.java -->
+    <!-- pressType : type int -> 0 short, 1 long, 2 double, 3 triple : currently support only short, long  -->
+    <!-- action : type int, see below -->
+    <!-- ACTION_DO_NOTHING 0 -->
+    <!-- ACTION_LCD_ON_OFF 1 -->
+    <!-- ACTION_GO_HOME 2 -->
+    <!-- ACTION_BACK 3 -->
+    <!-- ACTION_MINILAUNCHER 4 -->
+    <!-- ACTION_MASTER_MUTE_TOGGLE 10 -->
+    <!-- ACTION_SUB_MUTE_TOGGLE 11 -->
+    <!-- ACTION_STREAM0_VOLUME_UP 20 -->
+    <!-- ACTION_STREAM1_VOLUME_UP 21 -->
+    <!-- ACTION_STREAM2_VOLUME_UP 22 -->
+    <!-- ACTION_STREAM3_VOLUME_UP 23 -->
+    <!-- ACTION_STREAM4_VOLUME_UP 24 -->
+    <!-- ACTION_STREAM5_VOLUME_UP 25 -->
+    <!-- ACTION_STREAM6_VOLUME_UP 26 -->
+    <!-- ACTION_STREAM7_VOLUME_UP 27 -->
+    <!-- ACTION_STREAM8_VOLUME_UP 28 -->
+    <!-- ACTION_STREAM0_VOLUME_DOWN 30 -->
+    <!-- ACTION_STREAM1_VOLUME_DOWN 31 -->
+    <!-- ACTION_STREAM2_VOLUME_DOWN 32 -->
+    <!-- ACTION_STREAM3_VOLUME_DOWN 33 -->
+    <!-- ACTION_STREAM4_VOLUME_DOWN 34 -->
+    <!-- ACTION_STREAM5_VOLUME_DOWN 35 -->
+    <!-- ACTION_STREAM6_VOLUME_DOWN 36 -->
+    <!-- ACTION_STREAM7_VOLUME_DOWN 37 -->
+    <!-- ACTION_STREAM8_VOLUME_DOWN 38 -->
+    <!-- ACTION_WINDOW0_EXIT 40 -->
+    <!-- ACTION_WINDOW1_EXIT 41 -->
+    <!-- ACTION_CHANGE_WINDOW_0_1 50 -->
+    <!-- ACTION_WINDOW0_TOGGLE_FULL 60 -->
+    <!-- ACTION_WINDOW1_TOGGLE_FULL 61 -->
+    <!-- ACTION_WINDOW0_TOGGLE_FLOATING 70 -->
+    <!-- ACTION_WINDOW1_TOGGLE_FLOATING 71 -->
+    <!-- ACTION_WINDOW0_MOVE_UP  80 -->
+    <!-- ACTION_WINDOW1_MOVE_UP 81 -->
+    <!-- ACTION_WINDOW0_MOVE_DOWN 90 -->
+    <!-- ACTION_WINDOW1_MOVE_DOWN 91 -->
+    <!-- ACTION_WINDOW0_MOVE_LEFT 100 -->
+    <!-- ACTION_WINDOW1_MOVE_LEFT 101 -->
+    <!-- ACTION_WINDOW0_MOVE_RIGHT 110 -->
+    <!-- ACTION_WINDOW1_MOVE_RIGHT 111 -->
+    <!-- ACTION_WINDOW0_SIZE_UP 120 -->
+    <!-- ACTION_WINDOW1_SIZE_UP 121 -->
+    <!-- ACTION_WINDOW0_SIZE_DOWN 130 -->
+    <!-- ACTION_WINDOW1_SIZE_DOWN 131 -->
+    <!-- ACTION_LAUNCH_APP 140 -->
+
+    <string-array name="config_nexell_avn_keyActionMappingTable" translate="false" >
+        <!-- KEYCODE_HOME,short press,go Home -->
+        <item>3,0,2</item>
+        <!-- KEYCODE_HOME,long press,miniLauncher -->
+        <item>3,1,4</item>
+        <!-- KEYCODE_F1,short press,back -->
+        <item>131,0,3</item>
+        <!-- KEYCODE_F1,long press,launch gallery -->
+        <item>131,1,140,com.android.gallery3d/.app.Gallery</item>
+        <!-- KEYCODE_F10,short press,lcd on off -->
+        <item>140,0,1</item>
+    </string-array>
+
 </resources>

@@ -32,6 +32,7 @@ import android.media.IAudioService;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.media.session.MediaSessionLegacyHelper;
+import android.media.session.MediaSessionManager;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.FactoryTest;
@@ -87,6 +88,8 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 
+import android.hardware.input.InputManager;
+
 import com.android.internal.R;
 import com.android.internal.policy.PolicyManager;
 import com.android.internal.statusbar.IStatusBarService;
@@ -119,7 +122,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
      */
     static final String TAG = "MultiWindowManager";
     static final boolean DEBUG = false;
-    static final boolean DEBUG_INPUT = DEBUG || false;
+    // static final boolean DEBUG_INPUT = DEBUG || false;
+    static final boolean DEBUG_INPUT = DEBUG || true;
     static final boolean DEBUG_LAYOUT = DEBUG || false;
     static final boolean DEBUG_STARTING_WINDOW = DEBUG || false;
     static final boolean DEBUG_MULTIWINDOW = DEBUG || false;
@@ -144,6 +148,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
     /**
      * key hooking
      */
+    /* define pressType */
+    static final int KEY_PRESS_TYPE_SHORT = 0;
+    static final int KEY_PRESS_TYPE_LONG = 1;
+    static final int KEY_PRESS_TYPE_DOUBLE = 2;
+    static final int KEY_PRESS_TYPE_TRIPLE = 3;
+    static final int KEY_PRESS_TYPE_MAX = 4;
+
     /* define actions */
     static final int ACTION_DO_NOTHING = 0;
     static final int ACTION_LCD_ON_OFF = 1;
@@ -152,24 +163,26 @@ public class MultiWindowManager implements WindowManagerPolicy {
     static final int ACTION_MINILAUNCHER = 4;
     static final int ACTION_MASTER_MUTE_TOGGLE = 10;
     static final int ACTION_SUB_MUTE_TOGGLE = 11;
-    static final int ACTION_STREAM0_VOLUME_UP = 20;
-    static final int ACTION_STREAM1_VOLUME_UP = 21;
-    static final int ACTION_STREAM2_VOLUME_UP = 22;
-    static final int ACTION_STREAM3_VOLUME_UP = 23;
-    static final int ACTION_STREAM4_VOLUME_UP = 24;
-    static final int ACTION_STREAM5_VOLUME_UP = 25;
-    static final int ACTION_STREAM6_VOLUME_UP = 26;
-    static final int ACTION_STREAM7_VOLUME_UP = 27;
-    static final int ACTION_STREAM8_VOLUME_UP = 28;
-    static final int ACTION_STREAM0_VOLUME_DOWN = 30;
-    static final int ACTION_STREAM1_VOLUME_DOWN = 31;
-    static final int ACTION_STREAM2_VOLUME_DOWN = 32;
-    static final int ACTION_STREAM3_VOLUME_DOWN = 33;
-    static final int ACTION_STREAM4_VOLUME_DOWN = 34;
-    static final int ACTION_STREAM5_VOLUME_DOWN = 35;
-    static final int ACTION_STREAM6_VOLUME_DOWN = 36;
-    static final int ACTION_STREAM7_VOLUME_DOWN = 37;
-    static final int ACTION_STREAM8_VOLUME_DOWN = 38;
+    static final int ACTION_STREAM_SYSTEM_VOLUME_UP = 20;
+    static final int ACTION_STREAM_MUSIC_VOLUME_UP = 21;
+    static final int ACTION_STREAM_ALARM_VOLUME_UP = 22;
+    static final int ACTION_STREAM_NOTIFICATION_VOLUME_UP = 23;
+    static final int ACTION_STREAM_BLUETOOTH_VOLUME_UP = 24;
+    static final int ACTION_STREAM_SYSTEM_ENFORCED_VOLUME_UP = 25;
+    static final int ACTION_STREAM_TTS_VOLUME_UP = 26;
+    static final int ACTION_STREAM_EXT_SPEAKER_VOLUME_UP = 27;
+    static final int ACTION_MASTER_VOLUME_UP = 28;
+    static final int ACTION_SUB_VOLUME_UP = 29;
+    static final int ACTION_STREAM_SYSTEM_VOLUME_DOWN = 30;
+    static final int ACTION_STREAM_MUSIC_VOLUME_DOWN = 31;
+    static final int ACTION_STREAM_ALARM_VOLUME_DOWN = 32;
+    static final int ACTION_STREAM_NOTIFICATION_VOLUME_DOWN = 33;
+    static final int ACTION_STREAM_BLUETOOTH_VOLUME_DOWN = 34;
+    static final int ACTION_STREAM_SYSTEM_ENFORCED_VOLUME_DOWN = 35;
+    static final int ACTION_STREAM_TTS_VOLUME_DOWN = 36;
+    static final int ACTION_STREAM_EXT_SPEAKER_VOLUME_DOWN = 37;
+    static final int ACTION_MASTER_VOLUME_DOWN = 38;
+    static final int ACTION_SUB_VOLUME_DOWN = 39;
     static final int ACTION_WINDOW0_EXIT = 40;
     static final int ACTION_WINDOW1_EXIT = 41;
     static final int ACTION_CHANGE_WINDOW_0_1 = 50;
@@ -190,67 +203,429 @@ public class MultiWindowManager implements WindowManagerPolicy {
     static final int ACTION_WINDOW0_SIZE_DOWN = 130;
     static final int ACTION_WINDOW1_SIZE_DOWN = 131;
     static final int ACTION_LAUNCH_APP = 140;
+    static final int ACTION_SCREEN_CAPTURE = 150;
+
+    /* KEY HANDLED RETURN */
+    static final int KEY_HANDLED = -1;
+    static final int KEY_UNHANDLED = 0;
+
+    /* WINDOW MOVE */
+    static final int WINDOW_MOVE_UP = 0;
+    static final int WINDOW_MOVE_DOWN = 1;
+    static final int WINDOW_MOVE_LEFT = 2;
+    static final int WINDOW_MOVE_RIGHT = 3;
+
+    static final int WINDOW_MOVE_UNIT = 50;
+
+    private class ButtonActionItem {
+        private int mKeyCode;
+        private int mPressType;
+        private int mAction;
+        private String mActionArg;
+
+        public ButtonActionItem(int keyCode, int pressType, int action, String actionArg) {
+            mKeyCode = keyCode;
+            mPressType = pressType;
+            mAction = action;
+            mActionArg = actionArg;
+        }
+
+        public int getKeyCode() {
+            return mKeyCode;
+        }
+
+        public int getPressType() {
+            return mPressType;
+        }
+
+        public int getAction() {
+            return mAction;
+        }
+
+        public String getActionArg() {
+            return mActionArg;
+        }
+
+        @Override
+        public String toString() {
+            String pressType = null;
+            switch (mPressType) {
+            case KEY_PRESS_TYPE_SHORT:
+                pressType = new String("Short Pressed");
+                break;
+            case KEY_PRESS_TYPE_LONG:
+                pressType = new String("Long Pressed");
+                break;
+            case KEY_PRESS_TYPE_DOUBLE:
+                pressType = new String("Double Pressed");
+                break;
+            case KEY_PRESS_TYPE_TRIPLE:
+                pressType = new String("Triple Pressed");
+                break;
+            }
+            return "KeyCode=" + mKeyCode + "==>" + pressType + ", Action=" + mAction + ", ActionArg=" + mActionArg;
+        }
+    }
 
     private class ButtonAction {
-        int mShortPressAction = 0;
-        int mLongPressAction = 0;
-        int mDoublePressAction = 0;
-        int mTriplePressAction = 0;
+        private int mKeyCode;
+        private ButtonActionItem[] mActions;
 
-        String mShortPressLaunchApp = null;
-        String mLongPressLaunchApp = null;
-        String mDoublePressLaunchApp = null;
-        String mTriplePressLaunchApp = null;
-
-        public ButtonAction(int shortPressAction,
-                int longPressAction,
-                int doublePressAction,
-                int triplePressAction,
-                String shortPressLaunchApp,
-                String longPressLaunchApp,
-                String doublePressLaunchApp,
-                String triplePressLaunchApp) {
-             mShortPressAction = shortPressAction;
+        public ButtonAction(int keyCode) {
+            mKeyCode = keyCode;
+            mActions = new ButtonActionItem[KEY_PRESS_TYPE_MAX];
         }
 
-        private int runCommon(int action, String app) {
+        public int addItem(ButtonActionItem item) {
+            int pressType = item.getPressType();
+            if (pressType < KEY_PRESS_TYPE_MAX) {
+                mActions[pressType] = item;
+            } else {
+                Slog.e(TAG, "ButtonAction addItem Error : invalid press type ---> " + item.getPressType());
+                return -1;
+            }
             return 0;
         }
 
-        public int runShort() {
-            return runCommon(mShortPressAction, mShortPressLaunchApp);
+        public int getKeyCode() {
+            return mKeyCode;
         }
 
-        public int runLong() {
-            return runCommon(mLongPressAction, mLongPressLaunchApp);
-        }
+        public int runCommon(int pressType, KeyEvent event) {
+            ButtonActionItem item = mActions[pressType];
+            if (DEBUG_INPUT) {
+                Slog.d(TAG, "runCommon --> pressType=" + pressType + ", event=" + event);
+                Slog.d(TAG, "item=" + item);
+            }
 
-        public int runDouble() {
-            return 0;
-        }
+            int res = KEY_UNHANDLED;
+            if (item != null) {
+                int action = item.getAction();
+                switch (action) {
+                case ACTION_LCD_ON_OFF:
+                    res = handlePowerKey(event.getEventTime());
+                    break;
+                case ACTION_GO_HOME:
+                    res = handleHomeKey();
+                    break;
+                case ACTION_BACK:
+                    res = handleBack();
+                    break;
+                case ACTION_MINILAUNCHER:
+                    res = handleMiniLauncherToggle();
+                    break;
+                case ACTION_MASTER_MUTE_TOGGLE:
+                    res = handleMasterMute();
+                    break;
+                case ACTION_SUB_MUTE_TOGGLE:
+                    res = handleSubMute();
+                    break;
+                case ACTION_MASTER_VOLUME_UP:
+                    res = handleMasterVolumeUp();
+                    break;
+                case ACTION_MASTER_VOLUME_DOWN:
+                    res = handleMasterVolumeDown();
+                    break;
+                case ACTION_STREAM_SYSTEM_VOLUME_UP:
+                    res = handleStreamVolumeUp(AudioManager.STREAM_SYSTEM);
+                    break;
+                case ACTION_STREAM_MUSIC_VOLUME_UP:
+                    res = handleStreamVolumeUp(AudioManager.STREAM_MUSIC);
+                    break;
+                case ACTION_STREAM_ALARM_VOLUME_UP:
+                    res = handleStreamVolumeUp(AudioManager.STREAM_ALARM);
+                    break;
+                case ACTION_STREAM_NOTIFICATION_VOLUME_UP:
+                    res = handleStreamVolumeUp(AudioManager.STREAM_NOTIFICATION);
+                    break;
+                case ACTION_STREAM_BLUETOOTH_VOLUME_UP:
+                    res = handleStreamVolumeUp(AudioManager.STREAM_BLUETOOTH_SCO);
+                    break;
+                case ACTION_STREAM_SYSTEM_ENFORCED_VOLUME_UP:
+                    res = handleStreamVolumeUp(AudioManager.STREAM_SYSTEM_ENFORCED);
+                    break;
+                case ACTION_STREAM_TTS_VOLUME_UP:
+                    res = handleStreamVolumeUp(AudioManager.STREAM_TTS);
+                    break;
+                case ACTION_STREAM_EXT_SPEAKER_VOLUME_UP:
+                case ACTION_SUB_VOLUME_UP:
+                    res = handleStreamVolumeUp(AudioManager.STREAM_EXT_SPEAKER);
+                    break;
+                case ACTION_STREAM_SYSTEM_VOLUME_DOWN:
+                    res = handleStreamVolumeDown(AudioManager.STREAM_SYSTEM);
+                    break;
+                case ACTION_STREAM_MUSIC_VOLUME_DOWN:
+                    res = handleStreamVolumeDown(AudioManager.STREAM_MUSIC);
+                    break;
+                case ACTION_STREAM_ALARM_VOLUME_DOWN:
+                    res = handleStreamVolumeDown(AudioManager.STREAM_ALARM);
+                    break;
+                case ACTION_STREAM_NOTIFICATION_VOLUME_DOWN:
+                    res = handleStreamVolumeDown(AudioManager.STREAM_NOTIFICATION);
+                    break;
+                case ACTION_STREAM_BLUETOOTH_VOLUME_DOWN:
+                    res = handleStreamVolumeDown(AudioManager.STREAM_BLUETOOTH_SCO);
+                    break;
+                case ACTION_STREAM_SYSTEM_ENFORCED_VOLUME_DOWN:
+                    res = handleStreamVolumeDown(AudioManager.STREAM_SYSTEM_ENFORCED);
+                    break;
+                case ACTION_STREAM_TTS_VOLUME_DOWN:
+                    res = handleStreamVolumeDown(AudioManager.STREAM_TTS);
+                    break;
+                case ACTION_STREAM_EXT_SPEAKER_VOLUME_DOWN:
+                case ACTION_SUB_VOLUME_DOWN:
+                    res = handleStreamVolumeDown(AudioManager.STREAM_EXT_SPEAKER);
+                    break;
+                case ACTION_WINDOW0_EXIT:
+                    res = handleWindowExit(0);
+                    break;
+                case ACTION_WINDOW1_EXIT:
+                    res = handleWindowExit(1);
+                    break;
+                case ACTION_CHANGE_WINDOW_0_1:
+                    res = handleChangeWindow(0, 1);
+                    break;
+                case ACTION_WINDOW0_TOGGLE_FULL:
+                    res = handleWindowToggleFull(0);
+                    break;
+                case ACTION_WINDOW1_TOGGLE_FULL:
+                    res = handleWindowToggleFull(1);
+                    break;
+                case ACTION_WINDOW0_TOGGLE_FLOATING:
+                    res = handleWindowToggleFloating(0);
+                    break;
+                case ACTION_WINDOW1_TOGGLE_FLOATING:
+                    res = handleWindowToggleFloating(1);
+                    break;
+                case ACTION_WINDOW0_MOVE_UP:
+                    res = handleWindowMove(0, WINDOW_MOVE_UP);
+                    break;
+                case ACTION_WINDOW1_MOVE_UP:
+                    res = handleWindowMove(1, WINDOW_MOVE_UP);
+                    break;
+                case ACTION_WINDOW0_MOVE_DOWN:
+                    res = handleWindowMove(0, WINDOW_MOVE_DOWN);
+                    break;
+                case ACTION_WINDOW1_MOVE_DOWN:
+                    res = handleWindowMove(1, WINDOW_MOVE_DOWN);
+                    break;
+                case ACTION_WINDOW0_MOVE_LEFT:
+                    res = handleWindowMove(0, WINDOW_MOVE_LEFT);
+                    break;
+                case ACTION_WINDOW1_MOVE_LEFT:
+                    res = handleWindowMove(1, WINDOW_MOVE_LEFT);
+                    break;
+                case ACTION_WINDOW0_MOVE_RIGHT:
+                    res = handleWindowMove(0, WINDOW_MOVE_RIGHT);
+                    break;
+                case ACTION_WINDOW1_MOVE_RIGHT:
+                    res = handleWindowMove(1, WINDOW_MOVE_RIGHT);
+                    break;
+                case ACTION_WINDOW0_SIZE_UP:
+                    res = handleWindowSizeControl(0, true);
+                    break;
+                case ACTION_WINDOW1_SIZE_UP:
+                    res = handleWindowSizeControl(1, true);
+                    break;
+                case ACTION_WINDOW0_SIZE_DOWN:
+                    res = handleWindowSizeControl(0, false);
+                    break;
+                case ACTION_WINDOW1_SIZE_DOWN:
+                    res = handleWindowSizeControl(1, false);
+                    break;
+                case ACTION_LAUNCH_APP:
+                    res = handleLaunchApp(item.getActionArg());
+                    break;
+                case ACTION_SCREEN_CAPTURE:
+                    res = handleScreenCapture();
+                    break;
+                default:
+                    break;
+                }
+            }
 
-        public int runTriple() {
-            return 0;
+            return res;
         }
     }
 
     private class ButtonActionManager {
         private Map<Integer, ButtonAction> mButtonActionMap;
         private Context mContext;
+        private int mPrevRepeatCount;
 
         public ButtonActionManager(Context context) {
             mContext = context;
             mButtonActionMap = new HashMap<Integer, ButtonAction>();
+            mPrevRepeatCount = 0;
         }
 
         public void init() {
             // read config, add ButtonAction
+            String[] items = mContext.getResources().getStringArray(com.android.internal.R.array.config_nexell_avn_keyActionMappingTable);
+            if (items == null) {
+                Slog.e(TAG, "FATAL ERROR ===> can't get config_nexell_avn_keyActionMappingTable!!!");
+                return;
+            }
+            
+            for (int i = 0; i < items.length; i++) {
+                String keyAction = items[i];
+                ButtonActionItem bai = parseActionString(keyAction);
+                if (bai != null) {
+                    ButtonAction ba = getButtonAction(bai.getKeyCode());
+                    if (ba == null) {
+                        ba = new ButtonAction(bai.getKeyCode());
+                        addButtonAction(ba);
+                    }
+                    ba.addItem(bai);
+                    if (DEBUG_INPUT) Slog.d(TAG, "Added ButtonActionItem --> " + bai);
+                }
+            }
         }
 
-        public int handleButtonEvent(KeyEvent event, boolean down, boolean canceled) {
-            return 0;
+        public int handleButtonEvent(KeyEvent event, int policyFlags) {
+            final int keyCode = event.getKeyCode();
+
+            ButtonAction action = getButtonAction(keyCode);
+            if (action == null)
+                return KEY_UNHANDLED; //ACTION_PASS_TO_USER;
+
+            final boolean interactive = (policyFlags & FLAG_INTERACTIVE) != 0;
+            final boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
+            final boolean canceled = event.isCanceled();
+            final boolean isInjected = (policyFlags & WindowManagerPolicy.FLAG_INJECTED) != 0;
+            final int repeatCount = event.getRepeatCount();
+            if (down) {
+                mPrevRepeatCount = repeatCount;
+                return KEY_HANDLED;
+            } else {
+                final int pressType = pickPressType(event);
+                if (DEBUG_INPUT) {
+                    Slog.d(TAG, "handleButtonEvent ===>  keyCode=" + keyCode + " down=" + down + " repeatCount="
+                            + repeatCount + " canceled=" + canceled + " isInjected=" + isInjected + " pressType=" 
+                            + pressType);
+                }
+                mPrevRepeatCount = 0;
+                return action.runCommon(pressType, event);
+            }
+
+            // return KEY_UNHANDLED;
+            // return ACTION_PASS_TO_USER;
         }
 
+        private ButtonAction getButtonAction(int keyCode) {
+            return mButtonActionMap.get(keyCode);
+        }
+
+        private void addButtonAction(ButtonAction ba) {
+            mButtonActionMap.put(ba.getKeyCode(), ba);
+        }
+
+        private int pickPressType(KeyEvent event) {
+            // boolean longPress = (event.getFlags() & KeyEvent.FLAG_LONG_PRESS) == KeyEvent.FLAG_LONG_PRESS;
+            if (mPrevRepeatCount == 0) {
+                return KEY_PRESS_TYPE_SHORT;
+            } else {
+                return KEY_PRESS_TYPE_LONG;
+            }
+        }
+
+        private ButtonActionItem parseActionString(String actionString) {
+            String delims = ",";
+            String[] tokens = actionString.split(delims);
+            if (tokens.length < 3) {
+                Slog.e(TAG, "parseActionString Error : invalid Action String ---> " + actionString);
+                return null;
+            }
+
+            int keyCode = Integer.parseInt(tokens[0]);
+            int pressType = Integer.parseInt(tokens[1]);
+            int action = Integer.parseInt(tokens[2]);
+            String actionArg = null;
+            if (tokens.length >= 4) {
+                actionArg = tokens[3];
+            }
+            ButtonActionItem item = new ButtonActionItem(keyCode, pressType, action, actionArg);
+            return item;
+        }
+    }
+
+    /**
+     * ScreenShot
+     */
+    final Object mScreenshotLock = new Object();
+    ServiceConnection mScreenshotConnection = null;
+
+    final Runnable mScreenshotTimeout = new Runnable() {
+        @Override public void run() {
+            synchronized (mScreenshotLock) {
+                if (mScreenshotConnection != null) {
+                    mContext.unbindService(mScreenshotConnection);
+                    mScreenshotConnection = null;
+                }
+            }
+        }
+    };
+
+    // Assume this is called from the Handler thread.
+    private void takeScreenshot() {
+        synchronized (mScreenshotLock) {
+            if (mScreenshotConnection != null) {
+                return;
+            }
+            ComponentName cn = new ComponentName("com.android.systemui",
+                    "com.android.systemui.screenshot.TakeScreenshotService");
+            Intent intent = new Intent();
+            intent.setComponent(cn);
+            ServiceConnection conn = new ServiceConnection() {
+                @Override
+                public void onServiceConnected(ComponentName name, IBinder service) {
+                    synchronized (mScreenshotLock) {
+                        if (mScreenshotConnection != this) {
+                            return;
+                        }
+                        Messenger messenger = new Messenger(service);
+                        Message msg = Message.obtain(null, 1);
+                        final ServiceConnection myConn = this;
+                        Handler h = new Handler(mHandler.getLooper()) {
+                            @Override
+                            public void handleMessage(Message msg) {
+                                synchronized (mScreenshotLock) {
+                                    if (mScreenshotConnection == myConn) {
+                                        mContext.unbindService(mScreenshotConnection);
+                                        mScreenshotConnection = null;
+                                        mHandler.removeCallbacks(mScreenshotTimeout);
+                                    }
+                                }
+                            }
+                        };
+                        msg.replyTo = new Messenger(h);
+                        msg.arg1 = msg.arg2 = 0;
+                        try {
+                            messenger.send(msg);
+                        } catch (RemoteException e) {
+                        }
+                    }
+                }
+                @Override
+                public void onServiceDisconnected(ComponentName name) {}
+            };
+            if (mContext.bindServiceAsUser(
+                    intent, conn, Context.BIND_AUTO_CREATE, UserHandle.CURRENT)) {
+                mScreenshotConnection = conn;
+                mHandler.postDelayed(mScreenshotTimeout, 10000);
+            }
+        }
+    }
+
+    private final Runnable mScreenshotRunnable = new Runnable() {
+        @Override
+        public void run() {
+            takeScreenshot();
+        }
+    };
+
+    private void cancelPendingScreenshot() {
+        mHandler.removeCallbacks(mScreenshotRunnable);
     }
 
     /**
@@ -655,6 +1030,397 @@ public class MultiWindowManager implements WindowManagerPolicy {
         return TASK_UNKNOWN;
     }
 
+    private void injectKeyEvent(KeyEvent event) {
+        if (DEBUG_INPUT) Slog.d(TAG, "injectKeyEvent: " + event);
+        InputManager.getInstance().injectInputEvent(event,
+                InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH);
+    }
+
+    private void sendKeyEvent(int inputSource, int keyCode, boolean longpress) {
+        long now = SystemClock.uptimeMillis();
+        injectKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 0, 0,
+                    KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, inputSource));
+        if (longpress) {
+            injectKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_DOWN, keyCode, 1, 0,
+                        KeyCharacterMap.VIRTUAL_KEYBOARD, 0, KeyEvent.FLAG_LONG_PRESS,
+                        inputSource));
+        }
+        injectKeyEvent(new KeyEvent(now, now, KeyEvent.ACTION_UP, keyCode, 0, 0,
+                    KeyCharacterMap.VIRTUAL_KEYBOARD, 0, 0, inputSource));
+    }   
+
+    private int handleLeftFullToggle() {
+        if (!mIsLeftFull) {
+            // on left full
+            if (mRightWin != null) {
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "On Left Full");
+                mRightWin.pauseActivityOfWindow(false);
+                mPrevRightWin = mRightWin;
+                mIsLeftFull = true;
+            }
+        } else {
+            // off left full
+            if (mPrevRightWin != null) {
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Off Left Full");
+                mPrevRightWin.restoreActivity();
+                mPrevRightWin = null;
+                mIsLeftFull = false;
+            }
+        }
+
+        hideSystemUI(mMultiWindowControl);
+        hideSystemUI(mMultiWindowFloatingControl);
+        return KEY_HANDLED;
+    }
+
+    private int handleRightFullToggle() {
+        if (!mIsRightFull) {
+            // on Right full
+            if (mLeftWin != null && mRightWin != null) {
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "On Right Full");
+                mLeftWin.pauseActivityOfWindow(false);
+                mPrevLeftWin = mLeftWin;
+                mIsRightFull = true;
+            }
+        } else {
+            // off Right full
+            if (mPrevLeftWin != null) {
+                if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Off Right Full");
+                mPrevLeftWin.restoreActivity();
+                mPrevLeftWin = null;
+                mIsRightFull = false;
+            }
+        }
+
+        hideSystemUI(mMultiWindowControl);
+        hideSystemUI(mMultiWindowFloatingControl);
+        return KEY_HANDLED;
+    }
+
+    private int handleMiniLauncherToggle() {
+        if (!isShowMiniLauncher()) {
+            hideSystemUI(mMultiWindowControl);
+            showSystemUI(mMultiWindowMiniLauncher);
+            hideSystemUI(mMultiWindowMiniLauncher, MULTIWINDOW_MINILAUNCHER_SHOW_TIMEOUT_MS);
+        } else {
+            hideSystemUI(mMultiWindowMiniLauncher);
+        }
+        return KEY_HANDLED;
+    }
+
+    private int handleFloatingDocking() {
+        if (mIsFloatingMode) {
+            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Off FloatingWindow Mode");
+            mIsFloatingMode = false;
+            mSystemGestures.enableTracking(false);
+            hideSystemUI(mMultiWindowFloatingControl);
+            try {
+                mWindowManager.executeAppTransition();
+            } catch (Exception e) {
+            }
+            return KEY_HANDLED;
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private int handleFloatingExit() {
+        if (mIsFloatingMode) {
+            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow exit");
+            if (isShowFloatingControl())
+                hideSystemUI(mMultiWindowFloatingControl);
+            if (mRightWin != null) {
+                mRightWin.pauseActivityOfWindow(true);
+            }
+            return KEY_HANDLED;
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private int handleFloatingSizeUp() {
+        if (mIsFloatingMode) {
+            if (mRightWin != null) {
+                int floatingWindowWidth = mFloatingWindowRight - mFloatingWindowLeft;
+                int floatingWindowHeight = mFloatingWindowBottom - mFloatingWindowTop;
+                if (((floatingWindowWidth + FLOATING_WINDOW_SCALE_WIDTH_FACTOR) < mSystemRight) 
+                        && ((floatingWindowHeight + FLOATING_WINDOW_SCALE_HEIGHT_FACTOR) < mSystemBottom)) {
+                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow Size Up: scaleFactor --> " + mFloatingWindowScaleFactor);
+                    try {
+                        mFloatingWindowScaleFactor++;
+                        mRightWin.setLayoutNeeded(true);
+                        mWindowManager.prepareAppTransition(17, false);
+                        mWindowManager.executeAppTransition();
+                    } catch (Exception e) {
+                        mFloatingWindowScaleFactor--;
+                    }
+                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Size Up End");
+                }
+            }
+            return KEY_HANDLED;
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private int handleFloatingSizeDown() {
+        if (mIsFloatingMode) {
+            if (mRightWin != null) {
+                int floatingWindowWidth = mFloatingWindowRight - mFloatingWindowLeft;
+                int floatingWindowHeight = mFloatingWindowBottom - mFloatingWindowTop;
+                if (((floatingWindowWidth - FLOATING_WINDOW_SCALE_WIDTH_FACTOR) >= FLOATING_WINDOW_DEFAULT_WIDTH) 
+                        && ((floatingWindowHeight - FLOATING_WINDOW_SCALE_HEIGHT_FACTOR) >= FLOATING_WINDOW_DEFAULT_HEIGHT)) {
+                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow Size Down: scaleFactor --> " + mFloatingWindowScaleFactor);
+                    try {
+                        // mWindowManager.prepareAppTransition(10, false);
+                        mFloatingWindowScaleFactor--;
+                        mRightWin.setLayoutNeeded(true);
+                        mWindowManager.prepareAppTransition(17, false);
+                        mWindowManager.executeAppTransition();
+                    } catch (Exception e) {
+                        mFloatingWindowScaleFactor++;
+                    }
+                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Size Down End");
+                }
+            }
+            return KEY_HANDLED;
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private int handleVolumeKey(KeyEvent event) {
+        MediaSessionLegacyHelper.getHelper(mContext).sendVolumeKeyEvent(event, false);
+        return KEY_HANDLED;
+    }
+
+    private int handlePowerKey(long when) {
+        if (mScreenOff) {
+            // turn on
+            mScreenOff = false;
+            mPowerManager.wakeUp(when);
+        } else {
+            // turn off
+            mScreenOff = true;
+            mPowerManager.goToSleep(when, PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON, 0);
+        }
+        return KEY_HANDLED;
+    }
+
+    private int handleHomeKey() {
+        mContext.startActivityAsUser(mHomeIntent, UserHandle.CURRENT);
+        return KEY_HANDLED;
+    }
+
+    private int handleBack() {
+        sendKeyEvent(InputDevice.SOURCE_KEYBOARD, KeyEvent.KEYCODE_BACK, false);
+        return KEY_HANDLED;
+    }
+
+    private int handleMasterMute() {
+        MediaSessionLegacyHelper.getHelper(mContext).sendAdjustVolumeBy(AudioManager.USE_DEFAULT_STREAM_TYPE,
+                MediaSessionManager.DIRECTION_MUTE, AudioManager.FLAG_SHOW_UI);
+        return KEY_HANDLED;
+    }
+
+    private int handleSubMute() {
+        MediaSessionLegacyHelper.getHelper(mContext).sendAdjustVolumeBy(AudioManager.STREAM_EXT_SPEAKER,
+                MediaSessionManager.DIRECTION_MUTE, AudioManager.FLAG_SHOW_UI);
+        return KEY_HANDLED;
+    }
+
+    private int handleVolumeCommon(int streamType, boolean isUp) {
+        int direction = isUp ? AudioManager.ADJUST_RAISE : AudioManager.ADJUST_LOWER; 
+        MediaSessionLegacyHelper.getHelper(mContext).sendAdjustVolumeBy(streamType,
+                direction, AudioManager.FLAG_SHOW_UI | AudioManager.FLAG_PLAY_SOUND);
+        return KEY_HANDLED;
+    }
+
+    private int handleMasterVolumeUp() {
+        return handleVolumeCommon(AudioManager.USE_DEFAULT_STREAM_TYPE, true);
+    }
+
+    private int handleMasterVolumeDown() {
+        return handleVolumeCommon(AudioManager.USE_DEFAULT_STREAM_TYPE, false);
+    }
+
+    private int handleStreamVolumeUp(int streamType) {
+        return handleVolumeCommon(streamType, true);
+    }
+
+    private int handleStreamVolumeDown(int streamType) {
+        return handleVolumeCommon(streamType, false);
+    }
+
+    private int handleWindowExit(int winnum) {
+        WindowState win = null;
+
+        switch (winnum) {
+        case 0:
+            if (mLeftWin != null)
+                win = mLeftWin;
+            break;
+        case 1:
+            if (mRightWin != null) {
+                win = mRightWin;
+                if (isShowFloatingControl())
+                    hideSystemUI(mMultiWindowFloatingControl);
+            }
+            break;
+        default:
+            break;
+        }
+
+        if (win != null) {
+            win.pauseActivityOfWindow(true);
+            return KEY_HANDLED;
+        }
+
+        return KEY_UNHANDLED;
+    }
+
+    private int handleChangeWindow(int win0, int win1) {
+        if (win0 == 0 && win1 == 1) {
+            if (mCurrentLayoutWindowNumber > 1 && mLeftWin != null && mRightWin != null) {
+                mLeftWin.changeLeftRight();
+                return KEY_HANDLED;
+            }
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private int handleWindowToggleFull(int winnum) {
+        if (winnum == 0) {
+            return handleLeftFullToggle();
+        } else if (winnum == 1) {
+            return handleRightFullToggle();
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private boolean isMultiWindowActivated() {
+        return mCurrentLayoutWindowNumber > 1 && mLeftWin != null && mRightWin != null;
+    }
+
+    private int handleWindowMove(int winnum, int direction) {
+        if (winnum == 1) {
+            if (mIsFloatingMode) {
+                int xDiff = 0;
+                int yDiff = 0;
+                switch (direction) {
+                case WINDOW_MOVE_UP:
+                    yDiff -= WINDOW_MOVE_UNIT;
+                    break;
+                case WINDOW_MOVE_DOWN:
+                    yDiff += WINDOW_MOVE_UNIT;
+                    break;
+                case WINDOW_MOVE_LEFT:
+                    xDiff -= WINDOW_MOVE_UNIT;
+                    break;
+                case WINDOW_MOVE_RIGHT:
+                    xDiff += WINDOW_MOVE_UNIT;
+                    break;
+                default:
+                    return KEY_UNHANDLED;
+                }
+                mFloatingWindowX += xDiff;
+                mFloatingWindowY += yDiff;
+                moveFloatingWindow(xDiff, yDiff);
+                return KEY_HANDLED;
+            }
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private int handleWindowSizeControl(int winnum, boolean isUp) {
+        if (winnum == 1) {
+            return isUp ? handleFloatingSizeUp() : handleFloatingSizeDown();
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private int handleWindowToggleFloating(int winnum) {
+        if (winnum == 1) {
+            if (isMultiWindowActivated()) {
+                if (!mIsFloatingMode) {
+                    mIsFloatingMode = true;
+                    mSystemGestures.enableTracking(true);
+                    try {
+                        mWindowManager.executeAppTransition();
+                    } catch (Exception e) {
+                    }
+                } else {
+                    mIsFloatingMode = false;
+                    mSystemGestures.enableTracking(false);
+                    try {
+                        mWindowManager.executeAppTransition();
+                    } catch (Exception e) {
+                    }
+                }
+                return KEY_HANDLED;
+            }
+        }
+        return KEY_UNHANDLED;
+    }
+
+    private int handleLaunchApp(String app) {
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setComponent(ComponentName.unflattenFromString(app));
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
+        mContext.startActivityAsUser(intent, UserHandle.CURRENT);
+        return KEY_HANDLED;
+    }
+
+    private int handleScreenCapture() {
+        cancelPendingScreenshot();
+        mHandler.post(mScreenshotRunnable);
+        return KEY_HANDLED;
+    }
+
+    private boolean handleKeyEvent(KeyEvent event, int keyCode, boolean down, boolean canceled, boolean interactive, boolean isInjected) {
+        boolean handled = false;
+        if (down) {
+            if (keyCode == 96) {
+                handled = true;
+                handleLeftFullToggle();
+            } else if (keyCode == 97) {
+                handled = true;
+                handleRightFullToggle();
+            } else if (keyCode == 131) {
+                handled = true;
+                handleMiniLauncherToggle();
+            } else if (keyCode == 100) {
+                handled = true;
+                handleFloatingDocking();
+            } else if (keyCode == 101) {
+                handled = true;
+                handleFloatingExit();
+            } else if (keyCode == 98) {
+                handled = true;
+                handleFloatingSizeUp();
+            } else if (keyCode == 99) {
+                handled = true;
+                handleFloatingSizeDown();
+            } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                handled = true;
+                handleVolumeKey(event);
+            } else if (keyCode == KeyEvent.KEYCODE_POWER) {
+                handled = true;
+                handlePowerKey(event.getEventTime());
+            } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+                handled = true;
+                handleHomeKey();
+            }
+        } else {
+            // up
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                handled = true;
+            } else if (keyCode == KeyEvent.KEYCODE_POWER) {
+                handled = true;
+            } else if (keyCode == KeyEvent.KEYCODE_HOME) {
+                handled = true;
+            }
+        }
+
+        return handled;
+    }
     /**
      * Public Interface
      */
@@ -1424,6 +2190,10 @@ public class MultiWindowManager implements WindowManagerPolicy {
             Log.d(TAG, "interceptKeyTi keyCode=" + keyCode + " down=" + down + " repeatCount="
                     + repeatCount + " canceled=" + canceled);
         }
+
+        if (true)
+            return mButtonActionManager.handleButtonEvent(event, policyFlags);
+        
         return 0;
     }
 
@@ -1781,11 +2551,12 @@ public class MultiWindowManager implements WindowManagerPolicy {
     public void notifyCameraLensCoverSwitchChanged(long whenNanos, boolean lensCovered) {
     }
 
+
     /** {@inheritDoc} */
     @Override
     public int interceptKeyBeforeQueueing(KeyEvent event, int policyFlags) {
         // called by InputFlinger, InputDispatcher::notifyKey()
-        // TODO : ButtonActionManager handle this?
+        
         if (!mSystemBooted)
             return 0;
 
@@ -1793,187 +2564,19 @@ public class MultiWindowManager implements WindowManagerPolicy {
         final boolean down = event.getAction() == KeyEvent.ACTION_DOWN;
         final boolean canceled = event.isCanceled();
         final int keyCode = event.getKeyCode();
-
         final boolean isInjected = (policyFlags & WindowManagerPolicy.FLAG_INJECTED) != 0;
-
-        boolean handled = false;
-
-        if (down) {
-            if (keyCode == 96) {
-                handled = true;
-                // multiwindow control leftfull
-                if (!mIsLeftFull) {
-                    // on left full
-                    if (mRightWin != null) {
-                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "On Left Full");
-                        mRightWin.pauseActivityOfWindow(false);
-                        mPrevRightWin = mRightWin;
-                        mIsLeftFull = true;
-                    }
-                } else {
-                    // off left full
-                    if (mPrevRightWin != null) {
-                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Off Left Full");
-                        mPrevRightWin.restoreActivity();
-                        mPrevRightWin = null;
-                        mIsLeftFull = false;
-                    }
-                }
-
-                hideSystemUI(mMultiWindowControl);
-                hideSystemUI(mMultiWindowFloatingControl);
-            } else if (keyCode == 97) {
-                handled = true;
-                // multiwindow control rightfull
-                if (!mIsRightFull) {
-                    // on Right full
-                    if (mLeftWin != null && mRightWin != null) {
-                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "On Right Full");
-                        mLeftWin.pauseActivityOfWindow(false);
-                        mPrevLeftWin = mLeftWin;
-                        mIsRightFull = true;
-                    }
-                } else {
-                    // off Right full
-                    if (mPrevLeftWin != null) {
-                        if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Off Right Full");
-                        mPrevLeftWin.restoreActivity();
-                        mPrevLeftWin = null;
-                        mIsRightFull = false;
-                    }
-                }
-
-                hideSystemUI(mMultiWindowControl);
-                hideSystemUI(mMultiWindowFloatingControl);
-            } else if (keyCode == 131) {
-                handled = true;
-                // minilauncher button
-                if (!isShowMiniLauncher()) {
-                    hideSystemUI(mMultiWindowControl);
-                    showSystemUI(mMultiWindowMiniLauncher);
-                    hideSystemUI(mMultiWindowMiniLauncher, MULTIWINDOW_MINILAUNCHER_SHOW_TIMEOUT_MS);
-                }
-            } else if (keyCode == 100) {
-                handled = true;
-                // floating docking 
-                if (mIsFloatingMode) {
-                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Off FloatingWindow Mode");
-                    mIsFloatingMode = false;
-                    mSystemGestures.enableTracking(false);
-                    hideSystemUI(mMultiWindowFloatingControl);
-                    try {
-                        mWindowManager.executeAppTransition();
-                    } catch (Exception e) {
-                    }
-                }
-            } else if (keyCode == 101) {
-                handled = true;
-                // floating exit
-                if (mIsFloatingMode) {
-                    if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow exit");
-                    if (isShowFloatingControl())
-                        hideSystemUI(mMultiWindowFloatingControl);
-                    if (mRightWin != null) {
-                        mRightWin.pauseActivityOfWindow(true);
-                    }
-                }
-            } else if (keyCode == 98) {
-                handled = true;
-                // floating size up
-                if (mIsFloatingMode) {
-                    if (mRightWin != null) {
-                        int floatingWindowWidth = mFloatingWindowRight - mFloatingWindowLeft;
-                        int floatingWindowHeight = mFloatingWindowBottom - mFloatingWindowTop;
-                        if (((floatingWindowWidth + FLOATING_WINDOW_SCALE_WIDTH_FACTOR) < mSystemRight) 
-                            && ((floatingWindowHeight + FLOATING_WINDOW_SCALE_HEIGHT_FACTOR) < mSystemBottom)) {
-                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow Size Up: scaleFactor --> " + mFloatingWindowScaleFactor);
-                            try {
-                                // TRANSIT_TASK_TO_FRONT
-                                // mWindowManager.prepareAppTransition(10, false);
-                                // TRANSIT_TASK_IN_PLACE
-                                mFloatingWindowScaleFactor++;
-                                mRightWin.setLayoutNeeded(true);
-                                mWindowManager.prepareAppTransition(17, false);
-                                mWindowManager.executeAppTransition();
-                            } catch (Exception e) {
-                                mFloatingWindowScaleFactor--;
-                            }
-                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Size Up End");
-                        }
-                    }
-                }
-            } else if (keyCode == 99) {
-                handled = true;
-                // floating size down
-                if (mIsFloatingMode) {
-                    if (mRightWin != null) {
-                        int floatingWindowWidth = mFloatingWindowRight - mFloatingWindowLeft;
-                        int floatingWindowHeight = mFloatingWindowBottom - mFloatingWindowTop;
-                        if (((floatingWindowWidth - FLOATING_WINDOW_SCALE_WIDTH_FACTOR) >= FLOATING_WINDOW_DEFAULT_WIDTH) 
-                            && ((floatingWindowHeight - FLOATING_WINDOW_SCALE_HEIGHT_FACTOR) >= FLOATING_WINDOW_DEFAULT_HEIGHT)) {
-                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "FloatingWindow Size Down: scaleFactor --> " + mFloatingWindowScaleFactor);
-                            try {
-                                // mWindowManager.prepareAppTransition(10, false);
-                                mFloatingWindowScaleFactor--;
-                                mRightWin.setLayoutNeeded(true);
-                                mWindowManager.prepareAppTransition(17, false);
-                                mWindowManager.executeAppTransition();
-                            } catch (Exception e) {
-                                mFloatingWindowScaleFactor++;
-                            }
-                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Size Down End");
-                        }
-                    }
-                }
-            } else if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-                handled = true;
-                MediaSessionLegacyHelper.getHelper(mContext).sendVolumeKeyEvent(event, false);
-            } else if (keyCode == KeyEvent.KEYCODE_POWER) {
-                handled = true;
-                if (mScreenOff) {
-                    // turn on
-                    mScreenOff = false;
-                    mPowerManager.wakeUp(event.getDownTime());
-                } else {
-                    // turn off
-                    mScreenOff = true;
-                    mPowerManager.goToSleep(event.getDownTime(), PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON, 0);
-                }
-            } else if (keyCode == KeyEvent.KEYCODE_HOME) {
-                handled = true;
-                mContext.startActivityAsUser(mHomeIntent, UserHandle.CURRENT);
-            }
-        } else {
-            // up
-            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN || keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-                handled = true;
-                // MediaSessionLegacyHelper.getHelper(mContext).sendVolumeKeyEvent(event, false);
-            } else if (keyCode == KeyEvent.KEYCODE_POWER) {
-                handled = true;
-                // if (mScreenOff) {
-                //     // turn on
-                //     mScreenOff = false;
-                //     mPowerManager.wakeUp(event.getDownTime());
-                // } else {
-                //     // turn off
-                //     mScreenOff = true;
-                //     mPowerManager.goToSleep(event.getDownTime(), PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON, 0);
-                // }
-            } else if (keyCode == KeyEvent.KEYCODE_HOME) {
-                handled = true;
-                // mContext.startActivityAsUser(mHomeIntent, UserHandle.CURRENT);
-            }
-        }
 
         if (DEBUG_INPUT)
             Log.d(TAG, "interceptKeyTq keycode=" + keyCode
                     + " interactive=" + interactive
                     + " policyFlags=" + Integer.toHexString(policyFlags));
 
-        if (handled)
-            return 0;
-        else
-            return ACTION_PASS_TO_USER;
+        // boolean handled = handleKeyEvent(event, keyCode, down, canceled, interactive, isInjected);
+        // if (handled)
+        //     return 0;
+        // else
+        //     return ACTION_PASS_TO_USER;
+        return ACTION_PASS_TO_USER;
     }
 
     /** {@inheritDoc} */
