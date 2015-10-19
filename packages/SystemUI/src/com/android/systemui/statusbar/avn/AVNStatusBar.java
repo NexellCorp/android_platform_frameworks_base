@@ -37,6 +37,9 @@ import com.android.systemui.statusbar.ActivatableNotificationView;
 import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.R;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /*
  * Status bar implementation for "large screen" products that mostly present no on-screen nav
  */
@@ -53,6 +56,60 @@ public class AVNStatusBar extends BaseStatusBar {
     private MultiWindowDragControlView mDragControl = null;
 
     private FloatingWindowControlView mFloatingControl = null;
+
+    /**
+     * Key-Action Binding
+     */
+    private class ButtonActionItem {
+        private int mKeyCode;
+        private int mPressType;
+        private int mAction;
+        private String mActionArg;
+
+        public ButtonActionItem(int keyCode, int pressType, int action, String actionArg) {
+            mKeyCode = keyCode;
+            mPressType = pressType;
+            mAction = action;
+            mActionArg = actionArg;
+        }
+
+        public int getKeyCode() {
+            return mKeyCode;
+        }
+
+        public int getPressType() {
+            return mPressType;
+        }
+
+        public int getAction() {
+            return mAction;
+        }
+
+        public String getActionArg() {
+            return mActionArg;
+        }
+
+        @Override
+        public String toString() {
+            String pressType = null;
+            switch (mPressType) {
+                case 0:
+                    pressType = new String("Short Pressed");
+                    break;
+                case 1:
+                    pressType = new String("Long Pressed");
+                    break;
+                case 2:
+                    pressType = new String("Double Pressed");
+                    break;
+                case 3:
+                    pressType = new String("Triple Pressed");
+                    break;
+            }
+            return "KeyCode=" + mKeyCode + "==>" + pressType + ", Action=" + mAction + ", ActionArg=" + mActionArg;
+        }
+    }
+    private Map<Integer, ButtonActionItem> mButtonActionMap = null;
 
     private void addMultiWindowControlBar() {
         if (DEBUG) Slog.d(TAG, "addMultiWindowControlBar: " + mControlBar);
@@ -346,6 +403,92 @@ public class AVNStatusBar extends BaseStatusBar {
             Slog.e(TAG, "FATAL ERROR : failed to create MiniLauncherView");
         }
         mMiniLauncher.setParent(this);
+
+        boolean buttonMapping = initButtonMapping();
+        if (buttonMapping) {
+            applyButtonMapping();
+        }
+    }
+    
+    private void applyButtonMapping() {
+        // mControlBar
+        ButtonActionItem item = getButtonActionItem(4); // ACTION_MINILAUNCHER
+        if (item != null) {
+            mControlBar.setMiniLauncherKeyCode(item.getKeyCode());
+        }
+        item = getButtonActionItem(60); // ACTION_WINDOW0_TOGGLE_FULL
+        if (item != null) {
+            mControlBar.setLeftFullToggleKeyCode(item.getKeyCode());
+        }
+        item = getButtonActionItem(61); // ACTION_WINDOW1_TOGGLE_FULL
+        if (item != null) {
+            mControlBar.setRightFullToggleKeyCode(item.getKeyCode());
+        }
+
+        // mFloatingControl
+        item = getButtonActionItem(121); // ACTION_WINDOW1_SIZE_UP
+        if (item != null) {
+            mFloatingControl.setFloatingSizeUpKeyCode(item.getKeyCode());
+        }
+        item = getButtonActionItem(131); // ACTION_WINDOW1_SIZE_DOWN
+        if (item != null) {
+            mFloatingControl.setFloatingSizeDownKeyCode(item.getKeyCode());
+        }
+        item = getButtonActionItem(41); // ACTION_WINDOW1_EXIT
+        if (item != null) {
+            mFloatingControl.setFloatingExitKeyCode(item.getKeyCode());
+        }
+        item = getButtonActionItem(71); // ACTION_WINDOW1_TOGGLE_FLOATING
+        if (item != null) {
+            mFloatingControl.setFloatingDockingKeyCode(item.getKeyCode());
+        }
+    }
+
+    private boolean initButtonMapping() {
+        String[] items = mContext.getResources().getStringArray(com.android.internal.R.array.config_nexell_avn_keyActionMappingTable);
+        if (items == null) {
+            Slog.e(TAG, "initButtonMapping Error --> can't get config_nexell_avn_keyActionMappingTable");
+            return false;
+        }
+
+        mButtonActionMap = new HashMap<Integer, ButtonActionItem>();
+
+        for (int i = 0; i < items.length; i++) {
+            String keyAction = items[i];
+            ButtonActionItem item = parseActionString(keyAction);
+            if (item != null) {
+                setButtonActionItem(item.getAction(), item);
+            }
+        }
+
+        return true;
+    }
+
+    private ButtonActionItem getButtonActionItem(int action) {
+        return mButtonActionMap.get(action);
+    }
+
+    private void setButtonActionItem(int action, ButtonActionItem item) {
+        mButtonActionMap.put(action, item);
+    }
+
+    private ButtonActionItem parseActionString(String actionString) {
+        String delims = ",";
+        String[] tokens = actionString.split(delims);
+        if (tokens.length < 3) {
+            Slog.e(TAG, "parseActionString Error : invalid Action String ---> " + actionString);
+            return null;
+        }
+
+        int keyCode = Integer.parseInt(tokens[0]);
+        int pressType = Integer.parseInt(tokens[1]);
+        int action = Integer.parseInt(tokens[2]);
+        String actionArg = null;
+        if (tokens.length >= 4) {
+            actionArg = tokens[3];
+        }
+        ButtonActionItem item = new ButtonActionItem(keyCode, pressType, action, actionArg);
+        return item;
     }
 
     @Override

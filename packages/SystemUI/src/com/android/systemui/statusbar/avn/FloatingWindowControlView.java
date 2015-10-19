@@ -68,4 +68,31 @@ public class FloatingWindowControlView extends LinearLayout {
         if (DEBUG) Log.d(TAG, "onConfigurationChanged " + newConfig);
         super.onConfigurationChanged(newConfig);
     }
+
+    // psw0523 add for AVN Key-Action Mapping
+    private int setAVNKeyCode(int id, int keyCode) {
+        KeyButtonView view = (KeyButtonView) findViewById(id);
+        if (view == null) {
+            Log.e(TAG, "setAVNKeyCode --> Error, can't find view for id: " + id);
+            return -1;
+        }
+        view.setKeyCode(keyCode);
+        return 0;
+    }
+
+    public void setFloatingSizeUpKeyCode(int keyCode) {
+        setAVNKeyCode(com.android.systemui.R.id.multiwin_floating_sizeup, keyCode);
+    }
+
+    public void setFloatingSizeDownKeyCode(int keyCode) {
+        setAVNKeyCode(com.android.systemui.R.id.multiwin_floating_sizedown, keyCode);
+    }
+
+    public void setFloatingExitKeyCode(int keyCode) {
+        setAVNKeyCode(com.android.systemui.R.id.multiwin_floating_exit, keyCode);
+    }
+
+    public void setFloatingDockingKeyCode(int keyCode) {
+        setAVNKeyCode(com.android.systemui.R.id.multiwin_floating_docking, keyCode);
+    }
 }

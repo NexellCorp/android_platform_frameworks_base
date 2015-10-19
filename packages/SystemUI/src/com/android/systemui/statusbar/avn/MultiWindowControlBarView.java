@@ -69,4 +69,27 @@ public class MultiWindowControlBarView extends LinearLayout {
         if (DEBUG) Log.d(TAG, "onConfigurationChanged " + newConfig);
         super.onConfigurationChanged(newConfig);
     }
+
+    // psw0523 add for AVN Key-Action Mapping
+    private int setAVNKeyCode(int id, int keyCode) {
+        KeyButtonView view = (KeyButtonView) findViewById(id);
+        if (view == null) {
+            Log.e(TAG, "setAVNKeyCode --> Error, can't find view for id: " + id);
+            return -1;
+        }
+        view.setKeyCode(keyCode);
+        return 0;
+    }
+
+    public void setLeftFullToggleKeyCode(int keyCode) {
+        setAVNKeyCode(com.android.systemui.R.id.multiwin_control_leftfull, keyCode);
+    }
+
+    public void setRightFullToggleKeyCode(int keyCode) {
+        setAVNKeyCode(com.android.systemui.R.id.multiwin_control_rightfull, keyCode);
+    }
+
+    public void setMiniLauncherKeyCode(int keyCode) {
+        setAVNKeyCode(com.android.systemui.R.id.minilauncher, keyCode);
+    }
 }
