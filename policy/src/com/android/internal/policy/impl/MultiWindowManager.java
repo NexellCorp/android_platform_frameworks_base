@@ -1033,7 +1033,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
     private void injectKeyEvent(KeyEvent event) {
         if (DEBUG_INPUT) Slog.d(TAG, "injectKeyEvent: " + event);
         InputManager.getInstance().injectInputEvent(event,
-                InputManager.INJECT_INPUT_EVENT_MODE_WAIT_FOR_FINISH);
+                InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }
 
     private void sendKeyEvent(int inputSource, int keyCode, boolean longpress) {
@@ -1277,8 +1277,16 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
     private int handleChangeWindow(int win0, int win1) {
         if (win0 == 0 && win1 == 1) {
-            if (mCurrentLayoutWindowNumber > 1 && mLeftWin != null && mRightWin != null) {
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "handleChangeWindow --> current window number:" + mCurrentLayoutWindowNumber
+                    + ", left:" + mLeftWin
+                    + ", right:" + mRightWin);
+            if (isMultiWindowActivated()) {
                 mLeftWin.changeLeftRight();
+                try {
+                    mWindowManager.prepareAppTransition(10, false);
+                    mWindowManager.executeAppTransition();
+                } catch (Exception e) {
+                }
                 return KEY_HANDLED;
             }
         }
@@ -1337,11 +1345,14 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
     private int handleWindowToggleFloating(int winnum) {
         if (winnum == 1) {
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "handleWindowToggleFloating --> isMultiWindowActivated(): " + isMultiWindowActivated()
+                    + ", mFloatingMode: " + mIsFloatingMode); 
             if (isMultiWindowActivated()) {
                 if (!mIsFloatingMode) {
                     mIsFloatingMode = true;
                     mSystemGestures.enableTracking(true);
                     try {
+                        mWindowManager.prepareAppTransition(10, false);
                         mWindowManager.executeAppTransition();
                     } catch (Exception e) {
                     }
@@ -1349,6 +1360,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     mIsFloatingMode = false;
                     mSystemGestures.enableTracking(false);
                     try {
+                        mWindowManager.prepareAppTransition(10, false);
                         mWindowManager.executeAppTransition();
                     } catch (Exception e) {
                     }
