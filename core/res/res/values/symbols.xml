@@ -2160,4 +2160,14 @@
 
   <!-- For Nexell AVN MultiWindow Key-Action Mapping -->
   <java-symbol type="array" name="config_nexell_avn_keyActionMappingTable" />
+
+  <!-- For Nexell AVN MultiWindow UI Customization -->
+  <java-symbol type="dimen" name="config_multiWindowControlbarWidth" />
+  <java-symbol type="dimen" name="config_multiWindowControlbarHeight" />
+  <java-symbol type="dimen" name="config_multiWindowControlbarStartY" />
+  <java-symbol type="dimen" name="config_minilauncherWidth" />
+  <java-symbol type="dimen" name="config_minilauncherHeight" />
+  <java-symbol type="dimen" name="config_dragControlHeight" />
+  <java-symbol type="dimen" name="config_floatingControlHeight" />
+
 </resources>

@@ -2096,4 +2096,13 @@
         <item>140,0,1</item>
     </string-array>
 
+    <!-- Nexell AVN MultiWindow UI Customization -->
+    <dimen name="config_multiWindowControlbarWidth">64px</dimen>
+    <dimen name="config_multiWindowControlbarHeight">256px</dimen>
+    <dimen name="config_multiWindowControlbarStartY">172px</dimen>
+    <dimen name="config_minilauncherWidth">512px</dimen>
+    <dimen name="config_minilauncherHeight">300px</dimen>
+    <dimen name="config_dragControlHeight">180px</dimen>
+    <dimen name="config_floatingControlHeight">80px</dimen>
+
 </resources>

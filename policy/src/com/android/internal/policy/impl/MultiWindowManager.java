@@ -138,12 +138,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
     /**
      * layout sizes for SystemUI
      */
-    static final int MULTIWINDOW_SYSTEMUI_WIDTH = 64;
-    // static final int MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN = 220;
-    static final int MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN = 188;
-    static final int MINILAUNCHER_LAYOUT_PERCENT_BY_10 = 6; // 60%
-    static final int DRAGCONTROL_LAYOUT_PERCENT_BY_10 = 3; // 30%
-    static final int FLOATINGCONTROL_SYSTEMUI_HEIGHT = 80;
+    int mMultiWindowControlbarWidth = 64;
+    int mMultiWindowControlbarHeight = 256;
+    int mMultiWindowControlbarStartY = 172;
+    int mMinilauncherWidth = 512;
+    int mMinilauncherHeight = 300;
+    int mDragControlHeight = 180;
+    int mFloatingControlHeight = 80;
 
     /**
      * key hooking
@@ -788,6 +789,26 @@ public class MultiWindowManager implements WindowManagerPolicy {
         }
         return mStatusBarService;
       }
+    }
+
+    private void loadMultiWindowSystemUiConfig() {
+        final Resources res = mContext.getResources();
+        mMultiWindowControlbarWidth = res.getDimensionPixelSize(com.android.internal.R.dimen.config_multiWindowControlbarWidth);
+        mMultiWindowControlbarHeight = res.getDimensionPixelSize(com.android.internal.R.dimen.config_multiWindowControlbarHeight);
+        mMultiWindowControlbarStartY = res.getDimensionPixelSize(com.android.internal.R.dimen.config_multiWindowControlbarStartY);
+        mMinilauncherWidth = res.getDimensionPixelSize(com.android.internal.R.dimen.config_minilauncherWidth);
+        mMinilauncherHeight = res.getDimensionPixelSize(com.android.internal.R.dimen.config_minilauncherHeight);
+        mDragControlHeight = res.getDimensionPixelSize(com.android.internal.R.dimen.config_dragControlHeight);
+        mFloatingControlHeight = res.getDimensionPixelSize(com.android.internal.R.dimen.config_floatingControlHeight);
+
+        if (DEBUG_SYSTEM_UI) Slog.d(TAG, "MultiWindowControlbar(" + mMultiWindowControlbarWidth + "x" + mMultiWindowControlbarHeight
+                + ", " + mMultiWindowControlbarStartY + ")"
+                + "\n"
+                + "Minilauncher(" + mMinilauncherWidth + "x" + mMinilauncherHeight + ")"
+                + "\n"
+                + "DragControlHeight(" + mDragControlHeight + ")"
+                + "\n"
+                + "FloatingControlHeight(" + mFloatingControlHeight + ")");
     }
 
     private boolean isShowMultiWindowControl() {
@@ -1448,6 +1469,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
         mButtonActionManager = new ButtonActionManager(context);
         mButtonActionManager.init();
 
+        loadMultiWindowSystemUiConfig();
+
         mSystemGestures = new SystemGesturesPointerEventListener(context,
                 new SystemGesturesPointerEventListener.Callbacks() {
                     @Override
@@ -1571,7 +1594,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
                                     hideSystemUI(mMultiWindowFloatingControl, MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS);
                                 }
                             } else if (x > mFloatingWindowLeft && x < mFloatingWindowRight
-                                       && y > (mFloatingWindowTop - FLOATINGCONTROL_SYSTEMUI_HEIGHT) && y < mFloatingWindowTop) {
+                                       && y > (mFloatingWindowTop - mFloatingControlHeight) && y < mFloatingWindowTop) {
                                 if (isShowFloatingControl()) {
                                     if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "ACTION_DOWN On FloatingControl: x " + x + ", y " + y);
                                     mFloatingDownPointers = 0;
@@ -2340,13 +2363,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
         Rect stableFrame = new Rect();
 
         if (win == mMultiWindowControl) {
-            parentFrame.left = mSystemRight - MULTIWINDOW_SYSTEMUI_WIDTH;
-            parentFrame.top = mSystemTop + MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN;
+            parentFrame.left = mSystemRight - mMultiWindowControlbarWidth;
+            parentFrame.top = mSystemTop + mMultiWindowControlbarStartY;
             parentFrame.right = mSystemRight;
-            parentFrame.bottom = mSystemBottom - MULTIWINDOW_SYSTEMUI_HEIGHT_MARGIN;
+            parentFrame.bottom = parentFrame.top + mMultiWindowControlbarHeight;
         } else if (win == mMultiWindowMiniLauncher) {
-            int width = (int)((mSystemRight/10)*MINILAUNCHER_LAYOUT_PERCENT_BY_10);
-            int height = (int)((mSystemBottom/10)*MINILAUNCHER_LAYOUT_PERCENT_BY_10);
+            int width = mMinilauncherWidth;
+            int height = mMinilauncherHeight;
             parentFrame.left = (mSystemRight - width)/2;
             parentFrame.top = (mSystemBottom - height)/2;
             parentFrame.right = parentFrame.left + width;
@@ -2355,11 +2378,11 @@ public class MultiWindowManager implements WindowManagerPolicy {
             parentFrame.left = mSystemLeft;
             parentFrame.top = mSystemTop;
             parentFrame.right = mSystemRight;
-            parentFrame.bottom = (int)((mSystemBottom/10)*DRAGCONTROL_LAYOUT_PERCENT_BY_10);
+            parentFrame.bottom = mDragControlHeight;
         } else if (win == mMultiWindowFloatingControl) {
             if (mIsFloatingMode) {
                 parentFrame.left = mFloatingWindowLeft;
-                parentFrame.top = mFloatingWindowTop - FLOATINGCONTROL_SYSTEMUI_HEIGHT;
+                parentFrame.top = mFloatingWindowTop - mFloatingControlHeight;
                 parentFrame.right = mFloatingWindowRight;
                 parentFrame.bottom = mFloatingWindowTop;
             } else {

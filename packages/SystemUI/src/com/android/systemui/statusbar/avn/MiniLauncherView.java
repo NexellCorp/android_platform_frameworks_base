@@ -123,12 +123,13 @@ public class MiniLauncherView extends LinearLayout {
 
             Drawable icon = info.icon;
 
+            final Resources res = getContext().getResources();
+
             if (!info.filtered) {
-                //final Resources resources = getContext().getResources();
-                // int width = 42;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-                // int height = 42;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-                int width = 64;//(int) resources.getDimension(android.R.dimen.app_icon_size);
-                int height = 64;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+                // int width = 64;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+                // int height = 64;//(int) resources.getDimension(android.R.dimen.app_icon_size);
+                int width = res.getDimensionPixelSize(R.dimen.minilauncher_icon_width);
+                int height = res.getDimensionPixelSize(R.dimen.minilauncher_icon_height);
 
                 final int iconWidth = icon.getIntrinsicWidth();
                 final int iconHeight = icon.getIntrinsicHeight();
@@ -165,12 +166,37 @@ public class MiniLauncherView extends LinearLayout {
                     icon.setBounds(mOldBounds);
                     icon = info.icon = new BitmapDrawable(thumb);
                     info.filtered = true;
+                } else if (width > 0 && height > 0 && (width > iconWidth || height > iconHeight)) {
+                    final float ratio = (float) iconWidth / iconHeight;
+
+                    if (iconWidth > iconHeight) {
+                        height = (int) (width / ratio);
+                    } else if (iconHeight > iconWidth) {
+                        width = (int) (height * ratio);
+                    }
+
+                    final Bitmap.Config c =
+                            icon.getOpacity() != PixelFormat.OPAQUE ?
+                                Bitmap.Config.ARGB_8888 : Bitmap.Config.RGB_565;
+                    final Bitmap thumb = Bitmap.createBitmap(width, height, c);
+                    final Canvas canvas = new Canvas(thumb);
+                    canvas.setDrawFilter(new PaintFlagsDrawFilter(Paint.DITHER_FLAG, 0));
+                    mOldBounds.set(icon.getBounds());
+                    icon.setBounds(0, 0, width, height);
+                    icon.draw(canvas);
+                    icon.setBounds(mOldBounds);
+                    icon = info.icon = new BitmapDrawable(thumb);
+                    info.filtered = true;
                 }
             }
 
             final TextView textView = (TextView) convertView.findViewById(R.id.label);
             textView.setCompoundDrawablesWithIntrinsicBounds(null, icon, null, null);
             textView.setText(info.title);
+
+            // test for row height
+            int rowHeight = res.getDimensionPixelSize(R.dimen.minilauncher_row_height);
+            convertView.setLayoutParams(new GridView.LayoutParams(GridView.AUTO_FIT, rowHeight));
 
             return convertView;
         }
