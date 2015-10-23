@@ -8882,7 +8882,8 @@ public class WindowManagerService extends IWindowManager.Stub
 
             if (DEBUG_MULTIWINDOW) Slog.d(TAG, "check win --> " + win);
             if (DEBUG_MULTIWINDOW) Slog.d(TAG, "check token --> " + token);
-            if (leftToken != null && token == leftToken) {
+            if (leftToken != null && token == leftToken
+                    && (!win.getAttrs().getTitle().toString().startsWith("SurfaceView"))) {
                 leftWin = win;
                 multiWinNum++;
             } else if (rightToken != null && token == rightToken) {
