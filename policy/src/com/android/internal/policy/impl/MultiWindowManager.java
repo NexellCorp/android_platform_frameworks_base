@@ -122,8 +122,7 @@ public class MultiWindowManager implements WindowManagerPolicy {
      */
     static final String TAG = "MultiWindowManager";
     static final boolean DEBUG = false;
-    // static final boolean DEBUG_INPUT = DEBUG || false;
-    static final boolean DEBUG_INPUT = DEBUG || true;
+    static final boolean DEBUG_INPUT = DEBUG || false;
     static final boolean DEBUG_LAYOUT = DEBUG || false;
     static final boolean DEBUG_STARTING_WINDOW = DEBUG || false;
     static final boolean DEBUG_MULTIWINDOW = DEBUG || false;
@@ -957,56 +956,33 @@ public class MultiWindowManager implements WindowManagerPolicy {
         final WindowManager.LayoutParams attrs = win.getAttrs();
         final String title = attrs.getTitle().toString();
         if (title.startsWith("Starting")) {
-            parentFrame.left = mSystemLeft;
-            parentFrame.top = mSystemTop;
-            parentFrame.right = mSystemRight;
-            parentFrame.bottom = mSystemBottom;
+            if (DEBUG_LAYOUT) Slog.d(TAG, "layout Starting...");
+            layoutFull(parentFrame);
         } else if (title.startsWith("Toast")) {
-            parentFrame.left = mSystemLeft;
-            parentFrame.top = mSystemTop;
-            parentFrame.right = mSystemRight;
-            parentFrame.bottom = mSystemBottom;
+            if (DEBUG_LAYOUT) Slog.d(TAG, "layout Toast...");
+            layoutFull(parentFrame);
         } else if (title.startsWith("Error")) {
-            parentFrame.left = mSystemLeft;
-            parentFrame.top = mSystemTop;
-            parentFrame.right = mSystemRight;
-            parentFrame.bottom = mSystemBottom;
+            if (DEBUG_LAYOUT) Slog.d(TAG, "layout Error...");
+            layoutFull(parentFrame);
         } else if (title.startsWith("Select input method")) {
-            parentFrame.left = mSystemLeft;
-            parentFrame.top = mSystemTop;
-            parentFrame.right = mSystemRight;
-            parentFrame.bottom = mSystemBottom;
+            if (DEBUG_LAYOUT) Slog.d(TAG, "layout Select input method...");
+            layoutFull(parentFrame);
         } else {
             Slog.e(TAG, "Error: window is not left nor right nor Starting nor Error not Select input :  title --> " + title);
-            // check taskId
-            int which = whichTask(win);
-            if (which == TASK_LEFT) {
-                if (DEBUG_LAYOUT) Slog.d(TAG, "Task same to Left");
-                parentFrame.left = mSystemLeft;
-                parentFrame.top = mSystemTop;
-                parentFrame.right = mSystemRight/2;
-                parentFrame.bottom = mSystemBottom;
-
-                // psw0523 test for Navi
-                if (title.startsWith("com.autonavi.xmgd.navigator/com.autonavi.xmgd.navigator.Map")) {
-                    Slog.e(TAG, "Fixup for autonavi");
-                    parentFrame.left = -256;
-                    parentFrame.right = 768;
-                }
-            } else if (which == TASK_RIGHT) {
-                if (DEBUG_LAYOUT) Slog.d(TAG, "Task same to Right");
-                parentFrame.left = mSystemLeft + (mSystemRight/2);
-                parentFrame.top = mSystemTop;
-                parentFrame.right = mSystemRight;
-                parentFrame.bottom = mSystemBottom;
-            } else {
-                if (DEBUG_LAYOUT) Slog.d(TAG, "Unknown Task");
-                parentFrame.left = mSystemLeft;
-                parentFrame.top = mSystemTop;
-                parentFrame.right = mSystemRight;
-                parentFrame.bottom = mSystemBottom;
-            }
         }
+    }
+
+    private boolean isSameGroupWindow(WindowState win, String title) {
+        String winTitle = win.getAttrs().getTitle().toString();
+        String shortName = winTitle.split("/")[0];
+        return title.startsWith(shortName);
+    }
+
+    private boolean isSameGroupWindow(WindowState win1, WindowState win2) {
+        String win1Title = win1.getAttrs().getTitle().toString();
+        String win2Title = win2.getAttrs().getTitle().toString();
+        String shortName = win1Title.split("/")[0];
+        return win2Title.startsWith(shortName);
     }
 
     private void layoutFloating(Rect parentFrame) {
@@ -1048,6 +1024,13 @@ public class MultiWindowManager implements WindowManagerPolicy {
             return TASK_LEFT;
         else if (taskId == rightTaskId)
             return TASK_RIGHT;
+
+        if (mLeftWin != null && isSameGroupWindow(mLeftWin, win))
+            return TASK_LEFT;
+
+        if (mRightWin != null && isSameGroupWindow(mRightWin, win))
+            return TASK_RIGHT;
+
         return TASK_UNKNOWN;
     }
 
@@ -1226,6 +1209,15 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
     private int handleHomeKey() {
         mContext.startActivityAsUser(mHomeIntent, UserHandle.CURRENT);
+        if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 0) {
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Home pressed, pause all windows");
+            if (mLeftWin != null) {
+                mLeftWin.pauseActivityOfWindow(true);
+            }
+            if (mRightWin != null) {
+                mRightWin.pauseActivityOfWindow(true);
+            }
+        }
         return KEY_HANDLED;
     }
 
@@ -1477,7 +1469,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
                     public void onSwipeFromTop() {
                       if (DEBUG_GESTURE) Slog.d(TAG, "onSwipeFromTop ---> ");
                       if (mCurrentLayoutWindowNumber > 0) {
-                          if (mCurrentLayoutWindowNumber > 1
+                          // if (mCurrentLayoutWindowNumber > 1
+                          if (isMultiWindowActivated()
                               && (!mIsFloatingMode)
                               && isShowDragControl()
                               && mSystemGestures.getLastX() > (mSystemRight/2)) {
@@ -1510,7 +1503,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
                       if (isShowDragControl()) {
                           long hideDelay = MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS;
-                          if (mCurrentLayoutWindowNumber > 1) {
+                          // if (mCurrentLayoutWindowNumber > 1) {
+                          if (isMultiWindowActivated()) {
                               if (fromX < (mSystemRight/2)) {
                                   // remove left win
                                   if (mLeftWin != null) {
@@ -1540,7 +1534,8 @@ public class MultiWindowManager implements WindowManagerPolicy {
 
                       if (isShowDragControl()) {
                           long hideDelay = MULTIWINDOW_CONTROL_SHOW_TIMEOUT_MS;
-                          if (mCurrentLayoutWindowNumber > 1) {
+                          // if (mCurrentLayoutWindowNumber > 1) {
+                          if (isMultiWindowActivated()) {
                               if (fromX > (mSystemRight/2)) {
                                   // remove right win
                                   if (mRightWin != null) {
@@ -2345,6 +2340,117 @@ public class MultiWindowManager implements WindowManagerPolicy {
         r.set(mSystemLeft, mSystemTop, mSystemRight, mSystemBottom);
     }
 
+    private void layoutMultiWindowControl(Rect parentFrame) {
+        parentFrame.left = mSystemRight - mMultiWindowControlbarWidth;
+        parentFrame.top = mSystemTop + mMultiWindowControlbarStartY;
+        parentFrame.right = mSystemRight;
+        parentFrame.bottom = parentFrame.top + mMultiWindowControlbarHeight;
+    }
+
+    private void layoutMiniLauncher(Rect parentFrame) {
+        int width = mMinilauncherWidth;
+        int height = mMinilauncherHeight;
+        parentFrame.left = (mSystemRight - width)/2;
+        parentFrame.top = (mSystemBottom - height)/2;
+        parentFrame.right = parentFrame.left + width;
+        parentFrame.bottom = parentFrame.top + height;
+    }
+
+    private void layoutDragControl(Rect parentFrame) {
+        parentFrame.left = mSystemLeft;
+        parentFrame.top = mSystemTop;
+        parentFrame.right = mSystemRight;
+        parentFrame.bottom = mDragControlHeight;
+    }
+
+    private void layoutFloatingControl(Rect parentFrame) {
+        parentFrame.left = mFloatingWindowLeft;
+        parentFrame.top = mFloatingWindowTop - mFloatingControlHeight;
+        parentFrame.right = mFloatingWindowRight;
+        parentFrame.bottom = mFloatingWindowTop;
+    }
+
+    private void layoutFull(Rect parentFrame) {
+        parentFrame.left = mSystemLeft;
+        parentFrame.top = mSystemTop;
+        parentFrame.right = mSystemRight;
+        parentFrame.bottom = mSystemBottom;
+    }
+
+    private void layoutLeft(Rect parentFrame) {
+        parentFrame.left = mSystemLeft;
+        parentFrame.top = mSystemTop;
+        parentFrame.right = mSystemRight/2;
+        parentFrame.bottom = mSystemBottom;
+    }
+
+    private void layoutRight(Rect parentFrame) {
+        parentFrame.left = mSystemLeft + (mSystemRight/2);
+        parentFrame.top = mSystemTop;
+        parentFrame.right = mSystemRight;
+        parentFrame.bottom = mSystemBottom;
+    }
+
+    private void layoutAttached(WindowState attached,
+            Rect parentFrame,
+            Rect displayFrame,
+            Rect overscanFrame,
+            Rect contentFrame,
+            Rect visibleFrame,
+            Rect decorFrame,
+            Rect stableFrame) {
+        contentFrame.set(attached.getContentFrameLw());
+        displayFrame.set(attached.getDisplayFrameLw());
+        overscanFrame.set(attached.getOverscanFrameLw());
+        visibleFrame.set(attached.getVisibleFrameLw());
+        parentFrame.set(attached.getFrameLw());
+        decorFrame.set(parentFrame);
+        stableFrame.set(parentFrame);
+
+        if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 1) {
+
+            int which = whichTask(attached);
+            if (which != TASK_UNKNOWN) {
+                // HACK!!! Workaround code for autonavi
+                if ((!mIsFloatingMode) && mCurrentLayoutWindowNumber > 1 && which == TASK_LEFT) {
+                    final WindowManager.LayoutParams attachedAttrs = attached.getAttrs();
+                    final String attachedTitle = attachedAttrs.getTitle().toString();
+                    if (attachedTitle.startsWith("com.autonavi.xmgd.navigator/com.autonavi.xmgd.navigator.Map")) {
+                        Slog.e(TAG, "This is Test Code ---> Fixup for autonavi!!!");
+                        int factor = -256;
+                        contentFrame.left = factor;
+                        displayFrame.left = factor;
+                        overscanFrame.left = factor;
+                        visibleFrame.left = factor;
+                        decorFrame.left = factor;
+                        stableFrame.left = factor;
+                        parentFrame.left = factor;
+                        int right = 768;
+                        contentFrame.right = right;
+                        displayFrame.right = right;
+                        overscanFrame.right = right;
+                        visibleFrame.right = right;
+                        decorFrame.right = right;
+                        stableFrame.right = right;
+                        parentFrame.right = right;
+                    }
+                }
+            } else {
+                Slog.e(TAG, "attached win is not left nor right --> " + attached);
+            }
+        }
+        if (DEBUG_LAYOUT) {
+            Slog.d(TAG, "Attached set ---> ");
+            Slog.d(TAG, "content:" + contentFrame);
+            Slog.d(TAG, "display:" + displayFrame);
+            Slog.d(TAG, "overscan:" + overscanFrame);
+            Slog.d(TAG, "visible:" + visibleFrame);
+            Slog.d(TAG, "decor:" + decorFrame);
+            Slog.d(TAG, "stable:" + stableFrame);
+            Slog.d(TAG, "parent:" + parentFrame);
+        }
+    }
+
     /** {@inheritDoc} */
     @Override
     public void layoutWindowLw(WindowState win, WindowState attached) {
@@ -2362,169 +2468,80 @@ public class MultiWindowManager implements WindowManagerPolicy {
         Rect decorFrame = new Rect();
         Rect stableFrame = new Rect();
 
-        if (win == mMultiWindowControl) {
-            parentFrame.left = mSystemRight - mMultiWindowControlbarWidth;
-            parentFrame.top = mSystemTop + mMultiWindowControlbarStartY;
-            parentFrame.right = mSystemRight;
-            parentFrame.bottom = parentFrame.top + mMultiWindowControlbarHeight;
-        } else if (win == mMultiWindowMiniLauncher) {
-            int width = mMinilauncherWidth;
-            int height = mMinilauncherHeight;
-            parentFrame.left = (mSystemRight - width)/2;
-            parentFrame.top = (mSystemBottom - height)/2;
-            parentFrame.right = parentFrame.left + width;
-            parentFrame.bottom = parentFrame.top + height;
-        } else if (win == mMultiWindowDragControl) {
-            parentFrame.left = mSystemLeft;
-            parentFrame.top = mSystemTop;
-            parentFrame.right = mSystemRight;
-            parentFrame.bottom = mDragControlHeight;
-        } else if (win == mMultiWindowFloatingControl) {
-            if (mIsFloatingMode) {
-                parentFrame.left = mFloatingWindowLeft;
-                parentFrame.top = mFloatingWindowTop - mFloatingControlHeight;
-                parentFrame.right = mFloatingWindowRight;
-                parentFrame.bottom = mFloatingWindowTop;
-            } else {
-                Slog.e(TAG, "FATAL ERROR: Current Mode is not Floating Mode, Why window layout requested?");
-            }
-        } else {
-            if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 1) {
+        if (attached == null) {
+            if (win == mMultiWindowControl) {
+                layoutMultiWindowControl(parentFrame);
+            } else if (win == mMultiWindowMiniLauncher) {
+                layoutMiniLauncher(parentFrame);
+            } else if (win == mMultiWindowDragControl) {
+                layoutDragControl(parentFrame);
+            } else if (win == mMultiWindowFloatingControl) {
                 if (mIsFloatingMode) {
-                    // floating mode
-                    if (win == mRightWin) {
-                        layoutFloating(parentFrame);
-                    } else if (win == mLeftWin) {
-                        parentFrame.left = mSystemLeft;
-                        parentFrame.top = mSystemTop;
-                        parentFrame.right = mSystemRight;
-                        parentFrame.bottom = mSystemBottom;
-                    } else {
-                        int which = whichTask(win);
-                        if (which == TASK_LEFT) {
-                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Floating Mode --> Task same to Left");
-                            parentFrame.left = mSystemLeft;
-                            parentFrame.top = mSystemTop;
-                            parentFrame.right = mSystemRight;
-                            parentFrame.bottom = mSystemBottom;
-                        } else if (which == TASK_RIGHT) {
-                            if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Floating Mode --> Task same to Right");
+                    layoutFloatingControl(parentFrame);
+                } else {
+                    Slog.e(TAG, "FATAL ERROR: Current Mode is not Floating Mode, Why window layout requested?");
+                }
+            } else {
+                if (mMultiWindowEnable && mCurrentLayoutWindowNumber > 1) {
+                    if (mIsFloatingMode) {
+                        // floating mode
+                        if (win == mRightWin) {
                             layoutFloating(parentFrame);
+                        } else if (win == mLeftWin) {
+                            layoutFull(parentFrame);
                         } else {
-                            Slog.e(TAG, "How can I deal this window when floating mode ? win --> " + win);
-                            layoutFloating(parentFrame);
+                            int which = whichTask(win);
+                            if (which == TASK_LEFT) {
+                                if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Floating Mode --> Task same to Left");
+                                layoutLeft(parentFrame);
+                            } else if (which == TASK_RIGHT) {
+                                if (DEBUG_FLOATING_WINDOW) Slog.d(TAG, "Floating Mode --> Task same to Right");
+                                layoutFloating(parentFrame);
+                            } else {
+                                Slog.e(TAG, "How can I deal this window when floating mode ? win --> " + win);
+                                layoutFloating(parentFrame);
+                            }
+                        }
+                    } else {
+                        // normal mode
+                        if (win == mRightWin) {
+                            layoutRight(parentFrame);
+                        } else if (win == mLeftWin) {
+                            layoutLeft(parentFrame);
+                        } else {
+                            int which = whichTask(win);
+                            if (which == TASK_LEFT) {
+                                if (DEBUG_LAYOUT) Slog.d(TAG, "Task same to Left");
+                                layoutLeft(parentFrame);
+
+                                // HACK!!! Workaround code for autonavi
+                                if (win.getAttrs().getTitle().toString().startsWith("com.autonavi.xmgd.navigator/com.autonavi.xmgd.navigator.Map")) {
+                                    Slog.e(TAG, "Fixup for autonavi");
+                                    parentFrame.left = -256;
+                                    parentFrame.right = 768;
+                                }
+                            } else if (which == TASK_RIGHT) {
+                                if (DEBUG_LAYOUT) Slog.d(TAG, "Task same to Right");
+                                layoutRight(parentFrame);
+                            } else {
+                                if (DEBUG_LAYOUT) Slog.d(TAG, "Unknown Task");
+                                layoutSpecialWindow(win, parentFrame);
+                            }
                         }
                     }
                 } else {
-                    // normal mode
-                    if (win == mRightWin) {
-                        parentFrame.left = mSystemLeft + (mSystemRight/2);
-                        parentFrame.top = mSystemTop;
-                        parentFrame.right = mSystemRight;
-                        parentFrame.bottom = mSystemBottom;
-                    } else if (win == mLeftWin) {
-                        parentFrame.left = mSystemLeft;
-                        parentFrame.top = mSystemTop;
-                        parentFrame.right = mSystemRight/2;
-                        parentFrame.bottom = mSystemBottom;
-                    } else {
-                        layoutSpecialWindow(win, parentFrame);
-                    }
+                    layoutFull(parentFrame);
                 }
-            } else {
-                parentFrame.left = mSystemLeft;
-                parentFrame.top = mSystemTop;
-                parentFrame.right = mSystemRight;
-                parentFrame.bottom = mSystemBottom;
             }
-        }
 
-        // if (mMultiWindowEnable == false && attached != null) {
-        if (attached != null) {
-            if (mMultiWindowEnable) {
-                int which = whichTask(attached);
-                if (which != TASK_UNKNOWN) {
-                    contentFrame.set(attached.getContentFrameLw());
-                    displayFrame.set(attached.getDisplayFrameLw());
-                    overscanFrame.set(attached.getOverscanFrameLw());
-                    visibleFrame.set(attached.getVisibleFrameLw());
-                    decorFrame.set(parentFrame);
-                    stableFrame.set(parentFrame);
-                    parentFrame.set(attached.getFrameLw());
-
-                    // psw0523 test
-                    if ((!mIsFloatingMode) && mCurrentLayoutWindowNumber > 1 && which == TASK_LEFT) {
-                        final WindowManager.LayoutParams attachedAttrs = attached.getAttrs();
-                        final String attachedTitle = attachedAttrs.getTitle().toString();
-                        if (attachedTitle.startsWith("com.autonavi.xmgd.navigator/com.autonavi.xmgd.navigator.Map")) {
-                            Slog.e(TAG, "This is Test Code ---> Fixup for autonavi!!!");
-                            int factor = -256;
-                            contentFrame.left = factor;
-                            displayFrame.left = factor;
-                            overscanFrame.left = factor;
-                            visibleFrame.left = factor;
-                            decorFrame.left = factor;
-                            stableFrame.left = factor;
-                            parentFrame.left = factor;
-                            int right = 768;
-                            contentFrame.right = right;
-                            displayFrame.right = right;
-                            overscanFrame.right = right;
-                            visibleFrame.right = right;
-                            decorFrame.right = right;
-                            stableFrame.right = right;
-                            parentFrame.right = right;
-                        }
-                    }
-                    if (DEBUG_LAYOUT) {
-                        Slog.d(TAG, "Attached set ---> ");
-                        Slog.d(TAG, "content --> " + contentFrame);
-                        Slog.d(TAG, "display --> " + displayFrame);
-                        Slog.d(TAG, "overscan --> " + overscanFrame);
-                        Slog.d(TAG, "visible --> " + visibleFrame);
-                        Slog.d(TAG, "decor --> " + decorFrame);
-                        Slog.d(TAG, "stable --> " + stableFrame);
-                        Slog.d(TAG, "parent --> " + parentFrame);
-                    }
-                } else {
-                    Slog.e(TAG, "attached win is not left nor right --> " + attached);
-                    if (mCurrentLayoutWindowNumber == 1 && mLeftWin == null) {
-                        Slog.e(TAG, "set to default");
-                        parentFrame.right = mSystemRight;
-                        parentFrame.bottom = mSystemBottom;
-                        parentFrame.left = 0;
-                        parentFrame.top = 0;
-                    } else {
-                        Slog.e(TAG, "set to small right down corner");
-                        parentFrame.right = mSystemRight;
-                        parentFrame.bottom = mSystemBottom;
-                        parentFrame.left = parentFrame.right - 48;
-                        parentFrame.top = parentFrame.bottom - 32;
-                    }
-
-                    displayFrame.set(parentFrame);
-                    overscanFrame.set(parentFrame);
-                    contentFrame.set(parentFrame);
-                    visibleFrame.set(parentFrame);
-                    decorFrame.set(parentFrame);
-                    stableFrame.set(parentFrame);
-                }
-            } else {
-                contentFrame.set(attached.getContentFrameLw());
-                displayFrame.set(attached.getDisplayFrameLw());
-                overscanFrame.set(attached.getOverscanFrameLw());
-                visibleFrame.set(attached.getVisibleFrameLw());
-                decorFrame.set(parentFrame);
-                stableFrame.set(parentFrame);
-                parentFrame.set(attached.getFrameLw());
-            }
-        } else {
             displayFrame.set(parentFrame);
             overscanFrame.set(parentFrame);
             contentFrame.set(parentFrame);
             visibleFrame.set(parentFrame);
             decorFrame.set(parentFrame);
             stableFrame.set(parentFrame);
+        } else {
+            layoutAttached(attached, parentFrame, displayFrame, overscanFrame, contentFrame, visibleFrame, decorFrame, stableFrame);
         }
 
         win.computeFrameLw(parentFrame,
