@@ -1064,6 +1064,13 @@ final class ActivityStack {
     }
 
     // psw0523 add for AVN MultiWindow
+    final boolean isSameGroupActivity(ActivityRecord r1, ActivityRecord r2) {
+        if (r1.task == r2.task) return true;
+        String shortName1 = r1.shortComponentName.split("/")[0];
+        return r2.shortComponentName.startsWith(shortName1);
+    }
+
+    // psw0523 add for AVN MultiWindow
     final void updateMultiWindowActivities(ActivityRecord r, boolean isStackRestore) {
         if (DEBUG_MULTIWINDOW) {
             Slog.d(TAG, "updateMultiWindowActivities ---> ");
@@ -1088,7 +1095,7 @@ final class ActivityStack {
                 mFirstActivity = r;
                 Slog.d(TAG, "Set First Activity ==> " + r);
             } else {
-                if (r.task == mFirstActivity.task) {
+                if (isSameGroupActivity(r, mFirstActivity)) {
                     Slog.d(TAG, "Same Task with FirstActivity");
                     r.mIndex = mFirstActivity.mIndex;
                     if (!isStackRestore && !mActivityStackForDefault.contains(mFirstActivity)) {
@@ -1109,7 +1116,7 @@ final class ActivityStack {
                     } else {
                         Slog.d(TAG, "Set Second Activity ==> " + r);
                         if (mSecondActivity != null) {
-                            if (r.task == mSecondActivity.task) {
+                            if (isSameGroupActivity(r, mSecondActivity)) {
                                 Slog.d(TAG, "Same Task With SecondActivity");
                                 if (!isStackRestore && !mActivityStackForSecond.contains(mSecondActivity)) {
                                     mActivityStackForSecond.add(mSecondActivity);
@@ -1629,7 +1636,7 @@ final class ActivityStack {
                                     invisible = true;
                                 }
                                 if (!isMultiWindowActivity(r)) {
-                                    if (mFirstActivity != null && mFirstActivity.task == r.task) {
+                                    if (mFirstActivity != null && isSameGroupActivity(r, mFirstActivity)) {
                                         Slog.d(TAG, "activity is same task to FirstActivity, don't invisible --> " + r);
                                     } else {
                                         Slog.d(TAG, "activity is not MultiWindowActivity making to invisible --> r " + r);
@@ -3656,6 +3663,7 @@ final class ActivityStack {
         // psw0523 add for AVN MultiWindow
         if (mStackSupervisor.getMultiWindowEnabled()) {
             if (DEBUG_MULTIWINDOW) Slog.d(TAG, "requestFinishActivityLocked --> " + r);
+            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "reason --> " + reason);
             if (reason.startsWith("crashed")) {
                 if (r.task != null) {
                     if (mFirstActivity != null && mFirstActivity.task == r.task) {
@@ -3674,6 +3682,30 @@ final class ActivityStack {
                         mActivityStackForSecond.clear();
                         setMultiWindowAppToken();
                     }
+                }
+            } else if (reason.startsWith("app-request")) {
+                if (mFirstActivity != null && mFirstActivity.task == r.task) {
+                    if (mFirstActivity == r) {
+                        Slog.e(TAG, "FirstActivity is dead");
+                        mFirstActivity = mSecondActivity;
+                        mActivityStackForDefault.clear();
+                        for (int i = 0; i < mActivityStackForSecond.size(); i++) {
+                            mActivityStackForDefault.add(mActivityStackForSecond.get(i));
+                        }
+                        mSecondActivity = null;
+                        mActivityStackForSecond.clear();
+                        setMultiWindowAppToken();
+                    } else {
+                        if (mActivityStackForDefault.contains(r)) {
+                            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Activity in FirstActivityGroun is dead");
+                            mActivityStackForDefault.remove(r);
+                        }
+                    }
+                } else if (mSecondActivity != null && mSecondActivity.task == r.task) {
+                    Slog.e(TAG, "FirstActivity is dead");
+                    mSecondActivity = null;
+                    mActivityStackForSecond.clear();
+                    setMultiWindowAppToken();
                 }
             } else {
                 if (mActivityStackForDefault.size() > 0) {
