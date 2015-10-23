@@ -112,6 +112,11 @@ public class SurfaceView extends View {
     static final int GET_NEW_SURFACE_MSG = 2;
     static final int UPDATE_WINDOW_MSG = 3;
 
+    // psw0523 HACK
+    static final int SET_VISIBILITY_HIDE_MSG = 4;
+    static final int SET_VISIBILITY_SHOW_MSG = 5;
+
+
     int mWindowType = WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA;
 
     boolean mIsCreating = false;
@@ -121,13 +126,28 @@ public class SurfaceView extends View {
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case KEEP_SCREEN_ON_MSG: {
+                    if (DEBUG) Log.i(TAG, "KEEP_SCREEN_ON_MSG");
                     setKeepScreenOn(msg.arg1 != 0);
                 } break;
                 case GET_NEW_SURFACE_MSG: {
+                    if (DEBUG) Log.i(TAG, "GET_NEW_SURFACE_MSG");
                     handleGetNewSurface();
                 } break;
                 case UPDATE_WINDOW_MSG: {
+                    if (DEBUG) Log.i(TAG, "UPDATE_WINDOW_MSG");
+                    // psw0523 HACK
                     updateWindow(false, false);
+                    // updateWindow(false, true);
+                } break;
+                // psw0523 HACK
+                case SET_VISIBILITY_HIDE_MSG: {
+                    if (DEBUG) Log.i(TAG, "SET_VISIBILITY_HIDE_MSG");
+                    mySetVisibility(4);
+                    sendEmptyMessage(SET_VISIBILITY_SHOW_MSG);
+                } break;
+                case SET_VISIBILITY_SHOW_MSG: {
+                    if (DEBUG) Log.i(TAG, "SET_VISIBILITY_SHOW_MSG");
+                    mySetVisibility(0);
                 } break;
             }
         }
@@ -137,6 +157,7 @@ public class SurfaceView extends View {
             = new ViewTreeObserver.OnScrollChangedListener() {
                     @Override
                     public void onScrollChanged() {
+                        if (DEBUG) Log.i(TAG, "onScrollChanged");
                         updateWindow(false, false);
                     }
             };
@@ -171,6 +192,7 @@ public class SurfaceView extends View {
             new ViewTreeObserver.OnPreDrawListener() {
                 @Override
                 public boolean onPreDraw() {
+                    if (DEBUG) Log.i(TAG, "onPreDraw()");
                     // reposition ourselves where the surface is
                     mHaveFrame = getWidth() > 0 && getHeight() > 0;
                     updateWindow(false, false);
@@ -215,6 +237,7 @@ public class SurfaceView extends View {
 
     @Override
     protected void onAttachedToWindow() {
+        if (DEBUG) Log.i(TAG, "onAttachedToWindow()");
         super.onAttachedToWindow();
         mParent.requestTransparentRegion(this);
         mSession = getWindowSession();
@@ -232,6 +255,7 @@ public class SurfaceView extends View {
 
     @Override
     protected void onWindowVisibilityChanged(int visibility) {
+        if (DEBUG) Log.i(TAG, "onWindowVisibilityChanged()--> " + visibility);
         super.onWindowVisibilityChanged(visibility);
         mWindowVisibility = visibility == VISIBLE;
         mRequestedVisible = mWindowVisibility && mViewVisibility;
@@ -240,6 +264,7 @@ public class SurfaceView extends View {
 
     @Override
     public void setVisibility(int visibility) {
+        if (DEBUG) Log.i(TAG, "setVisibility()--> " + visibility);
         super.setVisibility(visibility);
         mViewVisibility = visibility == VISIBLE;
         boolean newRequestedVisible = mWindowVisibility && mViewVisibility;
@@ -256,8 +281,19 @@ public class SurfaceView extends View {
         updateWindow(false, false);
     }
 
+    // psw0523 HACK
+    private void mySetVisibility(int visibility) {
+        if (DEBUG) Log.i(TAG, "mySetVisibility()--> " + visibility);
+        super.setVisibility(visibility);
+        mViewVisibility = visibility == VISIBLE;
+        requestLayout();
+
+        dispatchWindowVisibilityChanged(visibility);
+    }
+
     @Override
     protected void onDetachedFromWindow() {
+        if (DEBUG) Log.i(TAG, "onDetachedFromWindow()");
         if (mGlobalListenersAdded) {
             ViewTreeObserver observer = getViewTreeObserver();
             observer.removeOnScrollChangedListener(mScrollChangedListener);
@@ -284,6 +320,7 @@ public class SurfaceView extends View {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (DEBUG) Log.i(TAG, "onMeasure()--> width:" + widthMeasureSpec + ", height:" + heightMeasureSpec);
         int width = mRequestedWidth >= 0
                 ? resolveSizeAndState(mRequestedWidth, widthMeasureSpec, 0)
                 : getDefaultSize(0, widthMeasureSpec);
@@ -299,6 +336,7 @@ public class SurfaceView extends View {
     /** @hide */
     @Override
     protected boolean setFrame(int left, int top, int right, int bottom) {
+        if (DEBUG) Log.i(TAG, "setFrame()--> left:" + left + ", top:" + top + ", right:" + right + ", bottom:" + bottom);
         boolean result = super.setFrame(left, top, right, bottom);
         // psw0523 debugging
         // Log.d(TAG, "setFrame ---> " + left + "," + top + "," + right + "," + bottom);
@@ -338,6 +376,7 @@ public class SurfaceView extends View {
         if (mWindowType != WindowManager.LayoutParams.TYPE_APPLICATION_PANEL) {
             // draw() is not called when SKIP_DRAW is set
             if ((mPrivateFlags & PFLAG_SKIP_DRAW) == 0) {
+                if (DEBUG) Log.i(TAG, "draw()");
                 // punch a whole in the view-hierarchy below us
                 canvas.drawColor(0, PorterDuff.Mode.CLEAR);
             }
@@ -351,6 +390,7 @@ public class SurfaceView extends View {
             // if SKIP_DRAW is cleared, draw() has already punched a hole
             if ((mPrivateFlags & PFLAG_SKIP_DRAW) == PFLAG_SKIP_DRAW) {
                 // punch a whole in the view-hierarchy below us
+                if (DEBUG) Log.i(TAG, "dispatchDraw()");
                 canvas.drawColor(0, PorterDuff.Mode.CLEAR);
             }
         }
@@ -369,6 +409,7 @@ public class SurfaceView extends View {
      * <p>Calling this overrides any previous call to {@link #setZOrderOnTop}.
      */
     public void setZOrderMediaOverlay(boolean isMediaOverlay) {
+        if (DEBUG) Log.i(TAG, "setZOrderMediaOverlay() --> isMediaOverlay:" + isMediaOverlay);
         mWindowType = isMediaOverlay
                 ? WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA_OVERLAY
                 : WindowManager.LayoutParams.TYPE_APPLICATION_MEDIA;
@@ -388,6 +429,7 @@ public class SurfaceView extends View {
      * <p>Calling this overrides any previous call to {@link #setZOrderMediaOverlay}.
      */
     public void setZOrderOnTop(boolean onTop) {
+        if (DEBUG) Log.i(TAG, "setZOrderOnTop() --> onTop:" + onTop);
         if (onTop) {
             mWindowType = WindowManager.LayoutParams.TYPE_APPLICATION_PANEL;
             // ensures the surface is placed below the IME
@@ -411,6 +453,7 @@ public class SurfaceView extends View {
      * @param isSecure True if the surface view is secure.
      */
     public void setSecure(boolean isSecure) {
+        if (DEBUG) Log.i(TAG, "setSecure() --> isSecure:" + isSecure);
         if (isSecure) {
             mLayout.flags |= WindowManager.LayoutParams.FLAG_SECURE;
         } else {
@@ -424,11 +467,13 @@ public class SurfaceView extends View {
      * @hide
      */
     public void setWindowType(int type) {
+        if (DEBUG) Log.i(TAG, "setWindowType() --> type:" + type);
         mWindowType = type;
     }
 
     /** @hide */
     protected void updateWindow(boolean force, boolean redrawNeeded) {
+        if (DEBUG) Log.i(TAG, "updateWindow() --> force:" + force + ", redrawNeeded:" + redrawNeeded);
         if (!mHaveFrame) {
             return;
         }
@@ -451,6 +496,9 @@ public class SurfaceView extends View {
         final boolean formatChanged = mFormat != mRequestedFormat;
         final boolean sizeChanged = mWidth != myWidth || mHeight != myHeight;
         final boolean visibleChanged = mVisible != mRequestedVisible;
+
+        // psw0523 HACK
+        // boolean forceHide = false;
 
         if (force || creating || formatChanged || sizeChanged || visibleChanged
             || mLeft != mLocation[0] || mTop != mLocation[1]
@@ -548,9 +596,11 @@ public class SurfaceView extends View {
                     realSizeChanged = mLastSurfaceWidth != surfaceWidth
                             || mLastSurfaceHeight != surfaceHeight;
                     // psw0523 debugging
-                    // Log.i(TAG, "realSizeChanged ---> " + realSizeChanged);
-                    // Log.i(TAG, "last: " + mLastSurfaceWidth + ", " + mLastSurfaceHeight);
-                    // Log.i(TAG, "changed: " + surfaceWidth + ", " + surfaceHeight);
+                    if (DEBUG) {
+                        Log.i(TAG, "realSizeChanged ---> " + realSizeChanged);
+                        Log.i(TAG, "last: " + mLastSurfaceWidth + ", " + mLastSurfaceHeight);
+                        Log.i(TAG, "changed: " + surfaceWidth + ", " + surfaceHeight);
+                    }
                     mLastSurfaceWidth = surfaceWidth;
                     mLastSurfaceHeight = surfaceHeight;
                 } finally {
@@ -562,14 +612,25 @@ public class SurfaceView extends View {
 
                     SurfaceHolder.Callback callbacks[] = null;
 
+                    // psw0523 HACK!!!
                     final boolean surfaceChanged = (relayoutResult
                             & WindowManagerGlobal.RELAYOUT_RES_SURFACE_CHANGED) != 0;
+                    // final boolean surfaceChanged = ((relayoutResult & WindowManagerGlobal.RELAYOUT_RES_SURFACE_CHANGED) != 0)
+                    //     || realSizeChanged;
+                    // psw0523 debugging
+                    Log.i(TAG, "surfaceChanged --> " + surfaceChanged);
+                    Log.i(TAG, "mSurfaceCreated --> " + mSurfaceCreated);
+                    // psw0523 HACK
+                    // if (surfaceChanged == false && mSurfaceCreated == true && realSizeChanged == true) {
+                    //     forceHide = true;
+                    // }
                     if (mSurfaceCreated && (surfaceChanged || (!visible && visibleChanged))) {
                         mSurfaceCreated = false;
                         if (mSurface.isValid()) {
                             if (DEBUG) Log.i(TAG, "visibleChanged -- surfaceDestroyed");
                             callbacks = getSurfaceCallbacks();
                             for (SurfaceHolder.Callback c : callbacks) {
+                                if (DEBUG) Log.i(TAG, "call surfaceDestroyed callback of SurfaceHolder");
                                 c.surfaceDestroyed(mSurfaceHolder);
                             }
                         }
@@ -586,6 +647,7 @@ public class SurfaceView extends View {
                                 callbacks = getSurfaceCallbacks();
                             }
                             for (SurfaceHolder.Callback c : callbacks) {
+                                if (DEBUG) Log.i(TAG, "call surfaceCreated callback of SurfaceHolder");
                                 c.surfaceCreated(mSurfaceHolder);
                             }
                         }
@@ -598,19 +660,20 @@ public class SurfaceView extends View {
                             }
                             for (SurfaceHolder.Callback c : callbacks) {
                                 // psw0523 debugging
-                                // Log.i(TAG, "call surfaceChanged callback of SurfaceHolder");
+                                if (DEBUG) Log.i(TAG, "call surfaceChanged callback of SurfaceHolder");
                                 c.surfaceChanged(mSurfaceHolder, mFormat, myWidth, myHeight);
                             }
-                            // psw0523 fix for AVN MultiWindow 
-                            redrawNeeded = true;
                         }
                         if (redrawNeeded) {
                             if (DEBUG) Log.i(TAG, "surfaceRedrawNeeded");
+                            // psw0523 HACK
+                            // forceHide = false;
                             if (callbacks == null) {
                                 callbacks = getSurfaceCallbacks();
                             }
                             for (SurfaceHolder.Callback c : callbacks) {
                                 if (c instanceof SurfaceHolder.Callback2) {
+                                    if (DEBUG) Log.i(TAG, "call surfaceRedrawNeeded callback of SurfaceHolder");
                                     ((SurfaceHolder.Callback2)c).surfaceRedrawNeeded(
                                             mSurfaceHolder);
                                 }
@@ -632,6 +695,12 @@ public class SurfaceView extends View {
                 " w=" + mLayout.width + " h=" + mLayout.height +
                 ", frame=" + mSurfaceFrame);
         }
+
+        // psw0523 HACK
+        // if (forceHide) {
+        //     if (DEBUG) Log.i(TAG, "sendMessage: SET_VISIBILITY_HIDE_MSG");
+        //     mHandler.sendEmptyMessage(SET_VISIBILITY_HIDE_MSG);
+        // }
     }
 
     private SurfaceHolder.Callback[] getSurfaceCallbacks() {
@@ -644,6 +713,7 @@ public class SurfaceView extends View {
     }
 
     void handleGetNewSurface() {
+        if (DEBUG) Log.i(TAG, "handleGetNewSurface()");
         updateWindow(false, false);
     }
 
@@ -669,6 +739,7 @@ public class SurfaceView extends View {
         public void resized(Rect frame, Rect overscanInsets, Rect contentInsets,
                 Rect visibleInsets, Rect stableInsets, boolean reportDraw,
                 Configuration newConfig) {
+            if (DEBUG) Log.i(TAG, "resized()");
             SurfaceView surfaceView = mSurfaceView.get();
             if (surfaceView != null) {
                 if (DEBUG) Log.v(
@@ -698,6 +769,7 @@ public class SurfaceView extends View {
 
         @Override
         public void dispatchGetNewSurface() {
+            if (DEBUG) Log.i(TAG, "dispatchGetNewSurface()");
             SurfaceView surfaceView = mSurfaceView.get();
             if (surfaceView != null) {
                 Message msg = surfaceView.mHandler.obtainMessage(GET_NEW_SURFACE_MSG);
@@ -747,8 +819,7 @@ public class SurfaceView extends View {
 
         @Override
         public void setFixedSize(int width, int height) {
-            // psw0523 debugging
-            // Log.d(TAG, "setFixedSize ============> " + width + ", " + height);
+            if (DEBUG) Log.i(TAG, "setFixedSize ============> " + width + ", " + height);
             if (mRequestedWidth != width || mRequestedHeight != height) {
                 mRequestedWidth = width;
                 mRequestedHeight = height;
