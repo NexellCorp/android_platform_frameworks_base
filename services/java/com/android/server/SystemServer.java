@@ -445,6 +445,16 @@ public final class SystemServer {
         inputManager.setWindowManagerCallbacks(wm.getInputMonitor());
         inputManager.start();
 
+        // psw0523 fix : need this feature for hdmi audio policy manage
+        try {
+            Slog.i(TAG, "Wired Accessory Manager");
+            // Listen for wired headset changes
+            inputManager.setWiredAccessoryCallbacks(
+                    new WiredAccessoryManager(context, inputManager));
+        } catch (Throwable e) {
+            reportWtf("starting WiredAccessoryManager", e);
+        }
+
         // TODO: Use service dependencies instead.
         mDisplayManagerService.windowManagerAndInputReady();
 
