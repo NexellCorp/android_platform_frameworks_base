@@ -427,12 +427,12 @@ public class RecoverySystem {
         // doCommand("rm -rf /cache#<{(|");
         // doCommand("rm -rf /data#<{(|");
         // doCommand("sync");
-        doCommand("setprop ctl.start factory_reset");
-        try {
-            Thread.sleep(3000);
-        } catch (Exception e) {
-            Log.e(TAG, "Error in Thread.sleep()");
-        }
+        // doCommand("setprop ctl.start factory_reset");
+        // try {
+        //     Thread.sleep(3000);
+        // } catch (Exception e) {
+        //     Log.e(TAG, "Error in Thread.sleep()");
+        // }
 
         String shutdownArg = null;
         if (shutdown) {
