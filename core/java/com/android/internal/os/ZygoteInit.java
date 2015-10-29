@@ -267,12 +267,12 @@ public class ZygoteInit {
 
         preloadClassesPre();
 
-        //Thread preloadClassThr = new Thread("preloadClass") {
-            //@Override
-            //public void run() {
-                //preloadClasses();
-            //}
-        //};
+        Thread preloadClassThr = new Thread("preloadClass") {
+            @Override
+            public void run() {
+                preloadClasses();
+            }
+        };
 
         Thread preloadClassThr1 = new Thread("preloadClass1") {
              @Override
@@ -387,29 +387,29 @@ public class ZygoteInit {
         };
         //preloadClassThr.setPriority(android.os.Process.THREAD_PRIORITY_FOREGROUND);
         //preloadResourceThr.setPriority(android.os.Process.THREAD_PRIORITY_FOREGROUND);
-        //preloadClassThr.start();
-        preloadClassThr1.start();
-        preloadClassThr2.start();
-        preloadClassThr3.start();
-        preloadClassThr4.start();
-        preloadClassThr5.start();
-        preloadClassThr6.start();
-        preloadClassThr7.start();
-        preloadClassThr8.start();
+        preloadClassThr.start();
+        // preloadClassThr1.start();
+        // preloadClassThr2.start();
+        // preloadClassThr3.start();
+        // preloadClassThr4.start();
+        // preloadClassThr5.start();
+        // preloadClassThr6.start();
+        // preloadClassThr7.start();
+        // preloadClassThr8.start();
         preloadResourceThr.start();
         preloadSharedLibraries();
         WebViewFactory.prepareWebViewInZygote();
         try {
             preloadResourceThr.join();
-            //preloadClassThr.join();
-            preloadClassThr1.join();
-            preloadClassThr2.join();
-            preloadClassThr3.join();
-            preloadClassThr4.join();
-            preloadClassThr5.join();
-            preloadClassThr6.join();
-            preloadClassThr7.join();
-            preloadClassThr8.join();
+            preloadClassThr.join();
+            // preloadClassThr1.join();
+            // preloadClassThr2.join();
+            // preloadClassThr3.join();
+            // preloadClassThr4.join();
+            // preloadClassThr5.join();
+            // preloadClassThr6.join();
+            // preloadClassThr7.join();
+            // preloadClassThr8.join();
             preloadClassesPost();
         } catch (Exception e) {
         }
