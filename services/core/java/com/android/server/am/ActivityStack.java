@@ -3684,29 +3684,29 @@ final class ActivityStack {
                     }
                 }
             } else if (reason.startsWith("app-request")) {
-                if (mFirstActivity != null && mFirstActivity.task == r.task) {
-                    if (mFirstActivity == r) {
-                        Slog.e(TAG, "FirstActivity is dead");
-                        mFirstActivity = mSecondActivity;
-                        mActivityStackForDefault.clear();
-                        for (int i = 0; i < mActivityStackForSecond.size(); i++) {
-                            mActivityStackForDefault.add(mActivityStackForSecond.get(i));
-                        }
-                        mSecondActivity = null;
-                        mActivityStackForSecond.clear();
-                        setMultiWindowAppToken();
-                    } else {
-                        if (mActivityStackForDefault.contains(r)) {
-                            if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Activity in FirstActivityGroun is dead");
-                            mActivityStackForDefault.remove(r);
-                        }
-                    }
-                } else if (mSecondActivity != null && mSecondActivity.task == r.task) {
-                    Slog.e(TAG, "FirstActivity is dead");
-                    mSecondActivity = null;
-                    mActivityStackForSecond.clear();
-                    setMultiWindowAppToken();
-                }
+                // if (mFirstActivity != null && mFirstActivity.task == r.task) {
+                //     if (mFirstActivity == r) {
+                //         Slog.e(TAG, "FirstActivity is dead");
+                //         mFirstActivity = mSecondActivity;
+                //         mActivityStackForDefault.clear();
+                //         for (int i = 0; i < mActivityStackForSecond.size(); i++) {
+                //             mActivityStackForDefault.add(mActivityStackForSecond.get(i));
+                //         }
+                //         mSecondActivity = null;
+                //         mActivityStackForSecond.clear();
+                //         setMultiWindowAppToken();
+                //     } else {
+                //         if (mActivityStackForDefault.contains(r)) {
+                //             if (DEBUG_MULTIWINDOW) Slog.d(TAG, "Activity in FirstActivityGroun is dead");
+                //             mActivityStackForDefault.remove(r);
+                //         }
+                //     }
+                // } else if (mSecondActivity != null && mSecondActivity.task == r.task) {
+                //     Slog.e(TAG, "SecondActivity is dead");
+                //     mSecondActivity = null;
+                //     mActivityStackForSecond.clear();
+                //     setMultiWindowAppToken();
+                // }
             } else {
                 if (mActivityStackForDefault.size() > 0) {
                     int lastIndex = mActivityStackForDefault.size() - 1;
