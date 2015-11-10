@@ -967,8 +967,11 @@ public class MultiWindowManager implements WindowManagerPolicy {
         } else if (title.startsWith("Select input method")) {
             if (DEBUG_LAYOUT) Slog.d(TAG, "layout Select input method...");
             layoutFull(parentFrame);
+        } else if (title.startsWith("ScreenshotAnimation")) {
+            if (DEBUG_LAYOUT) Slog.d(TAG, "ScreenshotAnimation...");
+            layoutFull(parentFrame);
         } else {
-            Slog.e(TAG, "Error: window is not left nor right nor Starting nor Error not Select input :  title --> " + title);
+            Slog.e(TAG, "Error: window is not left nor right nor Starting nor Error not Select input nor ScreenshotAnimation:  title --> " + title);
         }
     }
 
