@@ -764,14 +764,25 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
             // the final state of the color fade animation.
             boolean isOn = (state != Display.STATE_OFF);
             if (wasOn && !isOn) {
-                unblockScreenOn();
+                // patch for SLSIAP : issue 1459 
+                // disable blockScreenOn/ unblockScreenOn
+                // unblockScreenOn();
                 mWindowManagerPolicy.screenTurnedOff();
             } else if (!wasOn && isOn) {
+                // patch for SLSIAP : issue 1459 
+                // disable blockScreenOn/ unblockScreenOn
+                // if (mPowerState.getColorFadeLevel() == 0.0f) {
+                //     blockScreenOn();
+                // } else {
+                //     unblockScreenOn();
+                // }
                 if (mPowerState.getColorFadeLevel() == 0.0f) {
-                    blockScreenOn();
-                } else {
-                    unblockScreenOn();
+                    try {
+                        Thread.sleep(200);
+                    } catch (Exception e) {
+                    }
                 }
+                // end patch for SLSIAP
                 mWindowManagerPolicy.screenTurningOn(mPendingScreenOnUnblocker);
             }
         }
