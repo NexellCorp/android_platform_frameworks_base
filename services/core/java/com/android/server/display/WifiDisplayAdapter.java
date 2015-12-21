@@ -136,12 +136,13 @@ final class WifiDisplayAdapter extends DisplayAdapter {
         getHandler().post(new Runnable() {
             @Override
             public void run() {
+                // psw0523 enable wifi display for miracast source
                 // psw0523 fix
-                //mDisplayController = new WifiDisplayController(
-                        //getContext(), getHandler(), mWifiDisplayListener);
+                mDisplayController = new WifiDisplayController(
+                        getContext(), getHandler(), mWifiDisplayListener);
 
-                //getContext().registerReceiverAsUser(mBroadcastReceiver, UserHandle.ALL,
-                        //new IntentFilter(ACTION_DISCONNECT), null, mHandler);
+                getContext().registerReceiverAsUser(mBroadcastReceiver, UserHandle.ALL,
+                        new IntentFilter(ACTION_DISCONNECT), null, mHandler);
             }
         });
     }

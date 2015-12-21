@@ -578,12 +578,13 @@ public final class SystemServer {
             reportWtf("making Package Manager Service ready", e);
         }
 
-        try {
-            // TODO: use boot phase and communicate these flags some other way
-            mDisplayManagerService.systemReady(false, mOnlyCore);
-        } catch (Throwable e) {
-            reportWtf("making Display Manager Service ready", e);
-        }
+        // psw0523 patch for miracast source
+        // try {
+        //     // TODO: use boot phase and communicate these flags some other way
+        //     mDisplayManagerService.systemReady(false, mOnlyCore);
+        // } catch (Throwable e) {
+        //     reportWtf("making Display Manager Service ready", e);
+        // }
 
         AssetAtlasService atlas = null;
         try {
@@ -1176,6 +1177,14 @@ public final class SystemServer {
             if (mmsServiceF != null) mmsServiceF.systemRunning();
         } catch (Throwable e) {
             reportWtf("Notifying MmsService running", e);
+        }
+
+        //psw0523 patch for miracast source
+        try {
+            // TODO: use boot phase and communicate these flags some other way
+            mDisplayManagerService.systemReady(false, mOnlyCore);
+        } catch (Throwable e) {
+            reportWtf("making Display Manager Service ready", e);
         }
     }
 
