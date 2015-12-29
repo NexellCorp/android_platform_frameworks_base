@@ -1347,8 +1347,8 @@ public class PackageManagerService extends IPackageManager.Stub {
             Slog.e(TAG, "can't find FusedLocation!!!");
         }
 
-        //File launcherApk = new File("/system/app/Launcher3/Launcher3.apk");
-        File launcherApk = new File("/system/app/SampleHome/SampleHome.apk");
+        File launcherApk = new File("/system/app/Launcher3/Launcher3.apk");
+        // File launcherApk = new File("/system/app/SampleHome/SampleHome.apk");
         try {
             mLauncher = scanPackageLI(launcherApk,
                     PackageParser.PARSE_IS_SYSTEM

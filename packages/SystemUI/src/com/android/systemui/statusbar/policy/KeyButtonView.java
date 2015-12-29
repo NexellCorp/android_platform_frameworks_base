@@ -248,11 +248,6 @@ public class KeyButtonView extends ImageView {
         InputManager.getInstance().injectInputEvent(ev,
                 InputManager.INJECT_INPUT_EVENT_MODE_ASYNC);
     }
-
-    // psw0523 add for AVN Key-Action Mapping
-    public void setKeyCode(int code) {
-        mCode = code;
-    }
 }
 
 

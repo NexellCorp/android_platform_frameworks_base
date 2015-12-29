@@ -168,14 +168,14 @@ public final class BatteryService extends SystemService {
 
     @Override
     public void onStart() {
-        IBinder b = ServiceManager.getService("batteryproperties");
-        final IBatteryPropertiesRegistrar batteryPropertiesRegistrar =
-                IBatteryPropertiesRegistrar.Stub.asInterface(b);
-        try {
-            batteryPropertiesRegistrar.registerListener(new BatteryListener());
-        } catch (RemoteException e) {
-            // Should never happen.
-        }
+        // IBinder b = ServiceManager.getService("batteryproperties");
+        // final IBatteryPropertiesRegistrar batteryPropertiesRegistrar =
+        //         IBatteryPropertiesRegistrar.Stub.asInterface(b);
+        // try {
+        //     batteryPropertiesRegistrar.registerListener(new BatteryListener());
+        // } catch (RemoteException e) {
+        //     // Should never happen.
+        // }
 
         publishBinderService("battery", new BinderService());
         publishLocalService(BatteryManagerInternal.class, new LocalService());
@@ -306,6 +306,9 @@ public final class BatteryService extends SystemService {
     private void processValuesLocked(boolean force) {
         boolean logOutlier = false;
         long dischargeDuration = 0;
+
+        if (mBatteryProps == null)
+            return;
 
         mBatteryLevelCritical = (mBatteryProps.batteryLevel <= mCriticalBatteryLevel);
         if (mBatteryProps.chargerAcOnline) {

@@ -634,8 +634,8 @@ public class WindowManagerService extends IWindowManager.Stub
     float mTransitionAnimationScaleSetting = 1.0f;
     float mAnimatorDurationScaleSetting = 1.0f;
     // psw0523 fix for AVN MultiWindow
-    // boolean mAnimationsDisabled = false;
-    boolean mAnimationsDisabled = true;
+    boolean mAnimationsDisabled = false;
+    // boolean mAnimationsDisabled = true;
 
     final InputManagerService mInputManager;
     final DisplayManagerInternal mDisplayManagerInternal;

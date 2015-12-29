@@ -25,7 +25,9 @@
     <!-- Upper height limit for application icon -->
     <dimen name="status_bar_recents_app_icon_max_height">48dp</dimen>
 
-    <!-- Size of application thumbnail --> <dimen name="status_bar_recents_thumbnail_width">164dp</dimen> <dimen name="status_bar_recents_thumbnail_height">145dp</dimen>
+    <!-- Size of application thumbnail -->
+    <dimen name="status_bar_recents_thumbnail_width">164dp</dimen>
+    <dimen name="status_bar_recents_thumbnail_height">145dp</dimen>
     <dimen name="status_bar_recents_thumbnail_bg_padding">4dp</dimen>
 
     <!-- Size of application label text -->
@@ -145,11 +147,6 @@
     <dimen name="standard_notification_panel_width">416dp</dimen><!-- includes notification_side_padding on each side -->
     <dimen name="notification_panel_width">@dimen/match_parent</dimen>
 
-    <!-- MULTIWINDOW The padding on the side of the multiwin bar -->
-    <dimen name="multiwin_side_padding">70dp</dimen>
-    <!-- The width of the view containing multiwin buttons -->
-    <dimen name="multiwin_key_height">70dp</dimen>
-
     <!-- Gravity for the notification panel -->
     <integer name="standard_notification_panel_layout_gravity">0x31</integer><!-- top|center_horizontal -->
     <integer name="notification_panel_layout_gravity">0x37</integer><!-- fill_horizontal|top -->
@@ -260,7 +257,7 @@
     <!-- The top offset for the task stack. -->
     <dimen name="recents_stack_top_padding">16dp</dimen>
 
-    <!-- Used to calculate the translation animation duration, the expected amount of movement
+    <!-- Used to calculate the translation animation duration, the expected amount of movement 
          in dps over one second of time. -->
     <dimen name="recents_animation_movement_in_dps_per_second">800dp</dimen>
 
@@ -320,7 +317,7 @@
     <dimen name="swipe_helper_falsing_threshold">70dp</dimen>
 
     <dimen name="notifications_top_padding">8dp</dimen>
-
+    
     <!-- Minimum distance the user has to drag down to go to the full shade. -->
     <dimen name="keyguard_drag_down_min_distance">100dp</dimen>
 
@@ -527,7 +524,7 @@
 
     <!-- The maximum width of the navigation bar ripples. -->
     <dimen name="key_button_ripple_max_width">95dp</dimen>
-
+    
     <!-- Inset shadow for FakeShadowDrawable. It is used to avoid gaps between the card
          and the shadow. -->
     <dimen name="fake_shadow_inset">1dp</dimen>
@@ -563,10 +560,5 @@
     <dimen name="screen_pinning_nav_highlight_size">56dp</dimen>
     <!-- Screen pinning inner nav bar outer circle size -->
     <dimen name="screen_pinning_nav_highlight_outer_size">84dp</dimen>
-
-    <!-- Minilauncher icon width, height -->
-    <dimen name="minilauncher_icon_width">64px</dimen>
-    <dimen name="minilauncher_icon_height">64px</dimen>
-    <dimen name="minilauncher_row_height">80px</dimen>
 
 </resources>

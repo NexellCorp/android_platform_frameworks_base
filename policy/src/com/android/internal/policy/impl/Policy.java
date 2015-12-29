@@ -66,8 +66,8 @@ public class Policy implements IPolicy {
 
     public WindowManagerPolicy makeNewWindowManager() {
         // MULTIWINDOW
-        //return new PhoneWindowManager();
-        return new MultiWindowManager();
+        return new PhoneWindowManager();
+        // return new MultiWindowManager();
     }
 
     public FallbackEventHandler makeNewFallbackEventHandler(Context context) {
