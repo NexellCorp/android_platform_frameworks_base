@@ -243,6 +243,9 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     @Override  // NotificationData.Environment
     public boolean isDeviceProvisioned() {
+        // psw0523 fix for Nexell AVN
+        // return mDeviceProvisioned;
+        mDeviceProvisioned = true;
         return mDeviceProvisioned;
     }
 

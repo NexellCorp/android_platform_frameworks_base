@@ -1534,9 +1534,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         // Disable QS if device not provisioned.
         // If the user switcher is simple then disable QS during setup because
         // the user intends to use the lock screen user switcher, QS in not needed.
-        mNotificationPanel.setQsExpansionEnabled(isDeviceProvisioned()
-                && (mUserSetup || mUserSwitcherController == null
-                        || !mUserSwitcherController.isSimpleUserSwitcher()));
+        // psw0523 fix for Nexell AVN
+        // mNotificationPanel.setQsExpansionEnabled(isDeviceProvisioned()
+        //         && (mUserSetup || mUserSwitcherController == null
+        //                 || !mUserSwitcherController.isSimpleUserSwitcher()));
+        mNotificationPanel.setQsExpansionEnabled(true);
         mShadeUpdates.check();
     }
 
@@ -3970,6 +3972,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
     @Override
     public boolean onDraggedDown(View startingChild, int dragLengthY) {
+        // psw0523 test
+        if (true) {
         if (hasActiveNotifications()) {
             EventLogTags.writeSysuiLockscreenGesture(
                     EventLogConstants.SYSUI_LOCKSCREEN_GESTURE_SWIPE_DOWN_FULL_SHADE,
@@ -3983,6 +3987,16 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
             // No notifications - abort gesture.
             return false;
+        }
+        } else {
+            EventLogTags.writeSysuiLockscreenGesture(
+                    EventLogConstants.SYSUI_LOCKSCREEN_GESTURE_SWIPE_DOWN_FULL_SHADE,
+                    (int) (dragLengthY / mDisplayMetrics.density),
+                    0 /* velocityDp - N/A */);
+
+            // We have notifications, go to locked shade.
+            goToLockedShade(startingChild);
+            return true;
         }
     }
 

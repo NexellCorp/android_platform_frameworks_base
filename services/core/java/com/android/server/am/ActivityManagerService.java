@@ -15941,51 +15941,52 @@ public final class ActivityManagerService extends ActivityManagerNative
          * processes) from sending protected broadcasts.
          */
         int callingAppId = UserHandle.getAppId(callingUid);
-        if (callingAppId == Process.SYSTEM_UID || callingAppId == Process.PHONE_UID
-            || callingAppId == Process.SHELL_UID || callingAppId == Process.BLUETOOTH_UID
-            || callingAppId == Process.NFC_UID || callingUid == 0) {
-            // Always okay.
-        } else if (callerApp == null || !callerApp.persistent) {
-            try {
-                if (AppGlobals.getPackageManager().isProtectedBroadcast(
-                        intent.getAction())) {
-                    String msg = "Permission Denial: not allowed to send broadcast "
-                            + intent.getAction() + " from pid="
-                            + callingPid + ", uid=" + callingUid;
-                    Slog.w(TAG, msg);
-                    throw new SecurityException(msg);
-                } else if (AppWidgetManager.ACTION_APPWIDGET_CONFIGURE.equals(intent.getAction())) {
-                    // Special case for compatibility: we don't want apps to send this,
-                    // but historically it has not been protected and apps may be using it
-                    // to poke their own app widget.  So, instead of making it protected,
-                    // just limit it to the caller.
-                    if (callerApp == null) {
-                        String msg = "Permission Denial: not allowed to send broadcast "
-                                + intent.getAction() + " from unknown caller.";
-                        Slog.w(TAG, msg);
-                        throw new SecurityException(msg);
-                    } else if (intent.getComponent() != null) {
-                        // They are good enough to send to an explicit component...  verify
-                        // it is being sent to the calling app.
-                        if (!intent.getComponent().getPackageName().equals(
-                                callerApp.info.packageName)) {
-                            String msg = "Permission Denial: not allowed to send broadcast "
-                                    + intent.getAction() + " to "
-                                    + intent.getComponent().getPackageName() + " from "
-                                    + callerApp.info.packageName;
-                            Slog.w(TAG, msg);
-                            throw new SecurityException(msg);
-                        }
-                    } else {
-                        // Limit broadcast to their own package.
-                        intent.setPackage(callerApp.info.packageName);
-                    }
-                }
-            } catch (RemoteException e) {
-                Slog.w(TAG, "Remote exception", e);
-                return ActivityManager.BROADCAST_SUCCESS;
-            }
-        }
+        // psw0523 fix : don't check permission!!!
+        // if (callingAppId == Process.SYSTEM_UID || callingAppId == Process.PHONE_UID
+        //     || callingAppId == Process.SHELL_UID || callingAppId == Process.BLUETOOTH_UID
+        //     || callingAppId == Process.NFC_UID || callingUid == 0) {
+        //     // Always okay.
+        // } else if (callerApp == null || !callerApp.persistent) {
+        //     try {
+        //         if (AppGlobals.getPackageManager().isProtectedBroadcast(
+        //                 intent.getAction())) {
+        //             String msg = "Permission Denial: not allowed to send broadcast "
+        //                     + intent.getAction() + " from pid="
+        //                     + callingPid + ", uid=" + callingUid;
+        //             Slog.w(TAG, msg);
+        //             throw new SecurityException(msg);
+        //         } else if (AppWidgetManager.ACTION_APPWIDGET_CONFIGURE.equals(intent.getAction())) {
+        //             // Special case for compatibility: we don't want apps to send this,
+        //             // but historically it has not been protected and apps may be using it
+        //             // to poke their own app widget.  So, instead of making it protected,
+        //             // just limit it to the caller.
+        //             if (callerApp == null) {
+        //                 String msg = "Permission Denial: not allowed to send broadcast "
+        //                         + intent.getAction() + " from unknown caller.";
+        //                 Slog.w(TAG, msg);
+        //                 throw new SecurityException(msg);
+        //             } else if (intent.getComponent() != null) {
+        //                 // They are good enough to send to an explicit component...  verify
+        //                 // it is being sent to the calling app.
+        //                 if (!intent.getComponent().getPackageName().equals(
+        //                         callerApp.info.packageName)) {
+        //                     String msg = "Permission Denial: not allowed to send broadcast "
+        //                             + intent.getAction() + " to "
+        //                             + intent.getComponent().getPackageName() + " from "
+        //                             + callerApp.info.packageName;
+        //                     Slog.w(TAG, msg);
+        //                     throw new SecurityException(msg);
+        //                 }
+        //             } else {
+        //                 // Limit broadcast to their own package.
+        //                 intent.setPackage(callerApp.info.packageName);
+        //             }
+        //         }
+        //     } catch (RemoteException e) {
+        //         Slog.w(TAG, "Remote exception", e);
+        //         return ActivityManager.BROADCAST_SUCCESS;
+        //     }
+        // }
 
         final String action = intent.getAction();
         if (action != null) {
