@@ -582,44 +582,56 @@ public class PointerLocationView extends View implements InputDeviceListener,
         final int N = event.getHistorySize();
         for (int historyPos = 0; historyPos < N; historyPos++) {
             for (int i = 0; i < NI; i++) {
-                final int id = event.getPointerId(i);
-                final PointerState ps = mCurDown ? mPointers.get(id) : null;
-                final PointerCoords coords = ps != null ? ps.mCoords : mTempCoords;
-                event.getHistoricalPointerCoords(i, historyPos, coords);
-                if (mPrintCoords) {
-                    logCoords("Pointer", action, i, coords, id, event);
-                }
-                if (ps != null) {
-                    ps.addTrace(coords.x, coords.y, false);
+                // psw0523 patch for android reboot BUG by IndexOutOfBoundsException
+                try {
+                    final int id = event.getPointerId(i);
+                    final PointerState ps = mCurDown ? mPointers.get(id) : null;
+                    final PointerCoords coords = ps != null ? ps.mCoords : mTempCoords;
+                    event.getHistoricalPointerCoords(i, historyPos, coords);
+                    if (mPrintCoords) {
+                        logCoords("Pointer", action, i, coords, id, event);
+                    }
+                    if (ps != null) {
+                        ps.addTrace(coords.x, coords.y, false);
+                    }
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception occured 1");
+                    return;
                 }
             }
         }
         for (int i = 0; i < NI; i++) {
-            final int id = event.getPointerId(i);
-            final PointerState ps = mCurDown ? mPointers.get(id) : null;
-            final PointerCoords coords = ps != null ? ps.mCoords : mTempCoords;
-            event.getPointerCoords(i, coords);
-            if (mPrintCoords) {
-                logCoords("Pointer", action, i, coords, id, event);
-            }
-            if (ps != null) {
-                ps.addTrace(coords.x, coords.y, true);
-                ps.mXVelocity = mVelocity.getXVelocity(id);
-                ps.mYVelocity = mVelocity.getYVelocity(id);
-                mVelocity.getEstimator(id, ps.mEstimator);
-                if (mAltVelocity != null) {
-                    ps.mAltXVelocity = mAltVelocity.getXVelocity(id);
-                    ps.mAltYVelocity = mAltVelocity.getYVelocity(id);
-                    mAltVelocity.getEstimator(id, ps.mAltEstimator);
+            // psw0523 patch for android reboot BUG by IndexOutOfBoundsException
+            try {
+                final int id = event.getPointerId(i);
+                final PointerState ps = mCurDown ? mPointers.get(id) : null;
+                final PointerCoords coords = ps != null ? ps.mCoords : mTempCoords;
+                event.getPointerCoords(i, coords);
+                if (mPrintCoords) {
+                    logCoords("Pointer", action, i, coords, id, event);
                 }
-                ps.mToolType = event.getToolType(i);
+                if (ps != null) {
+                    ps.addTrace(coords.x, coords.y, true);
+                    ps.mXVelocity = mVelocity.getXVelocity(id);
+                    ps.mYVelocity = mVelocity.getYVelocity(id);
+                    mVelocity.getEstimator(id, ps.mEstimator);
+                    if (mAltVelocity != null) {
+                        ps.mAltXVelocity = mAltVelocity.getXVelocity(id);
+                        ps.mAltYVelocity = mAltVelocity.getYVelocity(id);
+                        mAltVelocity.getEstimator(id, ps.mAltEstimator);
+                    }
+                    ps.mToolType = event.getToolType(i);
 
-                if (ps.mHasBoundingBox) {
-                    ps.mBoundingLeft = event.getAxisValue(MotionEvent.AXIS_GENERIC_1, i);
-                    ps.mBoundingTop = event.getAxisValue(MotionEvent.AXIS_GENERIC_2, i);
-                    ps.mBoundingRight = event.getAxisValue(MotionEvent.AXIS_GENERIC_3, i);
-                    ps.mBoundingBottom = event.getAxisValue(MotionEvent.AXIS_GENERIC_4, i);
+                    if (ps.mHasBoundingBox) {
+                        ps.mBoundingLeft = event.getAxisValue(MotionEvent.AXIS_GENERIC_1, i);
+                        ps.mBoundingTop = event.getAxisValue(MotionEvent.AXIS_GENERIC_2, i);
+                        ps.mBoundingRight = event.getAxisValue(MotionEvent.AXIS_GENERIC_3, i);
+                        ps.mBoundingBottom = event.getAxisValue(MotionEvent.AXIS_GENERIC_4, i);
+                    }
                 }
+            } catch (Exception e) {
+                Log.e(TAG, "Exception occured 2");
+                return;
             }
         }
 
