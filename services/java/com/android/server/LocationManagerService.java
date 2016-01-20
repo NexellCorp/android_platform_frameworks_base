@@ -1148,6 +1148,11 @@ public class LocationManagerService extends ILocationManager.Stub {
             boolean shouldBeEnabled = isAllowedByCurrentUserSettingsLocked(name);
             if (isEnabled && !shouldBeEnabled) {
                 updateProviderListenersLocked(name, false, mCurrentUserId);
+                // If any provider has been disabled, clear all last locations for all providers.
+                // This is to be on the safe side in case a provider has location derived from
+                // this disabled provider.
+                mLastLocation.clear();
+                mLastLocationCoarseInterval.clear();
                 changesMade = true;
             } else if (!isEnabled && shouldBeEnabled) {
                 updateProviderListenersLocked(name, true, mCurrentUserId);
@@ -1787,13 +1792,7 @@ public class LocationManagerService extends ILocationManager.Stub {
         try {
             synchronized (mLock) {
                 LocationProviderInterface p = mProvidersByName.get(provider);
-                if (p == null) {
-                    // psw0523 fix for cts android.location.cts.LocationManagerTest
-                    return false; // this is org
-                    // if GMS, android booting fail....
-                    //ContentResolver resolver = mContext.getContentResolver();
-                    //return Settings.Secure.isLocationProviderEnabled(resolver, provider);
-                }
+                if (p == null) return false;
 
                 return isAllowedByUserSettingsLocked(provider, uid);
             }

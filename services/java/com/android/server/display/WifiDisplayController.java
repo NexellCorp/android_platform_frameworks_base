@@ -284,9 +284,7 @@ final class WifiDisplayController implements DumpUtils.Dump {
 
                 WifiP2pWfdInfo wfdInfo = new WifiP2pWfdInfo();
                 wfdInfo.setWfdEnabled(true);
-                // psw0523 fix for miracast sink
-                //wfdInfo.setDeviceType(WifiP2pWfdInfo.WFD_SOURCE);
-                wfdInfo.setDeviceType(WifiP2pWfdInfo.SOURCE_OR_PRIMARY_SINK);
+                wfdInfo.setDeviceType(WifiP2pWfdInfo.WFD_SOURCE);
                 wfdInfo.setSessionAvailable(true);
                 wfdInfo.setControlPort(DEFAULT_CONTROL_PORT);
                 wfdInfo.setMaxThroughput(MAX_THROUGHPUT);
