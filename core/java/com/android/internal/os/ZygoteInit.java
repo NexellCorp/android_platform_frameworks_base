@@ -234,9 +234,31 @@ public class ZygoteInit {
     }
 
     static void preload() {
-        preloadClasses();
-        preloadResources();
-        preloadOpenGL();
+        //preloadClasses();
+        //preloadResources();
+        //preloadOpenGL();
+		//MCJINO
+        Log.d(TAG, "begin preload");
+        Thread preloadClassThr = new Thread("preloadClass") {
+            @Override
+            public void run() {
+                preloadClasses();
+            }
+        };
+        Thread preloadResourceThr = new Thread("preloadResource") {
+            @Override
+            public void run() {
+                preloadResources();
+            }
+        };
+        preloadClassThr.start();
+        preloadResourceThr.start();
+        try {
+            preloadResourceThr.join();
+            preloadClassThr.join();
+        } catch (Exception e) {
+        }
+        Log.d(TAG, "end preload");
     }
 
     private static void preloadOpenGL() {

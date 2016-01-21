@@ -2487,7 +2487,7 @@ public final class PowerManagerService extends IPowerManager.Stub
         public void handleMessage(Message msg) {
             switch (msg.what) {
                 case MSG_USER_ACTIVITY_TIMEOUT:
-                    handleUserActivityTimeout();
+                    //handleUserActivityTimeout(); //MCJINO BLOCK
                     break;
                 case MSG_SANDMAN:
                     handleSandman();
