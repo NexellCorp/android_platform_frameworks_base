@@ -42,6 +42,13 @@ LOCAL_SHARED_LIBRARIES := \
 LOCAL_C_INCLUDES := \
     external/skia/include/core
 
+ifeq ($(BOARD_USES_TSLIB),true)
+    LOCAL_CFLAGS += -DHAVE_TSLIB
+    LOCAL_SHARED_LIBRARIES += libts
+    LOCAL_C_INCLUDES += external/tslib/src
+endif
+
+
 LOCAL_MODULE:= libinputservice
 
 LOCAL_MODULE_TAGS := optional

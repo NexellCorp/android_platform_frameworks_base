@@ -16,7 +16,7 @@
 
 #define LOG_TAG "EventHub"
 
-// #define LOG_NDEBUG 0
+//#define LOG_NDEBUG 0
 
 #include "EventHub.h"
 
@@ -199,7 +199,11 @@ EventHub::EventHub(void) :
         mOpeningDevices(0), mClosingDevices(0),
         mNeedToSendFinishedDeviceScan(false),
         mNeedToReopenDevices(false), mNeedToScanDevices(true),
-        mPendingEventCount(0), mPendingEventIndex(0), mPendingINotify(false) {
+        mPendingEventCount(0), mPendingEventIndex(0), mPendingINotify(false) 
+#ifdef HAVE_TSLIB
+    , mTS()
+#endif
+{
     acquire_wake_lock(PARTIAL_WAKE_LOCK, WAKE_LOCK_ID);
 
     mEpollFd = epoll_create(EPOLL_SIZE_HINT);
@@ -236,6 +240,14 @@ EventHub::EventHub(void) :
     result = epoll_ctl(mEpollFd, EPOLL_CTL_ADD, mWakeReadPipeFd, &eventItem);
     LOG_ALWAYS_FATAL_IF(result != 0, "Could not add wake read pipe to epoll instance.  errno=%d",
             errno);
+#ifdef HAVE_TSLIB
+    mTS = (tsdev*)malloc(sizeof(struct tsdev));
+    if(mTS == NULL)
+    {
+          ALOGE("No Memory");
+    }
+    memset(mTS, 0, sizeof(struct tsdev));
+#endif	
 }
 
 EventHub::~EventHub(void) {
@@ -654,7 +666,18 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
     RawEvent* event = buffer;
     size_t capacity = bufferSize;
     bool awoken = false;
+	int32_t readSize;
+	int32_t deviceId;
+	Device* device;
+#ifdef HAVE_TSLIB
+    int numOfEventsSent = 0;
+    struct ts_sample samp;
+    samp.total_events = 0;
+#endif
     for (;;) {
+#ifdef HAVE_TSLIB
+        if(!samp.total_events) {
+#endif
         nsecs_t now = systemTime(SYSTEM_TIME_MONOTONIC);
 
         // Reopen input devices if needed.
@@ -692,7 +715,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
         }
 
         while (mOpeningDevices != NULL) {
-            Device* device = mOpeningDevices;
+            device = mOpeningDevices;
             ALOGV("Reporting device opened: id=%d, name=%s\n",
                  device->id, device->path.string());
             mOpeningDevices = device->next;
@@ -752,10 +775,61 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
                 continue;
             }
 
-            Device* device = mDevices.valueAt(deviceIndex);
+            device = mDevices.valueAt(deviceIndex);
             if (eventItem.events & EPOLLIN) {
-                int32_t readSize = read(device->fd, readBuffer,
+#ifdef HAVE_TSLIB
+        if (mTS != NULL) {
+            if (device->fd != mTS->fd ) {
+                ALOGE("mFDs.fd = %d and mTS->fd = %d", device->fd, mTS->fd);
+#endif
+                readSize = read(device->fd, readBuffer,
                         sizeof(struct input_event) * capacity);
+#ifdef HAVE_TSLIB
+            }
+            else{
+                char ts_property[128];
+                property_get("persist.calibration.state",ts_property,NULL);
+                if(strcmp(ts_property,"start") == 0){
+                                ALOGV("tslib : raw read");
+                                readSize = ts_read_raw(mTS, &samp, 1);
+                                if (readSize < 0){
+                                    ALOGE("[EventHub.cpp:: After Poll] Error in ts_read_raw()\n");
+                                }
+                                else {
+                                    numOfEventsSent = 0;
+                                    samp.tsIndex = deviceIndex;
+                                    deviceId = device->id == mBuiltInKeyboardId ? 0 : device->id;
+                                    break;
+                                }
+                }
+                else{
+                if(strcmp(ts_property, "done") == 0)
+                {
+                    mTS->list = NULL;
+                    mTS->list_raw = NULL;
+                        if(ts_config(mTS)) {
+                            ALOGE("Error in Configuring tslib.\n");
+                        }
+                    property_set("persist.calibration.state","over");
+                }
+                                readSize = ts_read(mTS, &samp, 1);
+                                if (readSize < 0) {
+                                    ALOGE("[EventHub.cpp:: After Poll] Error in ts_read()\n");
+                                }
+                                else {
+                                    numOfEventsSent = 0;
+                                    samp.tsIndex = deviceIndex;
+                        deviceId = device->id == mBuiltInKeyboardId ? 0 : device->id;
+                                    break;
+                                }
+                }
+            }
+        }
+        else {
+            ALOGE("ERROR in setup of mTS: mTS is NULL!\n");
+        }
+#endif
+
                 if (readSize == 0 || (readSize < 0 && errno == ENODEV)) {
                     // Device was removed before INotify noticed.
                     ALOGW("could not get event, removed? (fd: %d size: %d bufferSize: %d "
@@ -770,7 +844,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
                 } else if ((readSize % sizeof(struct input_event)) != 0) {
                     ALOGE("could not get event (wrong size: %d)", readSize);
                 } else {
-                    int32_t deviceId = device->id == mBuiltInKeyboardId ? 0 : device->id;
+                    deviceId = device->id == mBuiltInKeyboardId ? 0 : device->id;
 
                     size_t count = size_t(readSize) / sizeof(struct input_event);
                     for (size_t i = 0; i < count; i++) {
@@ -895,6 +969,35 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
         if (deviceChanged) {
             continue;
         }
+#ifdef HAVE_TSLIB
+            }
+        if(samp.total_events) {
+            int i;
+                    for (i = 0; i < samp.total_events; i++) {
+            int err;
+            //ALOGV(" id =%d, type=%d, code=%d, x=%d, y=%d, press=%d, value=%d", deviceId, samp.ev[numOfEventsSent].type, samp.ev[numOfEventsSent].code, samp.x, samp.y, samp.pressure, samp.ev[numOfEventsSent].value);
+            event->deviceId = deviceId;
+            event->type = samp.ev[numOfEventsSent].type;
+            event->code = samp.ev[numOfEventsSent].code;
+            if(event->type == EV_ABS) {
+                if(event->code == ABS_X)
+                    event->value = samp.x;
+                if(event->code == ABS_Y)
+                    event->value = samp.y;
+                if(event->code == ABS_PRESSURE)
+                    event->value = samp.pressure;
+            }
+            else {
+                event->value = samp.ev[numOfEventsSent].value;
+                event->when = systemTime(SYSTEM_TIME_MONOTONIC);
+            }
+            if(++numOfEventsSent == samp.total_events)
+                samp.total_events = 0;
+        event += 1;
+         }
+        }
+#endif
+
 
         // Return now if we have collected any events or if we were explicitly awoken.
         if (event != buffer || awoken) {
@@ -1138,7 +1241,16 @@ status_t EventHub::openDeviceLocked(const char *devicePath) {
             && test_bit(ABS_X, device->absBitmask)
             && test_bit(ABS_Y, device->absBitmask)) {
         device->classes |= INPUT_DEVICE_CLASS_TOUCH;
+#ifdef HAVE_TSLIB
+    mTS->fd = fd;
+    ALOGE("Device fd = %d", fd);
+    ALOGE("tslib: calling ts_config from eventhub\n");
+    if(ts_config(mTS)) {
+        ALOGE("Error in Configuring tslib.");
     }
+#endif
+    }
+
 
     // See if this device is a joystick.
     // Assumes that joysticks always have gamepad buttons in order to distinguish them
