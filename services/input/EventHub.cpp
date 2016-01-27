@@ -780,7 +780,7 @@ size_t EventHub::getEvents(int timeoutMillis, RawEvent* buffer, size_t bufferSiz
 #ifdef HAVE_TSLIB
         if (mTS != NULL) {
             if (device->fd != mTS->fd ) {
-                ALOGE("mFDs.fd = %d and mTS->fd = %d", device->fd, mTS->fd);
+                //ALOGE("mFDs.fd = %d and mTS->fd = %d", device->fd, mTS->fd);
 #endif
                 readSize = read(device->fd, readBuffer,
                         sizeof(struct input_event) * capacity);
