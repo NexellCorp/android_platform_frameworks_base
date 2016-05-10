@@ -417,11 +417,12 @@ public class SyncManager {
         IntentFilter intentFilter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
         context.registerReceiver(mConnectivityIntentReceiver, intentFilter);
 
-        if (!factoryTest) {
-            intentFilter = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
-            intentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
-            context.registerReceiver(mBootCompletedReceiver, intentFilter);
-        }
+		// booting fail
+        // if (!factoryTest) {
+        //     intentFilter = new IntentFilter(Intent.ACTION_BOOT_COMPLETED);
+        //     intentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
+        //     context.registerReceiver(mBootCompletedReceiver, intentFilter);
+        // }
 
         intentFilter = new IntentFilter(Intent.ACTION_DEVICE_STORAGE_LOW);
         intentFilter.addAction(Intent.ACTION_DEVICE_STORAGE_OK);

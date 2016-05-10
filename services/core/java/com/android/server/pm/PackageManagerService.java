@@ -1651,7 +1651,21 @@ public class PackageManagerService extends IPackageManager.Stub {
     public final class SecondRunThread extends Thread {
         public void run() {
             runSecondInner();
-        }
+			IActivityManager am = ActivityManagerNative.getDefault();
+			if (am != null) {
+					Intent intent = new Intent(Intent.ACTION_BOOT_COMPLETED, null);
+					intent.putExtra(Intent.EXTRA_USER_HANDLE, 0);
+					intent.addFlags(Intent.FLAG_RECEIVER_NO_ABORT);
+					try {
+							Slog.d(TAG, "send broadcast ACTION_BOOT_COMPLETED");
+							am.broadcastIntent(null, intent, null, null, 
+											0, null, null, null, android.app.AppOpsManager.OP_NONE,
+											false, false, 0);
+					} catch (RemoteException ex) {
+							Slog.e(TAG, "failed to broadcast ACTION_BOOT_COMPLETED");
+					}
+			}
+		}
     }
 
     @Override
