@@ -133,7 +133,7 @@ import static android.view.WindowManagerPolicy.WindowManagerFuncs.CAMERA_LENS_CO
  * of both of those when held.
  */
 public class PhoneWindowManager implements WindowManagerPolicy {
-    static final String TAG = "WindowManager";
+    static final String TAG = "PhoneWindowManager";
     static final boolean DEBUG = false;
     static final boolean localLOGV = false;
     static final boolean DEBUG_INPUT = false;
@@ -3100,7 +3100,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     @Override
     public int adjustSystemUiVisibilityLw(int visibility) {
-        mStatusBarController.adjustSystemUiVisibilityLw(mLastSystemUiFlags, visibility);
+        mStatusBarController.adjustSystemUiVisibilityLw(mLastSystemUiFlags, 0);
         mNavigationBarController.adjustSystemUiVisibilityLw(mLastSystemUiFlags, visibility);
         mRecentsVisible = (visibility & View.RECENT_APPS_VISIBLE) > 0;
 
@@ -3288,9 +3288,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mTmpNavigationFrame.set(0, top, displayWidth, displayHeight - overscanBottom);
                     mStableBottom = mStableFullscreenBottom = mTmpNavigationFrame.top;
                     if (transientNavBarShowing) {
-                        mNavigationBarController.setBarShowingLw(true);
+                        mNavigationBarController.setBarShowingLw(false);
                     } else if (navVisible) {
-                        mNavigationBarController.setBarShowingLw(true);
+                        mNavigationBarController.setBarShowingLw(false);
                         mDockBottom = mTmpNavigationFrame.top;
                         mRestrictedScreenHeight = mDockBottom - mRestrictedScreenTop;
                         mRestrictedOverscanScreenHeight = mDockBottom - mRestrictedOverscanScreenTop;
@@ -3313,9 +3313,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     mTmpNavigationFrame.set(left, 0, displayWidth - overscanRight, displayHeight);
                     mStableRight = mStableFullscreenRight = mTmpNavigationFrame.left;
                     if (transientNavBarShowing) {
-                        mNavigationBarController.setBarShowingLw(true);
+                        mNavigationBarController.setBarShowingLw(false);
                     } else if (navVisible) {
-                        mNavigationBarController.setBarShowingLw(true);
+                        mNavigationBarController.setBarShowingLw(false);
                         mDockRight = mTmpNavigationFrame.left;
                         mRestrictedScreenWidth = mDockRight - mRestrictedScreenLeft;
                         mRestrictedOverscanScreenWidth = mDockRight - mRestrictedOverscanScreenLeft;
@@ -4121,7 +4121,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
                 if (mWinShowWhenLocked != null &&
                         mWinShowWhenLocked.getAppToken() != win.getAppToken()) {
-                    win.hideLw(false);
+                    win.hideLw(true);
                 }
             }
         }
@@ -4136,7 +4136,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             // fullscreen window.
             // TODO: Make sure FLAG_SHOW_WALLPAPER is restored when dialog is dismissed. Or not.
             mWinShowWhenLocked.getAttrs().flags |= FLAG_SHOW_WALLPAPER;
-            mTopFullscreenOpaqueWindowState.hideLw(false);
+            mTopFullscreenOpaqueWindowState.hideLw(true);
             mTopFullscreenOpaqueWindowState = mWinShowWhenLocked;
         }
 
@@ -4161,7 +4161,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     + " top=" + mTopFullscreenOpaqueWindowState);
             if (mForceStatusBar || mForceStatusBarFromKeyguard) {
                 if (DEBUG_LAYOUT) Slog.v(TAG, "Showing status bar: forced");
-                if (mStatusBarController.setBarShowingLw(true)) {
+                if (mStatusBarController.setBarShowingLw(false)) {
                     changes |= FINISH_LAYOUT_REDO_LAYOUT;
                 }
                 // Maintain fullscreen layout until incoming animation is complete.
@@ -4186,7 +4186,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 // has the FLAG_FULLSCREEN set.  Not sure if there is another way that to be the
                 // case though.
                 if (mStatusBarController.isTransientShowing()) {
-                    if (mStatusBarController.setBarShowingLw(true)) {
+                    if (mStatusBarController.setBarShowingLw(false)) {
                         changes |= FINISH_LAYOUT_REDO_LAYOUT;
                     }
                 } else if (topIsFullscreen) {
@@ -4198,7 +4198,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     }
                 } else {
                     if (DEBUG_LAYOUT) Slog.v(TAG, "** SHOWING status bar: top is not fullscreen");
-                    if (mStatusBarController.setBarShowingLw(true)) {
+                    if (mStatusBarController.setBarShowingLw(false)) {
                         changes |= FINISH_LAYOUT_REDO_LAYOUT;
                     }
                 }
