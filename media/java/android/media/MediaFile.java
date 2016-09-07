@@ -32,6 +32,8 @@ import java.util.Locale;
  */
 public class MediaFile {
 
+/**
+ * org
     // Audio file types
     public static final int FILE_TYPE_MP3     = 1;
     public static final int FILE_TYPE_M4A     = 2;
@@ -52,7 +54,36 @@ public class MediaFile {
     public static final int FILE_TYPE_IMY     = 13;
     private static final int FIRST_MIDI_FILE_TYPE = FILE_TYPE_MID;
     private static final int LAST_MIDI_FILE_TYPE = FILE_TYPE_IMY;
-   
+*/   
+
+/****************************************************************/
+/**
+ * Add Audio APE (2016.09.07)
+ */
+
+    // Audio file types
+    public static final int FILE_TYPE_MP3     = 1;
+    public static final int FILE_TYPE_M4A     = 2;
+    public static final int FILE_TYPE_WAV     = 3;
+    public static final int FILE_TYPE_AMR     = 4;
+    public static final int FILE_TYPE_AWB     = 5;
+    public static final int FILE_TYPE_WMA     = 6;
+    public static final int FILE_TYPE_OGG     = 7;
+    public static final int FILE_TYPE_AAC     = 8;
+    public static final int FILE_TYPE_MKA     = 9;
+    public static final int FILE_TYPE_APE     = 10;    
+    public static final int FILE_TYPE_FLAC    = 11;
+    private static final int FIRST_AUDIO_FILE_TYPE = FILE_TYPE_MP3;
+    private static final int LAST_AUDIO_FILE_TYPE = FILE_TYPE_FLAC;
+
+    // MIDI file types
+    public static final int FILE_TYPE_MID     = 12;
+    public static final int FILE_TYPE_SMF     = 13;
+    public static final int FILE_TYPE_IMY     = 14;
+    private static final int FIRST_MIDI_FILE_TYPE = FILE_TYPE_MID;
+    private static final int LAST_MIDI_FILE_TYPE = FILE_TYPE_IMY;
+/****************************************************************/    
+
     // Video file types
     public static final int FILE_TYPE_FLV     = 19;
     public static final int FILE_TYPE_RV      = 20;
@@ -176,8 +207,11 @@ public class MediaFile {
         addFileType("WAV", FILE_TYPE_WAV, "audio/x-wav", MtpConstants.FORMAT_WAV);
         addFileType("AMR", FILE_TYPE_AMR, "audio/amr");
         addFileType("AWB", FILE_TYPE_AWB, "audio/amr-wb");
-        if (isWMAEnabled()) {
+        //if (isWMAEnabled())
+        {
             addFileType("WMA", FILE_TYPE_WMA, "audio/x-ms-wma", MtpConstants.FORMAT_WMA);
+
+            addFileType("APE", FILE_TYPE_APE, "audio/ape", MtpConstants.FORMAT_WMA);            
         }
         addFileType("OGG", FILE_TYPE_OGG, "audio/ogg", MtpConstants.FORMAT_OGG);
         addFileType("OGG", FILE_TYPE_OGG, "application/ogg", MtpConstants.FORMAT_OGG);
