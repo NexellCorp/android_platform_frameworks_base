@@ -1491,7 +1491,7 @@ public final class PowerManagerService extends SystemService
                         nextTimeout = -1;
                     }
                 }
-                if (mUserActivitySummary != 0 && nextTimeout >= 0) {
+	            if (mUserActivitySummary != 0 && nextTimeout >= 0) {
                     Message msg = mHandler.obtainMessage(MSG_USER_ACTIVITY_TIMEOUT);
                     msg.setAsynchronous(true);
                     mHandler.sendMessageAtTime(msg, nextTimeout);
