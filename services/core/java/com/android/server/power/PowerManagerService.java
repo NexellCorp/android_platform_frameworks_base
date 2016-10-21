@@ -1090,7 +1090,11 @@ public final class PowerManagerService extends SystemService
 
             mLastSleepTime = eventTime;
             mSandmanSummoned = true;
-            setWakefulnessLocked(WAKEFULNESS_DOZING, reason);
+
+            if (reason == PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON)
+                setWakefulnessLocked(WAKEFULNESS_AWAKE, 0);
+            else
+                setWakefulnessLocked(WAKEFULNESS_DOZING, reason);
 
             // Report the number of wake locks that will be cleared by going to sleep.
             int numWakeLocksCleared = 0;
@@ -1109,7 +1113,7 @@ public final class PowerManagerService extends SystemService
 
             // Skip dozing if requested.
             if ((flags & PowerManager.GO_TO_SLEEP_FLAG_NO_DOZE) != 0) {
-                reallyGoToSleepNoUpdateLocked(eventTime, uid);
+//             reallyGoToSleepNoUpdateLocked(eventTime, uid);
             }
         } finally {
             Trace.traceEnd(Trace.TRACE_TAG_POWER);
@@ -1740,8 +1744,8 @@ public final class PowerManagerService extends SystemService
                 }
 
                 // Doze has ended or will be stopped.  Update the power state.
-                reallyGoToSleepNoUpdateLocked(SystemClock.uptimeMillis(), Process.SYSTEM_UID);
-                updatePowerStateLocked();
+//              reallyGoToSleepNoUpdateLocked(SystemClock.uptimeMillis(), Process.SYSTEM_UID);
+//              updatePowerStateLocked();
             }
         }
 
