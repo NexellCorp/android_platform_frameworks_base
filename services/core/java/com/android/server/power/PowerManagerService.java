@@ -1744,8 +1744,8 @@ public final class PowerManagerService extends SystemService
                 }
 
                 // Doze has ended or will be stopped.  Update the power state.
-//              reallyGoToSleepNoUpdateLocked(SystemClock.uptimeMillis(), Process.SYSTEM_UID);
-//              updatePowerStateLocked();
+                reallyGoToSleepNoUpdateLocked(SystemClock.uptimeMillis(), Process.SYSTEM_UID);
+                updatePowerStateLocked();
             }
         }
 
