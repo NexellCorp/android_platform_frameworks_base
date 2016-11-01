@@ -163,6 +163,7 @@ public final class PowerManagerService extends SystemService
     private SettingsObserver mSettingsObserver;
     private DreamManagerInternal mDreamManager;
     private Light mAttentionLight;
+    private Light mbackLight;
 
     private final Object mLock = new Object();
 
@@ -510,6 +511,8 @@ public final class PowerManagerService extends SystemService
 
             mLightsManager = getLocalService(LightsManager.class);
             mAttentionLight = mLightsManager.getLight(LightsManager.LIGHT_ID_ATTENTION);
+
+            mbackLight = mLightsManager.getLight(LightsManager.LIGHT_ID_BACKLIGHT);
 
             // Initialize display power management.
             mDisplayManagerInternal.initPowerManagement(
@@ -1077,7 +1080,8 @@ public final class PowerManagerService extends SystemService
                     Slog.i(TAG, "Going to sleep due to lid switch (uid " + uid +")...");
                     break;
                 case PowerManager.GO_TO_SLEEP_REASON_POWER_BUTTON:
-                    Slog.i(TAG, "Going to sleep due to power button (uid " + uid +")...");
+                    Slog.e(TAG, "Going to sleep due to power button (uid " + uid +")...");
+		    mbackLight.setBrightness(0);
                     break;
                 case PowerManager.GO_TO_SLEEP_REASON_HDMI:
                     Slog.i(TAG, "Going to sleep due to HDMI standby (uid " + uid +")...");
