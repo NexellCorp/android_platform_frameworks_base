@@ -274,110 +274,110 @@ public class ZygoteInit {
             }
         };
 
-        Thread preloadClassThr1 = new Thread("preloadClass1") {
-             @Override
-             public void run() {
-                 InputStream is;
-                 try {
-                     is = new FileInputStream("/system/etc/preloaded-classes1");
-                 } catch (FileNotFoundException e) {
-                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "1.");
-                     return;
-                 }
-                 preloadClassesCommon(is);
-             }
-        };
-        Thread preloadClassThr2 = new Thread("preloadClass2") {
-             @Override
-             public void run() {
-                 InputStream is;
-                 try {
-                     is = new FileInputStream("/system/etc/preloaded-classes2");
-                 } catch (FileNotFoundException e) {
-                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "2.");
-                     return;
-                 }
-                 preloadClassesCommon(is);
-             }
-        };
-        Thread preloadClassThr3 = new Thread("preloadClass3") {
-             @Override
-             public void run() {
-                 InputStream is;
-                 try {
-                     is = new FileInputStream("/system/etc/preloaded-classes3");
-                 } catch (FileNotFoundException e) {
-                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "3.");
-                     return;
-                 }
-                 preloadClassesCommon(is);
-             }
-        };
-        Thread preloadClassThr4 = new Thread("preloadClass4") {
-             @Override
-             public void run() {
-                 InputStream is;
-                 try {
-                     is = new FileInputStream("/system/etc/preloaded-classes4");
-                 } catch (FileNotFoundException e) {
-                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "4.");
-                     return;
-                 }
-                 preloadClassesCommon(is);
-             }
-        };
-        Thread preloadClassThr5 = new Thread("preloadClass5") {
-             @Override
-             public void run() {
-                 InputStream is;
-                 try {
-                     is = new FileInputStream("/system/etc/preloaded-classes5");
-                 } catch (FileNotFoundException e) {
-                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "5.");
-                     return;
-                 }
-                 preloadClassesCommon(is);
-             }
-        };
-        Thread preloadClassThr6 = new Thread("preloadClass6") {
-             @Override
-             public void run() {
-                 InputStream is;
-                 try {
-                     is = new FileInputStream("/system/etc/preloaded-classes6");
-                 } catch (FileNotFoundException e) {
-                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "6.");
-                     return;
-                 }
-                 preloadClassesCommon(is);
-             }
-        };
-        Thread preloadClassThr7 = new Thread("preloadClass7") {
-             @Override
-             public void run() {
-                 InputStream is;
-                 try {
-                     is = new FileInputStream("/system/etc/preloaded-classes7");
-                 } catch (FileNotFoundException e) {
-                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "7.");
-                     return;
-                 }
-                 preloadClassesCommon(is);
-             }
-        };
-        Thread preloadClassThr8= new Thread("preloadClass8") {
-             @Override
-             public void run() {
-                 InputStream is;
-                 try {
-                     is = new FileInputStream("/system/etc/preloaded-classes8");
-                 } catch (FileNotFoundException e) {
-                     Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "8.");
-                     return;
-                 }
-                 preloadClassesCommon(is);
-             }
-        };
+        // Thread preloadClassThr1 = new Thread("preloadClass1") {
+        //      @Override
+        //      public void run() {
+        //          InputStream is;
+        //          try {
+        //              is = new FileInputStream("/system/etc/preloaded-classes1");
+        //          } catch (FileNotFoundException e) {
+        //              Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "1.");
+        //              return;
+        //          }
+        //          preloadClassesCommon(is);
+        //      }
+        // };
+        // Thread preloadClassThr2 = new Thread("preloadClass2") {
+        //      @Override
+        //      public void run() {
+        //          InputStream is;
+        //          try {
+        //              is = new FileInputStream("/system/etc/preloaded-classes2");
+        //          } catch (FileNotFoundException e) {
+        //              Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "2.");
+        //              return;
+        //          }
+        //          preloadClassesCommon(is);
+        //      }
+        // };
+        // Thread preloadClassThr3 = new Thread("preloadClass3") {
+        //      @Override
+        //      public void run() {
+        //          InputStream is;
+        //          try {
+        //              is = new FileInputStream("/system/etc/preloaded-classes3");
+        //          } catch (FileNotFoundException e) {
+        //              Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "3.");
+        //              return;
+        //          }
+        //          preloadClassesCommon(is);
+        //      }
+        // };
+        // Thread preloadClassThr4 = new Thread("preloadClass4") {
+        //      @Override
+        //      public void run() {
+        //          InputStream is;
+        //          try {
+        //              is = new FileInputStream("/system/etc/preloaded-classes4");
+        //          } catch (FileNotFoundException e) {
+        //              Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "4.");
+        //              return;
+        //          }
+        //          preloadClassesCommon(is);
+        //      }
+        // };
+        // Thread preloadClassThr5 = new Thread("preloadClass5") {
+        //      @Override
+        //      public void run() {
+        //          InputStream is;
+        //          try {
+        //              is = new FileInputStream("/system/etc/preloaded-classes5");
+        //          } catch (FileNotFoundException e) {
+        //              Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "5.");
+        //              return;
+        //          }
+        //          preloadClassesCommon(is);
+        //      }
+        // };
+        // Thread preloadClassThr6 = new Thread("preloadClass6") {
+        //      @Override
+        //      public void run() {
+        //          InputStream is;
+        //          try {
+        //              is = new FileInputStream("/system/etc/preloaded-classes6");
+        //          } catch (FileNotFoundException e) {
+        //              Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "6.");
+        //              return;
+        //          }
+        //          preloadClassesCommon(is);
+        //      }
+        // };
+        // Thread preloadClassThr7 = new Thread("preloadClass7") {
+        //      @Override
+        //      public void run() {
+        //          InputStream is;
+        //          try {
+        //              is = new FileInputStream("/system/etc/preloaded-classes7");
+        //          } catch (FileNotFoundException e) {
+        //              Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "7.");
+        //              return;
+        //          }
+        //          preloadClassesCommon(is);
+        //      }
+        // };
+        // Thread preloadClassThr8= new Thread("preloadClass8") {
+        //      @Override
+        //      public void run() {
+        //          InputStream is;
+        //          try {
+        //              is = new FileInputStream("/system/etc/preloaded-classes8");
+        //          } catch (FileNotFoundException e) {
+        //              Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + "8.");
+        //              return;
+        //          }
+        //          preloadClassesCommon(is);
+        //      }
+        // };
 
         Thread preloadResourceThr = new Thread("preloadResource") {
             @Override
