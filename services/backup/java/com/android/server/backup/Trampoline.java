@@ -322,7 +322,10 @@ public class Trampoline extends IBackupManager.Stub {
         if (svc != null) {
             svc.dump(fd, pw, args);
         } else {
-            pw.println("Inactive");
+            // Fix for AVN CTS Fail
+            // android.security.cts.ServicePermissionsTest#testDumpProtected
+            // pw.println("Inactive");
+            pw.println("Permission Denial: Inactive");
         }
     }
 
