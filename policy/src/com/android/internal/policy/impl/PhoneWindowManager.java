@@ -1531,7 +1531,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                             WindowManagerPolicy.USER_ROTATION_FREE :
                                     WindowManagerPolicy.USER_ROTATION_LOCKED;
             if (mUserRotationMode != userRotationMode) {
-                mUserRotationMode = userRotationMode;
+                // mUserRotationMode = userRotationMode;
+                mUserRotationMode = WindowManagerPolicy.USER_ROTATION_FREE;
                 updateRotation = true;
                 updateOrientationListenerLp();
             }
@@ -5318,16 +5319,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         // PATCH_FOR_SLSIAP
         // TODO : this patch is temporary remedy, You must handle this issue at kernel driver and sensor HAL
-        if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT &&
-            lastRotation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            Slog.d(TAG, "=====> orientation fix to 1");
-            return 1;
-        }
+        // if (orientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT &&
+        //     lastRotation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
+        //     Slog.d(TAG, "=====> orientation fix to 1");
+        //     return 1;
+        // }
 
-        if (orientation == 1 && lastRotation == 3) {
-            Slog.d(TAG, "=====> orientation fix to 3");
-            return 3;
-        }
+        // if (orientation == 1 && lastRotation == 3) {
+        //     Slog.d(TAG, "=====> orientation fix to 3");
+        //     return 3;
+        // }
         // END PATCH_FOR_SLSIAP
 
         synchronized (mLock) {
