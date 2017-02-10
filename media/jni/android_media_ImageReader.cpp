@@ -345,7 +345,7 @@ static void Image_getLockedBufferInfo(JNIEnv* env, CpuConsumer::LockedBuffer* bu
 
     ALOGV("%s: buffer: %p", __FUNCTION__, buffer);
 
-    uint32_t dataSize, ySize, cSize, cStride;
+    uint32_t dataSize, ySize, cSize, cStride, hStride, chStride;
     uint8_t *cb, *cr;
     uint8_t *pData = NULL;
     int bytesPerPixel = 0;
@@ -389,6 +389,7 @@ static void Image_getLockedBufferInfo(JNIEnv* env, CpuConsumer::LockedBuffer* bu
             dataSize = (idx == 0) ? ySize : cSize;
             break;
         case HAL_PIXEL_FORMAT_YV12:
+#if 0   //  Original Source
             // Y and C stride need to be 16 pixel aligned.
             LOG_ALWAYS_FATAL_IF(buffer->stride % 16,
                                 "Stride is not 16 pixel aligned %d", buffer->stride);
@@ -407,6 +408,33 @@ static void Image_getLockedBufferInfo(JNIEnv* env, CpuConsumer::LockedBuffer* bu
                 cr;
             dataSize = (idx == 0) ? ySize : cSize;
             break;
+#else   //  Nexell Gralloc
+            // Y and C stride need to be 16 pixel aligned.
+            LOG_ALWAYS_FATAL_IF(buffer->stride % 16,
+                                "Stride is not 16 pixel aligned %d", buffer->stride);
+            cStride = ALIGN(buffer->stride / 2, 16);
+            hStride = ALIGN(buffer->height, 16);
+            ySize = buffer->stride * buffer->height;
+            cSize = cStride * buffer->height/2;
+            if( idx == 0 )
+            {
+                pData = buffer->data;
+                dataSize = ySize;
+            }
+            else if( idx == 1 ) /*  Cb  */
+            {
+                pData = buffer->data + buffer->stride * hStride;
+                dataSize = cSize;
+            }
+            else    //  Cr
+            {
+                pData = buffer->data +
+                        buffer->stride * hStride +
+                        (buffer->stride/2)*(ALIGN(hStride>>1, 16));
+                dataSize = cSize;
+            }
+            break;
+#endif
         case HAL_PIXEL_FORMAT_Y8:
             // Single plane, 8bpp.
             ALOG_ASSERT(idx == 0, "Wrong index: %d", idx);
