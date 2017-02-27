@@ -5312,8 +5312,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         );
         }
 
+        mForceDefaultOrientation = true;
         if (mForceDefaultOrientation) {
-            return Surface.ROTATION_0;
+			//return Surface.ROTATION_0;
+            return Surface.ROTATION_90;
         }
 
         // PATCH_FOR_SLSIAP
