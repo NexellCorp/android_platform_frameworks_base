@@ -421,16 +421,16 @@ static void Image_getLockedBufferInfo(JNIEnv* env, CpuConsumer::LockedBuffer* bu
                 pData = buffer->data;
                 dataSize = ySize;
             }
-            else if( idx == 1 ) /*  Cb  */
+            else if( idx == 1 ) //  Cb
             {
-                pData = buffer->data + buffer->stride * hStride;
+                pData = buffer->data + 
+                        buffer->stride * hStride + 
+                        (buffer->stride/2)*(ALIGN(hStride>>1, 16));
                 dataSize = cSize;
             }
             else    //  Cr
             {
-                pData = buffer->data +
-                        buffer->stride * hStride +
-                        (buffer->stride/2)*(ALIGN(hStride>>1, 16));
+                pData = buffer->data + buffer->stride * hStride;
                 dataSize = cSize;
             }
             break;
