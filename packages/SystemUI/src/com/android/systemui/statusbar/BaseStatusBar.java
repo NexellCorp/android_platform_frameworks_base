@@ -62,8 +62,6 @@ import android.service.dreams.IDreamManager;
 import android.service.notification.NotificationListenerService;
 import android.service.notification.NotificationListenerService.RankingMap;
 import android.service.notification.StatusBarNotification;
-import android.service.vr.IVrManager;
-import android.service.vr.IVrStateCallbacks;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
@@ -274,8 +272,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     protected AssistManager mAssistManager;
 
-    protected boolean mVrMode;
-
     private Set<String> mNonBlockablePkgs;
 
     @Override  // NotificationData.Environment
@@ -283,15 +279,8 @@ public abstract class BaseStatusBar extends SystemUI implements
         return mDeviceProvisioned;
     }
 
-    private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
-        @Override
-        public void onVrStateChanged(boolean enabled) {
-            mVrMode = enabled;
-        }
-    };
-
     public boolean isDeviceInVrMode() {
-        return mVrMode;
+        return false;
     }
 
     protected final ContentObserver mSettingsObserver = new ContentObserver(mHandler) {
@@ -826,13 +815,6 @@ public abstract class BaseStatusBar extends SystemUI implements
         mContext.registerReceiverAsUser(mAllUsersReceiver, UserHandle.ALL, allUsersFilter,
                 null, null);
         updateCurrentProfilesCache();
-
-        IVrManager vrManager = IVrManager.Stub.asInterface(ServiceManager.getService("vrmanager"));
-        try {
-            vrManager.registerListener(mVrStateCallbacks);
-        } catch (RemoteException e) {
-            Slog.e(TAG, "Failed to register VR mode state listener: " + e);
-        }
 
         mNonBlockablePkgs = new ArraySet<String>();
         Collections.addAll(mNonBlockablePkgs, mContext.getResources().getStringArray(
