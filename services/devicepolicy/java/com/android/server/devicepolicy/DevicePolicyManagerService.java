@@ -9251,7 +9251,19 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
         ensureDeviceOwnerManagingSingleUser(admin);
 
         List<SecurityEvent> logs = mSecurityLogMonitor.retrieveLogs();
-        return logs != null ? new ParceledListSlice<SecurityEvent>(logs) : null;
+        if (logs != null) {
+            List<SecurityEvent> myLogs = new ArrayList<SecurityEvent>();;
+            for (int i = 0; i < logs.size(); i++) {
+                SecurityEvent event = logs.get(i);
+                long currentTimestampNanos = event.getTimeNanos();
+                if ((event.getTimeNanos() / (1000*1000*1000)) > 1000000000)
+                    myLogs.add(event);
+            }
+
+            return new ParceledListSlice<SecurityEvent>(myLogs);
+        } else {
+            return null;
+        }
     }
 
     private void enforceCanManageDeviceAdmin() {
