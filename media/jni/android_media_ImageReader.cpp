@@ -552,6 +552,10 @@ static jint ImageReader_imageSetup(JNIEnv* env, jobject thiz, jobject image) {
                 // Using HAL_PIXEL_FORMAT_RGBA_8888 Gralloc buffers containing JPEGs to get around
                 // SW write limitations for (b/17379185).
                 ALOGV("%s: Receiving JPEG in HAL_PIXEL_FORMAT_RGBA_8888 buffer.", __FUNCTION__);
+            } else if (ctx->getBufferFormat() == 0x1 &&
+                       bufferFormat == 0x2) {
+                ALOGV("Producer output buffer format: 0x%x, ImageReader configured format: 0x%x",
+                      bufferFormat, ctx->getBufferFormat());
             } else {
                 // Return the buffer to the queue. No need to provide fence, as this buffer wasn't
                 // used anywhere yet.
