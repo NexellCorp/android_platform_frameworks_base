@@ -1184,6 +1184,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     @GuardedBy("this") boolean mBootAnimationComplete = false;
     @GuardedBy("this") boolean mLaunchWarningShown = false;
     @GuardedBy("this") boolean mCheckedForSetup = false;
+    @GuardedBy("this") boolean mQuickBoot = false;
 
     Context mContext;
 
@@ -2625,6 +2626,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         mContext = systemContext;
         mFactoryTest = FactoryTest.getMode();
         mSystemThread = ActivityThread.currentActivityThread();
+        mQuickBoot = SystemProperties.getBoolean("config.quickboot", false);
 
         Slog.i(TAG, "Memory class: " + ActivityManager.staticGetMemoryClass());
 
@@ -6923,6 +6925,9 @@ public final class ActivityManagerService extends ActivityManagerNative
         if (enableScreen) {
             enableScreenAfterBoot();
         }
+
+        if (mQuickBoot)
+            bootAnimationComplete();
     }
 
     @Override
@@ -13415,6 +13420,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                     throw e.rethrowAsRuntimeException();
                 }
             }
+
+            if (mQuickBoot)
+                ensureBootCompleted();
             startHomeActivityLocked(currentUserId, "systemReady");
 
             try {
