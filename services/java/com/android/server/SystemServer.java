@@ -210,6 +210,8 @@ public final class SystemServer {
     private boolean mFirstBoot;
     private final boolean mRuntimeRestart;
 
+    private boolean mQuickBoot = false;
+
     /**
      * Start the sensor service.
      */
@@ -466,6 +468,8 @@ public final class SystemServer {
         mFirstBoot = mPackageManagerService.isFirstBoot();
         mPackageManager = mSystemContext.getPackageManager();
         Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+
+        mQuickBoot = SystemProperties.getBoolean("config.quickboot", false);
 
         // Manages A/B OTA dexopting. This is a bootstrap service as we need it to rename
         // A/B artifacts after boot, before anything else might touch/need them.
@@ -1343,13 +1347,15 @@ public final class SystemServer {
                     Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
                 }
 
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartSystemUI");
-                try {
-                    startSystemUi(context);
-                } catch (Throwable e) {
-                    reportWtf("starting System UI", e);
+                if (!mQuickBoot) {
+                    Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartSystemUI");
+                    try {
+                        startSystemUi(context);
+                    } catch (Throwable e) {
+                        reportWtf("starting System UI", e);
+                    }
+                    Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
                 Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkScoreReady");
                 try {
                     if (networkScoreF != null) networkScoreF.systemReady();
