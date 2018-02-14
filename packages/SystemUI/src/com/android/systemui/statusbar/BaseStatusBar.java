@@ -274,6 +274,8 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     private Set<String> mNonBlockablePkgs;
 
+    private boolean mQuickBoot = false;
+
     @Override  // NotificationData.Environment
     public boolean isDeviceProvisioned() {
         return mDeviceProvisioned;
@@ -755,6 +757,8 @@ public abstract class BaseStatusBar extends SystemUI implements
         } catch (RemoteException ex) {
             // If the system process isn't there we're doomed anyway.
         }
+
+        mQuickBoot = SystemProperties.getBoolean("config.quickboot", false);
 
         createAndAddWindows();
 
@@ -2637,6 +2641,9 @@ public abstract class BaseStatusBar extends SystemUI implements
     }
 
     public boolean isKeyguardSecure() {
+        if (mQuickBoot)
+            return false;
+
         if (mStatusBarKeyguardViewManager == null) {
             // startKeyguard() hasn't been called yet, so we don't know.
             // Make sure anything that needs to know isKeyguardSecure() checks and re-checks this
