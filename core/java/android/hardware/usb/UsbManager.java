@@ -71,6 +71,8 @@ public class UsbManager {
      * accessory function is enabled
      * <li> {@link #USB_FUNCTION_AUDIO_SOURCE} boolean extra indicating whether the
      * audio source function is enabled
+     * <li> {@link #USB_FUNCTION_AUDIO_SINK} boolean extra indicating whether the
+     * audio sink function is enabled
      * <li> {@link #USB_FUNCTION_MIDI} boolean extra indicating whether the
      * MIDI function is enabled
      * </ul>
@@ -228,6 +230,14 @@ public class UsbManager {
      * {@hide}
      */
     public static final String USB_FUNCTION_AUDIO_SOURCE = "audio_source";
+
+    /**
+     * Name of the audio sink USB function.
+     * Used in extras for the {@link #ACTION_USB_STATE} broadcast
+     *
+     * {@hide}
+     */
+    public static final String USB_FUNCTION_AUDIO_SINK = "audio_sink";
 
     /**
      * Name of the MIDI USB function.
@@ -527,8 +537,8 @@ public class UsbManager {
      * or {@link #USB_FUNCTION_ACCESSORY} based on other settings and states.
      * </p><p>
      * The allowed values are: {@link #USB_FUNCTION_NONE}, {@link #USB_FUNCTION_AUDIO_SOURCE},
-     * {@link #USB_FUNCTION_MIDI}, {@link #USB_FUNCTION_MTP}, {@link #USB_FUNCTION_PTP},
-     * or {@link #USB_FUNCTION_RNDIS}.
+     * {@link #USB_FUNCTION_AUDIO_SINK},{@link #USB_FUNCTION_MIDI}, {@link #USB_FUNCTION_MTP},
+     * {@link #USB_FUNCTION_PTP}, or {@link #USB_FUNCTION_RNDIS}.
      * </p><p>
      * Also sets whether USB data (for example, MTP exposed pictures) should be made available
      * on the USB connection when in device mode. Unlocking usb data should only be done with

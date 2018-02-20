@@ -101,6 +101,8 @@ public class UsbDeviceManager {
             "/sys/class/android_usb/android0/f_rndis/ethaddr";
     private static final String AUDIO_SOURCE_PCM_PATH =
             "/sys/class/android_usb/android0/f_audio_source/pcm";
+    private static final String AUDIO_SINK_PCM_PATH =
+            "/sys/class/android_usb/android0/f_audio_sink/pcm";
     private static final String MIDI_ALSA_PATH =
             "/sys/class/android_usb/android0/f_midi/alsa";
 
@@ -144,6 +146,7 @@ public class UsbDeviceManager {
     private boolean mUseUsbNotification;
     private boolean mAdbEnabled;
     private boolean mAudioSourceEnabled;
+    private boolean mAudioSinkEnabled;
     private boolean mMidiEnabled;
     private int mMidiCard;
     private int mMidiDevice;
@@ -684,6 +687,7 @@ public class UsbDeviceManager {
 
         private void updateUsbFunctions() {
             updateAudioSourceFunction();
+            updateAudioSinkFunction();
             updateMidiFunction();
         }
 
@@ -710,6 +714,32 @@ public class UsbDeviceManager {
                 }
                 mUsbAlsaManager.setAccessoryAudioState(enabled, card, device);
                 mAudioSourceEnabled = enabled;
+            }
+        }
+
+        private void updateAudioSinkFunction() {
+            boolean enabled = UsbManager.containsFunction(mCurrentFunctions,
+                    UsbManager.USB_FUNCTION_AUDIO_SINK);
+            if (enabled != mAudioSinkEnabled) {
+                int card = -1;
+                int device = -1;
+
+                if (enabled) {
+                    Scanner scanner = null;
+                    try {
+                        scanner = new Scanner(new File(AUDIO_SINK_PCM_PATH));
+                        card = scanner.nextInt();
+                        device = scanner.nextInt();
+                    } catch (FileNotFoundException e) {
+                        Slog.e(TAG, "could not open audio sink PCM file", e);
+                    } finally {
+                        if (scanner != null) {
+                            scanner.close();
+                        }
+                    }
+                }
+                mUsbAlsaManager.setAccessoryAudioState(enabled, card, device);
+                mAudioSinkEnabled = enabled;
             }
         }
 
