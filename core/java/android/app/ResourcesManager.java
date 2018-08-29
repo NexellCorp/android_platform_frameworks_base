@@ -29,7 +29,7 @@ import android.content.res.ResourcesImpl;
 import android.content.res.ResourcesKey;
 import android.hardware.display.DisplayManagerGlobal;
 import android.os.IBinder;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -497,9 +497,9 @@ public class ResourcesManager {
             @Nullable Configuration overrideConfig,
             @NonNull CompatibilityInfo compatInfo,
             @Nullable ClassLoader classLoader) {
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_RESOURCES,
-                    "ResourcesManager#createBaseActivityResources");
+        // try {
+            // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES,
+            //         "ResourcesManager#createBaseActivityResources");
             final ResourcesKey key = new ResourcesKey(
                     resDir,
                     splitResDirs,
@@ -525,9 +525,9 @@ public class ResourcesManager {
 
             // Now request an actual Resources object.
             return getOrCreateResources(activityToken, key, classLoader);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+        // }
     }
 
     /**
@@ -662,8 +662,8 @@ public class ResourcesManager {
             @Nullable Configuration overrideConfig,
             @NonNull CompatibilityInfo compatInfo,
             @Nullable ClassLoader classLoader) {
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "ResourcesManager#getResources");
+        // try {
+        //     Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "ResourcesManager#getResources");
             final ResourcesKey key = new ResourcesKey(
                     resDir,
                     splitResDirs,
@@ -674,9 +674,9 @@ public class ResourcesManager {
                     compatInfo);
             classLoader = classLoader != null ? classLoader : ClassLoader.getSystemClassLoader();
             return getOrCreateResources(activityToken, key, classLoader);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+        // }
     }
 
     /**
@@ -690,9 +690,9 @@ public class ResourcesManager {
      */
     public void updateResourcesForActivity(@NonNull IBinder activityToken,
             @Nullable Configuration overrideConfig) {
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_RESOURCES,
-                    "ResourcesManager#updateResourcesForActivity");
+        // try {
+        //     Trace.traceBegin(Trace.TRACE_TAG_RESOURCES,
+        //             "ResourcesManager#updateResourcesForActivity");
             synchronized (this) {
                 final ActivityResources activityResources =
                         getOrCreateActivityResourcesStructLocked(activityToken);
@@ -788,16 +788,16 @@ public class ResourcesManager {
                     }
                 }
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+        // }
     }
 
     public final boolean applyConfigurationToResourcesLocked(@NonNull Configuration config,
                                                              @Nullable CompatibilityInfo compat) {
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_RESOURCES,
-                    "ResourcesManager#applyConfigurationToResourcesLocked");
+        // try {
+        //     Trace.traceBegin(Trace.TRACE_TAG_RESOURCES,
+        //             "ResourcesManager#applyConfigurationToResourcesLocked");
 
             if (!mResConfiguration.isOtherSeqNewer(config) && compat == null) {
                 if (DEBUG || DEBUG_CONFIGURATION) Slog.v(TAG, "Skipping new config: curSeq="
@@ -871,9 +871,9 @@ public class ResourcesManager {
             }
 
             return changes != 0;
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+        // }
     }
 
     /**

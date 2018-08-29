@@ -60,7 +60,7 @@ import android.os.Debug;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.provider.Settings;
 import android.util.ArraySet;
 import android.util.Slog;
@@ -210,7 +210,7 @@ class WindowSurfacePlacer {
             return;
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "wmLayout");
+        // Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "wmLayout");
         mInLayout = true;
 
         boolean recoveringMemory = false;
@@ -257,7 +257,7 @@ class WindowSurfacePlacer {
             Slog.wtf(TAG, "Unhandled exception while laying out windows", e);
         }
 
-        Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
+        // Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
     }
 
     void debugLayoutRepeats(final String msg, int pendingLayoutChanges) {
@@ -1076,7 +1076,7 @@ class WindowSurfacePlacer {
         if (!transitionGoodToGo(appsCount)) {
             return 0;
         }
-        Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "AppTransitionReady");
+        // Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "AppTransitionReady");
 
         if (DEBUG_APP_TRANSITIONS) Slog.v(TAG, "**** GOOD TO GO");
         int transit = mService.mAppTransition.getAppTransition();
@@ -1233,7 +1233,7 @@ class WindowSurfacePlacer {
         mService.mFocusMayChange = false;
         mService.notifyActivityDrawnForKeyguard();
 
-        Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
+        // Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
 
         return FINISH_LAYOUT_REDO_LAYOUT | FINISH_LAYOUT_REDO_CONFIG;
     }

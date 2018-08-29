@@ -27,7 +27,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Handler;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Log;
 import android.view.View;
 
@@ -75,7 +75,7 @@ abstract public class CompareActivity extends Activity {
     protected abstract boolean forceRecreateBitmaps();
 
     protected void loadBitmaps() {
-        Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, "loadBitmaps");
+        // Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, "loadBitmaps");
         if (forceRecreateBitmaps()) {
             int width = mSoftwareBitmap.getWidth();
             int height = mSoftwareBitmap.getHeight();
@@ -84,9 +84,9 @@ abstract public class CompareActivity extends Activity {
             mHardwareBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, "softwareDraw");
+        // Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, "softwareDraw");
         mHardwareView.draw(new Canvas(mSoftwareBitmap));
-        Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
+        // Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
 
         try {
             Method getHardwareLayer = View.class.getDeclaredMethod("getHardwareLayer");
@@ -102,9 +102,9 @@ abstract public class CompareActivity extends Activity {
             if (!copyInto.isAccessible())
                 copyInto.setAccessible(true);
 
-            Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, "copyInto");
+            // Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, "copyInto");
             boolean success = (Boolean) copyInto.invoke(hardwareLayer, mHardwareBitmap);
-            Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
+            // Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
             if (!success) {
                 Log.d(LOG_TAG, "failure to copy hardware layer into bitmap");
             }
@@ -117,6 +117,6 @@ abstract public class CompareActivity extends Activity {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
+        // Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
     }
 }

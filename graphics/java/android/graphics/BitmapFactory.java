@@ -18,7 +18,7 @@ package android.graphics;
 
 import android.content.res.AssetManager;
 import android.content.res.Resources;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
@@ -528,17 +528,17 @@ public class BitmapFactory {
 
         Bitmap bm;
 
-        Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeBitmap");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeBitmap");
+        // try {
             bm = nativeDecodeByteArray(data, offset, length, opts);
 
             if (bm == null && opts != null && opts.inBitmap != null) {
                 throw new IllegalArgumentException("Problem decoding into existing bitmap");
             }
             setDensityFromOptions(bm, opts);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
+        // }
 
         return bm;
     }
@@ -613,8 +613,8 @@ public class BitmapFactory {
 
         Bitmap bm = null;
 
-        Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeBitmap");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeBitmap");
+        // try {
             if (is instanceof AssetManager.AssetInputStream) {
                 final long asset = ((AssetManager.AssetInputStream) is).getNativeAsset();
                 bm = nativeDecodeAsset(asset, outPadding, opts);
@@ -627,9 +627,9 @@ public class BitmapFactory {
             }
 
             setDensityFromOptions(bm, opts);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
+        // }
 
         return bm;
     }
@@ -677,8 +677,8 @@ public class BitmapFactory {
     public static Bitmap decodeFileDescriptor(FileDescriptor fd, Rect outPadding, Options opts) {
         Bitmap bm;
 
-        Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeFileDescriptor");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "decodeFileDescriptor");
+        // try {
             if (nativeIsSeekable(fd)) {
                 bm = nativeDecodeFileDescriptor(fd, outPadding, opts);
             } else {
@@ -697,9 +697,9 @@ public class BitmapFactory {
             }
 
             setDensityFromOptions(bm, opts);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS);
+        // }
         return bm;
     }
 

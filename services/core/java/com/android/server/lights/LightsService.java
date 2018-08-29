@@ -21,7 +21,7 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Trace;
+// import android.os.Trace;
 import android.provider.Settings;
 import android.util.Slog;
 
@@ -139,13 +139,13 @@ public class LightsService extends SystemService {
                 mOnMS = onMS;
                 mOffMS = offMS;
                 mBrightnessMode = brightnessMode;
-                Trace.traceBegin(Trace.TRACE_TAG_POWER, "setLight(" + mId + ", 0x"
-                        + Integer.toHexString(color) + ")");
-                try {
+                // Trace.traceBegin(Trace.TRACE_TAG_POWER, "setLight(" + mId + ", 0x"
+                //         + Integer.toHexString(color) + ")");
+                // try {
                     setLight_native(mNativePointer, mId, color, mode, onMS, offMS, brightnessMode);
-                } finally {
-                    Trace.traceEnd(Trace.TRACE_TAG_POWER);
-                }
+                // } finally {
+                //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+                // }
             }
         }
 

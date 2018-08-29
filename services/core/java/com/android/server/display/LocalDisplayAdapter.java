@@ -28,7 +28,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.PowerManager;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.Display;
@@ -508,15 +508,15 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                                     + ", state=" + Display.stateToString(state) + ")");
                         }
 
-                        Trace.traceBegin(Trace.TRACE_TAG_POWER, "setDisplayState("
-                                + "id=" + displayId
-                                + ", state=" + Display.stateToString(state) + ")");
-                        try {
+                        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "setDisplayState("
+                        //         + "id=" + displayId
+                        //         + ", state=" + Display.stateToString(state) + ")");
+                        // try {
                             final int mode = getPowerModeForState(state);
                             SurfaceControl.setDisplayPowerMode(token, mode);
-                        } finally {
-                            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-                        }
+                        // } finally {
+                        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+                        // }
                     }
 
                     private void setDisplayBrightness(int brightness) {
@@ -525,13 +525,13 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                                     + "id=" + displayId + ", brightness=" + brightness + ")");
                         }
 
-                        Trace.traceBegin(Trace.TRACE_TAG_POWER, "setDisplayBrightness("
-                                + "id=" + displayId + ", brightness=" + brightness + ")");
-                        try {
+                        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "setDisplayBrightness("
+                        //         + "id=" + displayId + ", brightness=" + brightness + ")");
+                        // try {
                             mBacklight.setBrightness(brightness);
-                        } finally {
-                            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-                        }
+                        // } finally {
+                        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+                        // }
                     }
                 };
             }

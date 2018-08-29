@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.AttributeSet;
 import android.util.MathUtils;
 import android.view.Gravity;
@@ -1464,7 +1464,7 @@ public class GridView extends AbsListView {
      */
     private void setupChild(View child, int position, int y, boolean flowDown, int childrenLeft,
             boolean selected, boolean isAttachedToWindow, int where) {
-        Trace.traceBegin(Trace.TRACE_TAG_VIEW, "setupGridItem");
+        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "setupGridItem");
 
         boolean isSelected = selected && shouldShowSelector();
         final boolean updateChildSelected = isSelected != child.isSelected();
@@ -1569,7 +1569,7 @@ public class GridView extends AbsListView {
             child.setDrawingCacheEnabled(true);
         }
 
-        Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
     }
 
     /**

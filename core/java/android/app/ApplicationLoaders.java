@@ -16,7 +16,7 @@
 
 package android.app;
 
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.ArrayMap;
 import com.android.internal.os.PathClassLoaderFactory;
 import dalvik.system.PathClassLoader;
@@ -53,7 +53,7 @@ class ApplicationLoaders {
                     return loader;
                 }
 
-                Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, zip);
+                // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, zip);
 
                 PathClassLoader pathClassloader = PathClassLoaderFactory.createClassLoader(
                                                       zip,
@@ -63,19 +63,19 @@ class ApplicationLoaders {
                                                       targetSdkVersion,
                                                       isBundled);
 
-                Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
 
-                Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "setupVulkanLayerPath");
+                // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "setupVulkanLayerPath");
                 setupVulkanLayerPath(pathClassloader, librarySearchPath);
-                Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
 
                 mLoaders.put(zip, pathClassloader);
                 return pathClassloader;
             }
 
-            Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, zip);
+            // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, zip);
             PathClassLoader pathClassloader = new PathClassLoader(zip, parent);
-            Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+            // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
             return pathClassloader;
         }
     }

@@ -33,7 +33,7 @@ import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.AttributeSet;
 import android.util.MathUtils;
 import android.util.SparseBooleanArray;
@@ -1993,7 +1993,7 @@ public class ListView extends AbsListView {
      */
     private void setupChild(View child, int position, int y, boolean flowDown, int childrenLeft,
             boolean selected, boolean isAttachedToWindow) {
-        Trace.traceBegin(Trace.TRACE_TAG_VIEW, "setupListItem");
+        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "setupListItem");
 
         final boolean isSelected = selected && shouldShowSelector();
         final boolean updateChildSelected = isSelected != child.isSelected();
@@ -2087,7 +2087,7 @@ public class ListView extends AbsListView {
             child.setDrawingCacheEnabled(true);
         }
 
-        Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
     }
 
     @Override

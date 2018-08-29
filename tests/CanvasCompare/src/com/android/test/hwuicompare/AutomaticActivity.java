@@ -30,7 +30,7 @@ import org.json.JSONObject;
 
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -80,9 +80,9 @@ public class AutomaticActivity extends CompareActivity {
                 mHardwareImageView.setImageBitmap(mHardwareBitmap);
             }
 
-            Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, "calculateError");
+            // Trace.traceBegin(Trace.TRACE_TAG_ALWAYS, "calculateError");
             float error = mErrorCalculator.calcErrorRS(mSoftwareBitmap, mHardwareBitmap);
-            Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
+            // Trace.traceEnd(Trace.TRACE_TAG_ALWAYS);
 
             final String[] modifierNames = DisplayModifier.getLastAppliedModifications();
             handleError(modifierNames, error);

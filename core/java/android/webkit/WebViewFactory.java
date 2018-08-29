@@ -32,7 +32,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.StrictMode;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.text.TextUtils;
 import android.util.AndroidRuntimeException;
 import android.util.ArraySet;
@@ -189,11 +189,11 @@ public final class WebViewFactory {
             }
 
             StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
-            Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "WebViewFactory.getProvider()");
+            // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "WebViewFactory.getProvider()");
             try {
                 Class<WebViewFactoryProvider> providerClass = getProviderClass();
 
-                Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "providerClass.newInstance()");
+                // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "providerClass.newInstance()");
                 try {
                     sProviderInstance = providerClass.getConstructor(WebViewDelegate.class)
                             .newInstance(new WebViewDelegate());
@@ -202,11 +202,11 @@ public final class WebViewFactory {
                 } catch (Exception e) {
                     Log.e(LOGTAG, "error instantiating provider", e);
                     throw new AndroidRuntimeException(e);
-                } finally {
-                    Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+                // } finally {
+                //     Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
                 }
             } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+                // Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
                 StrictMode.setThreadPolicy(oldPolicy);
             }
         }
@@ -258,13 +258,13 @@ public final class WebViewFactory {
         Application initialApplication = AppGlobals.getInitialApplication();
         try {
             WebViewProviderResponse response = null;
-            Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW,
-                    "WebViewUpdateService.waitForAndGetProvider()");
-            try {
+            // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW,
+            //         "WebViewUpdateService.waitForAndGetProvider()");
+            // try {
                 response = getUpdateService().waitForAndGetProvider();
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+            // }
             if (response.status != LIBLOAD_SUCCESS
                     && response.status != LIBLOAD_FAILED_WAITING_FOR_RELRO) {
                 throw new MissingWebViewPackageException("Failed to load WebView provider: "
@@ -272,17 +272,17 @@ public final class WebViewFactory {
             }
             // Register to be killed before fetching package info - so that we will be
             // killed if the package info goes out-of-date.
-            Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "ActivityManager.addPackageDependency()");
-            try {
+            // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "ActivityManager.addPackageDependency()");
+            // try {
                 ActivityManagerNative.getDefault().addPackageDependency(
                         response.packageInfo.packageName);
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+            // }
             // Fetch package info and verify it against the chosen package
             PackageInfo newPackageInfo = null;
-            Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "PackageManager.getPackageInfo()");
-            try {
+            // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "PackageManager.getPackageInfo()");
+            // try {
                 newPackageInfo = initialApplication.getPackageManager().getPackageInfo(
                     response.packageInfo.packageName,
                     PackageManager.GET_SHARED_LIBRARY_FILES
@@ -294,26 +294,26 @@ public final class WebViewFactory {
                     | PackageManager.GET_SIGNATURES
                     // Get meta-data for meta data flag verification
                     | PackageManager.GET_META_DATA);
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+            // }
 
             // Validate the newly fetched package info, throws MissingWebViewPackageException on
             // failure
             verifyPackageInfo(response.packageInfo, newPackageInfo);
 
-            Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW,
-                    "initialApplication.createApplicationContext");
-            try {
+            // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW,
+            //         "initialApplication.createApplicationContext");
+            // try {
                 // Construct an app context to load the Java code into the current app.
                 Context webViewContext = initialApplication.createApplicationContext(
                         newPackageInfo.applicationInfo,
                         Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
                 sPackageInfo = newPackageInfo;
                 return webViewContext;
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+            // }
         } catch (RemoteException | PackageManager.NameNotFoundException e) {
             throw new MissingWebViewPackageException("Failed to load WebView provider: " + e);
         }
@@ -324,38 +324,38 @@ public final class WebViewFactory {
         Application initialApplication = AppGlobals.getInitialApplication();
 
         try {
-            Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW,
-                    "WebViewFactory.getWebViewContextAndSetProvider()");
-            try {
+            // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW,
+            //         "WebViewFactory.getWebViewContextAndSetProvider()");
+            // try {
                 webViewContext = getWebViewContextAndSetProvider();
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+            // }
             Log.i(LOGTAG, "Loading " + sPackageInfo.packageName + " version " +
                     sPackageInfo.versionName + " (code " + sPackageInfo.versionCode + ")");
 
-            Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "WebViewFactory.getChromiumProviderClass()");
+            // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "WebViewFactory.getChromiumProviderClass()");
             try {
                 initialApplication.getAssets().addAssetPathAsSharedLibrary(
                         webViewContext.getApplicationInfo().sourceDir);
                 ClassLoader clazzLoader = webViewContext.getClassLoader();
 
-                Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "WebViewFactory.loadNativeLibrary()");
+                // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "WebViewFactory.loadNativeLibrary()");
                 loadNativeLibrary(clazzLoader);
-                Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+                // Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
 
-                Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "Class.forName()");
-                try {
+                // Trace.traceBegin(Trace.TRACE_TAG_WEBVIEW, "Class.forName()");
+                // try {
                     return (Class<WebViewFactoryProvider>) Class.forName(CHROMIUM_WEBVIEW_FACTORY,
                             true, clazzLoader);
-                } finally {
-                    Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
-                }
+                // } finally {
+                //     Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+                // }
             } catch (ClassNotFoundException e) {
                 Log.e(LOGTAG, "error loading provider", e);
                 throw new AndroidRuntimeException(e);
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_WEBVIEW);
             }
         } catch (MissingWebViewPackageException e) {
             // If the package doesn't exist, then try loading the null WebView instead.

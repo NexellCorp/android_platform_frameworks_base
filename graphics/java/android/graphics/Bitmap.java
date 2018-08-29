@@ -21,7 +21,7 @@ import android.annotation.ColorInt;
 import android.annotation.NonNull;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
@@ -1071,10 +1071,10 @@ public final class Bitmap implements Parcelable {
         if (quality < 0 || quality > 100) {
             throw new IllegalArgumentException("quality must be 0..100");
         }
-        Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "Bitmap.compress");
+        // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "Bitmap.compress");
         boolean result = nativeCompress(mNativePtr, format.nativeInt,
                 quality, stream, new byte[WORKING_COMPRESS_STORAGE]);
-        Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+        // Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
         return result;
     }
 

@@ -46,7 +46,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.os.WorkSource;
 import android.provider.Settings;
@@ -1162,8 +1162,8 @@ public final class PowerManagerService extends SystemService
             return false;
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "userActivity");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "userActivity");
+        // try {
             if (eventTime > mLastInteractivePowerHintTime) {
                 powerHintInternal(POWER_HINT_INTERACTION, 0);
                 mLastInteractivePowerHintTime = eventTime;
@@ -1196,9 +1196,9 @@ public final class PowerManagerService extends SystemService
                     return true;
                 }
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        // }
         return false;
     }
 
@@ -1222,8 +1222,8 @@ public final class PowerManagerService extends SystemService
             return false;
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "wakeUp");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "wakeUp");
+        // try {
             switch (mWakefulness) {
                 case WAKEFULNESS_ASLEEP:
                     Slog.i(TAG, "Waking up from sleep (uid " + reasonUid +")...");
@@ -1242,9 +1242,9 @@ public final class PowerManagerService extends SystemService
             mNotifier.onWakeUp(reason, reasonUid, opPackageName, opUid);
             userActivityNoUpdateLocked(
                     eventTime, PowerManager.USER_ACTIVITY_EVENT_OTHER, 0, reasonUid);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        // }
         return true;
     }
 
@@ -1272,8 +1272,8 @@ public final class PowerManagerService extends SystemService
             return false;
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "goToSleep");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "goToSleep");
+        // try {
             switch (reason) {
                 case PowerManager.GO_TO_SLEEP_REASON_DEVICE_ADMIN:
                     Slog.i(TAG, "Going to sleep due to device administration policy "
@@ -1323,9 +1323,9 @@ public final class PowerManagerService extends SystemService
             if ((flags & PowerManager.GO_TO_SLEEP_FLAG_NO_DOZE) != 0) {
                 reallyGoToSleepNoUpdateLocked(eventTime, uid);
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        // }
         return true;
     }
 
@@ -1347,15 +1347,15 @@ public final class PowerManagerService extends SystemService
             return false;
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "nap");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "nap");
+        // try {
             Slog.i(TAG, "Nap time (uid " + uid +")...");
 
             mSandmanSummoned = true;
             setWakefulnessLocked(WAKEFULNESS_DREAMING, 0);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        // }
         return true;
     }
 
@@ -1371,14 +1371,14 @@ public final class PowerManagerService extends SystemService
             return false;
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "reallyGoToSleep");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "reallyGoToSleep");
+        // try {
             Slog.i(TAG, "Sleeping (uid " + uid +")...");
 
             setWakefulnessLocked(WAKEFULNESS_ASLEEP, PowerManager.GO_TO_SLEEP_REASON_TIMEOUT);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        // }
         return true;
     }
 
@@ -1434,8 +1434,8 @@ public final class PowerManagerService extends SystemService
             Slog.wtf(TAG, "Power manager lock was not held when calling updatePowerStateLocked");
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "updatePowerState");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "updatePowerState");
+        // try {
             // Phase 0: Basic state updates.
             updateIsPoweredLocked(mDirty);
             updateStayOnLocked(mDirty);
@@ -1471,9 +1471,9 @@ public final class PowerManagerService extends SystemService
             // Because we might release the last suspend blocker here, we need to make sure
             // we finished everything else first!
             updateSuspendBlockerLocked();
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        // }
     }
 
     /**
@@ -2416,12 +2416,12 @@ public final class PowerManagerService extends SystemService
                 Slog.d(TAG, "Setting HAL auto-suspend mode to " + enable);
             }
             mHalAutoSuspendModeEnabled = enable;
-            Trace.traceBegin(Trace.TRACE_TAG_POWER, "setHalAutoSuspend(" + enable + ")");
-            try {
+            // Trace.traceBegin(Trace.TRACE_TAG_POWER, "setHalAutoSuspend(" + enable + ")");
+            // try {
                 nativeSetAutoSuspend(enable);
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_POWER);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+            // }
         }
     }
 
@@ -2431,12 +2431,12 @@ public final class PowerManagerService extends SystemService
                 Slog.d(TAG, "Setting HAL interactive mode to " + enable);
             }
             mHalInteractiveModeEnabled = enable;
-            Trace.traceBegin(Trace.TRACE_TAG_POWER, "setHalInteractive(" + enable + ")");
-            try {
+            // Trace.traceBegin(Trace.TRACE_TAG_POWER, "setHalInteractive(" + enable + ")");
+            // try {
                 nativeSetInteractive(enable);
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_POWER);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+            // }
         }
     }
 
@@ -3306,7 +3306,7 @@ public final class PowerManagerService extends SystemService
                             + "\" was finalized without being released!");
                     mReferenceCount = 0;
                     nativeReleaseSuspendBlocker(mName);
-                    Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
+                    // Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
                 }
             } finally {
                 super.finalize();
@@ -3321,7 +3321,7 @@ public final class PowerManagerService extends SystemService
                     if (DEBUG_SPEW) {
                         Slog.d(TAG, "Acquiring suspend blocker \"" + mName + "\".");
                     }
-                    Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, mTraceName, 0);
+                    // Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, mTraceName, 0);
                     nativeAcquireSuspendBlocker(mName);
                 }
             }
@@ -3336,7 +3336,7 @@ public final class PowerManagerService extends SystemService
                         Slog.d(TAG, "Releasing suspend blocker \"" + mName + "\".");
                     }
                     nativeReleaseSuspendBlocker(mName);
-                    Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
+                    // Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
                 } else if (mReferenceCount < 0) {
                     Slog.wtf(TAG, "Suspend blocker \"" + mName
                             + "\" was released without being acquired!", new Throwable());

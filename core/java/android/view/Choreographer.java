@@ -22,7 +22,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Log;
 import android.util.TimeUtils;
 import android.view.animation.AnimationUtils;
@@ -608,7 +608,7 @@ public final class Choreographer {
         }
 
         try {
-            Trace.traceBegin(Trace.TRACE_TAG_VIEW, "Choreographer#doFrame");
+            // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "Choreographer#doFrame");
             AnimationUtils.lockAnimationClock(frameTimeNanos / TimeUtils.NANOS_PER_MS);
 
             mFrameInfo.markInputHandlingStart();
@@ -623,7 +623,7 @@ public final class Choreographer {
             doCallbacks(Choreographer.CALLBACK_COMMIT, frameTimeNanos);
         } finally {
             AnimationUtils.unlockAnimationClock();
-            Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+            // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
         }
 
         if (DEBUG_FRAMES) {
@@ -658,7 +658,7 @@ public final class Choreographer {
             // safe by ensuring the commit time is always at least one frame behind.
             if (callbackType == Choreographer.CALLBACK_COMMIT) {
                 final long jitterNanos = now - frameTimeNanos;
-                Trace.traceCounter(Trace.TRACE_TAG_VIEW, "jitterNanos", (int) jitterNanos);
+                // Trace.traceCounter(Trace.TRACE_TAG_VIEW, "jitterNanos", (int) jitterNanos);
                 if (jitterNanos >= 2 * mFrameIntervalNanos) {
                     final long lastFrameOffset = jitterNanos % mFrameIntervalNanos
                             + mFrameIntervalNanos;
@@ -676,7 +676,7 @@ public final class Choreographer {
             }
         }
         try {
-            Trace.traceBegin(Trace.TRACE_TAG_VIEW, CALLBACK_TRACE_TITLES[callbackType]);
+            // Trace.traceBegin(Trace.TRACE_TAG_VIEW, CALLBACK_TRACE_TITLES[callbackType]);
             for (CallbackRecord c = callbacks; c != null; c = c.next) {
                 if (DEBUG_FRAMES) {
                     Log.d(TAG, "RunCallback: type=" + callbackType
@@ -694,7 +694,7 @@ public final class Choreographer {
                     callbacks = next;
                 } while (callbacks != null);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+            // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
         }
     }
 

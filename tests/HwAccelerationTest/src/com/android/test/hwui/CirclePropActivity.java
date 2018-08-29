@@ -23,7 +23,7 @@ import android.graphics.CanvasProperty;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
 import android.os.Bundle;
-import android.os.Trace;
+// import android.os.Trace;
 import android.view.DisplayListCanvas;
 import android.view.RenderNodeAnimator;
 import android.view.View;
@@ -138,12 +138,12 @@ public class CirclePropActivity extends Activity {
                 post(new Runnable() {
                     @Override
                     public void run() {
-                        Trace.traceBegin(Trace.TRACE_TAG_VIEW, "pretendBusy");
+                        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "pretendBusy");
                         try {
                             Thread.sleep(DURATION);
                         } catch (InterruptedException e) {
                         }
-                        Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+                        // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
                     }
                 });
             }

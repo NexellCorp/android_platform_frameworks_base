@@ -37,7 +37,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.StrictMode;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.system.Os;
 import android.system.OsConstants;
@@ -775,7 +775,7 @@ public final class LoadedApk {
             return mApplication;
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "makeApplication");
+        // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "makeApplication");
 
         Application app = null;
 
@@ -787,10 +787,10 @@ public final class LoadedApk {
         try {
             java.lang.ClassLoader cl = getClassLoader();
             if (!mPackageName.equals("android")) {
-                Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER,
-                        "initializeJavaContextClassLoader");
+                // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER,
+                //         "initializeJavaContextClassLoader");
                 initializeJavaContextClassLoader();
-                Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
             }
             ContextImpl appContext = ContextImpl.createAppContext(mActivityThread, this);
             app = mActivityThread.mInstrumentation.newApplication(
@@ -798,7 +798,7 @@ public final class LoadedApk {
             appContext.setOuterContext(app);
         } catch (Exception e) {
             if (!mActivityThread.mInstrumentation.onException(app, e)) {
-                Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
                 throw new RuntimeException(
                     "Unable to instantiate application " + appClass
                     + ": " + e.toString(), e);
@@ -812,7 +812,7 @@ public final class LoadedApk {
                 instrumentation.callApplicationOnCreate(app);
             } catch (Exception e) {
                 if (!instrumentation.onException(app, e)) {
-                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                    // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
                     throw new RuntimeException(
                         "Unable to create application " + app.getClass().getName()
                         + ": " + e.toString(), e);
@@ -833,7 +833,7 @@ public final class LoadedApk {
             rewriteRValues(getClassLoader(), packageIdentifiers.valueAt(i), id);
         }
 
-        Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+        // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
 
         return app;
     }
@@ -1112,7 +1112,7 @@ public final class LoadedApk {
                     return;
                 }
 
-                Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "broadcastReceiveReg");
+                // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "broadcastReceiveReg");
                 try {
                     ClassLoader cl =  mReceiver.getClass().getClassLoader();
                     intent.setExtrasClassLoader(cl);
@@ -1128,7 +1128,7 @@ public final class LoadedApk {
                     }
                     if (mInstrumentation == null ||
                             !mInstrumentation.onException(mReceiver, e)) {
-                        Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                        // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
                         throw new RuntimeException(
                             "Error receiving broadcast " + intent
                             + " in " + mReceiver, e);
@@ -1138,7 +1138,7 @@ public final class LoadedApk {
                 if (receiver.getPendingResult() != null) {
                     finish();
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
             }
         }
 

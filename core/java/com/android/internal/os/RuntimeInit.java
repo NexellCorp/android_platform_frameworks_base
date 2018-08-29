@@ -25,7 +25,7 @@ import android.os.Debug;
 import android.os.IBinder;
 import android.os.Process;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Log;
 import android.util.Slog;
 import com.android.internal.logging.AndroidConfig;
@@ -158,11 +158,11 @@ public class RuntimeInit {
          * F9/F10 at any time to capture traces.  This has performance
          * consequences, so it's not something you want to do always.
          */
-        String trace = SystemProperties.get("ro.kernel.android.tracing");
-        if (trace.equals("1")) {
-            Slog.i(TAG, "NOTE: emulator trace profiling enabled");
-            Debug.enableEmulatorTraceOutput();
-        }
+        // String trace = SystemProperties.get("ro.kernel.android.tracing");
+        // if (trace.equals("1")) {
+        //     Slog.i(TAG, "NOTE: emulator trace profiling enabled");
+        //     Debug.enableEmulatorTraceOutput();
+        // }
 
         initialized = true;
     }
@@ -281,7 +281,7 @@ public class RuntimeInit {
             throws ZygoteInit.MethodAndArgsCaller {
         if (DEBUG) Slog.d(TAG, "RuntimeInit: Starting application from zygote");
 
-        Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "RuntimeInit");
+        // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "RuntimeInit");
         redirectLogStreams();
 
         commonInit();
@@ -331,7 +331,7 @@ public class RuntimeInit {
         }
 
         // The end of of the RuntimeInit event (see #zygoteInit).
-        Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+        // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
 
         // Remaining arguments are passed to the start class's static main
         invokeStaticMain(args.startClass, args.startArgs, classLoader);

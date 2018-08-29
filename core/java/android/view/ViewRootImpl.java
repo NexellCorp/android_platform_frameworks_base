@@ -62,7 +62,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.AndroidRuntimeException;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -2270,12 +2270,12 @@ public final class ViewRootImpl implements ViewParent,
     }
 
     private void performMeasure(int childWidthMeasureSpec, int childHeightMeasureSpec) {
-        Trace.traceBegin(Trace.TRACE_TAG_VIEW, "measure");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "measure");
+        // try {
             mView.measure(childWidthMeasureSpec, childHeightMeasureSpec);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_VIEW);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        // }
     }
 
     /**
@@ -2341,8 +2341,8 @@ public final class ViewRootImpl implements ViewParent,
                     host.getMeasuredWidth() + ", " + host.getMeasuredHeight() + ")");
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_VIEW, "layout");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "layout");
+        // try {
             host.layout(0, 0, host.getMeasuredWidth(), host.getMeasuredHeight());
 
             mInLayout = false;
@@ -2397,9 +2397,9 @@ public final class ViewRootImpl implements ViewParent,
                 }
 
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_VIEW);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        // }
         mInLayout = false;
     }
 
@@ -2603,12 +2603,12 @@ public final class ViewRootImpl implements ViewParent,
         mFullRedrawNeeded = false;
 
         mIsDrawing = true;
-        Trace.traceBegin(Trace.TRACE_TAG_VIEW, "draw");
+        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "draw");
         try {
             draw(fullRedrawNeeded);
         } finally {
             mIsDrawing = false;
-            Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+            // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
         }
 
         // For whatever reason we didn't create a HardwareRenderer, end any
@@ -4067,7 +4067,7 @@ public final class ViewRootImpl implements ViewParent,
             }
 
             mQueueLength += 1;
-            Trace.traceCounter(Trace.TRACE_TAG_INPUT, mTraceCounter, mQueueLength);
+            // Trace.traceCounter(Trace.TRACE_TAG_INPUT, mTraceCounter, mQueueLength);
         }
 
         private void dequeue(QueuedInputEvent q, QueuedInputEvent prev) {
@@ -4082,7 +4082,7 @@ public final class ViewRootImpl implements ViewParent,
             q.mNext = null;
 
             mQueueLength -= 1;
-            Trace.traceCounter(Trace.TRACE_TAG_INPUT, mTraceCounter, mQueueLength);
+            // Trace.traceCounter(Trace.TRACE_TAG_INPUT, mTraceCounter, mQueueLength);
         }
 
         @Override
@@ -6175,8 +6175,8 @@ public final class ViewRootImpl implements ViewParent,
             mPendingInputEventTail = q;
         }
         mPendingInputEventCount += 1;
-        Trace.traceCounter(Trace.TRACE_TAG_INPUT, mPendingInputEventQueueLengthCounterName,
-                mPendingInputEventCount);
+        // Trace.traceCounter(Trace.TRACE_TAG_INPUT, mPendingInputEventQueueLengthCounterName,
+        //         mPendingInputEventCount);
 
         if (processImmediately) {
             doProcessInputEvents();
@@ -6205,8 +6205,8 @@ public final class ViewRootImpl implements ViewParent,
             q.mNext = null;
 
             mPendingInputEventCount -= 1;
-            Trace.traceCounter(Trace.TRACE_TAG_INPUT, mPendingInputEventQueueLengthCounterName,
-                    mPendingInputEventCount);
+            // Trace.traceCounter(Trace.TRACE_TAG_INPUT, mPendingInputEventQueueLengthCounterName,
+            //         mPendingInputEventCount);
 
             long eventTime = q.mEvent.getEventTimeNano();
             long oldestEventTime = eventTime;
@@ -6230,8 +6230,8 @@ public final class ViewRootImpl implements ViewParent,
     }
 
     private void deliverInputEvent(QueuedInputEvent q) {
-        Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, "deliverInputEvent",
-                q.mEvent.getSequenceNumber());
+        // Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, "deliverInputEvent",
+        //         q.mEvent.getSequenceNumber());
         if (mInputEventConsistencyVerifier != null) {
             mInputEventConsistencyVerifier.onInputEvent(q.mEvent, 0);
         }
@@ -6251,8 +6251,8 @@ public final class ViewRootImpl implements ViewParent,
     }
 
     private void finishInputEvent(QueuedInputEvent q) {
-        Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, "deliverInputEvent",
-                q.mEvent.getSequenceNumber());
+        // Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, "deliverInputEvent",
+        //         q.mEvent.getSequenceNumber());
 
         if (q.mReceiver != null) {
             boolean handled = (q.mFlags & QueuedInputEvent.FLAG_FINISHED_HANDLED) != 0;

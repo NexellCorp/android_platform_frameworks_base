@@ -38,7 +38,7 @@ import android.os.ServiceManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.storage.IMountService;
@@ -232,8 +232,8 @@ public final class SystemServer {
     }
 
     private void run() {
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "InitBeforeStartServices");
+        // try {
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "InitBeforeStartServices");
             // If a device's clock is before 1970 (before 0), a lot of
             // APIs crash dealing with negative numbers, notably
             // java.io.File#setLastModified, so instead we fake it and
@@ -330,13 +330,13 @@ public final class SystemServer {
             mSystemServiceManager = new SystemServiceManager(mSystemContext);
             mSystemServiceManager.setRuntimeRestarted(mRuntimeRestart);
             LocalServices.addService(SystemServiceManager.class, mSystemServiceManager);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // }
 
         // Start services.
         try {
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartServices");
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartServices");
             startBootstrapServices();
             startCoreServices();
             startOtherServices();
@@ -344,8 +344,8 @@ public final class SystemServer {
             Slog.e("System", "******************************************");
             Slog.e("System", "************ Failure starting system services", ex);
             throw ex;
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         }
 
         // For debug builds, log event loop stalls to dropbox for analysis.
@@ -437,9 +437,9 @@ public final class SystemServer {
 
         // Now that the power manager has been started, let the activity manager
         // initialize power management features.
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "InitPowerManagement");
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "InitPowerManagement");
         mActivityManagerService.initPowerManagement();
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
         // Manages LEDs and display backlight so we need it to bring up the display.
         mSystemServiceManager.startService(LightsService.class);
@@ -467,7 +467,7 @@ public final class SystemServer {
                 mFactoryTestMode != FactoryTest.FACTORY_TEST_OFF, mOnlyCore);
         mFirstBoot = mPackageManagerService.isFirstBoot();
         mPackageManager = mSystemContext.getPackageManager();
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
         mQuickBoot = SystemProperties.getBoolean("config.quickboot", false);
 
@@ -483,15 +483,15 @@ public final class SystemServer {
                     OtaDexoptService.main(mSystemContext, mPackageManagerService);
                 } catch (Throwable e) {
                     reportWtf("starting OtaDexOptService", e);
-                } finally {
-                    Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // } finally {
+                //     Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
                 }
             }
         }
 
         traceBeginAndSlog("StartUserManagerService");
         mSystemServiceManager.startService(UserManagerService.LifeCycle.class);
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
         // Initialize attribute cache used to cache resources from packages.
         AttributeCache.init(mSystemContext);
@@ -576,18 +576,18 @@ public final class SystemServer {
 
             traceBeginAndSlog("StartSchedulingPolicyService");
             ServiceManager.addService("scheduling_policy", new SchedulingPolicyService());
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             mSystemServiceManager.startService(TelecomLoaderService.class);
 
             traceBeginAndSlog("StartTelephonyRegistry");
             telephonyRegistry = new TelephonyRegistry(context);
             ServiceManager.addService("telephony.registry", telephonyRegistry);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("StartEntropyMixer");
             mEntropyMixer = new EntropyMixer(context);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             mContentResolver = context.getContentResolver();
 
@@ -599,40 +599,40 @@ public final class SystemServer {
             // The AccountManager must come before the ContentService
             traceBeginAndSlog("StartAccountManagerService");
             mSystemServiceManager.startService(ACCOUNT_SERVICE_CLASS);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("StartContentService");
             mSystemServiceManager.startService(CONTENT_SERVICE_CLASS);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("InstallSystemProviders");
             mActivityManagerService.installSystemProviders();
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("StartVibratorService");
             vibrator = new VibratorService(context);
             ServiceManager.addService("vibrator", vibrator);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             if (!disableConsumerIr) {
                 traceBeginAndSlog("StartConsumerIrService");
                 consumerIr = new ConsumerIrService(context);
                 ServiceManager.addService(Context.CONSUMER_IR_SERVICE, consumerIr);
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             traceBeginAndSlog("StartAlarmManagerService");
             mSystemServiceManager.startService(AlarmManagerService.class);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("InitWatchdog");
             final Watchdog watchdog = Watchdog.getInstance();
             watchdog.init(context, mActivityManagerService);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("StartInputManagerService");
             inputManager = new InputManagerService(context);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("StartWindowManagerService");
             wm = WindowManagerService.main(context, inputManager,
@@ -640,12 +640,12 @@ public final class SystemServer {
                     !mFirstBoot, mOnlyCore);
             ServiceManager.addService(Context.WINDOW_SERVICE, wm);
             ServiceManager.addService(Context.INPUT_SERVICE, inputManager);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             if (!disableVrManager) {
                 traceBeginAndSlog("StartVrManagerService");
                 mSystemServiceManager.startService(VrManagerService.class);
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             mActivityManagerService.setWindowManager(wm);
@@ -674,15 +674,15 @@ public final class SystemServer {
 
             traceBeginAndSlog("ConnectivityMetricsLoggerService");
             mSystemServiceManager.startService(MetricsLoggerService.class);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("IpConnectivityMetrics");
             mSystemServiceManager.startService(IpConnectivityMetrics.class);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             traceBeginAndSlog("PinnerService");
             mSystemServiceManager.startService(PinnerService.class);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         } catch (RuntimeException e) {
             Slog.e("System", "******************************************");
             Slog.e("System", "************ Failure starting core service", e);
@@ -707,7 +707,7 @@ public final class SystemServer {
             } catch (Throwable e) {
                 reportWtf("starting Accessibility Manager", e);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         }
 
         try {
@@ -738,22 +738,22 @@ public final class SystemServer {
         mSystemServiceManager.startService(UiModeManagerService.class);
 
         if (!mOnlyCore) {
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "UpdatePackagesIfNeeded");
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "UpdatePackagesIfNeeded");
             try {
                 mPackageManagerService.updatePackagesIfNeeded();
             } catch (Throwable e) {
                 reportWtf("update packages", e);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "PerformFstrimIfNeeded");
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "PerformFstrimIfNeeded");
         try {
             mPackageManagerService.performFstrimIfNeeded();
         } catch (Throwable e) {
             reportWtf("performing fstrim", e);
         }
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
         if (mFactoryTestMode != FactoryTest.FACTORY_TEST_LOW_LEVEL) {
             if (!disableNonCoreServices) {
@@ -765,7 +765,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting LockSettingsService service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 if (!SystemProperties.get(PERSISTENT_DATA_BLOCK_PROP).equals("")) {
                     mSystemServiceManager.startService(PersistentDataBlockService.class);
@@ -786,7 +786,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting StatusBarManagerService", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNonCoreServices) {
@@ -797,7 +797,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting Clipboard Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNetwork) {
@@ -808,7 +808,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting NetworkManagement Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNonCoreServices && !disableTextServices) {
@@ -823,7 +823,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting Network Score Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 traceBeginAndSlog("StartNetworkStatsService");
                 try {
@@ -832,7 +832,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting NetworkStats Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 traceBeginAndSlog("StartNetworkPolicyManagerService");
                 try {
@@ -842,7 +842,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting NetworkPolicy Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_NAN)) {
                     mSystemServiceManager.startService(WIFI_NAN_SERVICE_CLASS);
@@ -873,7 +873,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting Connectivity Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 traceBeginAndSlog("StartNsdService");
                 try {
@@ -883,7 +883,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting Service Discovery Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNonCoreServices) {
@@ -894,7 +894,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting UpdateLockService", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNonCoreServices) {
@@ -907,12 +907,12 @@ public final class SystemServer {
              * first before continuing.
              */
             if (mountService != null && !mOnlyCore) {
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "WaitForAsecScan");
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "WaitForAsecScan");
                 try {
                     mountService.waitForAsecScan();
                 } catch (RemoteException ignored) {
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             mSystemServiceManager.startService(NotificationManagerService.class);
@@ -930,7 +930,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting Location Manager", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 traceBeginAndSlog("StartCountryDetectorService");
                 try {
@@ -939,7 +939,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting Country Detector", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNonCoreServices && !disableSearchManager) {
@@ -949,7 +949,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting Search Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             mSystemServiceManager.startService(DropBoxManagerService.class);
@@ -958,12 +958,12 @@ public final class SystemServer {
                         R.bool.config_enableWallpaperService)) {
                 traceBeginAndSlog("StartWallpaperManagerService");
                 mSystemServiceManager.startService(WALLPAPER_SERVICE_CLASS);
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             traceBeginAndSlog("StartAudioService");
             mSystemServiceManager.startService(AudioService.Lifecycle.class);
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             if (!disableNonCoreServices) {
                 mSystemServiceManager.startService(DockObserver.class);
@@ -981,7 +981,7 @@ public final class SystemServer {
             } catch (Throwable e) {
                 reportWtf("starting WiredAccessoryManager", e);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             if (!disableNonCoreServices) {
                 if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_MIDI)) {
@@ -993,9 +993,9 @@ public final class SystemServer {
                         || mPackageManager.hasSystemFeature(
                                 PackageManager.FEATURE_USB_ACCESSORY)) {
                     // Manage USB host and device support
-                    Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartUsbService");
+                    // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartUsbService");
                     mSystemServiceManager.startService(USB_SERVICE_CLASS);
-                    Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                    // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
                 }
 
                 if (!disableSerial) {
@@ -1007,11 +1007,11 @@ public final class SystemServer {
                     } catch (Throwable e) {
                         Slog.e(TAG, "Failure starting SerialService", e);
                     }
-                    Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                    // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
                 }
 
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER,
-                        "StartHardwarePropertiesManagerService");
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER,
+                        // "StartHardwarePropertiesManagerService");
                 try {
                     hardwarePropertiesService = new HardwarePropertiesManagerService(context);
                     ServiceManager.addService(Context.HARDWARE_PROPERTIES_SERVICE,
@@ -1019,7 +1019,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     Slog.e(TAG, "Failure starting HardwarePropertiesManagerService", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             mSystemServiceManager.startService(TwilightService.class);
@@ -1060,7 +1060,7 @@ public final class SystemServer {
             } catch (Throwable e) {
                 reportWtf("starting DiskStats Service", e);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             if (!disableSamplingProfiler) {
                 traceBeginAndSlog("StartSamplingProfilerService");
@@ -1074,7 +1074,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting SamplingProfiler Service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNetwork && !disableNetworkTime) {
@@ -1085,7 +1085,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting NetworkTimeUpdate service", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             traceBeginAndSlog("StartCommonTimeManagementService");
@@ -1095,7 +1095,7 @@ public final class SystemServer {
             } catch (Throwable e) {
                 reportWtf("starting CommonTimeManagementService service", e);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
             if (!disableNetwork) {
                 traceBeginAndSlog("CertBlacklister");
@@ -1104,7 +1104,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting CertBlacklister", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNetwork && !disableNonCoreServices && EmergencyAffordanceManager.ENABLED) {
@@ -1125,7 +1125,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting AssetAtlasService", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
             if (!disableNonCoreServices) {
@@ -1165,7 +1165,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting MediaRouterService", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 if (!disableTrustManager) {
                     mSystemServiceManager.startService(TrustManagerService.class);
@@ -1181,7 +1181,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("starting BackgroundDexOptService", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
             // LauncherAppsService uses ShortcutService.
             mSystemServiceManager.startService(ShortcutService.Lifecycle.class);
@@ -1226,15 +1226,15 @@ public final class SystemServer {
 
         // It is now time to start up the app processes...
 
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeVibratorServiceReady");
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeVibratorServiceReady");
         try {
             vibrator.systemReady();
         } catch (Throwable e) {
             reportWtf("making Vibrator Service ready", e);
         }
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeLockSettingsServiceReady");
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeLockSettingsServiceReady");
         if (lockSettings != null) {
             try {
                 lockSettings.systemReady();
@@ -1242,20 +1242,20 @@ public final class SystemServer {
                 reportWtf("making Lock Settings Service ready", e);
             }
         }
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
         // Needed by DevicePolicyManager for initialization
         mSystemServiceManager.startBootPhase(SystemService.PHASE_LOCK_SETTINGS_READY);
 
         mSystemServiceManager.startBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
 
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeWindowManagerServiceReady");
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeWindowManagerServiceReady");
         try {
             wm.systemReady();
         } catch (Throwable e) {
             reportWtf("making Window Manager Service ready", e);
         }
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
         if (safeMode) {
             mActivityManagerService.showSafeModeOverlay();
@@ -1276,32 +1276,32 @@ public final class SystemServer {
             systemTheme.rebase();
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakePowerManagerServiceReady");
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakePowerManagerServiceReady");
         try {
             // TODO: use boot phase
             mPowerManagerService.systemReady(mActivityManagerService.getAppOpsService());
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         } catch (Throwable e) {
             reportWtf("making Power Manager Service ready", e);
         }
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakePackageManagerServiceReady");
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakePackageManagerServiceReady");
         try {
             mPackageManagerService.systemReady();
         } catch (Throwable e) {
             reportWtf("making Package Manager Service ready", e);
         }
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeDisplayManagerServiceReady");
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeDisplayManagerServiceReady");
         try {
             // TODO: use boot phase and communicate these flags some other way
             mDisplayManagerService.systemReady(safeMode, mOnlyCore);
         } catch (Throwable e) {
             reportWtf("making Display Manager Service ready", e);
         }
-        Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
         // These are needed to propagate to the runnable below.
         final NetworkManagementService networkManagementF = networkManagement;
@@ -1330,74 +1330,74 @@ public final class SystemServer {
                 Slog.i(TAG, "Making services ready");
                 mSystemServiceManager.startBootPhase(
                         SystemService.PHASE_ACTIVITY_MANAGER_READY);
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "PhaseActivityManagerReady");
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "PhaseActivityManagerReady");
 
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartObservingNativeCrashes");
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartObservingNativeCrashes");
                 try {
                     mActivityManagerService.startObservingNativeCrashes();
                 } catch (Throwable e) {
                     reportWtf("observing native crashes", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 if (!mOnlyCore) {
                     Slog.i(TAG, "WebViewFactory preparation");
-                    Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "WebViewFactoryPreparation");
+                    // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "WebViewFactoryPreparation");
                     mWebViewUpdateService.prepareWebViewInSystemServer();
-                    Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                    // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
                 }
 
                 if (!mQuickBoot) {
-                    Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartSystemUI");
+                    // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartSystemUI");
                     try {
                         startSystemUi(context);
                     } catch (Throwable e) {
                         reportWtf("starting System UI", e);
                     }
-                    Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                    // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
                 }
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkScoreReady");
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkScoreReady");
                 try {
                     if (networkScoreF != null) networkScoreF.systemReady();
                 } catch (Throwable e) {
                     reportWtf("making Network Score Service ready", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkManagementServiceReady");
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkManagementServiceReady");
                 try {
                     if (networkManagementF != null) networkManagementF.systemReady();
                 } catch (Throwable e) {
                     reportWtf("making Network Managment Service ready", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkStatsServiceReady");
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkStatsServiceReady");
                 try {
                     if (networkStatsF != null) networkStatsF.systemReady();
                 } catch (Throwable e) {
                     reportWtf("making Network Stats Service ready", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkPolicyServiceReady");
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeNetworkPolicyServiceReady");
                 try {
                     if (networkPolicyF != null) networkPolicyF.systemReady();
                 } catch (Throwable e) {
                     reportWtf("making Network Policy Service ready", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeConnectivityServiceReady");
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "MakeConnectivityServiceReady");
                 try {
                     if (connectivityF != null) connectivityF.systemReady();
                 } catch (Throwable e) {
                     reportWtf("making Connectivity Service ready", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
                 Watchdog.getInstance().start();
 
                 // It is now okay to let the various system services start their
                 // third party code...
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
-                Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "PhaseThirdPartyAppsCanStart");
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "PhaseThirdPartyAppsCanStart");
                 mSystemServiceManager.startBootPhase(
                         SystemService.PHASE_THIRD_PARTY_APPS_CAN_START);
 
@@ -1456,7 +1456,7 @@ public final class SystemServer {
                 } catch (Throwable e) {
                     reportWtf("Notifying NetworkScoreService running", e);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+                // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
         });
     }
@@ -1471,7 +1471,7 @@ public final class SystemServer {
     }
 
     private static void traceBeginAndSlog(String name) {
-        Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, name);
+        // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, name);
         Slog.i(TAG, name);
     }
 }

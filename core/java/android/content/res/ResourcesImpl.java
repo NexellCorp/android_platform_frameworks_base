@@ -36,7 +36,7 @@ import android.graphics.drawable.Drawable;
 import android.icu.text.PluralRules;
 import android.os.Build;
 import android.os.LocaleList;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -319,8 +319,8 @@ public class ResourcesImpl {
 
     public void updateConfiguration(Configuration config, DisplayMetrics metrics,
                                     CompatibilityInfo compat) {
-        Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "ResourcesImpl#updateConfiguration");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, "ResourcesImpl#updateConfiguration");
+        // try {
             synchronized (mAccessLock) {
                 if (false) {
                     Slog.i(TAG, "**** Updating config of " + this + ": old config is "
@@ -435,9 +435,9 @@ public class ResourcesImpl {
                     mPluralRule = PluralRules.forLocale(mConfiguration.getLocales().get(0));
                 }
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+        // }
     }
 
     /**
@@ -707,7 +707,7 @@ public class ResourcesImpl {
 
         final Drawable dr;
 
-        Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, file);
+        // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, file);
         try {
             if (file.endsWith(".xml")) {
                 final XmlResourceParser rp = loadXmlResourceParser(
@@ -721,13 +721,13 @@ public class ResourcesImpl {
                 is.close();
             }
         } catch (Exception e) {
-            Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+            // Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
             final NotFoundException rnf = new NotFoundException(
                     "File " + file + " from drawable resource ID #0x" + Integer.toHexString(id));
             rnf.initCause(e);
             throw rnf;
         }
-        Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+        // Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
 
         return dr;
     }
@@ -899,7 +899,7 @@ public class ResourcesImpl {
 
         ComplexColor complexColor = null;
 
-        Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, file);
+        // Trace.traceBegin(Trace.TRACE_TAG_RESOURCES, file);
         if (file.endsWith(".xml")) {
             try {
                 final XmlResourceParser parser = loadXmlResourceParser(
@@ -923,7 +923,7 @@ public class ResourcesImpl {
                 }
                 parser.close();
             } catch (Exception e) {
-                Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+                // Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
                 final NotFoundException rnf = new NotFoundException(
                         "File " + file + " from ComplexColor resource ID #0x"
                                 + Integer.toHexString(id));
@@ -931,12 +931,12 @@ public class ResourcesImpl {
                 throw rnf;
             }
         } else {
-            Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+            // Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
             throw new NotFoundException(
                     "File " + file + " from drawable resource ID #0x"
                             + Integer.toHexString(id) + ": .xml extension required");
         }
-        Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
+        // Trace.traceEnd(Trace.TRACE_TAG_RESOURCES);
 
         return complexColor;
     }

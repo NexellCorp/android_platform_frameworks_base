@@ -33,7 +33,7 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.os.StrictMode;
-import android.os.Trace;
+// import android.os.Trace;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextUtils;
@@ -2339,7 +2339,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
      * @return A view displaying the data associated with the specified position
      */
     View obtainView(int position, boolean[] outMetadata) {
-        Trace.traceBegin(Trace.TRACE_TAG_VIEW, "obtainView");
+        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "obtainView");
 
         outMetadata[0] = false;
 
@@ -2400,7 +2400,7 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
             }
         }
 
-        Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
 
         return child;
     }

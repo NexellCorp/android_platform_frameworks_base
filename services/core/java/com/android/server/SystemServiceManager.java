@@ -17,7 +17,7 @@
 package com.android.server;
 
 import android.content.Context;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Slog;
 
 import java.lang.reflect.Constructor;
@@ -77,10 +77,10 @@ public class SystemServiceManager {
      */
     @SuppressWarnings("unchecked")
     public <T extends SystemService> T startService(Class<T> serviceClass) {
-        try {
+        // try {
             final String name = serviceClass.getName();
             Slog.i(TAG, "Starting " + name);
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartService " + name);
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "StartService " + name);
 
             // Create the service.
             if (!SystemService.class.isAssignableFrom(serviceClass)) {
@@ -116,9 +116,9 @@ public class SystemServiceManager {
                         + ": onStart threw an exception", ex);
             }
             return service;
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // }
     }
 
     /**
@@ -134,8 +134,8 @@ public class SystemServiceManager {
         mCurrentPhase = phase;
 
         Slog.i(TAG, "Starting phase " + mCurrentPhase);
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "OnBootPhase " + phase);
+        // try {
+        //     Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "OnBootPhase " + phase);
             final int serviceLen = mServices.size();
             for (int i = 0; i < serviceLen; i++) {
                 final SystemService service = mServices.get(i);
@@ -148,24 +148,24 @@ public class SystemServiceManager {
                             + mCurrentPhase, ex);
                 }
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+        // }
     }
 
     public void startUser(final int userHandle) {
         final int serviceLen = mServices.size();
         for (int i = 0; i < serviceLen; i++) {
             final SystemService service = mServices.get(i);
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onStartUser "
-                    + service.getClass().getName());
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onStartUser "
+            //         + service.getClass().getName());
             try {
                 service.onStartUser(userHandle);
             } catch (Exception ex) {
                 Slog.wtf(TAG, "Failure reporting start of user " + userHandle
                         + " to service " + service.getClass().getName(), ex);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         }
     }
 
@@ -173,15 +173,15 @@ public class SystemServiceManager {
         final int serviceLen = mServices.size();
         for (int i = 0; i < serviceLen; i++) {
             final SystemService service = mServices.get(i);
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onUnlockUser "
-                    + service.getClass().getName());
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onUnlockUser "
+            //         + service.getClass().getName());
             try {
                 service.onUnlockUser(userHandle);
             } catch (Exception ex) {
                 Slog.wtf(TAG, "Failure reporting unlock of user " + userHandle
                         + " to service " + service.getClass().getName(), ex);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         }
     }
 
@@ -189,15 +189,15 @@ public class SystemServiceManager {
         final int serviceLen = mServices.size();
         for (int i = 0; i < serviceLen; i++) {
             final SystemService service = mServices.get(i);
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onSwitchUser "
-                    + service.getClass().getName());
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onSwitchUser "
+            //         + service.getClass().getName());
             try {
                 service.onSwitchUser(userHandle);
             } catch (Exception ex) {
                 Slog.wtf(TAG, "Failure reporting switch of user " + userHandle
                         + " to service " + service.getClass().getName(), ex);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         }
     }
 
@@ -205,15 +205,15 @@ public class SystemServiceManager {
         final int serviceLen = mServices.size();
         for (int i = 0; i < serviceLen; i++) {
             final SystemService service = mServices.get(i);
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onStopUser "
-                    + service.getClass().getName());
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onStopUser "
+            //         + service.getClass().getName());
             try {
                 service.onStopUser(userHandle);
             } catch (Exception ex) {
                 Slog.wtf(TAG, "Failure reporting stop of user " + userHandle
                         + " to service " + service.getClass().getName(), ex);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         }
     }
 
@@ -221,15 +221,15 @@ public class SystemServiceManager {
         final int serviceLen = mServices.size();
         for (int i = 0; i < serviceLen; i++) {
             final SystemService service = mServices.get(i);
-            Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onCleanupUser "
-                    + service.getClass().getName());
+            // Trace.traceBegin(Trace.TRACE_TAG_SYSTEM_SERVER, "onCleanupUser "
+            //         + service.getClass().getName());
             try {
                 service.onCleanupUser(userHandle);
             } catch (Exception ex) {
                 Slog.wtf(TAG, "Failure reporting cleanup of user " + userHandle
                         + " to service " + service.getClass().getName(), ex);
             }
-            Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
+            // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
         }
     }
 

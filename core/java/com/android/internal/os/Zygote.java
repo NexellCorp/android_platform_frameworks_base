@@ -17,7 +17,7 @@
 package com.android.internal.os;
 
 
-import android.os.Trace;
+// import android.os.Trace;
 import dalvik.system.ZygoteHooks;
 import android.system.ErrnoException;
 import android.system.Os;
@@ -96,12 +96,12 @@ public final class Zygote {
                   uid, gid, gids, debugFlags, rlimits, mountExternal, seInfo, niceName, fdsToClose,
                   instructionSet, appDataDir);
         // Enable tracing as soon as possible for the child process.
-        if (pid == 0) {
-            Trace.setTracingEnabled(true);
+        // if (pid == 0) {
+            // Trace.setTracingEnabled(true);
 
             // Note that this event ends at the end of handleChildProc,
-            Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "PostFork");
-        }
+            // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "PostFork");
+        // }
         VM_HOOKS.postForkCommon();
         return pid;
     }
@@ -139,9 +139,9 @@ public final class Zygote {
         int pid = nativeForkSystemServer(
                 uid, gid, gids, debugFlags, rlimits, permittedCapabilities, effectiveCapabilities);
         // Enable tracing as soon as we enter the system_server.
-        if (pid == 0) {
-            Trace.setTracingEnabled(true);
-        }
+        // if (pid == 0) {
+        //     Trace.setTracingEnabled(true);
+        // }
         VM_HOOKS.postForkCommon();
         return pid;
     }

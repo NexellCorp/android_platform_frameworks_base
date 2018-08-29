@@ -146,17 +146,17 @@ public final class Looper {
                         msg.callback + ": " + msg.what);
             }
 
-            final long traceTag = me.mTraceTag;
-            if (traceTag != 0 && Trace.isTagEnabled(traceTag)) {
-                Trace.traceBegin(traceTag, msg.target.getTraceName(msg));
-            }
-            try {
+            // final long traceTag = me.mTraceTag;
+            // if (traceTag != 0 && Trace.isTagEnabled(traceTag)) {
+            //     Trace.traceBegin(traceTag, msg.target.getTraceName(msg));
+            // }
+            // try {
                 msg.target.dispatchMessage(msg);
-            } finally {
-                if (traceTag != 0) {
-                    Trace.traceEnd(traceTag);
-                }
-            }
+            // } finally {
+            //     if (traceTag != 0) {
+            //         Trace.traceEnd(traceTag);
+            //     }
+            // }
 
             if (logging != null) {
                 logging.println("<<<<< Finished to " + msg.target + " " + msg.callback);

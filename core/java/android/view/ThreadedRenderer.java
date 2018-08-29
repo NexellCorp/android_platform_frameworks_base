@@ -32,7 +32,7 @@ import android.os.Message;
 import android.os.ParcelFileDescriptor;
 import android.os.RemoteException;
 import android.os.ServiceManager;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Log;
 import android.view.Surface.OutOfResourcesException;
 import android.view.View.AttachInfo;
@@ -650,7 +650,7 @@ public final class ThreadedRenderer {
     }
 
     private void updateRootDisplayList(View view, HardwareDrawCallbacks callbacks) {
-        Trace.traceBegin(Trace.TRACE_TAG_VIEW, "Record View#draw()");
+        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "Record View#draw()");
         updateViewTreeDisplayList(view);
 
         if (mRootNodeNeedsUpdate || !mRootNode.isValid()) {
@@ -671,7 +671,7 @@ public final class ThreadedRenderer {
                 mRootNode.end(canvas);
             }
         }
-        Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
     }
 
     /**

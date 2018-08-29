@@ -30,7 +30,7 @@ import android.opengl.EGL14;
 import android.os.Process;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.security.keystore.AndroidKeyStoreProvider;
 import android.system.ErrnoException;
 import android.system.Os;
@@ -191,18 +191,18 @@ public class ZygoteInit {
 
     static void preload() {
         Log.d(TAG, "begin preload");
-        Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "BeginIcuCachePinning");
+        // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "BeginIcuCachePinning");
         beginIcuCachePinning();
-        Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
-        Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadClasses");
+        // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+        // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadClasses");
         preloadClasses();
-        Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
-        Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadResources");
+        // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+        // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadResources");
         preloadResources();
-        Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
-        Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadOpenGL");
+        // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+        // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadOpenGL");
         preloadOpenGL();
-        Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+        // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
         preloadSharedLibraries();
         preloadTextResources();
         // Ask the WebViewFactory to do any initialization that must run in the zygote process,
@@ -264,25 +264,25 @@ public class ZygoteInit {
      */
     private static void warmUpJcaProviders() {
         long startTime = SystemClock.uptimeMillis();
-        Trace.traceBegin(
-                Trace.TRACE_TAG_DALVIK, "Starting installation of AndroidKeyStoreProvider");
+        // Trace.traceBegin(
+        //         Trace.TRACE_TAG_DALVIK, "Starting installation of AndroidKeyStoreProvider");
         // AndroidKeyStoreProvider.install() manipulates the list of JCA providers to insert
         // preferred providers. Note this is not done via security.properties as the JCA providers
         // are not on the classpath in the case of, for example, raw dalvikvm runtimes.
         AndroidKeyStoreProvider.install();
         Log.i(TAG, "Installed AndroidKeyStoreProvider in "
                 + (SystemClock.uptimeMillis() - startTime) + "ms.");
-        Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+        // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
 
         startTime = SystemClock.uptimeMillis();
-        Trace.traceBegin(
-                Trace.TRACE_TAG_DALVIK, "Starting warm up of JCA providers");
+        // Trace.traceBegin(
+        //         Trace.TRACE_TAG_DALVIK, "Starting warm up of JCA providers");
         for (Provider p : Security.getProviders()) {
             p.warmUpServiceProvision();
         }
         Log.i(TAG, "Warmed up JCA providers in "
                 + (SystemClock.uptimeMillis() - startTime) + "ms.");
-        Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+        // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
     }
 
     /**
@@ -343,7 +343,7 @@ public class ZygoteInit {
                     continue;
                 }
 
-                Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadClass " + line);
+                // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadClass " + line);
                 try {
                     if (false) {
                         Log.v(TAG, "Preloading " + line + "...");
@@ -369,7 +369,7 @@ public class ZygoteInit {
                     }
                     throw new RuntimeException(t);
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+                // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
             }
 
             Log.i(TAG, "...preloaded " + count + " classes in "
@@ -382,9 +382,9 @@ public class ZygoteInit {
             runtime.setTargetHeapUtilization(defaultUtilization);
 
             // Fill in dex caches with classes, fields, and methods brought in by preloading.
-            Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadDexCaches");
+            // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadDexCaches");
             runtime.preloadDexCaches();
-            Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+            // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
 
             // Bring back root. We'll need it later if we're in the zygote.
             if (droppedPriviliges) {
@@ -715,7 +715,7 @@ public class ZygoteInit {
         ZygoteHooks.startZygoteNoThreadCreation();
 
         try {
-            Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "ZygoteInit");
+            // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "ZygoteInit");
             RuntimeInit.enableDdms();
             // Start profiling the zygote initialization.
             SamplingProfilerIntegration.start();
@@ -740,27 +740,27 @@ public class ZygoteInit {
             }
 
             registerZygoteSocket(socketName);
-            Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "ZygotePreload");
+            // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "ZygotePreload");
             EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_START,
                 SystemClock.uptimeMillis());
             preload();
             EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_END,
                 SystemClock.uptimeMillis());
-            Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+            // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
 
             // Finish profiling the zygote initialization.
             SamplingProfilerIntegration.writeZygoteSnapshot();
 
             // Do an initial gc to clean up after startup
-            Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PostZygoteInitGC");
+            // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PostZygoteInitGC");
             gcAndFinalize();
-            Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+            // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
 
-            Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+            // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
 
             // Disable tracing so that forked processes do not inherit stale tracing tags from
             // Zygote.
-            Trace.setTracingEnabled(false);
+            // Trace.setTracingEnabled(false);
 
             // Zygote process unmounts root storage spaces.
             Zygote.nativeUnmountStorageOnInit();

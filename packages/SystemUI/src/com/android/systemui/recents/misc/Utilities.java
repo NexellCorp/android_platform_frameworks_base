@@ -28,7 +28,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.ArraySet;
 import android.util.IntProperty;
 import android.util.Property;
@@ -282,8 +282,8 @@ public class Utilities {
      * Adds a trace event for debugging.
      */
     public static void addTraceEvent(String event) {
-        Trace.traceBegin(Trace.TRACE_TAG_VIEW, event);
-        Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        // Trace.traceBegin(Trace.TRACE_TAG_VIEW, event);
+        // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
     }
 
     /**

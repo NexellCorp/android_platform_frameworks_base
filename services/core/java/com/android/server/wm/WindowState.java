@@ -30,7 +30,7 @@ import android.os.PowerManager;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.os.WorkSource;
 import android.util.DisplayMetrics;
@@ -59,7 +59,7 @@ import java.util.ArrayList;
 import static android.app.ActivityManager.StackId;
 import static android.app.ActivityManager.StackId.DOCKED_STACK_ID;
 import static android.app.ActivityManager.StackId.INVALID_STACK_ID;
-import static android.os.Trace.TRACE_TAG_WINDOW_MANAGER;
+// import static android.os.Trace.TRACE_TAG_WINDOW_MANAGER;
 import static android.view.ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_CONTENT;
 import static android.view.ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_FRAME;
 import static android.view.ViewTreeObserver.InternalInsetsInfo.TOUCHABLE_INSETS_REGION;
@@ -2364,7 +2364,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
     }
 
     void reportResized() {
-        Trace.traceBegin(TRACE_TAG_WINDOW_MANAGER, "wm.reportResized_" + getWindowTag());
+        // Trace.traceBegin(TRACE_TAG_WINDOW_MANAGER, "wm.reportResized_" + getWindowTag());
         try {
             if (DEBUG_RESIZE || DEBUG_ORIENTATION) Slog.v(TAG, "Reporting new frame to " + this
                     + ": " + mCompatFrame);
@@ -2422,7 +2422,7 @@ final class WindowState implements WindowManagerPolicy.WindowState {
             mService.mPendingRemove.add(this);
             mService.mWindowPlacerLocked.requestTraversal();
         }
-        Trace.traceEnd(TRACE_TAG_WINDOW_MANAGER);
+        // Trace.traceEnd(TRACE_TAG_WINDOW_MANAGER);
     }
 
     Rect getBackdropFrame(Rect frame) {

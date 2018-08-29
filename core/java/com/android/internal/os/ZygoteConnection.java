@@ -27,7 +27,7 @@ import android.net.LocalSocket;
 import android.os.Process;
 import android.os.SELinux;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.system.ErrnoException;
 import android.system.Os;
 import android.util.Log;
@@ -747,7 +747,7 @@ class ZygoteConnection {
         }
 
         // End of the postFork event.
-        Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+        // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
         if (parsedArgs.invokeWith != null) {
             WrapperInit.execApplication(parsedArgs.invokeWith,
                     parsedArgs.niceName, parsedArgs.targetSdkVersion,

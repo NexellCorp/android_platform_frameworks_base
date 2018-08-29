@@ -36,7 +36,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.FileUtils;
 import android.os.PatternMatcher;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.text.TextUtils;
 import android.util.ArrayMap;
@@ -94,7 +94,7 @@ import static android.content.pm.PackageManager.INSTALL_PARSE_FAILED_MANIFEST_MA
 import static android.content.pm.PackageManager.INSTALL_PARSE_FAILED_NOT_APK;
 import static android.content.pm.PackageManager.INSTALL_PARSE_FAILED_NO_CERTIFICATES;
 import static android.content.pm.PackageManager.INSTALL_PARSE_FAILED_UNEXPECTED_EXCEPTION;
-import static android.os.Trace.TRACE_TAG_PACKAGE_MANAGER;
+// import static android.os.Trace.TRACE_TAG_PACKAGE_MANAGER;
 
 /**
  * Parser for package files (APKs) on disk. This supports apps packaged either
@@ -1137,8 +1137,8 @@ public class PackageParser {
         pkg.mSignatures = null;
         pkg.mSigningKeys = null;
 
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "collectCertificates");
-        try {
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "collectCertificates");
+        // try {
             collectCertificates(pkg, new File(pkg.baseCodePath), parseFlags);
 
             if (!ArrayUtils.isEmpty(pkg.splitCodePaths)) {
@@ -1146,9 +1146,9 @@ public class PackageParser {
                     collectCertificates(pkg, new File(pkg.splitCodePaths[i]), parseFlags);
                 }
             }
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // }
     }
 
     private static void collectCertificates(Package pkg, File apkFile, int parseFlags)
@@ -1161,7 +1161,7 @@ public class PackageParser {
             Certificate[][] allSignersCerts = null;
             Signature[] signatures = null;
             try {
-                Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "verifyV2");
+                // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "verifyV2");
                 allSignersCerts = ApkSignatureSchemeV2Verifier.verify(apkPath);
                 signatures = convertToSignatures(allSignersCerts);
                 // APK verified using APK Signature Scheme v2.
@@ -1174,8 +1174,8 @@ public class PackageParser {
                         "Failed to collect certificates from " + apkPath
                                 + " using APK Signature Scheme v2",
                         e);
-            } finally {
-                Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // } finally {
+            //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
             }
 
             if (verified) {
@@ -1202,7 +1202,7 @@ public class PackageParser {
 
         StrictJarFile jarFile = null;
         try {
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "strictJarFileCtor");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "strictJarFileCtor");
             // Ignore signature stripping protections when verifying APKs from system partition.
             // For those APKs we only care about extracting signer certificates, and don't care
             // about verifying integrity.
@@ -1212,7 +1212,7 @@ public class PackageParser {
                     apkPath,
                     !verified, // whether to verify JAR signature
                     signatureSchemeRollbackProtectionsEnforced);
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
 
             // Always verify manifest, regardless of source
             final ZipEntry manifestEntry = jarFile.findEntry(ANDROID_MANIFEST_FILENAME);
@@ -1227,7 +1227,7 @@ public class PackageParser {
             }
 
             // APK's integrity needs to be verified using JAR signature scheme.
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "verifyV1");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "verifyV1");
             final List<ZipEntry> toVerify = new ArrayList<>();
             toVerify.add(manifestEntry);
 
@@ -1275,7 +1275,7 @@ public class PackageParser {
                     }
                 }
             }
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
         } catch (GeneralSecurityException e) {
             throw new PackageParserException(INSTALL_PARSE_FAILED_CERTIFICATE_ENCODING,
                     "Failed to collect certificates from " + apkPath, e);
@@ -1332,12 +1332,12 @@ public class PackageParser {
             if ((flags & PARSE_COLLECT_CERTIFICATES) != 0) {
                 // TODO: factor signature related items out of Package object
                 final Package tempPkg = new Package(null);
-                Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "collectCertificates");
-                try {
+                // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "collectCertificates");
+                // try {
                     collectCertificates(tempPkg, apkFile, 0 /*parseFlags*/);
-                } finally {
-                    Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-                }
+                // } finally {
+                //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+                // }
                 signatures = tempPkg.mSignatures;
                 certificates = tempPkg.mCertificates;
             } else {

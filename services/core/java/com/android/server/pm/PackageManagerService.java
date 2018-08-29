@@ -75,7 +75,7 @@ import static android.content.pm.PackageManager.PERMISSION_DENIED;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.content.pm.PackageParser.PARSE_IS_PRIVILEGED;
 import static android.content.pm.PackageParser.isApkFile;
-import static android.os.Trace.TRACE_TAG_PACKAGE_MANAGER;
+// import static android.os.Trace.TRACE_TAG_PACKAGE_MANAGER;
 import static android.system.OsConstants.O_CREAT;
 import static android.system.OsConstants.O_RDWR;
 
@@ -187,7 +187,7 @@ import android.os.SELinux;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.UserManagerInternal;
@@ -1195,19 +1195,19 @@ public class PackageManagerService extends IPackageManager.Stub {
                     // need to do anything. The pending install
                     // will be processed later on.
                     if (!mBound) {
-                        Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "bindingMCS",
-                                System.identityHashCode(mHandler));
+                        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "bindingMCS",
+                                // System.identityHashCode(mHandler));
                         // If this is the only one pending we might
                         // have to bind to the service again.
                         if (!connectToService()) {
                             Slog.e(TAG, "Failed to bind to media container service");
                             params.serviceError();
-                            Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "bindingMCS",
-                                    System.identityHashCode(mHandler));
-                            if (params.traceMethod != null) {
-                                Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, params.traceMethod,
-                                        params.traceCookie);
-                            }
+                            // Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "bindingMCS",
+                            //         System.identityHashCode(mHandler));
+                            // if (params.traceMethod != null) {
+                            //     Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, params.traceMethod,
+                            //             params.traceCookie);
+                            // }
                             return;
                         } else {
                             // Once we bind to the service, the first
@@ -1228,8 +1228,8 @@ public class PackageManagerService extends IPackageManager.Stub {
                     if (DEBUG_INSTALL) Slog.i(TAG, "mcs_bound");
                     if (msg.obj != null) {
                         mContainerService = (IMediaContainerService) msg.obj;
-                        Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "bindingMCS",
-                                System.identityHashCode(mHandler));
+                        // Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "bindingMCS",
+                                // System.identityHashCode(mHandler));
                     }
                     if (mContainerService == null) {
                         if (!mBound) {
@@ -1239,12 +1239,12 @@ public class PackageManagerService extends IPackageManager.Stub {
                             for (HandlerParams params : mPendingInstalls) {
                                 // Indicate service bind error
                                 params.serviceError();
-                                Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
-                                        System.identityHashCode(params));
-                                if (params.traceMethod != null) {
-                                    Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER,
-                                            params.traceMethod, params.traceCookie);
-                                }
+                                // Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
+                                //         System.identityHashCode(params));
+                                // if (params.traceMethod != null) {
+                                //     Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER,
+                                //             params.traceMethod, params.traceCookie);
+                                // }
                                 return;
                             }
                             mPendingInstalls.clear();
@@ -1254,9 +1254,9 @@ public class PackageManagerService extends IPackageManager.Stub {
                     } else if (mPendingInstalls.size() > 0) {
                         HandlerParams params = mPendingInstalls.get(0);
                         if (params != null) {
-                            Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
-                                    System.identityHashCode(params));
-                            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "startCopy");
+                            // Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
+                            //         System.identityHashCode(params));
+                            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "startCopy");
                             if (params.startCopy()) {
                                 // We are done...  look for more work or to
                                 // go idle.
@@ -1285,7 +1285,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                                     mHandler.sendEmptyMessage(MCS_BOUND);
                                 }
                             }
-                            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+                            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
                         }
                     } else {
                         // Should never happen ideally.
@@ -1304,8 +1304,8 @@ public class PackageManagerService extends IPackageManager.Stub {
                             for (HandlerParams params : mPendingInstalls) {
                                 // Indicate service bind error
                                 params.serviceError();
-                                Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
-                                        System.identityHashCode(params));
+                                // Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
+                                //         System.identityHashCode(params));
                             }
                             mPendingInstalls.clear();
                         }
@@ -1334,8 +1334,8 @@ public class PackageManagerService extends IPackageManager.Stub {
                 case MCS_GIVE_UP: {
                     if (DEBUG_INSTALL) Slog.i(TAG, "mcs_giveup too many retries");
                     HandlerParams params = mPendingInstalls.remove(0);
-                    Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
-                            System.identityHashCode(params));
+                    // Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
+                    //         System.identityHashCode(params));
                     break;
                 }
                 case SEND_PENDING_BROADCAST: {
@@ -1437,15 +1437,15 @@ public class PackageManagerService extends IPackageManager.Stub {
                         }
 
                         // Log tracing if needed
-                        if (args.traceMethod != null) {
-                            Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, args.traceMethod,
-                                    args.traceCookie);
-                        }
+                        // if (args.traceMethod != null) {
+                        //     Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, args.traceMethod,
+                        //             args.traceCookie);
+                        // }
                     } else {
                         Slog.e(TAG, "Bogus post-install token " + msg.arg1);
                     }
 
-                    Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "postInstall", msg.arg1);
+                    // Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "postInstall", msg.arg1);
                 } break;
                 case UPDATED_MEDIA_STATUS: {
                     if (DEBUG_SD_INSTALL) Log.i(TAG, "Got message UPDATED_MEDIA_STATUS");
@@ -1532,8 +1532,8 @@ public class PackageManagerService extends IPackageManager.Stub {
                                     state.getInstallArgs().getUser());
                         }
 
-                        Trace.asyncTraceEnd(
-                                TRACE_TAG_PACKAGE_MANAGER, "verification", verificationId);
+                        // Trace.asyncTraceEnd(
+                        //         TRACE_TAG_PACKAGE_MANAGER, "verification", verificationId);
 
                         processPendingInstall(args, ret);
                         mHandler.sendEmptyMessage(MCS_UNBIND);
@@ -1573,8 +1573,8 @@ public class PackageManagerService extends IPackageManager.Stub {
                             ret = PackageManager.INSTALL_FAILED_VERIFICATION_FAILURE;
                         }
 
-                        Trace.asyncTraceEnd(
-                                TRACE_TAG_PACKAGE_MANAGER, "verification", verificationId);
+                        // Trace.asyncTraceEnd(
+                        //         TRACE_TAG_PACKAGE_MANAGER, "verification", verificationId);
 
                         processPendingInstall(args, ret);
                         mHandler.sendEmptyMessage(MCS_UNBIND);
@@ -4786,25 +4786,25 @@ public class PackageManagerService extends IPackageManager.Stub {
     @Override
     public ResolveInfo resolveIntent(Intent intent, String resolvedType,
             int flags, int userId) {
-        try {
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "resolveIntent");
+        // try {
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "resolveIntent");
 
             if (!sUserManager.exists(userId)) return null;
             flags = updateFlagsForResolve(flags, userId, intent);
             enforceCrossUserPermission(Binder.getCallingUid(), userId,
                     false /*requireFullPermission*/, false /*checkShell*/, "resolve intent");
 
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "queryIntentActivities");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "queryIntentActivities");
             final List<ResolveInfo> query = queryIntentActivitiesInternal(intent, resolvedType,
                     flags, userId);
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
 
             final ResolveInfo bestChoice =
                     chooseBestActivity(intent, resolvedType, flags, query, userId);
             return bestChoice;
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // }
     }
 
     @Override
@@ -5310,14 +5310,14 @@ public class PackageManagerService extends IPackageManager.Stub {
     @Override
     public @NonNull ParceledListSlice<ResolveInfo> queryIntentActivities(Intent intent,
             String resolvedType, int flags, int userId) {
-        try {
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "queryIntentActivities");
+        // try {
+        //     Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "queryIntentActivities");
 
             return new ParceledListSlice<>(
                     queryIntentActivitiesInternal(intent, resolvedType, flags, userId));
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // }
     }
 
     private @NonNull List<ResolveInfo> queryIntentActivitiesInternal(Intent intent,
@@ -5434,7 +5434,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
         }
         if (addEphemeral) {
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "resolveEphemeral");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "resolveEphemeral");
             final EphemeralResolveInfo ai = getEphemeralResolveInfo(
                     mContext, mEphemeralResolverConnection, intent, resolvedType, userId,
                     matchEphemeralPackage ? pkgName : null);
@@ -5454,7 +5454,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                         intent.getData().getPath(), PatternMatcher.PATTERN_LITERAL);
                 result.add(ephemeralInstaller);
             }
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
         }
         if (sortResult) {
             Collections.sort(result, mResolvePrioritySorter);
@@ -6657,12 +6657,12 @@ public class PackageManagerService extends IPackageManager.Stub {
     }
 
     private void scanDirTracedLI(File dir, final int parseFlags, int scanFlags, long currentTime) {
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "scanDir");
-        try {
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "scanDir");
+        // try {
             scanDirLI(dir, parseFlags, scanFlags, currentTime);
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // }
     }
 
     private void scanDirLI(File dir, final int parseFlags, int scanFlags, long currentTime) {
@@ -6791,12 +6791,12 @@ public class PackageManagerService extends IPackageManager.Stub {
      */
     private PackageParser.Package scanPackageTracedLI(File scanFile, final int parseFlags,
             int scanFlags, long currentTime, UserHandle user) throws PackageManagerException {
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "scanPackage");
-        try {
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "scanPackage");
+        // try {
             return scanPackageLI(scanFile, parseFlags, scanFlags, currentTime, user);
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // }
     }
 
     /**
@@ -6815,14 +6815,14 @@ public class PackageManagerService extends IPackageManager.Stub {
             parseFlags |= PackageParser.PARSE_TRUSTED_OVERLAY;
         }
 
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "parsePackage");
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "parsePackage");
         final PackageParser.Package pkg;
         try {
             pkg = pp.parsePackage(scanFile, parseFlags);
         } catch (PackageParserException e) {
             throw PackageManagerException.from(e);
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
         }
 
         return scanPackageLI(pkg, scanFile, parseFlags, scanFlags, currentTime, user);
@@ -7396,13 +7396,13 @@ public class PackageManagerService extends IPackageManager.Stub {
 
     private int performDexOptTraced(String packageName,
                 boolean checkProfiles, String targetCompilerFilter, boolean force) {
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "dexopt");
-        try {
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "dexopt");
+        // try {
             return performDexOptInternal(packageName, checkProfiles,
                     targetCompilerFilter, force);
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // }
     }
 
     // Run dexopt on a given package. Returns true if dexopt did not fail, i.e.
@@ -7543,7 +7543,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         synchronized (mInstallLock) {
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "dump profiles");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "dump profiles");
             final int sharedGid = UserHandle.getSharedAppGid(pkg.applicationInfo.uid);
             try {
                 List<String> allCodePaths = pkg.getAllCodePathsExcludingResourceOnly();
@@ -7553,7 +7553,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             } catch (InstallerException e) {
                 Slog.w(TAG, "Failed to dump profiles", e);
             }
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
         }
     }
 
@@ -7570,7 +7570,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         synchronized (mInstallLock) {
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "dexopt");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "dexopt");
 
             // Whoever is calling forceDexOpt wants a fully compiled package.
             // Don't use profiles since that may cause compilation to be skipped.
@@ -7578,7 +7578,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     false /* checkProfiles */, getCompilerFilterForReason(REASON_FORCED_DEXOPT),
                     true /* force */);
 
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
             if (res != PackageDexOptimizer.DEX_OPT_PERFORMED) {
                 throw new IllegalStateException("Failed to dexopt: " + res);
             }
@@ -7907,7 +7907,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     private PackageParser.Package scanPackageTracedLI(PackageParser.Package pkg,
             final int policyFlags, int scanFlags, long currentTime, UserHandle user)
                     throws PackageManagerException {
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "scanPackage");
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "scanPackage");
         // If the package has children and this is the first dive in the function
         // we recursively scan the package with the SCAN_CHECK_ONLY flag set to see
         // whether all packages (parent and children) would be successfully scanned
@@ -7922,7 +7922,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         final PackageParser.Package scannedPkg;
-        try {
+        // try {
             // Scan the parent
             scannedPkg = scanPackageLI(pkg, policyFlags, scanFlags, currentTime, user);
             // Scan the children
@@ -7932,9 +7932,9 @@ public class PackageManagerService extends IPackageManager.Stub {
                 scanPackageLI(childPkg, policyFlags,
                         scanFlags, currentTime, user);
             }
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // }
 
         if ((scanFlags & SCAN_CHECK_ONLY) != 0) {
             return scanPackageTracedLI(pkg, policyFlags, scanFlags, currentTime, user);
@@ -8626,7 +8626,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         ksms.assertScannedPackageValid(pkg);
 
         // writer
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "updateSettings");
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "updateSettings");
 
         boolean createIdmapFailed = false;
         synchronized (mPackages) {
@@ -8995,7 +8995,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
         }
 
-        Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
 
         if (createIdmapFailed) {
             throw new PackageManagerException(INSTALL_FAILED_UPDATE_INCOMPATIBLE,
@@ -9958,7 +9958,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             return;
         }
 
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "grantPermissions");
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "grantPermissions");
 
         PermissionsState permissionsState = ps.getPermissionsState();
         PermissionsState origPermissions = permissionsState;
@@ -10260,7 +10260,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             mSettings.writeRuntimePermissionsForUserLPr(userId, runtimePermissionsRevoked);
         }
 
-        Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
     }
 
     private boolean isNewPlatformPermissionForPackage(String perm, PackageParser.Package pkg) {
@@ -11640,10 +11640,10 @@ public class PackageManagerService extends IPackageManager.Stub {
         params.setTraceMethod("installAsUser").setTraceCookie(System.identityHashCode(params));
         msg.obj = params;
 
-        Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "installAsUser",
-                System.identityHashCode(msg.obj));
-        Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
-                System.identityHashCode(msg.obj));
+        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "installAsUser",
+        //         System.identityHashCode(msg.obj));
+        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
+        //         System.identityHashCode(msg.obj));
 
         mHandler.sendMessage(msg);
     }
@@ -11676,10 +11676,10 @@ public class PackageManagerService extends IPackageManager.Stub {
         params.setTraceMethod("installStage").setTraceCookie(System.identityHashCode(params));
         msg.obj = params;
 
-        Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "installStage",
-                System.identityHashCode(msg.obj));
-        Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
-                System.identityHashCode(msg.obj));
+        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "installStage",
+        //         System.identityHashCode(msg.obj));
+        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
+        //         System.identityHashCode(msg.obj));
 
         mHandler.sendMessage(msg);
     }
@@ -12185,7 +12185,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         if (DEBUG_INSTALL) {
             Slog.v(TAG, "BM finishing package install for " + token);
         }
-        Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "restore", token);
+        // Trace.asyncTraceEnd(TRACE_TAG_PACKAGE_MANAGER, "restore", token);
 
         final Message msg = mHandler.obtainMessage(POST_INSTALL, token, didLaunch ? 1 : 0);
         mHandler.sendMessage(msg);
@@ -12482,7 +12482,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     if (bm != null) {
                         if (DEBUG_INSTALL) Log.v(TAG, "token " + token
                                 + " to BM for possible restore");
-                        Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "restore", token);
+                        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "restore", token);
                         try {
                             // TODO: http://b/22388012
                             if (bm.isBackupServiceActive(UserHandle.USER_SYSTEM)) {
@@ -12507,7 +12507,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     // available -- just fire the post-install work request directly.
                     if (DEBUG_INSTALL) Log.v(TAG, "No restore - queue post-install for " + token);
 
-                    Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "postInstall", token);
+                    // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "postInstall", token);
 
                     Message msg = mHandler.obtainMessage(POST_INSTALL, token, 0);
                     mHandler.sendMessage(msg);
@@ -13191,8 +13191,8 @@ public class PackageManagerService extends IPackageManager.Stub {
                             mRequiredVerifierPackage, receivers);
                     if (ret == PackageManager.INSTALL_SUCCEEDED
                             && mRequiredVerifierPackage != null) {
-                        Trace.asyncTraceBegin(
-                                TRACE_TAG_PACKAGE_MANAGER, "verification", verificationId);
+                        // Trace.asyncTraceBegin(
+                        //         TRACE_TAG_PACKAGE_MANAGER, "verification", verificationId);
                         /*
                          * Send the intent to the required verification agent,
                          * but only start the verification timeout after the
@@ -13466,12 +13466,12 @@ public class PackageManagerService extends IPackageManager.Stub {
         }
 
         int copyApk(IMediaContainerService imcs, boolean temp) throws RemoteException {
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "copyApk");
-            try {
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "copyApk");
+            // try {
                 return doCopyApk(imcs, temp);
-            } finally {
-                Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-            }
+            // } finally {
+            //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // }
         }
 
         private int doCopyApk(IMediaContainerService imcs, boolean temp) throws RemoteException {
@@ -14209,7 +14209,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     private void installNewPackageLIF(PackageParser.Package pkg, final int policyFlags,
             int scanFlags, UserHandle user, String installerPackageName, String volumeUuid,
             PackageInstalledInfo res) {
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "installNewPackage");
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "installNewPackage");
 
         // Remember this for later, in case we need to rollback this install
         String pkgName = pkg.packageName;
@@ -14254,7 +14254,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             res.setError("Package couldn't be installed in " + pkg.codePath, e);
         }
 
-        Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
     }
 
     private boolean shouldCheckUpgradeKeySetLP(PackageSetting oldPs, int scanFlags) {
@@ -14880,7 +14880,7 @@ public class PackageManagerService extends IPackageManager.Stub {
     private void updateSettingsInternalLI(PackageParser.Package newPackage,
             String installerPackageName, int[] allUsers, int[] installedForUsers,
             PackageInstalledInfo res, UserHandle user) {
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "updateSettings");
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "updateSettings");
 
         String pkgName = newPackage.packageName;
         synchronized (mPackages) {
@@ -14888,9 +14888,9 @@ public class PackageManagerService extends IPackageManager.Stub {
             //note that the new package setting would have already been
             //added to mPackages. It hasn't been persisted yet.
             mSettings.setInstallStatus(pkgName, PackageSettingBase.PKG_INSTALL_INCOMPLETE);
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "writeSettings");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "writeSettings");
             mSettings.writeLPr();
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
         }
 
         if (DEBUG_INSTALL) Slog.d(TAG, "New package installed in " + newPackage.codePath);
@@ -14945,21 +14945,21 @@ public class PackageManagerService extends IPackageManager.Stub {
             mSettings.setInstallerPackageName(pkgName, installerPackageName);
             res.setReturnCode(PackageManager.INSTALL_SUCCEEDED);
             //to update install status
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "writeSettings");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "writeSettings");
             mSettings.writeLPr();
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
         }
 
-        Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
     }
 
     private void installPackageTracedLI(InstallArgs args, PackageInstalledInfo res) {
-        try {
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "installPackage");
+        // try {
+        //     Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "installPackage");
             installPackageLI(args, res);
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // }
     }
 
     private void installPackageLI(InstallArgs args, PackageInstalledInfo res) {
@@ -15006,15 +15006,15 @@ public class PackageManagerService extends IPackageManager.Stub {
         pp.setSeparateProcesses(mSeparateProcesses);
         pp.setDisplayMetrics(mMetrics);
 
-        Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "parsePackage");
+        // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "parsePackage");
         final PackageParser.Package pkg;
         try {
             pkg = pp.parsePackage(tmpPackageFile, parseFlags);
         } catch (PackageParserException e) {
             res.setError("Failed parse during installPackageLI", e);
             return;
-        } finally {
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+        // } finally {
+        //     Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
         }
 
         // If we are installing a clustered package add results for the children
@@ -15278,7 +15278,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     Slog.e(TAG, "updateSharedLibrariesLPw failed: " + e.getMessage());
                 }
             }
-            Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "dexopt");
+            // Trace.traceBegin(TRACE_TAG_PACKAGE_MANAGER, "dexopt");
             // Do not run PackageDexOptimizer through the local performDexOpt
             // method because `pkg` may not be in `mPackages` yet.
             //
@@ -15287,7 +15287,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                     null /* instructionSets */, false /* checkProfiles */,
                     getCompilerFilterForReason(REASON_INSTALL),
                     getOrCreateCompilerPackageStats(pkg));
-            Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_PACKAGE_MANAGER);
 
             // Notify BackgroundDexOptService that the package has been changed.
             // If this is an update of a package which used to fail to compile,
@@ -20473,10 +20473,10 @@ Slog.v(TAG, ":: stepped forward, applying functor at tag " + parser.getName());
         params.setTraceMethod("movePackage").setTraceCookie(System.identityHashCode(params));
         msg.obj = params;
 
-        Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "movePackage",
-                System.identityHashCode(msg.obj));
-        Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
-                System.identityHashCode(msg.obj));
+        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "movePackage",
+        //         System.identityHashCode(msg.obj));
+        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "queueInstall",
+        //         System.identityHashCode(msg.obj));
 
         mHandler.sendMessage(msg);
     }

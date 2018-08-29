@@ -43,7 +43,7 @@ import android.os.IBinder;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.util.ArrayMap;
 import android.util.PrintWriterPrinter;
@@ -599,7 +599,7 @@ final class ProcessRecord {
 
     void kill(String reason, boolean noisy) {
         if (!killedByAm) {
-            Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "kill");
+            // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "kill");
             if (noisy) {
                 Slog.i(TAG, "Killing " + toShortString() + " (adj " + setAdj + "): " + reason);
             }
@@ -610,7 +610,7 @@ final class ProcessRecord {
                 killed = true;
                 killedByAm = true;
             }
-            Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+            // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
         }
     }
 

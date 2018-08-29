@@ -65,7 +65,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.TransactionTooLargeException;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -125,7 +125,7 @@ import static android.content.Intent.FLAG_ACTIVITY_MULTIPLE_TASK;
 import static android.content.Intent.FLAG_ACTIVITY_NEW_TASK;
 import static android.content.pm.ActivityInfo.FLAG_SHOW_FOR_ALL_USERS;
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
-import static android.os.Trace.TRACE_TAG_ACTIVITY_MANAGER;
+// import static android.os.Trace.TRACE_TAG_ACTIVITY_MANAGER;
 import static com.android.server.am.ActivityManagerDebugConfig.DEBUG_ALL;
 import static com.android.server.am.ActivityManagerDebugConfig.DEBUG_CONTAINERS;
 import static com.android.server.am.ActivityManagerDebugConfig.DEBUG_IDLE;
@@ -2051,7 +2051,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             return;
         }
 
-        Trace.traceBegin(TRACE_TAG_ACTIVITY_MANAGER, "am.resizeStack_" + stackId);
+        // Trace.traceBegin(TRACE_TAG_ACTIVITY_MANAGER, "am.resizeStack_" + stackId);
         mWindowManager.deferSurfaceLayout();
         try {
             resizeStackUncheckedLocked(stack, bounds, tempTaskBounds, tempTaskInsetBounds);
@@ -2061,7 +2061,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             }
         } finally {
             mWindowManager.continueSurfaceLayout();
-            Trace.traceEnd(TRACE_TAG_ACTIVITY_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_ACTIVITY_MANAGER);
         }
     }
 
@@ -2234,7 +2234,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             return;
         }
 
-        Trace.traceBegin(TRACE_TAG_ACTIVITY_MANAGER, "am.resizeDockedStack");
+        // Trace.traceBegin(TRACE_TAG_ACTIVITY_MANAGER, "am.resizeDockedStack");
         mWindowManager.deferSurfaceLayout();
         try {
             // Don't allow re-entry while resizing. E.g. due to docked stack detaching.
@@ -2274,7 +2274,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         } finally {
             mAllowDockedStackResize = true;
             mWindowManager.continueSurfaceLayout();
-            Trace.traceEnd(TRACE_TAG_ACTIVITY_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_ACTIVITY_MANAGER);
         }
 
         mResizeDockedStackTimeout.notifyResizing(dockedBounds,
@@ -2290,7 +2290,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             Slog.w(TAG, "resizePinnedStackLocked: pinned stack not found");
             return;
         }
-        Trace.traceBegin(TRACE_TAG_ACTIVITY_MANAGER, "am.resizePinnedStack");
+        // Trace.traceBegin(TRACE_TAG_ACTIVITY_MANAGER, "am.resizePinnedStack");
         mWindowManager.deferSurfaceLayout();
         try {
             ActivityRecord r = stack.topRunningActivityLocked();
@@ -2299,7 +2299,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
             stack.ensureVisibleActivitiesConfigurationLocked(r, false);
         } finally {
             mWindowManager.continueSurfaceLayout();
-            Trace.traceEnd(TRACE_TAG_ACTIVITY_MANAGER);
+            // Trace.traceEnd(TRACE_TAG_ACTIVITY_MANAGER);
         }
     }
 
@@ -2335,7 +2335,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         // This method assumes that the task is already placed in the right stack.
         // we do not mess with that decision and we only do the resize!
 
-        Trace.traceBegin(TRACE_TAG_ACTIVITY_MANAGER, "am.resizeTask_" + task.taskId);
+        // Trace.traceBegin(TRACE_TAG_ACTIVITY_MANAGER, "am.resizeTask_" + task.taskId);
 
         final Configuration overrideConfig =  task.updateOverrideConfiguration(bounds);
         // This variable holds information whether the configuration didn't change in a significant
@@ -2360,7 +2360,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
         }
         mWindowManager.resizeTask(task.taskId, task.mBounds, task.mOverrideConfig, kept, forced);
 
-        Trace.traceEnd(TRACE_TAG_ACTIVITY_MANAGER);
+        // Trace.traceEnd(TRACE_TAG_ACTIVITY_MANAGER);
         return kept;
     }
 

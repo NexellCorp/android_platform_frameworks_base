@@ -72,7 +72,7 @@ import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.os.SystemService;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.os.WorkSource;
 import android.provider.Settings;
@@ -2786,7 +2786,7 @@ public class WindowManagerService extends IWindowManager.Stub
     void repositionChild(Session session, IWindow client,
             int left, int top, int right, int bottom,
             long frameNumber, Rect outFrame) {
-        Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "repositionChild");
+        // Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "repositionChild");
         long origId = Binder.clearCallingIdentity();
 
         try {
@@ -2837,7 +2837,7 @@ public class WindowManagerService extends IWindowManager.Stub
             }
         } finally {
             Binder.restoreCallingIdentity(origId);
-            Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
+            // Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
         }
     }
 
@@ -3005,13 +3005,13 @@ public class WindowManagerService extends IWindowManager.Stub
                 } else {
                     if (DEBUG_VISIBILITY) Slog.i(TAG_WM, "Releasing surface in: " + win);
 
-                    try {
-                        Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "wmReleaseOutSurface_"
-                                + win.mAttrs.getTitle());
+                    // try {
+                    //     Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "wmReleaseOutSurface_"
+                    //             + win.mAttrs.getTitle());
                         outSurface.release();
-                    } finally {
-                        Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
-                    }
+                    // } finally {
+                    //     Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
+                    // }
                 }
             }
 
@@ -3276,7 +3276,7 @@ public class WindowManagerService extends IWindowManager.Stub
         // frozen, there is no reason to animate and it can cause strange
         // artifacts when we unfreeze the display if some different animation
         // is running.
-        Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "WM#applyAnimationLocked");
+        // Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "WM#applyAnimationLocked");
         if (okToDisplay()) {
             DisplayInfo displayInfo = getDefaultDisplayInfoLocked();
             final int width = displayInfo.appWidth;
@@ -3328,7 +3328,7 @@ public class WindowManagerService extends IWindowManager.Stub
         } else {
             atoken.mAppAnimator.clearAnimation();
         }
-        Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
+        // Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
 
         return atoken.mAppAnimator.animation != null;
     }
@@ -6054,7 +6054,7 @@ public class WindowManagerService extends IWindowManager.Stub
 
             if (!mBootAnimationStopped) {
                 // Do this one time.
-                Trace.asyncTraceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "Stop bootanim", 0);
+                // Trace.asyncTraceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "Stop bootanim", 0);
                 try {
                     IBinder surfaceFlinger = ServiceManager.getService("SurfaceFlinger");
                     if (surfaceFlinger != null) {
@@ -6077,7 +6077,7 @@ public class WindowManagerService extends IWindowManager.Stub
             }
 
             EventLog.writeEvent(EventLogTags.WM_BOOT_ANIMATION_DONE, SystemClock.uptimeMillis());
-            Trace.asyncTraceEnd(Trace.TRACE_TAG_WINDOW_MANAGER, "Stop bootanim", 0);
+            // Trace.asyncTraceEnd(Trace.TRACE_TAG_WINDOW_MANAGER, "Stop bootanim", 0);
             mDisplayEnabled = true;
             if (DEBUG_SCREEN_ON || DEBUG_BOOT) Slog.i(TAG_WM, "******************** ENABLING SCREEN!");
 
@@ -6336,13 +6336,13 @@ public class WindowManagerService extends IWindowManager.Stub
                 "screenshotWallpaper()")) {
             throw new SecurityException("Requires READ_FRAME_BUFFER permission");
         }
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "screenshotWallpaper");
+        // try {
+        //     Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "screenshotWallpaper");
             return screenshotApplicationsInner(null, Display.DEFAULT_DISPLAY, -1, -1, true, 1f,
                     Bitmap.Config.ARGB_8888, true);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
+        // }
     }
 
     /**
@@ -6388,13 +6388,13 @@ public class WindowManagerService extends IWindowManager.Stub
                 "screenshotApplications()")) {
             throw new SecurityException("Requires READ_FRAME_BUFFER permission");
         }
-        try {
-            Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "screenshotApplications");
+        // try {
+        //     Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "screenshotApplications");
             return screenshotApplicationsInner(appToken, displayId, width, height, false,
                     frameScale, Bitmap.Config.RGB_565, false);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
+        // }
     }
 
     /**
@@ -9909,7 +9909,7 @@ public class WindowManagerService extends IWindowManager.Stub
     boolean updateFocusedWindowLocked(int mode, boolean updateInputWindows) {
         WindowState newFocus = computeFocusedWindowLocked();
         if (mCurrentFocus != newFocus) {
-            Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "wmUpdateFocus");
+            // Trace.traceBegin(Trace.TRACE_TAG_WINDOW_MANAGER, "wmUpdateFocus");
             // This check makes sure that we don't already have the focus
             // change message pending.
             mH.removeMessages(H.REPORT_FOCUS_CHANGE);
@@ -9968,7 +9968,7 @@ public class WindowManagerService extends IWindowManager.Stub
             getDefaultDisplayContentLocked().scheduleToastWindowsTimeoutIfNeededLocked(
                         oldFocus, newFocus);
 
-            Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
+            // Trace.traceEnd(Trace.TRACE_TAG_WINDOW_MANAGER);
             return true;
         }
         return false;

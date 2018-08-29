@@ -30,7 +30,7 @@ import android.content.res.XmlResourceParser;
 import android.graphics.Canvas;
 import android.os.Handler;
 import android.os.Message;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
@@ -453,7 +453,7 @@ public abstract class LayoutInflater {
      */
     public View inflate(XmlPullParser parser, @Nullable ViewGroup root, boolean attachToRoot) {
         synchronized (mConstructorArgs) {
-            Trace.traceBegin(Trace.TRACE_TAG_VIEW, "inflate");
+            // Trace.traceBegin(Trace.TRACE_TAG_VIEW, "inflate");
 
             final Context inflaterContext = mContext;
             final AttributeSet attrs = Xml.asAttributeSet(parser);
@@ -548,7 +548,7 @@ public abstract class LayoutInflater {
                 mConstructorArgs[0] = lastContext;
                 mConstructorArgs[1] = null;
 
-                Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+                // Trace.traceEnd(Trace.TRACE_TAG_VIEW);
             }
 
             return result;
@@ -602,7 +602,7 @@ public abstract class LayoutInflater {
         Class<? extends View> clazz = null;
 
         try {
-            Trace.traceBegin(Trace.TRACE_TAG_VIEW, name);
+            // Trace.traceBegin(Trace.TRACE_TAG_VIEW, name);
 
             if (constructor == null) {
                 // Class not found in the cache, see if it's real, and try to add it
@@ -671,8 +671,8 @@ public abstract class LayoutInflater {
                             + (clazz == null ? "<unknown>" : clazz.getName()), e);
             ie.setStackTrace(EMPTY_STACK_TRACE);
             throw ie;
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_VIEW);
         }
     }
 

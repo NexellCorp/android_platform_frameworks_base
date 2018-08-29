@@ -40,7 +40,7 @@ import android.os.Message;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.ServiceManager;
-import android.os.Trace;
+// import android.os.Trace;
 import android.text.TextUtils;
 import android.text.style.SuggestionSpan;
 import android.util.Log;
@@ -1917,8 +1917,8 @@ public final class InputMethodManager {
             final int seq = event.getSequenceNumber();
             if (mCurSender.sendInputEvent(seq, event)) {
                 mPendingEvents.put(seq, p);
-                Trace.traceCounter(Trace.TRACE_TAG_INPUT, PENDING_EVENT_COUNTER,
-                        mPendingEvents.size());
+                // Trace.traceCounter(Trace.TRACE_TAG_INPUT, PENDING_EVENT_COUNTER,
+                //         mPendingEvents.size());
 
                 Message msg = mH.obtainMessage(MSG_TIMEOUT_INPUT_EVENT, p);
                 msg.setAsynchronous(true);
@@ -1942,7 +1942,7 @@ public final class InputMethodManager {
 
             p = mPendingEvents.valueAt(index);
             mPendingEvents.removeAt(index);
-            Trace.traceCounter(Trace.TRACE_TAG_INPUT, PENDING_EVENT_COUNTER, mPendingEvents.size());
+            // Trace.traceCounter(Trace.TRACE_TAG_INPUT, PENDING_EVENT_COUNTER, mPendingEvents.size());
 
             if (timeout) {
                 Log.w(TAG, "Timeout waiting for IME to handle input event after "

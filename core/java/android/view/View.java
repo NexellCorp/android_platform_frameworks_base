@@ -66,7 +66,7 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.FloatProperty;
@@ -16327,15 +16327,15 @@ public class View implements Drawable.Callback, KeyEvent.Callback,
     public void buildDrawingCache(boolean autoScale) {
         if ((mPrivateFlags & PFLAG_DRAWING_CACHE_VALID) == 0 || (autoScale ?
                 mDrawingCache == null : mUnscaledDrawingCache == null)) {
-            if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
-                Trace.traceBegin(Trace.TRACE_TAG_VIEW,
-                        "buildDrawingCache/SW Layer for " + getClass().getSimpleName());
-            }
-            try {
+            // if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
+            //     Trace.traceBegin(Trace.TRACE_TAG_VIEW,
+            //             "buildDrawingCache/SW Layer for " + getClass().getSimpleName());
+            // }
+            // try {
                 buildDrawingCacheImpl(autoScale);
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_VIEW);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_VIEW);
+            // }
         }
     }
 

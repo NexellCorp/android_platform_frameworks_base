@@ -142,7 +142,7 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.ResultReceiver;
 import android.os.ServiceManager;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -569,8 +569,8 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     }
 
     public void systemReady() {
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "systemReady");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "systemReady");
+        // try {
             if (!isBandwidthControlEnabled()) {
                 Slog.w(TAG, "bandwidth controls disabled, unable to enforce policy");
                 return;
@@ -674,21 +674,21 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
             mContext.registerReceiver(mWifiStateReceiver, wifiStateFilter, null, mHandler);
 
             mUsageStats.addAppIdleStateChangeListener(new AppIdleStateChangeListener());
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     final private IUidObserver mUidObserver = new IUidObserver.Stub() {
         @Override public void onUidStateChanged(int uid, int procState) throws RemoteException {
-            Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "onUidStateChanged");
-            try {
+            // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "onUidStateChanged");
+            // try {
                 synchronized (mUidRulesFirstLock) {
                     updateUidStateUL(uid, procState);
                 }
-            } finally {
-                Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-            }
+            // } finally {
+            //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+            // }
         }
 
         @Override public void onUidGone(int uid) throws RemoteException {
@@ -2218,8 +2218,8 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     @Override
     public void setDeviceIdleMode(boolean enabled) {
         mContext.enforceCallingOrSelfPermission(MANAGE_NETWORK_POLICY, TAG);
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "setDeviceIdleMode");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "setDeviceIdleMode");
+        // try {
             synchronized (mUidRulesFirstLock) {
                 if (mDeviceIdleMode == enabled) {
                     return;
@@ -2236,9 +2236,9 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
             } else {
                 EventLogTags.writeDeviceIdleOffPhase("net");
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     private NetworkPolicy findPolicyForNetworkNL(NetworkIdentity ident) {
@@ -2525,8 +2525,8 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
      * {@link #updateRulesForPowerRestrictionsUL(int)}
      */
     private void updateUidStateUL(int uid, int uidState) {
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateUidStateUL");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateUidStateUL");
+        // try {
             final int oldUidState = mUidState.get(uid, ActivityManager.PROCESS_STATE_CACHED_EMPTY);
             if (oldUidState != uidState) {
                 // state changed, push updated rules
@@ -2547,9 +2547,9 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                 }
                 updateNetworkStats(uid, isUidStateForegroundUL(uidState));
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     private void removeUidStateUL(int uid) {
@@ -2601,13 +2601,13 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     }
 
     void updateRulesForPowerSaveUL() {
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForPowerSaveUL");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForPowerSaveUL");
+        // try {
             updateRulesForWhitelistedPowerSaveUL(mRestrictPower, FIREWALL_CHAIN_POWERSAVE,
                     mUidFirewallPowerSaveRules);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     void updateRuleForRestrictPowerUL(int uid) {
@@ -2615,13 +2615,13 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     }
 
     void updateRulesForDeviceIdleUL() {
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForDeviceIdleUL");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForDeviceIdleUL");
+        // try {
             updateRulesForWhitelistedPowerSaveUL(mDeviceIdleMode, FIREWALL_CHAIN_DOZABLE,
                     mUidFirewallDozableRules);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     void updateRuleForDeviceIdleUL(int uid) {
@@ -2683,8 +2683,8 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     }
 
     void updateRulesForAppIdleUL() {
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForAppIdleUL");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForAppIdleUL");
+        // try {
             final SparseIntArray uidRules = mUidFirewallStandbyRules;
             uidRules.clear();
 
@@ -2706,9 +2706,9 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
             }
 
             setUidFirewallRulesAsync(FIREWALL_CHAIN_STANDBY, uidRules, CHAIN_TOGGLE_NONE);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     void updateRuleForAppIdleUL(int uid) {
@@ -2755,8 +2755,8 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
      * {@link #mRestrictPower}, or {@link #mDeviceIdleMode} value.
      */
     private void updateRulesForGlobalChangeAL(boolean restrictedNetworksChanged) {
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForGlobalChangeAL");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForGlobalChangeAL");
+        // try {
             updateRulesForAppIdleUL();
             updateRulesForRestrictPowerUL();
             updateRulesForRestrictBackgroundUL();
@@ -2766,30 +2766,30 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                 normalizePoliciesNL();
                 updateNetworkRulesNL();
             }
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     // TODO: rename / document to make it clear these are global (not app-specific) rules
     private void updateRulesForRestrictPowerUL() {
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForRestrictPowerUL");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForRestrictPowerUL");
+        // try {
             updateRulesForDeviceIdleUL();
             updateRulesForPowerSaveUL();
             updateRulesForAllAppsUL(TYPE_RESTRICT_POWER);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     private void updateRulesForRestrictBackgroundUL() {
-        Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForRestrictBackgroundUL");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForRestrictBackgroundUL");
+        // try {
             updateRulesForAllAppsUL(TYPE_RESTRICT_BACKGROUND);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        // }
     }
 
     private static final int TYPE_RESTRICT_BACKGROUND = 1;
@@ -2804,10 +2804,10 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
 
     // TODO: refactor / consolidate all those updateXyz methods, there are way too many of them...
     private void updateRulesForAllAppsUL(@RestrictType int type) {
-        if (Trace.isTagEnabled(Trace.TRACE_TAG_NETWORK)) {
-            Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForRestrictPowerUL-" + type);
-        }
-        try {
+        // if (Trace.isTagEnabled(Trace.TRACE_TAG_NETWORK)) {
+        //     Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForRestrictPowerUL-" + type);
+        // }
+        // try {
             final PackageManager pm = mContext.getPackageManager();
 
             // update rules for all installed applications
@@ -2836,11 +2836,11 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                     }
                 }
             }
-        } finally {
-            if (Trace.isTagEnabled(Trace.TRACE_TAG_NETWORK)) {
-                Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
-            }
-        }
+        // } finally {
+        //     if (Trace.isTagEnabled(Trace.TRACE_TAG_NETWORK)) {
+        //         Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
+        //     }
+        // }
     }
 
     private void updateRulesForTempWhitelistChangeUL() {

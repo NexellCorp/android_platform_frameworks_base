@@ -184,7 +184,7 @@ import android.os.ServiceManager;
 import android.os.StrictMode;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.TransactionTooLargeException;
 import android.os.UpdateLock;
 import android.os.UserHandle;
@@ -1600,9 +1600,9 @@ public final class ActivityManagerService extends ActivityManagerNative
             switch (msg.what) {
                 case KILL_PROCESS_GROUP_MSG:
                 {
-                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "killProcessGroup");
+                    // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "killProcessGroup");
                     Process.killProcessGroup(msg.arg1 /* uid */, msg.arg2 /* pid */);
-                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                    // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
                 }
                 break;
 
@@ -2070,9 +2070,9 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
             case FINISH_BOOTING_MSG: {
                 if (msg.arg1 != 0) {
-                    Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "FinishBooting");
+                    // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "FinishBooting");
                     finishBooting();
-                    Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+                    // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
                 }
                 if (msg.arg2 != 0) {
                     enableScreenAfterBoot();
@@ -3802,15 +3802,15 @@ public final class ActivityManagerService extends ActivityManagerNative
             // the PID of the new process, or else throw a RuntimeException.
             boolean isActivityProcess = (entryPoint == null);
             if (entryPoint == null) entryPoint = "android.app.ActivityThread";
-            Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "Start proc: " +
-                    app.processName);
+            // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "Start proc: " +
+            //         app.processName);
             checkTime(startTime, "startProcess: asking zygote to start proc");
             Process.ProcessStartResult startResult = Process.start(entryPoint,
                     app.processName, uid, uid, gids, debugFlags, mountExternal,
                     app.info.targetSdkVersion, app.info.seinfo, requiredAbi, instructionSet,
                     app.info.dataDir, entryPointArgs);
             checkTime(startTime, "startProcess: returned from zygote!");
-            Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+            // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
 
             mBatteryStatsService.noteProcessStart(app.processName, app.info.uid);
             checkTime(startTime, "startProcess: done updating battery stats");
@@ -6900,9 +6900,9 @@ public final class ActivityManagerService extends ActivityManagerNative
             mBootAnimationComplete = true;
         }
         if (callFinishBooting) {
-            Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "FinishBooting");
+            // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "FinishBooting");
             finishBooting();
-            Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+            // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
         }
     }
 
@@ -6917,9 +6917,9 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
 
         if (booting) {
-            Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "FinishBooting");
+            // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "FinishBooting");
             finishBooting();
-            Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
+            // Trace.traceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER);
         }
 
         if (enableScreen) {

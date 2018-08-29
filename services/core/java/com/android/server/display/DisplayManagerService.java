@@ -46,7 +46,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.text.TextUtils;
 import android.util.Slog;
 import android.util.SparseArray;
@@ -367,9 +367,9 @@ public final class DisplayManagerService extends SystemService {
                         return; // no change
                     }
 
-                    Trace.traceBegin(Trace.TRACE_TAG_POWER, "requestGlobalDisplayState("
-                            + Display.stateToString(state)
-                            + ", brightness=" + brightness + ")");
+                    // Trace.traceBegin(Trace.TRACE_TAG_POWER, "requestGlobalDisplayState("
+                    //         + Display.stateToString(state)
+                    //         + ", brightness=" + brightness + ")");
                     mGlobalDisplayState = state;
                     mGlobalDisplayBrightness = brightness;
                     applyGlobalDisplayStateLocked(mTempDisplayStateWorkQueue);
@@ -382,7 +382,7 @@ public final class DisplayManagerService extends SystemService {
                 for (int i = 0; i < mTempDisplayStateWorkQueue.size(); i++) {
                     mTempDisplayStateWorkQueue.get(i).run();
                 }
-                Trace.traceEnd(Trace.TRACE_TAG_POWER);
+                // Trace.traceEnd(Trace.TRACE_TAG_POWER);
             } finally {
                 mTempDisplayStateWorkQueue.clear();
             }

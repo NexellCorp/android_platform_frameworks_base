@@ -32,7 +32,7 @@ import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.IBinder.DeathRecipient;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.service.dreams.DreamService;
 import android.service.dreams.IDreamService;
@@ -122,8 +122,8 @@ final class DreamController {
             boolean isTest, boolean canDoze, int userId, PowerManager.WakeLock wakeLock) {
         stopDream(true /*immediate*/);
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "startDream");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "startDream");
+        // try {
             // Close the notification shade. No need to send to all, but better to be explicit.
             mContext.sendBroadcastAsUser(mCloseNotificationShadeIntent, UserHandle.ALL);
 
@@ -164,9 +164,9 @@ final class DreamController {
 
             mCurrentDream.mBound = true;
             mHandler.postDelayed(mStopUnconnectedDreamRunnable, DREAM_CONNECTION_TIMEOUT);
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        // }
     }
 
     public void stopDream(boolean immediate) {
@@ -174,8 +174,8 @@ final class DreamController {
             return;
         }
 
-        Trace.traceBegin(Trace.TRACE_TAG_POWER, "stopDream");
-        try {
+        // Trace.traceBegin(Trace.TRACE_TAG_POWER, "stopDream");
+        // try {
             if (!immediate) {
                 if (mCurrentDream.mWakingGently) {
                     return; // already waking gently
@@ -247,9 +247,9 @@ final class DreamController {
                     mListener.onDreamStopped(oldDream.mToken);
                 }
             });
-        } finally {
-            Trace.traceEnd(Trace.TRACE_TAG_POWER);
-        }
+        // } finally {
+        //     Trace.traceEnd(Trace.TRACE_TAG_POWER);
+        // }
     }
 
     private void attach(IDreamService service) {
