@@ -29,7 +29,7 @@ import android.os.CancellationSignal;
 import android.os.Looper;
 import android.os.OperationCanceledException;
 import android.text.TextUtils;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.util.Printer;
@@ -336,7 +336,7 @@ public final class SQLiteDatabase extends SQLiteClosable {
      * Sends a corruption message to the database error handler.
      */
     void onCorruption() {
-        EventLog.writeEvent(EVENT_DB_CORRUPT, getLabel());
+        // EventLog.writeEvent(EVENT_DB_CORRUPT, getLabel());
         mErrorHandler.onCorruption(this);
     }
 

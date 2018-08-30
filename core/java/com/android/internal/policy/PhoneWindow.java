@@ -88,7 +88,7 @@ import android.transition.TransitionInflater;
 import android.transition.TransitionManager;
 import android.transition.TransitionSet;
 import android.util.AndroidRuntimeException;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.SparseArray;
 import android.util.TypedValue;
@@ -1076,7 +1076,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
 
                     if (show) {
                         // Write 'menu opened' to event log
-                        EventLog.writeEvent(50001, 0);
+                        // EventLog.writeEvent(50001, 0);
 
                         // Show menu
                         openPanel(st, event);

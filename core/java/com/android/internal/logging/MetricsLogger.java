@@ -35,14 +35,14 @@ public class MetricsLogger {
         if (Build.IS_DEBUGGABLE && category == VIEW_UNKNOWN) {
             throw new IllegalArgumentException("Must define metric category");
         }
-        EventLogTags.writeSysuiViewVisibility(category, 100);
+        // EventLogTags.writeSysuiViewVisibility(category, 100);
     }
 
     public static void hidden(Context context, int category) throws IllegalArgumentException {
         if (Build.IS_DEBUGGABLE && category == VIEW_UNKNOWN) {
             throw new IllegalArgumentException("Must define metric category");
         }
-        EventLogTags.writeSysuiViewVisibility(category, 0);
+        // EventLogTags.writeSysuiViewVisibility(category, 0);
     }
 
     public static void visibility(Context context, int category, boolean visibile)
@@ -75,16 +75,16 @@ public class MetricsLogger {
         if (Build.IS_DEBUGGABLE && category == VIEW_UNKNOWN) {
             throw new IllegalArgumentException("Must define metric category");
         }
-        EventLogTags.writeSysuiAction(category, pkg);
+        // EventLogTags.writeSysuiAction(category, pkg);
     }
 
     /** Add an integer value to the monotonically increasing counter with the given name. */
     public static void count(Context context, String name, int value) {
-        EventLogTags.writeSysuiCount(name, value);
+        // EventLogTags.writeSysuiCount(name, value);
     }
 
     /** Increment the bucket with the integer label on the histogram with the given name. */
     public static void histogram(Context context, String name, int bucket) {
-        EventLogTags.writeSysuiHistogram(name, bucket);
+        // EventLogTags.writeSysuiHistogram(name, bucket);
     }
 }

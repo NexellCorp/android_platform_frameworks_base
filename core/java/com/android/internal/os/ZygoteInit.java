@@ -37,7 +37,7 @@ import android.system.Os;
 import android.system.OsConstants;
 import android.system.StructPollfd;
 import android.text.Hyphenator;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.webkit.WebViewFactory;
 import android.widget.TextView;
@@ -741,11 +741,11 @@ public class ZygoteInit {
 
             registerZygoteSocket(socketName);
             // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "ZygotePreload");
-            EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_START,
-                SystemClock.uptimeMillis());
+            // EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_START,
+            //     SystemClock.uptimeMillis());
             preload();
-            EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_END,
-                SystemClock.uptimeMillis());
+            // EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_END,
+            //     SystemClock.uptimeMillis());
             // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
 
             // Finish profiling the zygote initialization.

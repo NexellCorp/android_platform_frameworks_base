@@ -87,7 +87,7 @@ import android.security.net.config.NetworkSecurityConfigProvider;
 import android.util.AndroidRuntimeException;
 import android.util.ArrayMap;
 import android.util.DisplayMetrics;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.LogPrinter;
 import android.util.Pair;
@@ -141,7 +141,7 @@ import java.util.Objects;
 import java.util.TimeZone;
 
 import libcore.io.DropBox;
-import libcore.io.EventLogger;
+// import libcore.io.EventLogger;
 import libcore.io.IoUtils;
 import libcore.net.event.NetworkEventDispatcher;
 import dalvik.system.CloseGuard;
@@ -3418,8 +3418,8 @@ public final class ActivityThread {
                     }
                 }
 
-                EventLog.writeEvent(LOG_AM_ON_RESUME_CALLED, UserHandle.myUserId(),
-                        r.activity.getComponentName().getClassName(), reason);
+                // EventLog.writeEvent(LOG_AM_ON_RESUME_CALLED, UserHandle.myUserId(),
+                //         r.activity.getComponentName().getClassName(), reason);
 
                 r.paused = false;
                 r.stopped = false;
@@ -3739,8 +3739,8 @@ public final class ActivityThread {
         try {
             r.activity.mCalled = false;
             mInstrumentation.callActivityOnPause(r.activity);
-            EventLog.writeEvent(LOG_AM_ON_PAUSE_CALLED, UserHandle.myUserId(),
-                    r.activity.getComponentName().getClassName(), reason);
+            // EventLog.writeEvent(LOG_AM_ON_PAUSE_CALLED, UserHandle.myUserId(),
+            //         r.activity.getComponentName().getClassName(), reason);
             if (!r.activity.mCalled) {
                 throw new SuperNotCalledException("Activity " + safeToComponentShortString(r.intent)
                         + " did not call through to super.onPause()");
@@ -3871,8 +3871,8 @@ public final class ActivityThread {
                     }
                 }
                 r.stopped = true;
-                EventLog.writeEvent(LOG_AM_ON_STOP_CALLED, UserHandle.myUserId(),
-                        r.activity.getComponentName().getClassName(), reason);
+                // EventLog.writeEvent(LOG_AM_ON_STOP_CALLED, UserHandle.myUserId(),
+                //         r.activity.getComponentName().getClassName(), reason);
             }
         }
     }
@@ -4015,8 +4015,8 @@ public final class ActivityThread {
                     }
                 }
                 r.stopped = true;
-                EventLog.writeEvent(LOG_AM_ON_STOP_CALLED, UserHandle.myUserId(),
-                        r.activity.getComponentName().getClassName(), "sleeping");
+                // EventLog.writeEvent(LOG_AM_ON_STOP_CALLED, UserHandle.myUserId(),
+                //         r.activity.getComponentName().getClassName(), "sleeping");
             }
 
             // Make sure any pending writes are now committed.
@@ -4170,8 +4170,8 @@ public final class ActivityThread {
                     }
                 }
                 r.stopped = true;
-                EventLog.writeEvent(LOG_AM_ON_STOP_CALLED, UserHandle.myUserId(),
-                        r.activity.getComponentName().getClassName(), "destroy");
+                // EventLog.writeEvent(LOG_AM_ON_STOP_CALLED, UserHandle.myUserId(),
+                //         r.activity.getComponentName().getClassName(), "destroy");
             }
             if (getNonConfigInstance) {
                 try {
@@ -4988,7 +4988,7 @@ public final class ActivityThread {
         // Ask SQLite to free up as much memory as it can, mostly from its page caches.
         if (Process.myUid() != Process.SYSTEM_UID) {
             int sqliteReleased = SQLiteDatabase.releaseMemory();
-            EventLog.writeEvent(SQLITE_MEM_RELEASED_EVENT_LOG_TAG, sqliteReleased);
+            // EventLog.writeEvent(SQLITE_MEM_RELEASED_EVENT_LOG_TAG, sqliteReleased);
         }
 
         // Ask graphics to free up as much as possible (font/image caches)
@@ -6050,12 +6050,12 @@ public final class ActivityThread {
         }
     }
 
-    private static class EventLoggingReporter implements EventLogger.Reporter {
-        @Override
-        public void report (int code, Object... list) {
-            EventLog.writeEvent(code, list);
-        }
-    }
+    // private static class EventLoggingReporter implements EventLogger.Reporter {
+    //     @Override
+    //     public void report (int code, Object... list) {
+    //         EventLog.writeEvent(code, list);
+    //     }
+    // }
 
     private class DropBoxReporter implements DropBox.Reporter {
 
@@ -6094,7 +6094,7 @@ public final class ActivityThread {
         Environment.initForCurrentUser();
 
         // Set the reporter for event logging in libcore
-        EventLogger.setReporter(new EventLoggingReporter());
+        // EventLogger.setReporter(new EventLoggingReporter());
 
         // Make sure TrustedCertificateStore looks in the right place for CA certificates
         final File configDir = Environment.getUserConfigDirectory(UserHandle.myUserId());

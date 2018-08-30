@@ -77,7 +77,7 @@ import android.transition.Scene;
 import android.transition.TransitionManager;
 import android.util.ArrayMap;
 import android.util.AttributeSet;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.PrintWriterPrinter;
 import android.util.Slog;
@@ -3201,9 +3201,9 @@ public class Activity extends ContextThemeWrapper
                 // Put event logging here so it gets called even if subclass
                 // doesn't call through to superclass's implmeentation of each
                 // of these methods below
-                if(titleCondensed != null) {
-                    EventLog.writeEvent(50000, 0, titleCondensed.toString());
-                }
+                // if(titleCondensed != null) {
+                //     EventLog.writeEvent(50000, 0, titleCondensed.toString());
+                // }
                 if (onOptionsItemSelected(item)) {
                     return true;
                 }
@@ -3221,9 +3221,9 @@ public class Activity extends ContextThemeWrapper
                 return false;
 
             case Window.FEATURE_CONTEXT_MENU:
-                if(titleCondensed != null) {
-                    EventLog.writeEvent(50000, 1, titleCondensed.toString());
-                }
+                // if(titleCondensed != null) {
+                //     EventLog.writeEvent(50000, 1, titleCondensed.toString());
+                // }
                 if (onContextItemSelected(item)) {
                     return true;
                 }

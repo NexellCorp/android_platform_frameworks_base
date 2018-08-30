@@ -13737,8 +13737,8 @@ public final class ActivityManagerService extends ActivityManagerNative
         final String processName = app == null ? "system_server"
                 : (r == null ? "unknown" : r.processName);
 
-        EventLog.writeEvent(EventLogTags.AM_WTF, UserHandle.getUserId(callingUid), callingPid,
-                processName, r == null ? -1 : r.info.flags, tag, crashInfo.exceptionMessage);
+        // EventLog.writeEvent(EventLogTags.AM_WTF, UserHandle.getUserId(callingUid), callingPid,
+        //         processName, r == null ? -1 : r.info.flags, tag, crashInfo.exceptionMessage);
 
         addErrorToDropBox("wtf", r, processName, null, null, tag, null, null, crashInfo);
 

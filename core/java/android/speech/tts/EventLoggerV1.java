@@ -35,19 +35,19 @@ class EventLoggerV1 extends AbstractEventLogger {
         // We don't report stopped syntheses because their overall
         // total time spent will be inaccurate (will not correlate with
         // the length of the utterance).
-        if (statusCode != TextToSpeech.STOPPED) {
-            EventLogTags.writeTtsSpeakFailure(mServiceApp, mCallerUid, mCallerPid,
-                    getUtteranceLength(), getLocaleString(),
-                    mRequest.getSpeechRate(), mRequest.getPitch());
-        }
+        // if (statusCode != TextToSpeech.STOPPED) {
+        //     EventLogTags.writeTtsSpeakFailure(mServiceApp, mCallerUid, mCallerPid,
+        //             getUtteranceLength(), getLocaleString(),
+        //             mRequest.getSpeechRate(), mRequest.getPitch());
+        // }
     }
 
     @Override
     protected void logSuccess(long audioLatency, long engineLatency, long engineTotal) {
-        EventLogTags.writeTtsSpeakSuccess(mServiceApp, mCallerUid, mCallerPid,
-                getUtteranceLength(), getLocaleString(),
-                mRequest.getSpeechRate(), mRequest.getPitch(),
-                engineLatency, engineTotal, audioLatency);
+        // EventLogTags.writeTtsSpeakSuccess(mServiceApp, mCallerUid, mCallerPid,
+        //         getUtteranceLength(), getLocaleString(),
+        //         mRequest.getSpeechRate(), mRequest.getPitch(),
+        //         engineLatency, engineTotal, audioLatency);
     }
 
     /**

@@ -48,7 +48,7 @@ import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.UserHandle;
 import android.text.TextUtils;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 
 import com.android.internal.util.ArrayUtils;
@@ -550,7 +550,7 @@ public abstract class ContentResolver {
             // Force query execution.  Might fail and throw a runtime exception here.
             qCursor.getCount();
             long durationMillis = SystemClock.uptimeMillis() - startTime;
-            maybeLogQueryToEventLog(durationMillis, uri, projection, selection, sortOrder);
+            // maybeLogQueryToEventLog(durationMillis, uri, projection, selection, sortOrder);
 
             // Wrap the cursor object into CursorWrapperInner object.
             final IContentProvider provider = (stableProvider != null) ? stableProvider
@@ -1275,7 +1275,7 @@ public abstract class ContentResolver {
             long startTime = SystemClock.uptimeMillis();
             Uri createdRow = provider.insert(mPackageName, url, values);
             long durationMillis = SystemClock.uptimeMillis() - startTime;
-            maybeLogUpdateToEventLog(durationMillis, url, "insert", null /* where */);
+            // maybeLogUpdateToEventLog(durationMillis, url, "insert", null #<{(| where |)}>#);
             return createdRow;
         } catch (RemoteException e) {
             // Arbitrary and not worth documenting, as Activity
@@ -1340,7 +1340,7 @@ public abstract class ContentResolver {
             long startTime = SystemClock.uptimeMillis();
             int rowsCreated = provider.bulkInsert(mPackageName, url, values);
             long durationMillis = SystemClock.uptimeMillis() - startTime;
-            maybeLogUpdateToEventLog(durationMillis, url, "bulkinsert", null /* where */);
+            // maybeLogUpdateToEventLog(durationMillis, url, "bulkinsert", null #<{(| where |)}>#);
             return rowsCreated;
         } catch (RemoteException e) {
             // Arbitrary and not worth documenting, as Activity
@@ -1372,7 +1372,7 @@ public abstract class ContentResolver {
             long startTime = SystemClock.uptimeMillis();
             int rowsDeleted = provider.delete(mPackageName, url, where, selectionArgs);
             long durationMillis = SystemClock.uptimeMillis() - startTime;
-            maybeLogUpdateToEventLog(durationMillis, url, "delete", where);
+            // maybeLogUpdateToEventLog(durationMillis, url, "delete", where);
             return rowsDeleted;
         } catch (RemoteException e) {
             // Arbitrary and not worth documenting, as Activity
@@ -1408,7 +1408,7 @@ public abstract class ContentResolver {
             long startTime = SystemClock.uptimeMillis();
             int rowsUpdated = provider.update(mPackageName, uri, values, where, selectionArgs);
             long durationMillis = SystemClock.uptimeMillis() - startTime;
-            maybeLogUpdateToEventLog(durationMillis, uri, "update", where);
+            // maybeLogUpdateToEventLog(durationMillis, uri, "update", where);
             return rowsUpdated;
         } catch (RemoteException e) {
             // Arbitrary and not worth documenting, as Activity
@@ -2552,68 +2552,68 @@ public abstract class ContentResolver {
         return (int) (100 * durationMillis / SLOW_THRESHOLD_MILLIS) + 1;
     }
 
-    private void maybeLogQueryToEventLog(long durationMillis,
-                                         Uri uri, String[] projection,
-                                         String selection, String sortOrder) {
-        if (!ENABLE_CONTENT_SAMPLE) return;
-        int samplePercent = samplePercentForDuration(durationMillis);
-        if (samplePercent < 100) {
-            synchronized (mRandom) {
-                if (mRandom.nextInt(100) >= samplePercent) {
-                    return;
-                }
-            }
-        }
+    // private void maybeLogQueryToEventLog(long durationMillis,
+    //                                      Uri uri, String[] projection,
+    //                                      String selection, String sortOrder) {
+    //     if (!ENABLE_CONTENT_SAMPLE) return;
+    //     int samplePercent = samplePercentForDuration(durationMillis);
+    //     if (samplePercent < 100) {
+    //         synchronized (mRandom) {
+    //             if (mRandom.nextInt(100) >= samplePercent) {
+    //                 return;
+    //             }
+    //         }
+    //     }
+    //
+    //     StringBuilder projectionBuffer = new StringBuilder(100);
+    //     if (projection != null) {
+    //         for (int i = 0; i < projection.length; ++i) {
+    //             // Note: not using a comma delimiter here, as the
+    //             // multiple arguments to EventLog.writeEvent later
+    //             // stringify with a comma delimiter, which would make
+    //             // parsing uglier later.
+    //             if (i != 0) projectionBuffer.append('/');
+    //             projectionBuffer.append(projection[i]);
+    //         }
+    //     }
+    //
+    //     // ActivityThread.currentPackageName() only returns non-null if the
+    //     // current thread is an application main thread.  This parameter tells
+    //     // us whether an event loop is blocked, and if so, which app it is.
+    //     String blockingPackage = AppGlobals.getInitialPackage();
+    //
+    //     EventLog.writeEvent(
+    //         EventLogTags.CONTENT_QUERY_SAMPLE,
+    //         uri.toString(),
+    //         projectionBuffer.toString(),
+    //         selection != null ? selection : "",
+    //         sortOrder != null ? sortOrder : "",
+    //         durationMillis,
+    //         blockingPackage != null ? blockingPackage : "",
+    //         samplePercent);
+    // }
 
-        StringBuilder projectionBuffer = new StringBuilder(100);
-        if (projection != null) {
-            for (int i = 0; i < projection.length; ++i) {
-                // Note: not using a comma delimiter here, as the
-                // multiple arguments to EventLog.writeEvent later
-                // stringify with a comma delimiter, which would make
-                // parsing uglier later.
-                if (i != 0) projectionBuffer.append('/');
-                projectionBuffer.append(projection[i]);
-            }
-        }
-
-        // ActivityThread.currentPackageName() only returns non-null if the
-        // current thread is an application main thread.  This parameter tells
-        // us whether an event loop is blocked, and if so, which app it is.
-        String blockingPackage = AppGlobals.getInitialPackage();
-
-        EventLog.writeEvent(
-            EventLogTags.CONTENT_QUERY_SAMPLE,
-            uri.toString(),
-            projectionBuffer.toString(),
-            selection != null ? selection : "",
-            sortOrder != null ? sortOrder : "",
-            durationMillis,
-            blockingPackage != null ? blockingPackage : "",
-            samplePercent);
-    }
-
-    private void maybeLogUpdateToEventLog(
-        long durationMillis, Uri uri, String operation, String selection) {
-        if (!ENABLE_CONTENT_SAMPLE) return;
-        int samplePercent = samplePercentForDuration(durationMillis);
-        if (samplePercent < 100) {
-            synchronized (mRandom) {
-                if (mRandom.nextInt(100) >= samplePercent) {
-                    return;
-                }
-            }
-        }
-        String blockingPackage = AppGlobals.getInitialPackage();
-        EventLog.writeEvent(
-            EventLogTags.CONTENT_UPDATE_SAMPLE,
-            uri.toString(),
-            operation,
-            selection != null ? selection : "",
-            durationMillis,
-            blockingPackage != null ? blockingPackage : "",
-            samplePercent);
-    }
+    // private void maybeLogUpdateToEventLog(
+    //     long durationMillis, Uri uri, String operation, String selection) {
+    //     if (!ENABLE_CONTENT_SAMPLE) return;
+    //     int samplePercent = samplePercentForDuration(durationMillis);
+    //     if (samplePercent < 100) {
+    //         synchronized (mRandom) {
+    //             if (mRandom.nextInt(100) >= samplePercent) {
+    //                 return;
+    //             }
+    //         }
+    //     }
+    //     String blockingPackage = AppGlobals.getInitialPackage();
+    //     EventLog.writeEvent(
+    //         EventLogTags.CONTENT_UPDATE_SAMPLE,
+    //         uri.toString(),
+    //         operation,
+    //         selection != null ? selection : "",
+    //         durationMillis,
+    //         blockingPackage != null ? blockingPackage : "",
+    //         samplePercent);
+    // }
 
     private final class CursorWrapperInner extends CrossProcessCursorWrapper {
         private final IContentProvider mContentProvider;

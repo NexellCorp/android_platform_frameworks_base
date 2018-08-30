@@ -18,7 +18,7 @@ package com.android.internal.os;
 
 import android.os.IBinder;
 import android.os.SystemClock;
-import android.util.EventLog;
+// import android.util.EventLog;
 
 import dalvik.system.VMRuntime;
 
@@ -99,7 +99,7 @@ public class BinderInternal {
     static native final void handleGc();
     
     public static void forceGc(String reason) {
-        EventLog.writeEvent(2741, reason);
+        // EventLog.writeEvent(2741, reason);
         VMRuntime.getRuntime().requestConcurrentGC();
     }
     
