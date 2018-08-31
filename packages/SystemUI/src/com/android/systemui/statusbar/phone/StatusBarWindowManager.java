@@ -24,7 +24,7 @@ import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.RemoteException;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;

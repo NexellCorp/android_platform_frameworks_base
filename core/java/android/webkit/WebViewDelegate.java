@@ -27,7 +27,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.SparseArray;
 import android.view.DisplayListCanvas;
 import android.view.View;
@@ -70,7 +70,8 @@ public final class WebViewDelegate {
      * Returns true if the WebView trace tag is enabled and false otherwise.
      */
     public boolean isTraceTagEnabled() {
-        return Trace.isTagEnabled(Trace.TRACE_TAG_WEBVIEW);
+        // return Trace.isTagEnabled(Trace.TRACE_TAG_WEBVIEW);
+        return false;
     }
 
     /**

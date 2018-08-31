@@ -1179,7 +1179,7 @@ public final class PowerManager {
             synchronized (mToken) {
                 if (mHeld) {
                     Log.wtf(TAG, "WakeLock finalized while still held: " + mTag);
-                    Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
+                    // Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
                     try {
                         mService.releaseWakeLock(mToken, 0);
                     } catch (RemoteException e) {
@@ -1247,7 +1247,7 @@ public final class PowerManager {
                 // should immediately acquire the wake lock once again despite never having
                 // been explicitly released by the keyguard.
                 mHandler.removeCallbacks(mReleaser);
-                Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, mTraceName, 0);
+                // Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, mTraceName, 0);
                 try {
                     mService.acquireWakeLock(mToken, mFlags, mTag, mPackageName, mWorkSource,
                             mHistoryTag);
@@ -1287,7 +1287,7 @@ public final class PowerManager {
                 if (!mRefCounted || --mCount == 0) {
                     mHandler.removeCallbacks(mReleaser);
                     if (mHeld) {
-                        Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
+                        // Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
                         try {
                             mService.releaseWakeLock(mToken, flags);
                         } catch (RemoteException e) {

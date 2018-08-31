@@ -85,7 +85,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.UserManager;
@@ -271,7 +271,8 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     private static final boolean ONLY_CORE_APPS;
 
     /** If true, the lockscreen will show a distinct wallpaper */
-    private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = true;
+    // private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = true;
+    private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = false;
 
     /* If true, the device supports freeform window management.
      * This affects the status bar UI. */
@@ -1262,7 +1263,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     protected void startKeyguard() {
-        Trace.beginSection("PhoneStatusBar#startKeyguard");
+        // Trace.beginSection("PhoneStatusBar#startKeyguard");
         KeyguardViewMediator keyguardViewMediator = getComponent(KeyguardViewMediator.class);
         mFingerprintUnlockController = new FingerprintUnlockController(mContext,
                 mStatusBarWindowManager, mDozeScrimController, keyguardViewMediator,
@@ -1297,7 +1298,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
 
         mKeyguardViewMediatorCallback = keyguardViewMediator.getViewMediatorCallback();
         mLightStatusBarController.setFingerprintUnlockController(mFingerprintUnlockController);
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     @Override
@@ -2207,20 +2208,20 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
      * Refresh or remove lockscreen artwork from media metadata or the lockscreen wallpaper.
      */
     public void updateMediaMetaData(boolean metaDataChanged, boolean allowEnterAnimation) {
-        Trace.beginSection("PhoneStatusBar#updateMediaMetaData");
+        // Trace.beginSection("PhoneStatusBar#updateMediaMetaData");
         if (!SHOW_LOCKSCREEN_MEDIA_ARTWORK) {
-            Trace.endSection();
+            // Trace.endSection();
             return;
         }
 
         if (mBackdrop == null) {
-            Trace.endSection();
+            // Trace.endSection();
             return; // called too early
         }
 
         if (mLaunchTransitionFadingAway) {
             mBackdrop.setVisibility(View.INVISIBLE);
-            Trace.endSection();
+            // Trace.endSection();
             return;
         }
 
@@ -2364,7 +2365,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                 }
             }
         }
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     private void updateReportRejectedTouchVisibility() {
@@ -4238,7 +4239,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
      * @return true if we would like to stay in the shade, false if it should go away entirely
      */
     public boolean hideKeyguard() {
-        Trace.beginSection("PhoneStatusBar#hideKeyguard");
+        // Trace.beginSection("PhoneStatusBar#hideKeyguard");
         boolean staying = mLeaveOpenOnKeyguardHide;
         setBarState(StatusBarState.SHADE);
         View viewToClick = null;
@@ -4283,7 +4284,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mNotificationPanel.onAffordanceLaunchEnded();
         mNotificationPanel.animate().cancel();
         mNotificationPanel.setAlpha(1f);
-        Trace.endSection();
+        // Trace.endSection();
         return staying;
     }
 
@@ -4358,7 +4359,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     protected void updateKeyguardState(boolean goingToFullShade, boolean fromShadeLocked) {
-        Trace.beginSection("PhoneStatusBar#updateKeyguardState");
+        // Trace.beginSection("PhoneStatusBar#updateKeyguardState");
         if (mState == StatusBarState.KEYGUARD) {
             mKeyguardIndicationController.setVisible(true);
             mNotificationPanel.resetViews();
@@ -4391,11 +4392,11 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mKeyguardMonitor.notifyKeyguardState(mStatusBarKeyguardViewManager.isShowing(),
                 mStatusBarKeyguardViewManager.isSecure(),
                 mStatusBarKeyguardViewManager.isOccluded());
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     private void updateDozingState() {
-        Trace.beginSection("PhoneStatusBar#updateDozingState");
+        // Trace.beginSection("PhoneStatusBar#updateDozingState");
         boolean animate = !mDozing && mDozeScrimController.isPulsing();
         mNotificationPanel.setDozing(mDozing, animate);
         mStackScroller.setDark(mDozing, animate, mWakeUpTouchLocation);
@@ -4406,7 +4407,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mDozeScrimController.setDozing(mDozing &&
                 mFingerprintUnlockController.getMode()
                         != FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING, animate);
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     public void updateStackScrollerState(boolean goingToFullShade, boolean fromShadeLocked) {
@@ -5062,13 +5063,13 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
     }
 
     private void updateDozing() {
-        Trace.beginSection("PhoneStatusBar#updateDozing");
+        // Trace.beginSection("PhoneStatusBar#updateDozing");
         // When in wake-and-unlock while pulsing, keep dozing state until fully unlocked.
         mDozing = mDozingRequested && mState == StatusBarState.KEYGUARD
                 || mFingerprintUnlockController.getMode()
                         == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING;
         updateDozingState();
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     private final class ShadeUpdates {

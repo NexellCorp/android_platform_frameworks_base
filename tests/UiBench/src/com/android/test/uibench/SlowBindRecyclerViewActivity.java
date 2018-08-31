@@ -16,7 +16,7 @@
 package com.android.test.uibench;
 
 import android.content.Context;
-import android.os.Trace;
+// import android.os.Trace;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import com.android.test.uibench.recyclerview.RvBoxAdapter;
@@ -44,11 +44,11 @@ public class SlowBindRecyclerViewActivity extends RvCompatListActivity {
         return new RvBoxAdapter(this, TextUtils.buildSimpleStringList()) {
             @Override
             public void onBindViewHolder(ViewHolder holder, int position) {
-                Trace.beginSection("bind item " + position);
+                // Trace.beginSection("bind item " + position);
 
                 spinWaitMs(3);
                 super.onBindViewHolder(holder, position);
-                Trace.endSection();
+                // Trace.endSection();
             }
         };
     }

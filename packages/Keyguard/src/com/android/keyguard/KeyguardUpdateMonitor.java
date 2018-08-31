@@ -54,7 +54,7 @@ import android.os.IRemoteCallback;
 import android.os.Message;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
@@ -264,14 +264,14 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
                     handleFinishedGoingToSleep(msg.arg1);
                     break;
                 case MSG_STARTED_WAKING_UP:
-                    Trace.beginSection("KeyguardUpdateMonitor#handler MSG_STARTED_WAKING_UP");
+                    // Trace.beginSection("KeyguardUpdateMonitor#handler MSG_STARTED_WAKING_UP");
                     handleStartedWakingUp();
-                    Trace.endSection();
+                    // Trace.endSection();
                     break;
                 case MSG_FACE_UNLOCK_STATE_CHANGED:
-                    Trace.beginSection("KeyguardUpdateMonitor#handler MSG_FACE_UNLOCK_STATE_CHANGED");
+                    // Trace.beginSection("KeyguardUpdateMonitor#handler MSG_FACE_UNLOCK_STATE_CHANGED");
                     handleFaceUnlockStateChanged(msg.arg1 != 0, msg.arg2);
-                    Trace.endSection();
+                    // Trace.endSection();
                     break;
                 case MSG_SIM_SUBSCRIPTION_INFO_CHANGED:
                     handleSimSubscriptionInfoChanged();
@@ -286,9 +286,9 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
                     handleScreenTurnedOn();
                     break;
                 case MSG_SCREEN_TURNED_OFF:
-                    Trace.beginSection("KeyguardUpdateMonitor#handler MSG_SCREEN_TURNED_ON");
+                    // Trace.beginSection("KeyguardUpdateMonitor#handler MSG_SCREEN_TURNED_ON");
                     handleScreenTurnedOff();
-                    Trace.endSection();
+                    // Trace.endSection();
                     break;
                 case MSG_DREAMING_STATE_CHANGED:
                     handleDreamingStateChanged(msg.arg1);
@@ -416,7 +416,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
     }
 
     private void onFingerprintAuthenticated(int userId) {
-        Trace.beginSection("KeyGuardUpdateMonitor#onFingerPrintAuthenticated");
+        // Trace.beginSection("KeyGuardUpdateMonitor#onFingerPrintAuthenticated");
         mUserFingerprintAuthenticated.put(userId, true);
 
         // If fingerprint unlocking is allowed, this event will lead to a Keyguard dismiss or to a
@@ -429,7 +429,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
                 cb.onFingerprintAuthenticated(userId);
             }
         }
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     private void handleFingerprintAuthFailed() {
@@ -455,7 +455,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
     }
 
     private void handleFingerprintAuthenticated(int authUserId) {
-        Trace.beginSection("KeyGuardUpdateMonitor#handlerFingerPrintAuthenticated");
+        // Trace.beginSection("KeyGuardUpdateMonitor#handlerFingerPrintAuthenticated");
         try {
             final int userId;
             try {
@@ -476,7 +476,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
         } finally {
             setFingerprintRunningState(FINGERPRINT_STATE_STOPPED);
         }
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     private void handleFingerprintHelp(int msgId, String helpString) {
@@ -718,10 +718,10 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
                 mHandler.sendMessage(mHandler.obtainMessage(MSG_USER_INFO_CHANGED,
                         intent.getIntExtra(Intent.EXTRA_USER_HANDLE, getSendingUserId()), 0));
             } else if (ACTION_FACE_UNLOCK_STARTED.equals(action)) {
-                Trace.beginSection("KeyguardUpdateMonitor.mBroadcastAllReceiver#onReceive ACTION_FACE_UNLOCK_STARTED");
+                // Trace.beginSection("KeyguardUpdateMonitor.mBroadcastAllReceiver#onReceive ACTION_FACE_UNLOCK_STARTED");
                 mHandler.sendMessage(mHandler.obtainMessage(MSG_FACE_UNLOCK_STATE_CHANGED, 1,
                         getSendingUserId()));
-                Trace.endSection();
+                // Trace.endSection();
             } else if (ACTION_FACE_UNLOCK_STOPPED.equals(action)) {
                 mHandler.sendMessage(mHandler.obtainMessage(MSG_FACE_UNLOCK_STATE_CHANGED, 0,
                         getSendingUserId()));
@@ -763,9 +763,9 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
 
         @Override
         public void onAuthenticationSucceeded(AuthenticationResult result) {
-            Trace.beginSection("KeyguardUpdateMonitor#onAuthenticationSucceeded");
+            // Trace.beginSection("KeyguardUpdateMonitor#onAuthenticationSucceeded");
             handleFingerprintAuthenticated(result.getUserId());
-            Trace.endSection();
+            // Trace.endSection();
         }
 
         @Override
@@ -940,7 +940,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
     }
 
     protected void handleStartedWakingUp() {
-        Trace.beginSection("KeyguardUpdateMonitor#handleStartedWakingUp");
+        // Trace.beginSection("KeyguardUpdateMonitor#handleStartedWakingUp");
         updateFingerprintListeningState();
         final int count = mCallbacks.size();
         for (int i = 0; i < count; i++) {
@@ -949,7 +949,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
                 cb.onStartedWakingUp();
             }
         }
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     protected void handleStartedGoingToSleep(int arg1) {

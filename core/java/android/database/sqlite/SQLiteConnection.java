@@ -27,7 +27,7 @@ import android.os.CancellationSignal;
 import android.os.OperationCanceledException;
 import android.os.ParcelFileDescriptor;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Log;
 import android.util.LruCache;
 import android.util.Printer;
@@ -1333,10 +1333,10 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
                     }
                 }
                 operation.mCookie = newOperationCookieLocked(index);
-                if (Trace.isTagEnabled(Trace.TRACE_TAG_DATABASE)) {
-                    Trace.asyncTraceBegin(Trace.TRACE_TAG_DATABASE, operation.getTraceMethodName(),
-                            operation.mCookie);
-                }
+                // if (Trace.isTagEnabled(Trace.TRACE_TAG_DATABASE)) {
+                //     Trace.asyncTraceBegin(Trace.TRACE_TAG_DATABASE, operation.getTraceMethodName(),
+                //             operation.mCookie);
+                // }
                 mIndex = index;
                 return operation.mCookie;
             }
@@ -1374,10 +1374,10 @@ public final class SQLiteConnection implements CancellationSignal.OnCancelListen
         private boolean endOperationDeferLogLocked(int cookie) {
             final Operation operation = getOperationLocked(cookie);
             if (operation != null) {
-                if (Trace.isTagEnabled(Trace.TRACE_TAG_DATABASE)) {
-                    Trace.asyncTraceEnd(Trace.TRACE_TAG_DATABASE, operation.getTraceMethodName(),
-                            operation.mCookie);
-                }
+                // if (Trace.isTagEnabled(Trace.TRACE_TAG_DATABASE)) {
+                //     Trace.asyncTraceEnd(Trace.TRACE_TAG_DATABASE, operation.getTraceMethodName(),
+                //             operation.mCookie);
+                // }
                 operation.mEndTime = SystemClock.uptimeMillis();
                 operation.mFinished = true;
                 return SQLiteDebug.DEBUG_LOG_SLOW_QUERIES && SQLiteDebug.shouldLogSlowQuery(

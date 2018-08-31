@@ -36,7 +36,7 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.MathUtils;
 import android.util.Slog;
 import android.util.Spline;
@@ -812,7 +812,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
 
     private void blockScreenOn() {
         if (mPendingScreenOnUnblocker == null) {
-            Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, SCREEN_ON_BLOCKED_TRACE_NAME, 0);
+            // Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, SCREEN_ON_BLOCKED_TRACE_NAME, 0);
             mPendingScreenOnUnblocker = new ScreenOnUnblocker();
             mScreenOnBlockStartRealTime = SystemClock.elapsedRealtime();
             Slog.i(TAG, "Blocking screen on until initial contents have been drawn.");
@@ -824,7 +824,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
             mPendingScreenOnUnblocker = null;
             long delay = SystemClock.elapsedRealtime() - mScreenOnBlockStartRealTime;
             Slog.i(TAG, "Unblocked screen on after " + delay + " ms");
-            Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, SCREEN_ON_BLOCKED_TRACE_NAME, 0);
+            // Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, SCREEN_ON_BLOCKED_TRACE_NAME, 0);
         }
     }
 

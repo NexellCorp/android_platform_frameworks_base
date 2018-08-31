@@ -27,7 +27,7 @@ import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.SystemProperties;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.Log;
 import android.view.Surface;
 
@@ -45,7 +45,7 @@ import android.view.Surface;
  * </div>
  **/
 public class RenderScript {
-    static final long TRACE_TAG = Trace.TRACE_TAG_RS;
+    // static final long TRACE_TAG = Trace.TRACE_TAG_RS;
 
     static final String LOG_TAG = "RenderScript_jni";
     static final boolean DEBUG  = false;

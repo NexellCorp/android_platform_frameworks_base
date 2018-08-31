@@ -54,7 +54,7 @@ import android.os.PersistableBundle;
 import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.service.voice.IVoiceInteractionSession;
 import android.util.EventLog;
@@ -1182,7 +1182,7 @@ final class ActivityRecord {
             final long totalTime = stack.mFullyDrawnStartTime != 0
                     ? (curTime - stack.mFullyDrawnStartTime) : thisTime;
             if (SHOW_ACTIVITY_START_TIME) {
-                Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
+                // Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
                 EventLog.writeEvent(EventLogTags.AM_ACTIVITY_FULLY_DRAWN_TIME,
                         userId, System.identityHashCode(this), shortComponentName,
                         thisTime, totalTime);
@@ -1216,7 +1216,7 @@ final class ActivityRecord {
         final long totalTime = stack.mLaunchStartTime != 0
                 ? (curTime - stack.mLaunchStartTime) : thisTime;
         if (SHOW_ACTIVITY_START_TIME) {
-            Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "launching: " + packageName, 0);
+            // Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "launching: " + packageName, 0);
             EventLog.writeEvent(EventLogTags.AM_ACTIVITY_LAUNCH_TIME,
                     userId, System.identityHashCode(this), shortComponentName,
                     thisTime, totalTime);

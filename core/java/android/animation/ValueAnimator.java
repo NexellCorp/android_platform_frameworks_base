@@ -20,7 +20,7 @@ import android.annotation.CallSuper;
 import android.annotation.IntDef;
 import android.annotation.TestApi;
 import android.os.Looper;
-import android.os.Trace;
+// import android.os.Trace;
 import android.util.AndroidRuntimeException;
 import android.util.Log;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -1158,10 +1158,10 @@ public class ValueAnimator extends Animator implements AnimationHandler.Animatio
         mStartListenersCalled = false;
         mReversing = false;
         mLastFrameTime = 0;
-        if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
-            Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, getNameForTrace(),
-                    System.identityHashCode(this));
-        }
+        // if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
+        //     Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, getNameForTrace(),
+        //             System.identityHashCode(this));
+        // }
     }
 
     /**
@@ -1169,10 +1169,10 @@ public class ValueAnimator extends Animator implements AnimationHandler.Animatio
      * called on the UI thread.
      */
     private void startAnimation() {
-        if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
-            Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, getNameForTrace(),
-                    System.identityHashCode(this));
-        }
+        // if (Trace.isTagEnabled(Trace.TRACE_TAG_VIEW)) {
+        //     Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, getNameForTrace(),
+        //             System.identityHashCode(this));
+        // }
 
         mAnimationEndRequested = false;
         initAnimation();

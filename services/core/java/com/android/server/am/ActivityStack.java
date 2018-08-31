@@ -113,7 +113,7 @@ import android.os.Message;
 import android.os.PersistableBundle;
 import android.os.RemoteException;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.os.UserHandle;
 import android.service.voice.IVoiceInteractionSession;
 import android.util.ArraySet;
@@ -918,16 +918,16 @@ final class ActivityStack {
     }
 
     private void startLaunchTraces(String packageName) {
-        if (mFullyDrawnStartTime != 0)  {
-            Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
-        }
-        Trace.asyncTraceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "launching: " + packageName, 0);
-        Trace.asyncTraceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
+        // if (mFullyDrawnStartTime != 0)  {
+        //     Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
+        // }
+        // Trace.asyncTraceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "launching: " + packageName, 0);
+        // Trace.asyncTraceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
     }
 
     private void stopFullyDrawnTraceIfNeeded() {
         if (mFullyDrawnStartTime != 0 && mLaunchStartTime == 0) {
-            Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
+            // Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
             mFullyDrawnStartTime = 0;
         }
     }

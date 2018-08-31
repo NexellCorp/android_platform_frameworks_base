@@ -20,7 +20,7 @@ import android.content.ComponentCallbacks2;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.os.Trace;
+// import android.os.Trace;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -185,17 +185,17 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
     }
 
     public void onStartedWakingUp() {
-        Trace.beginSection("StatusBarKeyguardViewManager#onStartedWakingUp");
+        // Trace.beginSection("StatusBarKeyguardViewManager#onStartedWakingUp");
         mDeviceInteractive = true;
         mDeviceWillWakeUp = false;
         mPhoneStatusBar.onStartedWakingUp();
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     public void onScreenTurningOn() {
-        Trace.beginSection("StatusBarKeyguardViewManager#onScreenTurningOn");
+        // Trace.beginSection("StatusBarKeyguardViewManager#onScreenTurningOn");
         mPhoneStatusBar.onScreenTurningOn();
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     public boolean isScreenTurnedOn() {
@@ -203,7 +203,7 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
     }
 
     public void onScreenTurnedOn() {
-        Trace.beginSection("StatusBarKeyguardViewManager#onScreenTurnedOn");
+        // Trace.beginSection("StatusBarKeyguardViewManager#onScreenTurnedOn");
         mScreenTurnedOn = true;
         if (mDeferScrimFadeOut) {
             mDeferScrimFadeOut = false;
@@ -212,7 +212,7 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
             updateStates();
         }
         mPhoneStatusBar.onScreenTurnedOn();
-        Trace.endSection();
+        // Trace.endSection();
     }
 
     @Override
@@ -378,7 +378,7 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
 
     private void animateScrimControllerKeyguardFadingOut(long delay, long duration,
             final Runnable endRunnable, boolean skipFirstFrame) {
-        Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, "Fading out", 0);
+        // Trace.asyncTraceBegin(Trace.TRACE_TAG_VIEW, "Fading out", 0);
         mScrimController.animateKeyguardFadingOut(delay, duration, new Runnable() {
             @Override
             public void run() {
@@ -390,7 +390,7 @@ public class StatusBarKeyguardViewManager implements RemoteInputController.Callb
                 mFingerprintUnlockController.finishKeyguardFadingAway();
                 WindowManagerGlobal.getInstance().trimMemory(
                         ComponentCallbacks2.TRIM_MEMORY_UI_HIDDEN);
-                Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, "Fading out", 0);
+                // Trace.asyncTraceEnd(Trace.TRACE_TAG_VIEW, "Fading out", 0);
             }
         }, skipFirstFrame);
     }
