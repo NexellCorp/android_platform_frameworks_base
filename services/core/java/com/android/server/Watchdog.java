@@ -442,17 +442,17 @@ public class Watchdog extends Thread {
             // Try to add the error to the dropbox, but assuming that the ActivityManager
             // itself may be deadlocked.  (which has happened, causing this statement to
             // deadlock and the watchdog as a whole to be ineffective)
-            Thread dropboxThread = new Thread("watchdogWriteToDropbox") {
-                    public void run() {
-                        mActivity.addErrorToDropBox(
-                                "watchdog", null, "system_server", null, null,
-                                subject, null, stack, null);
-                    }
-                };
-            dropboxThread.start();
-            try {
-                dropboxThread.join(2000);  // wait up to 2 seconds for it to return.
-            } catch (InterruptedException ignored) {}
+            // Thread dropboxThread = new Thread("watchdogWriteToDropbox") {
+            //         public void run() {
+            //             mActivity.addErrorToDropBox(
+            //                     "watchdog", null, "system_server", null, null,
+            //                     subject, null, stack, null);
+            //         }
+            //     };
+            // dropboxThread.start();
+            // try {
+            //     dropboxThread.join(2000);  // wait up to 2 seconds for it to return.
+            // } catch (InterruptedException ignored) {}
 
             IActivityController controller;
             synchronized (this) {

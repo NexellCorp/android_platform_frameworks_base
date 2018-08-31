@@ -19,7 +19,7 @@ package android.app;
 import com.android.internal.app.IAppOpsService;
 import com.android.internal.app.ISoundTriggerService;
 import com.android.internal.appwidget.IAppWidgetService;
-import com.android.internal.os.IDropBoxManagerService;
+// import com.android.internal.os.IDropBoxManagerService;
 
 import android.accounts.AccountManager;
 import android.accounts.IAccountManager;
@@ -90,7 +90,7 @@ import android.net.wifi.p2p.IWifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.nfc.NfcManager;
 import android.os.BatteryManager;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.HardwarePropertiesManager;
 import android.os.IBinder;
 import android.os.IHardwarePropertiesManager;
@@ -275,21 +275,21 @@ final class SystemServiceRegistry {
                 return new NfcManager(ctx);
             }});
 
-        registerService(Context.DROPBOX_SERVICE, DropBoxManager.class,
-                new CachedServiceFetcher<DropBoxManager>() {
-            @Override
-            public DropBoxManager createService(ContextImpl ctx) {
-                IBinder b = ServiceManager.getService(Context.DROPBOX_SERVICE);
-                IDropBoxManagerService service = IDropBoxManagerService.Stub.asInterface(b);
-                if (service == null) {
-                    // Don't return a DropBoxManager that will NPE upon use.
-                    // This also avoids caching a broken DropBoxManager in
-                    // getDropBoxManager during early boot, before the
-                    // DROPBOX_SERVICE is registered.
-                    return null;
-                }
-                return new DropBoxManager(ctx, service);
-            }});
+        // registerService(Context.DROPBOX_SERVICE, DropBoxManager.class,
+        //         new CachedServiceFetcher<DropBoxManager>() {
+        //     @Override
+        //     public DropBoxManager createService(ContextImpl ctx) {
+        //         IBinder b = ServiceManager.getService(Context.DROPBOX_SERVICE);
+        //         IDropBoxManagerService service = IDropBoxManagerService.Stub.asInterface(b);
+        //         if (service == null) {
+        //             // Don't return a DropBoxManager that will NPE upon use.
+        //             // This also avoids caching a broken DropBoxManager in
+        //             // getDropBoxManager during early boot, before the
+        //             // DROPBOX_SERVICE is registered.
+        //             return null;
+        //         }
+        //         return new DropBoxManager(ctx, service);
+        //     }});
 
         registerService(Context.INPUT_SERVICE, InputManager.class,
                 new StaticServiceFetcher<InputManager>() {

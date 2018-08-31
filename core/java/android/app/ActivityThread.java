@@ -140,7 +140,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.TimeZone;
 
-import libcore.io.DropBox;
+// import libcore.io.DropBox;
 // import libcore.io.EventLogger;
 import libcore.io.IoUtils;
 import libcore.net.event.NetworkEventDispatcher;
@@ -5988,7 +5988,7 @@ public final class ActivityThread {
         }
 
         // add dropbox logging to libcore
-        DropBox.setReporter(new DropBoxReporter());
+        // DropBox.setReporter(new DropBoxReporter());
 
         ViewRootImpl.addConfigCallback(new ComponentCallbacks2() {
             @Override
@@ -6057,30 +6057,30 @@ public final class ActivityThread {
     //     }
     // }
 
-    private class DropBoxReporter implements DropBox.Reporter {
-
-        private DropBoxManager dropBox;
-
-        public DropBoxReporter() {}
-
-        @Override
-        public void addData(String tag, byte[] data, int flags) {
-            ensureInitialized();
-            dropBox.addData(tag, data, flags);
-        }
-
-        @Override
-        public void addText(String tag, String data) {
-            ensureInitialized();
-            dropBox.addText(tag, data);
-        }
-
-        private synchronized void ensureInitialized() {
-            if (dropBox == null) {
-                dropBox = (DropBoxManager) getSystemContext().getSystemService(Context.DROPBOX_SERVICE);
-            }
-        }
-    }
+    // private class DropBoxReporter implements DropBox.Reporter {
+    //
+    //     private DropBoxManager dropBox;
+    //
+    //     public DropBoxReporter() {}
+    //
+    //     @Override
+    //     public void addData(String tag, byte[] data, int flags) {
+    //         ensureInitialized();
+    //         dropBox.addData(tag, data, flags);
+    //     }
+    //
+    //     @Override
+    //     public void addText(String tag, String data) {
+    //         ensureInitialized();
+    //         dropBox.addText(tag, data);
+    //     }
+    //
+    //     private synchronized void ensureInitialized() {
+    //         if (dropBox == null) {
+    //             dropBox = (DropBoxManager) getSystemContext().getSystemService(Context.DROPBOX_SERVICE);
+    //         }
+    //     }
+    // }
 
     public static void main(String[] args) {
         // Trace.traceBegin(Trace.TRACE_TAG_ACTIVITY_MANAGER, "ActivityThreadMain");

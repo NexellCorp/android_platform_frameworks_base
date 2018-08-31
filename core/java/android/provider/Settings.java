@@ -45,7 +45,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.IBinder;
 import android.os.LocaleList;
 import android.os.Process;

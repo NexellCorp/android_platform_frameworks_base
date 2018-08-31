@@ -40,7 +40,7 @@ import android.os.Handler;
 import android.os.IBatteryPropertiesListener;
 import android.os.IBatteryPropertiesRegistrar;
 import android.os.IBinder;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.os.SystemClock;
@@ -557,43 +557,43 @@ public final class BatteryService extends SystemService {
         });
     }
 
-    private void logBatteryStatsLocked() {
-        IBinder batteryInfoService = ServiceManager.getService(BatteryStats.SERVICE_NAME);
-        if (batteryInfoService == null) return;
-
-        DropBoxManager db = (DropBoxManager) mContext.getSystemService(Context.DROPBOX_SERVICE);
-        if (db == null || !db.isTagEnabled("BATTERY_DISCHARGE_INFO")) return;
-
-        File dumpFile = null;
-        FileOutputStream dumpStream = null;
-        try {
-            // dump the service to a file
-            dumpFile = new File(DUMPSYS_DATA_PATH + BatteryStats.SERVICE_NAME + ".dump");
-            dumpStream = new FileOutputStream(dumpFile);
-            batteryInfoService.dump(dumpStream.getFD(), DUMPSYS_ARGS);
-            FileUtils.sync(dumpStream);
-
-            // add dump file to drop box
-            db.addFile("BATTERY_DISCHARGE_INFO", dumpFile, DropBoxManager.IS_TEXT);
-        } catch (RemoteException e) {
-            Slog.e(TAG, "failed to dump battery service", e);
-        } catch (IOException e) {
-            Slog.e(TAG, "failed to write dumpsys file", e);
-        } finally {
-            // make sure we clean up
-            if (dumpStream != null) {
-                try {
-                    dumpStream.close();
-                } catch (IOException e) {
-                    Slog.e(TAG, "failed to close dumpsys output stream");
-                }
-            }
-            if (dumpFile != null && !dumpFile.delete()) {
-                Slog.e(TAG, "failed to delete temporary dumpsys file: "
-                        + dumpFile.getAbsolutePath());
-            }
-        }
-    }
+    // private void logBatteryStatsLocked() {
+    //     IBinder batteryInfoService = ServiceManager.getService(BatteryStats.SERVICE_NAME);
+    //     if (batteryInfoService == null) return;
+    //
+    //     DropBoxManager db = (DropBoxManager) mContext.getSystemService(Context.DROPBOX_SERVICE);
+    //     if (db == null || !db.isTagEnabled("BATTERY_DISCHARGE_INFO")) return;
+    //
+    //     File dumpFile = null;
+    //     FileOutputStream dumpStream = null;
+    //     try {
+    //         // dump the service to a file
+    //         dumpFile = new File(DUMPSYS_DATA_PATH + BatteryStats.SERVICE_NAME + ".dump");
+    //         dumpStream = new FileOutputStream(dumpFile);
+    //         batteryInfoService.dump(dumpStream.getFD(), DUMPSYS_ARGS);
+    //         FileUtils.sync(dumpStream);
+    //
+    //         // add dump file to drop box
+    //         db.addFile("BATTERY_DISCHARGE_INFO", dumpFile, DropBoxManager.IS_TEXT);
+    //     } catch (RemoteException e) {
+    //         Slog.e(TAG, "failed to dump battery service", e);
+    //     } catch (IOException e) {
+    //         Slog.e(TAG, "failed to write dumpsys file", e);
+    //     } finally {
+    //         // make sure we clean up
+    //         if (dumpStream != null) {
+    //             try {
+    //                 dumpStream.close();
+    //             } catch (IOException e) {
+    //                 Slog.e(TAG, "failed to close dumpsys output stream");
+    //             }
+    //         }
+    //         if (dumpFile != null && !dumpFile.delete()) {
+    //             Slog.e(TAG, "failed to delete temporary dumpsys file: "
+    //                     + dumpFile.getAbsolutePath());
+    //         }
+    //     }
+    // }
 
     private void logOutlierLocked(long duration) {
         ContentResolver cr = mContext.getContentResolver();
@@ -609,7 +609,7 @@ public final class BatteryService extends SystemService {
                 if (duration <= durationThreshold &&
                         mDischargeStartLevel - mBatteryProps.batteryLevel >= dischargeThreshold) {
                     // If the discharge cycle is bad enough we want to know about it.
-                    logBatteryStatsLocked();
+                    // logBatteryStatsLocked();
                 }
                 if (DEBUG) Slog.v(TAG, "duration threshold: " + durationThreshold +
                         " discharge threshold: " + dischargeThreshold);

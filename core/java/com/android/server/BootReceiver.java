@@ -21,7 +21,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.IPackageManager;
 import android.os.Build;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.Environment;
 import android.os.FileObserver;
 import android.os.FileUtils;
@@ -89,11 +89,11 @@ public class BootReceiver extends BroadcastReceiver {
         new Thread() {
             @Override
             public void run() {
-                try {
-                    logBootEvents(context);
-                } catch (Exception e) {
-                    Slog.e(TAG, "Can't log boot events", e);
-                }
+                // try {
+                //     logBootEvents(context);
+                // } catch (Exception e) {
+                //     Slog.e(TAG, "Can't log boot events", e);
+                // }
                 try {
                     boolean onlyCore = false;
                     try {
@@ -158,172 +158,172 @@ public class BootReceiver extends BroadcastReceiver {
         return "isPrevious: true\n" + oldHeaders;
     }
 
-    private void logBootEvents(Context ctx) throws IOException {
-        final DropBoxManager db = (DropBoxManager) ctx.getSystemService(Context.DROPBOX_SERVICE);
-        final String headers = getBootHeadersToLogAndUpdate();
-        final String bootReason = SystemProperties.get("ro.boot.bootreason", null);
+    // private void logBootEvents(Context ctx) throws IOException {
+    //     final DropBoxManager db = (DropBoxManager) ctx.getSystemService(Context.DROPBOX_SERVICE);
+    //     final String headers = getBootHeadersToLogAndUpdate();
+    //     final String bootReason = SystemProperties.get("ro.boot.bootreason", null);
+    //
+    //     String recovery = RecoverySystem.handleAftermath(ctx);
+    //     if (recovery != null && db != null) {
+    //         db.addText("SYSTEM_RECOVERY_LOG", headers + recovery);
+    //     }
+    //
+    //     String lastKmsgFooter = "";
+    //     if (bootReason != null) {
+    //         lastKmsgFooter = new StringBuilder(512)
+    //             .append("\n")
+    //             .append("Boot info:\n")
+    //             .append("Last boot reason: ").append(bootReason).append("\n")
+    //             .toString();
+    //     }
+    //
+    //     HashMap<String, Long> timestamps = readTimestamps();
+    //
+    //     if (SystemProperties.getLong("ro.runtime.firstboot", 0) == 0) {
+    //         if (StorageManager.inCryptKeeperBounce()) {
+    //             // Encrypted, first boot to get PIN/pattern/password so data is tmpfs
+    //             // Don't set ro.runtime.firstboot so that we will do this again
+    //             // when data is properly mounted
+    //         } else {
+    //             String now = Long.toString(System.currentTimeMillis());
+    //             SystemProperties.set("ro.runtime.firstboot", now);
+    //         }
+    //         if (db != null) db.addText("SYSTEM_BOOT", headers);
+    //
+    //         // Negative sizes mean to take the *tail* of the file (see FileUtils.readTextFile())
+    //         addFileWithFootersToDropBox(db, timestamps, headers, lastKmsgFooter,
+    //                 "/proc/last_kmsg", -LOG_SIZE, "SYSTEM_LAST_KMSG");
+    //         addFileWithFootersToDropBox(db, timestamps, headers, lastKmsgFooter,
+    //                 "/sys/fs/pstore/console-ramoops", -LOG_SIZE, "SYSTEM_LAST_KMSG");
+    //         addFileToDropBox(db, timestamps, headers, "/cache/recovery/log", -LOG_SIZE,
+    //                 "SYSTEM_RECOVERY_LOG");
+    //         addFileToDropBox(db, timestamps, headers, "/cache/recovery/last_kmsg",
+    //                 -LOG_SIZE, "SYSTEM_RECOVERY_KMSG");
+    //         addAuditErrorsToDropBox(db, timestamps, headers, -LOG_SIZE, "SYSTEM_AUDIT");
+    //         addFsckErrorsToDropBox(db, timestamps, headers, -LOG_SIZE, "SYSTEM_FSCK");
+    //     } else {
+    //         if (db != null) db.addText("SYSTEM_RESTART", headers);
+    //     }
+    //
+    //     // Scan existing tombstones (in case any new ones appeared)
+    //     File[] tombstoneFiles = TOMBSTONE_DIR.listFiles();
+    //     for (int i = 0; tombstoneFiles != null && i < tombstoneFiles.length; i++) {
+    //         if (tombstoneFiles[i].isFile()) {
+    //             addFileToDropBox(db, timestamps, headers, tombstoneFiles[i].getPath(),
+    //                     LOG_SIZE, "SYSTEM_TOMBSTONE");
+    //         }
+    //     }
+    //
+    //     writeTimestamps(timestamps);
+    //
+    //     // Start watching for new tombstone files; will record them as they occur.
+    //     // This gets registered with the singleton file observer thread.
+    //     sTombstoneObserver = new FileObserver(TOMBSTONE_DIR.getPath(), FileObserver.CLOSE_WRITE) {
+    //         @Override
+    //         public void onEvent(int event, String path) {
+    //             HashMap<String, Long> timestamps = readTimestamps();
+    //             try {
+    //                 File file = new File(TOMBSTONE_DIR, path);
+    //                 if (file.isFile()) {
+    //                     addFileToDropBox(db, timestamps, headers, file.getPath(), LOG_SIZE,
+    //                             "SYSTEM_TOMBSTONE");
+    //                 }
+    //             } catch (IOException e) {
+    //                 Slog.e(TAG, "Can't log tombstone", e);
+    //             }
+    //             writeTimestamps(timestamps);
+    //         }
+    //     };
+    //
+    //     sTombstoneObserver.startWatching();
+    // }
 
-        String recovery = RecoverySystem.handleAftermath(ctx);
-        if (recovery != null && db != null) {
-            db.addText("SYSTEM_RECOVERY_LOG", headers + recovery);
-        }
+    // private static void addFileToDropBox(
+    //         DropBoxManager db, HashMap<String, Long> timestamps,
+    //         String headers, String filename, int maxSize, String tag) throws IOException {
+    //     addFileWithFootersToDropBox(db, timestamps, headers, "", filename, maxSize, tag);
+    // }
 
-        String lastKmsgFooter = "";
-        if (bootReason != null) {
-            lastKmsgFooter = new StringBuilder(512)
-                .append("\n")
-                .append("Boot info:\n")
-                .append("Last boot reason: ").append(bootReason).append("\n")
-                .toString();
-        }
+    // private static void addFileWithFootersToDropBox(
+    //         DropBoxManager db, HashMap<String, Long> timestamps,
+    //         String headers, String footers, String filename, int maxSize,
+    //         String tag) throws IOException {
+    //     if (db == null || !db.isTagEnabled(tag)) return;  // Logging disabled
+    //
+    //     File file = new File(filename);
+    //     long fileTime = file.lastModified();
+    //     if (fileTime <= 0) return;  // File does not exist
+    //
+    //     if (timestamps.containsKey(filename) && timestamps.get(filename) == fileTime) {
+    //         return;  // Already logged this particular file
+    //     }
+    //
+    //     timestamps.put(filename, fileTime);
+    //
+    //     Slog.i(TAG, "Copying " + filename + " to DropBox (" + tag + ")");
+    //     db.addText(tag, headers + FileUtils.readTextFile(file, maxSize, "[[TRUNCATED]]\n") +
+    //             footers);
+    // }
 
-        HashMap<String, Long> timestamps = readTimestamps();
+    // private static void addAuditErrorsToDropBox(DropBoxManager db,
+    //         HashMap<String, Long> timestamps, String headers, int maxSize, String tag)
+    //         throws IOException {
+    //     if (db == null || !db.isTagEnabled(tag)) return;  // Logging disabled
+    //     Slog.i(TAG, "Copying audit failures to DropBox");
+    //
+    //     File file = new File("/proc/last_kmsg");
+    //     long fileTime = file.lastModified();
+    //     if (fileTime <= 0) {
+    //         file = new File("/sys/fs/pstore/console-ramoops");
+    //         fileTime = file.lastModified();
+    //     }
+    //
+    //     if (fileTime <= 0) return;  // File does not exist
+    //
+    //     if (timestamps.containsKey(tag) && timestamps.get(tag) == fileTime) {
+    //         return;  // Already logged this particular file
+    //     }
+    //
+    //     timestamps.put(tag, fileTime);
+    //
+    //     String log = FileUtils.readTextFile(file, maxSize, "[[TRUNCATED]]\n");
+    //     StringBuilder sb = new StringBuilder();
+    //     for (String line : log.split("\n")) {
+    //         if (line.contains("audit")) {
+    //             sb.append(line + "\n");
+    //         }
+    //     }
+    //     Slog.i(TAG, "Copied " + sb.toString().length() + " worth of audits to DropBox");
+    //     db.addText(tag, headers + sb.toString());
+    // }
 
-        if (SystemProperties.getLong("ro.runtime.firstboot", 0) == 0) {
-            if (StorageManager.inCryptKeeperBounce()) {
-                // Encrypted, first boot to get PIN/pattern/password so data is tmpfs
-                // Don't set ro.runtime.firstboot so that we will do this again
-                // when data is properly mounted
-            } else {
-                String now = Long.toString(System.currentTimeMillis());
-                SystemProperties.set("ro.runtime.firstboot", now);
-            }
-            if (db != null) db.addText("SYSTEM_BOOT", headers);
-
-            // Negative sizes mean to take the *tail* of the file (see FileUtils.readTextFile())
-            addFileWithFootersToDropBox(db, timestamps, headers, lastKmsgFooter,
-                    "/proc/last_kmsg", -LOG_SIZE, "SYSTEM_LAST_KMSG");
-            addFileWithFootersToDropBox(db, timestamps, headers, lastKmsgFooter,
-                    "/sys/fs/pstore/console-ramoops", -LOG_SIZE, "SYSTEM_LAST_KMSG");
-            addFileToDropBox(db, timestamps, headers, "/cache/recovery/log", -LOG_SIZE,
-                    "SYSTEM_RECOVERY_LOG");
-            addFileToDropBox(db, timestamps, headers, "/cache/recovery/last_kmsg",
-                    -LOG_SIZE, "SYSTEM_RECOVERY_KMSG");
-            addAuditErrorsToDropBox(db, timestamps, headers, -LOG_SIZE, "SYSTEM_AUDIT");
-            addFsckErrorsToDropBox(db, timestamps, headers, -LOG_SIZE, "SYSTEM_FSCK");
-        } else {
-            if (db != null) db.addText("SYSTEM_RESTART", headers);
-        }
-
-        // Scan existing tombstones (in case any new ones appeared)
-        File[] tombstoneFiles = TOMBSTONE_DIR.listFiles();
-        for (int i = 0; tombstoneFiles != null && i < tombstoneFiles.length; i++) {
-            if (tombstoneFiles[i].isFile()) {
-                addFileToDropBox(db, timestamps, headers, tombstoneFiles[i].getPath(),
-                        LOG_SIZE, "SYSTEM_TOMBSTONE");
-            }
-        }
-
-        writeTimestamps(timestamps);
-
-        // Start watching for new tombstone files; will record them as they occur.
-        // This gets registered with the singleton file observer thread.
-        sTombstoneObserver = new FileObserver(TOMBSTONE_DIR.getPath(), FileObserver.CLOSE_WRITE) {
-            @Override
-            public void onEvent(int event, String path) {
-                HashMap<String, Long> timestamps = readTimestamps();
-                try {
-                    File file = new File(TOMBSTONE_DIR, path);
-                    if (file.isFile()) {
-                        addFileToDropBox(db, timestamps, headers, file.getPath(), LOG_SIZE,
-                                "SYSTEM_TOMBSTONE");
-                    }
-                } catch (IOException e) {
-                    Slog.e(TAG, "Can't log tombstone", e);
-                }
-                writeTimestamps(timestamps);
-            }
-        };
-
-        sTombstoneObserver.startWatching();
-    }
-
-    private static void addFileToDropBox(
-            DropBoxManager db, HashMap<String, Long> timestamps,
-            String headers, String filename, int maxSize, String tag) throws IOException {
-        addFileWithFootersToDropBox(db, timestamps, headers, "", filename, maxSize, tag);
-    }
-
-    private static void addFileWithFootersToDropBox(
-            DropBoxManager db, HashMap<String, Long> timestamps,
-            String headers, String footers, String filename, int maxSize,
-            String tag) throws IOException {
-        if (db == null || !db.isTagEnabled(tag)) return;  // Logging disabled
-
-        File file = new File(filename);
-        long fileTime = file.lastModified();
-        if (fileTime <= 0) return;  // File does not exist
-
-        if (timestamps.containsKey(filename) && timestamps.get(filename) == fileTime) {
-            return;  // Already logged this particular file
-        }
-
-        timestamps.put(filename, fileTime);
-
-        Slog.i(TAG, "Copying " + filename + " to DropBox (" + tag + ")");
-        db.addText(tag, headers + FileUtils.readTextFile(file, maxSize, "[[TRUNCATED]]\n") +
-                footers);
-    }
-
-    private static void addAuditErrorsToDropBox(DropBoxManager db,
-            HashMap<String, Long> timestamps, String headers, int maxSize, String tag)
-            throws IOException {
-        if (db == null || !db.isTagEnabled(tag)) return;  // Logging disabled
-        Slog.i(TAG, "Copying audit failures to DropBox");
-
-        File file = new File("/proc/last_kmsg");
-        long fileTime = file.lastModified();
-        if (fileTime <= 0) {
-            file = new File("/sys/fs/pstore/console-ramoops");
-            fileTime = file.lastModified();
-        }
-
-        if (fileTime <= 0) return;  // File does not exist
-
-        if (timestamps.containsKey(tag) && timestamps.get(tag) == fileTime) {
-            return;  // Already logged this particular file
-        }
-
-        timestamps.put(tag, fileTime);
-
-        String log = FileUtils.readTextFile(file, maxSize, "[[TRUNCATED]]\n");
-        StringBuilder sb = new StringBuilder();
-        for (String line : log.split("\n")) {
-            if (line.contains("audit")) {
-                sb.append(line + "\n");
-            }
-        }
-        Slog.i(TAG, "Copied " + sb.toString().length() + " worth of audits to DropBox");
-        db.addText(tag, headers + sb.toString());
-    }
-
-    private static void addFsckErrorsToDropBox(DropBoxManager db,
-            HashMap<String, Long> timestamps, String headers, int maxSize, String tag)
-            throws IOException {
-        boolean upload_needed = false;
-        if (db == null || !db.isTagEnabled(tag)) return;  // Logging disabled
-        Slog.i(TAG, "Checking for fsck errors");
-
-        File file = new File("/dev/fscklogs/log");
-        long fileTime = file.lastModified();
-        if (fileTime <= 0) return;  // File does not exist
-
-        String log = FileUtils.readTextFile(file, maxSize, "[[TRUNCATED]]\n");
-        StringBuilder sb = new StringBuilder();
-        for (String line : log.split("\n")) {
-            if (line.contains("FILE SYSTEM WAS MODIFIED")) {
-                upload_needed = true;
-                break;
-            }
-        }
-
-        if (upload_needed) {
-            addFileToDropBox(db, timestamps, headers, "/dev/fscklogs/log", maxSize, tag);
-        }
-
-        // Remove the file so we don't re-upload if the runtime restarts.
-        file.delete();
-    }
+    // private static void addFsckErrorsToDropBox(DropBoxManager db,
+    //         HashMap<String, Long> timestamps, String headers, int maxSize, String tag)
+    //         throws IOException {
+    //     boolean upload_needed = false;
+    //     if (db == null || !db.isTagEnabled(tag)) return;  // Logging disabled
+    //     Slog.i(TAG, "Checking for fsck errors");
+    //
+    //     File file = new File("/dev/fscklogs/log");
+    //     long fileTime = file.lastModified();
+    //     if (fileTime <= 0) return;  // File does not exist
+    //
+    //     String log = FileUtils.readTextFile(file, maxSize, "[[TRUNCATED]]\n");
+    //     StringBuilder sb = new StringBuilder();
+    //     for (String line : log.split("\n")) {
+    //         if (line.contains("FILE SYSTEM WAS MODIFIED")) {
+    //             upload_needed = true;
+    //             break;
+    //         }
+    //     }
+    //
+    //     // if (upload_needed) {
+    //     //     addFileToDropBox(db, timestamps, headers, "/dev/fscklogs/log", maxSize, tag);
+    //     // }
+    //
+    //     // Remove the file so we don't re-upload if the runtime restarts.
+    //     file.delete();
+    // }
 
     private static HashMap<String, Long> readTimestamps() {
         synchronized (sFile) {

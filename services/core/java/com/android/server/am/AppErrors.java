@@ -857,8 +857,8 @@ class AppErrors {
             Process.sendSignal(app.pid, Process.SIGNAL_QUIT);
         }
 
-        mService.addErrorToDropBox("anr", app, app.processName, activity, parent, annotation,
-                cpuInfo, tracesFile, null);
+        // mService.addErrorToDropBox("anr", app, app.processName, activity, parent, annotation,
+        //         cpuInfo, tracesFile, null);
 
         if (mService.mController != null) {
             try {

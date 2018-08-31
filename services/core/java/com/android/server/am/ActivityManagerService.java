@@ -158,7 +158,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.Environment;
 import android.os.FactoryTest;
 import android.os.FileObserver;
@@ -506,7 +506,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     static final String[] EMPTY_STRING_ARRAY = new String[0];
 
     // How many bytes to write into the dropbox log before truncating
-    static final int DROPBOX_MAX_SIZE = 192 * 1024;
+    // static final int DROPBOX_MAX_SIZE = 192 * 1024;
     // Assumes logcat entries average around 100 bytes; that's not perfect stack traces count
     // as one line, but close enough for now.
     static final int RESERVED_BYTES_PER_LOGCAT_LINE = 100;
@@ -13511,7 +13511,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 crashInfo.throwFileName,
                 crashInfo.throwLineNumber);
 
-        addErrorToDropBox(eventType, r, processName, null, null, null, null, null, crashInfo);
+        // addErrorToDropBox(eventType, r, processName, null, null, null, null, null, crashInfo);
 
         mAppErrors.crashApplication(r, crashInfo);
     }
@@ -13544,9 +13544,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                     mAlreadyLoggedViolatedStacks.add(stackFingerprint);
                 }
             }
-            if (logIt) {
-                logStrictModeViolationToDropBox(r, info);
-            }
+            // if (logIt) {
+            //     logStrictModeViolationToDropBox(r, info);
+            // }
         }
 
         if ((violationMask & StrictMode.PENALTY_DIALOG) != 0) {
@@ -13575,123 +13575,123 @@ public final class ActivityManagerService extends ActivityManagerNative
     // these in quick succession so we try to batch these together to
     // minimize disk writes, number of dropbox entries, and maximize
     // compression, by having more fewer, larger records.
-    private void logStrictModeViolationToDropBox(
-            ProcessRecord process,
-            StrictMode.ViolationInfo info) {
-        if (info == null) {
-            return;
-        }
-        final boolean isSystemApp = process == null ||
-                (process.info.flags & (ApplicationInfo.FLAG_SYSTEM |
-                                       ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;
-        final String processName = process == null ? "unknown" : process.processName;
-        final String dropboxTag = isSystemApp ? "system_app_strictmode" : "data_app_strictmode";
-        final DropBoxManager dbox = (DropBoxManager)
-                mContext.getSystemService(Context.DROPBOX_SERVICE);
-
-        // Exit early if the dropbox isn't configured to accept this report type.
-        if (dbox == null || !dbox.isTagEnabled(dropboxTag)) return;
-
-        boolean bufferWasEmpty;
-        boolean needsFlush;
-        final StringBuilder sb = isSystemApp ? mStrictModeBuffer : new StringBuilder(1024);
-        synchronized (sb) {
-            bufferWasEmpty = sb.length() == 0;
-            appendDropBoxProcessHeaders(process, processName, sb);
-            sb.append("Build: ").append(Build.FINGERPRINT).append("\n");
-            sb.append("System-App: ").append(isSystemApp).append("\n");
-            sb.append("Uptime-Millis: ").append(info.violationUptimeMillis).append("\n");
-            if (info.violationNumThisLoop != 0) {
-                sb.append("Loop-Violation-Number: ").append(info.violationNumThisLoop).append("\n");
-            }
-            if (info.numAnimationsRunning != 0) {
-                sb.append("Animations-Running: ").append(info.numAnimationsRunning).append("\n");
-            }
-            if (info.broadcastIntentAction != null) {
-                sb.append("Broadcast-Intent-Action: ").append(info.broadcastIntentAction).append("\n");
-            }
-            if (info.durationMillis != -1) {
-                sb.append("Duration-Millis: ").append(info.durationMillis).append("\n");
-            }
-            if (info.numInstances != -1) {
-                sb.append("Instance-Count: ").append(info.numInstances).append("\n");
-            }
-            if (info.tags != null) {
-                for (String tag : info.tags) {
-                    sb.append("Span-Tag: ").append(tag).append("\n");
-                }
-            }
-            sb.append("\n");
-            if (info.crashInfo != null && info.crashInfo.stackTrace != null) {
-                sb.append(info.crashInfo.stackTrace);
-                sb.append("\n");
-            }
-            if (info.message != null) {
-                sb.append(info.message);
-                sb.append("\n");
-            }
-
-            // Only buffer up to ~64k.  Various logging bits truncate
-            // things at 128k.
-            needsFlush = (sb.length() > 64 * 1024);
-        }
-
-        // Flush immediately if the buffer's grown too large, or this
-        // is a non-system app.  Non-system apps are isolated with a
-        // different tag & policy and not batched.
-        //
-        // Batching is useful during internal testing with
-        // StrictMode settings turned up high.  Without batching,
-        // thousands of separate files could be created on boot.
-        if (!isSystemApp || needsFlush) {
-            new Thread("Error dump: " + dropboxTag) {
-                @Override
-                public void run() {
-                    String report;
-                    synchronized (sb) {
-                        report = sb.toString();
-                        sb.delete(0, sb.length());
-                        sb.trimToSize();
-                    }
-                    if (report.length() != 0) {
-                        dbox.addText(dropboxTag, report);
-                    }
-                }
-            }.start();
-            return;
-        }
-
-        // System app batching:
-        if (!bufferWasEmpty) {
-            // An existing dropbox-writing thread is outstanding, so
-            // we don't need to start it up.  The existing thread will
-            // catch the buffer appends we just did.
-            return;
-        }
-
-        // Worker thread to both batch writes and to avoid blocking the caller on I/O.
-        // (After this point, we shouldn't access AMS internal data structures.)
-        new Thread("Error dump: " + dropboxTag) {
-            @Override
-            public void run() {
-                // 5 second sleep to let stacks arrive and be batched together
-                try {
-                    Thread.sleep(5000);  // 5 seconds
-                } catch (InterruptedException e) {}
-
-                String errorReport;
-                synchronized (mStrictModeBuffer) {
-                    errorReport = mStrictModeBuffer.toString();
-                    if (errorReport.length() == 0) {
-                        return;
-                    }
-                    mStrictModeBuffer.delete(0, mStrictModeBuffer.length());
-                    mStrictModeBuffer.trimToSize();
-                }
-                dbox.addText(dropboxTag, errorReport);
-            }
-        }.start();
-    }
+    // private void logStrictModeViolationToDropBox(
+    //         ProcessRecord process,
+    //         StrictMode.ViolationInfo info) {
+    //     if (info == null) {
+    //         return;
+    //     }
+    //     final boolean isSystemApp = process == null ||
+    //             (process.info.flags & (ApplicationInfo.FLAG_SYSTEM |
+    //                                    ApplicationInfo.FLAG_UPDATED_SYSTEM_APP)) != 0;
+    //     final String processName = process == null ? "unknown" : process.processName;
+    //     final String dropboxTag = isSystemApp ? "system_app_strictmode" : "data_app_strictmode";
+    //     final DropBoxManager dbox = (DropBoxManager)
+    //             mContext.getSystemService(Context.DROPBOX_SERVICE);
+    //
+    //     // Exit early if the dropbox isn't configured to accept this report type.
+    //     if (dbox == null || !dbox.isTagEnabled(dropboxTag)) return;
+    //
+    //     boolean bufferWasEmpty;
+    //     boolean needsFlush;
+    //     final StringBuilder sb = isSystemApp ? mStrictModeBuffer : new StringBuilder(1024);
+    //     synchronized (sb) {
+    //         bufferWasEmpty = sb.length() == 0;
+    //         appendDropBoxProcessHeaders(process, processName, sb);
+    //         sb.append("Build: ").append(Build.FINGERPRINT).append("\n");
+    //         sb.append("System-App: ").append(isSystemApp).append("\n");
+    //         sb.append("Uptime-Millis: ").append(info.violationUptimeMillis).append("\n");
+    //         if (info.violationNumThisLoop != 0) {
+    //             sb.append("Loop-Violation-Number: ").append(info.violationNumThisLoop).append("\n");
+    //         }
+    //         if (info.numAnimationsRunning != 0) {
+    //             sb.append("Animations-Running: ").append(info.numAnimationsRunning).append("\n");
+    //         }
+    //         if (info.broadcastIntentAction != null) {
+    //             sb.append("Broadcast-Intent-Action: ").append(info.broadcastIntentAction).append("\n");
+    //         }
+    //         if (info.durationMillis != -1) {
+    //             sb.append("Duration-Millis: ").append(info.durationMillis).append("\n");
+    //         }
+    //         if (info.numInstances != -1) {
+    //             sb.append("Instance-Count: ").append(info.numInstances).append("\n");
+    //         }
+    //         if (info.tags != null) {
+    //             for (String tag : info.tags) {
+    //                 sb.append("Span-Tag: ").append(tag).append("\n");
+    //             }
+    //         }
+    //         sb.append("\n");
+    //         if (info.crashInfo != null && info.crashInfo.stackTrace != null) {
+    //             sb.append(info.crashInfo.stackTrace);
+    //             sb.append("\n");
+    //         }
+    //         if (info.message != null) {
+    //             sb.append(info.message);
+    //             sb.append("\n");
+    //         }
+    //
+    //         // Only buffer up to ~64k.  Various logging bits truncate
+    //         // things at 128k.
+    //         needsFlush = (sb.length() > 64 * 1024);
+    //     }
+    //
+    //     // Flush immediately if the buffer's grown too large, or this
+    //     // is a non-system app.  Non-system apps are isolated with a
+    //     // different tag & policy and not batched.
+    //     //
+    //     // Batching is useful during internal testing with
+    //     // StrictMode settings turned up high.  Without batching,
+    //     // thousands of separate files could be created on boot.
+    //     if (!isSystemApp || needsFlush) {
+    //         new Thread("Error dump: " + dropboxTag) {
+    //             @Override
+    //             public void run() {
+    //                 String report;
+    //                 synchronized (sb) {
+    //                     report = sb.toString();
+    //                     sb.delete(0, sb.length());
+    //                     sb.trimToSize();
+    //                 }
+    //                 if (report.length() != 0) {
+    //                     dbox.addText(dropboxTag, report);
+    //                 }
+    //             }
+    //         }.start();
+    //         return;
+    //     }
+    //
+    //     // System app batching:
+    //     if (!bufferWasEmpty) {
+    //         // An existing dropbox-writing thread is outstanding, so
+    //         // we don't need to start it up.  The existing thread will
+    //         // catch the buffer appends we just did.
+    //         return;
+    //     }
+    //
+    //     // Worker thread to both batch writes and to avoid blocking the caller on I/O.
+    //     // (After this point, we shouldn't access AMS internal data structures.)
+    //     new Thread("Error dump: " + dropboxTag) {
+    //         @Override
+    //         public void run() {
+    //             // 5 second sleep to let stacks arrive and be batched together
+    //             try {
+    //                 Thread.sleep(5000);  // 5 seconds
+    //             } catch (InterruptedException e) {}
+    //
+    //             String errorReport;
+    //             synchronized (mStrictModeBuffer) {
+    //                 errorReport = mStrictModeBuffer.toString();
+    //                 if (errorReport.length() == 0) {
+    //                     return;
+    //                 }
+    //                 mStrictModeBuffer.delete(0, mStrictModeBuffer.length());
+    //                 mStrictModeBuffer.trimToSize();
+    //             }
+    //             dbox.addText(dropboxTag, errorReport);
+    //         }
+    //     }.start();
+    // }
 
     /**
      * Used by {@link Log} via {@link com.android.internal.os.RuntimeInit} to report serious errors.
@@ -13740,7 +13740,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         // EventLog.writeEvent(EventLogTags.AM_WTF, UserHandle.getUserId(callingUid), callingPid,
         //         processName, r == null ? -1 : r.info.flags, tag, crashInfo.exceptionMessage);
 
-        addErrorToDropBox("wtf", r, processName, null, null, tag, null, null, crashInfo);
+        // addErrorToDropBox("wtf", r, processName, null, null, tag, null, null, crashInfo);
 
         return r;
     }
@@ -13778,44 +13778,44 @@ public final class ActivityManagerService extends ActivityManagerNative
      * Utility function for addErrorToDropBox and handleStrictModeViolation's logging
      * to append various headers to the dropbox log text.
      */
-    private void appendDropBoxProcessHeaders(ProcessRecord process, String processName,
-            StringBuilder sb) {
-        // Watchdog thread ends up invoking this function (with
-        // a null ProcessRecord) to add the stack file to dropbox.
-        // Do not acquire a lock on this (am) in such cases, as it
-        // could cause a potential deadlock, if and when watchdog
-        // is invoked due to unavailability of lock on am and it
-        // would prevent watchdog from killing system_server.
-        if (process == null) {
-            sb.append("Process: ").append(processName).append("\n");
-            return;
-        }
-        // Note: ProcessRecord 'process' is guarded by the service
-        // instance.  (notably process.pkgList, which could otherwise change
-        // concurrently during execution of this method)
-        synchronized (this) {
-            sb.append("Process: ").append(processName).append("\n");
-            int flags = process.info.flags;
-            IPackageManager pm = AppGlobals.getPackageManager();
-            sb.append("Flags: 0x").append(Integer.toHexString(flags)).append("\n");
-            for (int ip=0; ip<process.pkgList.size(); ip++) {
-                String pkg = process.pkgList.keyAt(ip);
-                sb.append("Package: ").append(pkg);
-                try {
-                    PackageInfo pi = pm.getPackageInfo(pkg, 0, UserHandle.getCallingUserId());
-                    if (pi != null) {
-                        sb.append(" v").append(pi.versionCode);
-                        if (pi.versionName != null) {
-                            sb.append(" (").append(pi.versionName).append(")");
-                        }
-                    }
-                } catch (RemoteException e) {
-                    Slog.e(TAG, "Error getting package info: " + pkg, e);
-                }
-                sb.append("\n");
-            }
-        }
-    }
+    // private void appendDropBoxProcessHeaders(ProcessRecord process, String processName,
+    //         StringBuilder sb) {
+    //     // Watchdog thread ends up invoking this function (with
+    //     // a null ProcessRecord) to add the stack file to dropbox.
+    //     // Do not acquire a lock on this (am) in such cases, as it
+    //     // could cause a potential deadlock, if and when watchdog
+    //     // is invoked due to unavailability of lock on am and it
+    //     // would prevent watchdog from killing system_server.
+    //     if (process == null) {
+    //         sb.append("Process: ").append(processName).append("\n");
+    //         return;
+    //     }
+    //     // Note: ProcessRecord 'process' is guarded by the service
+    //     // instance.  (notably process.pkgList, which could otherwise change
+    //     // concurrently during execution of this method)
+    //     synchronized (this) {
+    //         sb.append("Process: ").append(processName).append("\n");
+    //         int flags = process.info.flags;
+    //         IPackageManager pm = AppGlobals.getPackageManager();
+    //         sb.append("Flags: 0x").append(Integer.toHexString(flags)).append("\n");
+    //         for (int ip=0; ip<process.pkgList.size(); ip++) {
+    //             String pkg = process.pkgList.keyAt(ip);
+    //             sb.append("Package: ").append(pkg);
+    //             try {
+    //                 PackageInfo pi = pm.getPackageInfo(pkg, 0, UserHandle.getCallingUserId());
+    //                 if (pi != null) {
+    //                     sb.append(" v").append(pi.versionCode);
+    //                     if (pi.versionName != null) {
+    //                         sb.append(" (").append(pi.versionName).append(")");
+    //                     }
+    //                 }
+    //             } catch (RemoteException e) {
+    //                 Slog.e(TAG, "Error getting package info: " + pkg, e);
+    //             }
+    //             sb.append("\n");
+    //         }
+    //     }
+    // }
 
     private static String processClass(ProcessRecord process) {
         if (process == null || process.pid == MY_PID) {
@@ -13841,120 +13841,120 @@ public final class ActivityManagerService extends ActivityManagerNative
      * @param dataFile text file to include in the report, null if none
      * @param crashInfo giving an application stack trace, null if absent
      */
-    public void addErrorToDropBox(String eventType,
-            ProcessRecord process, String processName, ActivityRecord activity,
-            ActivityRecord parent, String subject,
-            final String report, final File dataFile,
-            final ApplicationErrorReport.CrashInfo crashInfo) {
-        // NOTE -- this must never acquire the ActivityManagerService lock,
-        // otherwise the watchdog may be prevented from resetting the system.
-
-        final String dropboxTag = processClass(process) + "_" + eventType;
-        final DropBoxManager dbox = (DropBoxManager)
-                mContext.getSystemService(Context.DROPBOX_SERVICE);
-
-        // Exit early if the dropbox isn't configured to accept this report type.
-        if (dbox == null || !dbox.isTagEnabled(dropboxTag)) return;
-
-        // Rate-limit how often we're willing to do the heavy lifting below to
-        // collect and record logs; currently 5 logs per 10 second period.
-        final long now = SystemClock.elapsedRealtime();
-        if (now - mWtfClusterStart > 10 * DateUtils.SECOND_IN_MILLIS) {
-            mWtfClusterStart = now;
-            mWtfClusterCount = 1;
-        } else {
-            if (mWtfClusterCount++ >= 5) return;
-        }
-
-        final StringBuilder sb = new StringBuilder(1024);
-        appendDropBoxProcessHeaders(process, processName, sb);
-        if (process != null) {
-            sb.append("Foreground: ")
-                    .append(process.isInterestingToUserLocked() ? "Yes" : "No")
-                    .append("\n");
-        }
-        if (activity != null) {
-            sb.append("Activity: ").append(activity.shortComponentName).append("\n");
-        }
-        if (parent != null && parent.app != null && parent.app.pid != process.pid) {
-            sb.append("Parent-Process: ").append(parent.app.processName).append("\n");
-        }
-        if (parent != null && parent != activity) {
-            sb.append("Parent-Activity: ").append(parent.shortComponentName).append("\n");
-        }
-        if (subject != null) {
-            sb.append("Subject: ").append(subject).append("\n");
-        }
-        sb.append("Build: ").append(Build.FINGERPRINT).append("\n");
-        if (Debug.isDebuggerConnected()) {
-            sb.append("Debugger: Connected\n");
-        }
-        sb.append("\n");
-
-        // Do the rest in a worker thread to avoid blocking the caller on I/O
-        // (After this point, we shouldn't access AMS internal data structures.)
-        Thread worker = new Thread("Error dump: " + dropboxTag) {
-            @Override
-            public void run() {
-                if (report != null) {
-                    sb.append(report);
-                }
-
-                String setting = Settings.Global.ERROR_LOGCAT_PREFIX + dropboxTag;
-                int lines = Settings.Global.getInt(mContext.getContentResolver(), setting, 0);
-                int maxDataFileSize = DROPBOX_MAX_SIZE - sb.length()
-                        - lines * RESERVED_BYTES_PER_LOGCAT_LINE;
-
-                if (dataFile != null && maxDataFileSize > 0) {
-                    try {
-                        sb.append(FileUtils.readTextFile(dataFile, maxDataFileSize,
-                                    "\n\n[[TRUNCATED]]"));
-                    } catch (IOException e) {
-                        Slog.e(TAG, "Error reading " + dataFile, e);
-                    }
-                }
-                if (crashInfo != null && crashInfo.stackTrace != null) {
-                    sb.append(crashInfo.stackTrace);
-                }
-
-                if (lines > 0) {
-                    sb.append("\n");
-
-                    // Merge several logcat streams, and take the last N lines
-                    InputStreamReader input = null;
-                    try {
-                        java.lang.Process logcat = new ProcessBuilder(
-                                "/system/bin/timeout", "-k", "15s", "10s",
-                                "/system/bin/logcat", "-v", "threadtime", "-b", "events", "-b", "system",
-                                "-b", "main", "-b", "crash", "-t", String.valueOf(lines))
-                                        .redirectErrorStream(true).start();
-
-                        try { logcat.getOutputStream().close(); } catch (IOException e) {}
-                        try { logcat.getErrorStream().close(); } catch (IOException e) {}
-                        input = new InputStreamReader(logcat.getInputStream());
-
-                        int num;
-                        char[] buf = new char[8192];
-                        while ((num = input.read(buf)) > 0) sb.append(buf, 0, num);
-                    } catch (IOException e) {
-                        Slog.e(TAG, "Error running logcat", e);
-                    } finally {
-                        if (input != null) try { input.close(); } catch (IOException e) {}
-                    }
-                }
-
-                dbox.addText(dropboxTag, sb.toString());
-            }
-        };
-
-        if (process == null) {
-            // If process is null, we are being called from some internal code
-            // and may be about to die -- run this synchronously.
-            worker.run();
-        } else {
-            worker.start();
-        }
-    }
+    // public void addErrorToDropBox(String eventType,
+    //         ProcessRecord process, String processName, ActivityRecord activity,
+    //         ActivityRecord parent, String subject,
+    //         final String report, final File dataFile,
+    //         final ApplicationErrorReport.CrashInfo crashInfo) {
+    //     // NOTE -- this must never acquire the ActivityManagerService lock,
+    //     // otherwise the watchdog may be prevented from resetting the system.
+    //
+    //     final String dropboxTag = processClass(process) + "_" + eventType;
+    //     final DropBoxManager dbox = (DropBoxManager)
+    //             mContext.getSystemService(Context.DROPBOX_SERVICE);
+    //
+    //     // Exit early if the dropbox isn't configured to accept this report type.
+    //     if (dbox == null || !dbox.isTagEnabled(dropboxTag)) return;
+    //
+    //     // Rate-limit how often we're willing to do the heavy lifting below to
+    //     // collect and record logs; currently 5 logs per 10 second period.
+    //     final long now = SystemClock.elapsedRealtime();
+    //     if (now - mWtfClusterStart > 10 * DateUtils.SECOND_IN_MILLIS) {
+    //         mWtfClusterStart = now;
+    //         mWtfClusterCount = 1;
+    //     } else {
+    //         if (mWtfClusterCount++ >= 5) return;
+    //     }
+    //
+    //     final StringBuilder sb = new StringBuilder(1024);
+    //     // appendDropBoxProcessHeaders(process, processName, sb);
+    //     if (process != null) {
+    //         sb.append("Foreground: ")
+    //                 .append(process.isInterestingToUserLocked() ? "Yes" : "No")
+    //                 .append("\n");
+    //     }
+    //     if (activity != null) {
+    //         sb.append("Activity: ").append(activity.shortComponentName).append("\n");
+    //     }
+    //     if (parent != null && parent.app != null && parent.app.pid != process.pid) {
+    //         sb.append("Parent-Process: ").append(parent.app.processName).append("\n");
+    //     }
+    //     if (parent != null && parent != activity) {
+    //         sb.append("Parent-Activity: ").append(parent.shortComponentName).append("\n");
+    //     }
+    //     if (subject != null) {
+    //         sb.append("Subject: ").append(subject).append("\n");
+    //     }
+    //     sb.append("Build: ").append(Build.FINGERPRINT).append("\n");
+    //     if (Debug.isDebuggerConnected()) {
+    //         sb.append("Debugger: Connected\n");
+    //     }
+    //     sb.append("\n");
+    //
+    //     // Do the rest in a worker thread to avoid blocking the caller on I/O
+    //     // (After this point, we shouldn't access AMS internal data structures.)
+    //     Thread worker = new Thread("Error dump: " + dropboxTag) {
+    //         @Override
+    //         public void run() {
+    //             if (report != null) {
+    //                 sb.append(report);
+    //             }
+    //
+    //             String setting = Settings.Global.ERROR_LOGCAT_PREFIX + dropboxTag;
+    //             int lines = Settings.Global.getInt(mContext.getContentResolver(), setting, 0);
+    //             int maxDataFileSize = DROPBOX_MAX_SIZE - sb.length()
+    //                     - lines * RESERVED_BYTES_PER_LOGCAT_LINE;
+    //
+    //             if (dataFile != null && maxDataFileSize > 0) {
+    //                 try {
+    //                     sb.append(FileUtils.readTextFile(dataFile, maxDataFileSize,
+    //                                 "\n\n[[TRUNCATED]]"));
+    //                 } catch (IOException e) {
+    //                     Slog.e(TAG, "Error reading " + dataFile, e);
+    //                 }
+    //             }
+    //             if (crashInfo != null && crashInfo.stackTrace != null) {
+    //                 sb.append(crashInfo.stackTrace);
+    //             }
+    //
+    //             if (lines > 0) {
+    //                 sb.append("\n");
+    //
+    //                 // Merge several logcat streams, and take the last N lines
+    //                 InputStreamReader input = null;
+    //                 try {
+    //                     java.lang.Process logcat = new ProcessBuilder(
+    //                             "/system/bin/timeout", "-k", "15s", "10s",
+    //                             "/system/bin/logcat", "-v", "threadtime", "-b", "events", "-b", "system",
+    //                             "-b", "main", "-b", "crash", "-t", String.valueOf(lines))
+    //                                     .redirectErrorStream(true).start();
+    //
+    //                     try { logcat.getOutputStream().close(); } catch (IOException e) {}
+    //                     try { logcat.getErrorStream().close(); } catch (IOException e) {}
+    //                     input = new InputStreamReader(logcat.getInputStream());
+    //
+    //                     int num;
+    //                     char[] buf = new char[8192];
+    //                     while ((num = input.read(buf)) > 0) sb.append(buf, 0, num);
+    //                 } catch (IOException e) {
+    //                     Slog.e(TAG, "Error running logcat", e);
+    //                 } finally {
+    //                     if (input != null) try { input.close(); } catch (IOException e) {}
+    //                 }
+    //             }
+    //
+    //             dbox.addText(dropboxTag, sb.toString());
+    //         }
+    //     };
+    //
+    //     if (process == null) {
+    //         // If process is null, we are being called from some internal code
+    //         // and may be about to die -- run this synchronously.
+    //         worker.run();
+    //     } else {
+    //         worker.start();
+    //     }
+    // }
 
     @Override
     public List<ActivityManager.ProcessErrorStateInfo> getProcessesInErrorState() {
@@ -16852,8 +16852,8 @@ public final class ActivityManagerService extends ActivityManagerNative
             catPw.flush();
         }
         dropBuilder.append(catSw.toString());
-        addErrorToDropBox("lowmem", null, "system_server", null,
-                null, tag.toString(), dropBuilder.toString(), null, null);
+        // addErrorToDropBox("lowmem", null, "system_server", null,
+        //         null, tag.toString(), dropBuilder.toString(), null, null);
         //Slog.i(TAG, "Sent to dropbox:");
         //Slog.i(TAG, dropBuilder.toString());
         synchronized (ActivityManagerService.this) {

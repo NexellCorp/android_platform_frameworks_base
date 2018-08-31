@@ -28,7 +28,7 @@ import android.net.NetworkStats.NonMonotonicObserver;
 import android.net.NetworkStatsHistory;
 import android.net.NetworkTemplate;
 import android.net.TrafficStats;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.util.Log;
 import android.util.MathUtils;
 import android.util.Slog;
@@ -72,7 +72,7 @@ public class NetworkStatsRecorder {
 
     private final FileRotator mRotator;
     private final NonMonotonicObserver<String> mObserver;
-    private final DropBoxManager mDropBox;
+    // private final DropBoxManager mDropBox;
     private final String mCookie;
 
     private final long mBucketDuration;
@@ -94,7 +94,7 @@ public class NetworkStatsRecorder {
     public NetworkStatsRecorder() {
         mRotator = null;
         mObserver = null;
-        mDropBox = null;
+        // mDropBox = null;
         mCookie = null;
 
         // set the bucket big enough to have all data in one bucket, but allow some
@@ -112,10 +112,10 @@ public class NetworkStatsRecorder {
      * Persisted recorder.
      */
     public NetworkStatsRecorder(FileRotator rotator, NonMonotonicObserver<String> observer,
-            DropBoxManager dropBox, String cookie, long bucketDuration, boolean onlyTags) {
+            long dropBox, String cookie, long bucketDuration, boolean onlyTags) {
         mRotator = checkNotNull(rotator, "missing FileRotator");
         mObserver = checkNotNull(observer, "missing NonMonotonicObserver");
-        mDropBox = checkNotNull(dropBox, "missing DropBoxManager");
+        // mDropBox = checkNotNull(dropBox, "missing DropBoxManager");
         mCookie = cookie;
 
         mBucketDuration = bucketDuration;
@@ -485,7 +485,7 @@ public class NetworkStatsRecorder {
             } finally {
                 IoUtils.closeQuietly(os);
             }
-            mDropBox.addData(TAG_NETSTATS_DUMP, os.toByteArray(), 0);
+            // mDropBox.addData(TAG_NETSTATS_DUMP, os.toByteArray(), 0);
         }
 
         mRotator.deleteAll();

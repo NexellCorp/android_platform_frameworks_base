@@ -48,7 +48,7 @@ import android.content.res.Configuration;
 import android.content.res.ObbInfo;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.Environment;
 import android.os.Environment.UserEnvironment;
 import android.os.FileUtils;
@@ -1194,9 +1194,9 @@ class MountService extends IMountService.Stub
                 final long run = Long.parseLong(cooked[5]);
                 final long destroy = Long.parseLong(cooked[6]);
 
-                final DropBoxManager dropBox = mContext.getSystemService(DropBoxManager.class);
-                dropBox.addText(TAG_STORAGE_BENCHMARK, scrubPath(path)
-                        + " " + ident + " " + create + " " + run + " " + destroy);
+                // final DropBoxManager dropBox = mContext.getSystemService(DropBoxManager.class);
+                // dropBox.addText(TAG_STORAGE_BENCHMARK, scrubPath(path)
+                //         + " " + ident + " " + create + " " + run + " " + destroy);
 
                 final VolumeRecord rec = findRecordForPath(path);
                 if (rec != null) {
@@ -1212,9 +1212,9 @@ class MountService extends IMountService.Stub
                 final long bytes = Long.parseLong(cooked[2]);
                 final long time = Long.parseLong(cooked[3]);
 
-                final DropBoxManager dropBox = mContext.getSystemService(DropBoxManager.class);
-                dropBox.addText(TAG_STORAGE_TRIM, scrubPath(path)
-                        + " " + bytes + " " + time);
+                // final DropBoxManager dropBox = mContext.getSystemService(DropBoxManager.class);
+                // dropBox.addText(TAG_STORAGE_TRIM, scrubPath(path)
+                //         + " " + bytes + " " + time);
 
                 final VolumeRecord rec = findRecordForPath(path);
                 if (rec != null) {

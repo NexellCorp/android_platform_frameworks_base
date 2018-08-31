@@ -43,7 +43,7 @@ import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Debug;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -1969,14 +1969,14 @@ public class SettingsProvider extends ContentProvider {
                     + "] for user " + userId);
 
             // Write a drop box entry if it's a restricted profile
-            if (user.isRestricted()) {
-                DropBoxManager dbm = (DropBoxManager) getContext().getSystemService(
-                        Context.DROPBOX_SERVICE);
-                if (dbm != null && dbm.isTagEnabled(DROPBOX_TAG_USERLOG)) {
-                    dbm.addText(DROPBOX_TAG_USERLOG, System.currentTimeMillis()
-                            + "," + DROPBOX_TAG_USERLOG + "," + androidId + "\n");
-                }
-            }
+            // if (user.isRestricted()) {
+            //     DropBoxManager dbm = (DropBoxManager) getContext().getSystemService(
+            //             Context.DROPBOX_SERVICE);
+            //     if (dbm != null && dbm.isTagEnabled(DROPBOX_TAG_USERLOG)) {
+            //         dbm.addText(DROPBOX_TAG_USERLOG, System.currentTimeMillis()
+            //                 + "," + DROPBOX_TAG_USERLOG + "," + androidId + "\n");
+            //     }
+            // }
         }
 
         private void notifyForSettingsChange(int key, String name) {

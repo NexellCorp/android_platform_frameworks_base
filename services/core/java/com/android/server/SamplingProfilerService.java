@@ -17,7 +17,7 @@
 package com.android.server;
 
 import android.content.ContentResolver;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.FileObserver;
 import android.os.Binder;
 
@@ -51,41 +51,41 @@ public class SamplingProfilerService extends Binder {
     private void startWorking(Context context) {
         if (LOCAL_LOGV) Slog.v(TAG, "starting SamplingProfilerService!");
 
-        final DropBoxManager dropbox =
-                (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
+        // final DropBoxManager dropbox =
+        //         (DropBoxManager) context.getSystemService(Context.DROPBOX_SERVICE);
 
         // before FileObserver is ready, there could have already been some snapshots
         // in the directory, we don't want to miss them
-        File[] snapshotFiles = new File(SNAPSHOT_DIR).listFiles();
-        for (int i = 0; snapshotFiles != null && i < snapshotFiles.length; i++) {
-            handleSnapshotFile(snapshotFiles[i], dropbox);
-        }
+        // File[] snapshotFiles = new File(SNAPSHOT_DIR).listFiles();
+        // for (int i = 0; snapshotFiles != null && i < snapshotFiles.length; i++) {
+        //     handleSnapshotFile(snapshotFiles[i], dropbox);
+        // }
 
         // detect new snapshot and put it in dropbox
         // delete it afterwards no matter what happened before
         // Note: needs listening at event ATTRIB rather than CLOSE_WRITE, because we set the
         // readability of snapshot files after writing them!
-        snapshotObserver = new FileObserver(SNAPSHOT_DIR, FileObserver.ATTRIB) {
-            @Override
-            public void onEvent(int event, String path) {
-                handleSnapshotFile(new File(SNAPSHOT_DIR, path), dropbox);
-            }
-        };
-        snapshotObserver.startWatching();
+        // snapshotObserver = new FileObserver(SNAPSHOT_DIR, FileObserver.ATTRIB) {
+        //     @Override
+        //     public void onEvent(int event, String path) {
+        //         handleSnapshotFile(new File(SNAPSHOT_DIR, path), dropbox);
+        //     }
+        // };
+        // snapshotObserver.startWatching();
 
         if (LOCAL_LOGV) Slog.v(TAG, "SamplingProfilerService activated");
     }
 
-    private void handleSnapshotFile(File file, DropBoxManager dropbox) {
-        try {
-            dropbox.addFile(TAG, file, 0);
-            if (LOCAL_LOGV) Slog.v(TAG, file.getPath() + " added to dropbox");
-        } catch (IOException e) {
-            Slog.e(TAG, "Can't add " + file.getPath() + " to dropbox", e);
-        } finally {
-            file.delete();
-        }
-    }
+    // private void handleSnapshotFile(File file, DropBoxManager dropbox) {
+    //     try {
+    //         dropbox.addFile(TAG, file, 0);
+    //         if (LOCAL_LOGV) Slog.v(TAG, file.getPath() + " added to dropbox");
+    //     } catch (IOException e) {
+    //         Slog.e(TAG, "Can't add " + file.getPath() + " to dropbox", e);
+    //     } finally {
+    //         file.delete();
+    //     }
+    // }
 
     private void registerSettingObserver(Context context) {
         ContentResolver contentResolver = context.getContentResolver();

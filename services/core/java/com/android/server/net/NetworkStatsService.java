@@ -90,7 +90,7 @@ import android.net.NetworkStatsHistory;
 import android.net.NetworkTemplate;
 import android.net.TrafficStats;
 import android.os.Binder;
-import android.os.DropBoxManager;
+// import android.os.DropBoxManager;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -370,11 +370,11 @@ public class NetworkStatsService extends INetworkStatsService.Stub {
 
     private NetworkStatsRecorder buildRecorder(
             String prefix, NetworkStatsSettings.Config config, boolean includeTags) {
-        final DropBoxManager dropBox = (DropBoxManager) mContext.getSystemService(
-                Context.DROPBOX_SERVICE);
+        // final DropBoxManager dropBox = (DropBoxManager) mContext.getSystemService(
+        //         Context.DROPBOX_SERVICE);
         return new NetworkStatsRecorder(new FileRotator(
                 mBaseDir, prefix, config.rotateAgeMillis, config.deleteAgeMillis),
-                mNonMonotonicObserver, dropBox, prefix, config.bucketDuration, includeTags);
+                mNonMonotonicObserver, 0, prefix, config.bucketDuration, includeTags);
     }
 
     private void shutdownLocked() {
@@ -1440,15 +1440,15 @@ public class NetworkStatsService extends INetworkStatsService.Stub {
             Log.w(TAG, "found non-monotonic values; saving to dropbox");
 
             // record error for debugging
-            final StringBuilder builder = new StringBuilder();
-            builder.append("found non-monotonic " + cookie + " values at left[" + leftIndex
-                    + "] - right[" + rightIndex + "]\n");
-            builder.append("left=").append(left).append('\n');
-            builder.append("right=").append(right).append('\n');
-
-            final DropBoxManager dropBox = (DropBoxManager) mContext.getSystemService(
-                    Context.DROPBOX_SERVICE);
-            dropBox.addText(TAG_NETSTATS_ERROR, builder.toString());
+            // final StringBuilder builder = new StringBuilder();
+            // builder.append("found non-monotonic " + cookie + " values at left[" + leftIndex
+            //         + "] - right[" + rightIndex + "]\n");
+            // builder.append("left=").append(left).append('\n');
+            // builder.append("right=").append(right).append('\n');
+            //
+            // final DropBoxManager dropBox = (DropBoxManager) mContext.getSystemService(
+            //         Context.DROPBOX_SERVICE);
+            // dropBox.addText(TAG_NETSTATS_ERROR, builder.toString());
         }
     }
 
