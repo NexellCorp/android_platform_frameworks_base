@@ -718,7 +718,7 @@ public class ZygoteInit {
             // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "ZygoteInit");
             RuntimeInit.enableDdms();
             // Start profiling the zygote initialization.
-            SamplingProfilerIntegration.start();
+            // SamplingProfilerIntegration.start();
 
             boolean startSystemServer = false;
             String socketName = "zygote";
@@ -749,7 +749,7 @@ public class ZygoteInit {
             // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
 
             // Finish profiling the zygote initialization.
-            SamplingProfilerIntegration.writeZygoteSnapshot();
+            // SamplingProfilerIntegration.writeZygoteSnapshot();
 
             // Do an initial gc to clean up after startup
             // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PostZygoteInitGC");
