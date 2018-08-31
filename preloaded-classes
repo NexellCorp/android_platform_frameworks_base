@@ -1981,8 +1981,6 @@ android.util.Base64$Decoder
 android.util.Base64$Encoder
 android.util.ContainerHelpers
 android.util.DisplayMetrics
-android.util.EventLog
-android.util.EventLog$Event
 android.util.FloatProperty
 android.util.IntProperty
 android.util.JsonReader
