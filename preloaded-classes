@@ -1719,8 +1719,6 @@ android.os.StrictMode$VmPolicy$Builder
 android.os.SystemClock
 android.os.SystemProperties
 android.os.SystemVibrator
-android.os.Trace
-android.os.Trace$1
 android.os.UEventObserver
 android.os.UserHandle
 android.os.UserHandle$1
