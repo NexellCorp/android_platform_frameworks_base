@@ -141,7 +141,7 @@ import android.view.animation.AnimationSet;
 import android.view.animation.AnimationUtils;
 import com.android.internal.R;
 import com.android.internal.annotations.GuardedBy;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.policy.PhoneWindow;
 import com.android.internal.policy.IShortcutService;
 import com.android.internal.statusbar.IStatusBarService;
@@ -1043,7 +1043,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     private void interceptBackKeyDown() {
-        MetricsLogger.count(mContext, "key_back_down", 1);
+        // MetricsLogger.count(mContext, "key_back_down", 1);
         // Reset back key state for long press
         mBackKeyHandled = false;
 
@@ -6410,7 +6410,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     public void finishedGoingToSleep(int why) {
         EventLog.writeEvent(70000, 0);
         if (DEBUG_WAKEUP) Slog.i(TAG, "Finished going to sleep... (why=" + why + ")");
-        MetricsLogger.histogram(mContext, "screen_timeout", mLockScreenTimeout / 1000);
+        // MetricsLogger.histogram(mContext, "screen_timeout", mLockScreenTimeout / 1000);
 
         mGoingToSleep = false;
 

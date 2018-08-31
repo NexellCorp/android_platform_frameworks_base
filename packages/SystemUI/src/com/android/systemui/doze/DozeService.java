@@ -44,8 +44,8 @@ import android.util.Log;
 import android.view.Display;
 
 import com.android.internal.hardware.AmbientDisplayConfiguration;
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.SystemUIApplication;
 import com.android.systemui.statusbar.phone.DozeParameters;
 
@@ -525,7 +525,7 @@ public class DozeService extends DreamService {
                 boolean sensorPerformsProxCheck = false;
                 if (mSensor.getType() == Sensor.TYPE_PICK_UP_GESTURE) {
                     int subType = (int) event.values[0];
-                    MetricsLogger.action(mContext, MetricsEvent.ACTION_AMBIENT_GESTURE, subType);
+                    // MetricsLogger.action(mContext, MetricsEvent.ACTION_AMBIENT_GESTURE, subType);
                     sensorPerformsProxCheck = mDozeParameters.getPickupSubtypePerformsProxCheck(
                             subType);
                 }

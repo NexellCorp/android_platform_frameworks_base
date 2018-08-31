@@ -33,8 +33,8 @@ import android.view.ViewDebug;
 import android.view.ViewParent;
 import android.view.animation.Interpolator;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
 import com.android.systemui.SwipeHelper;
@@ -278,7 +278,7 @@ class TaskStackViewTouchHandler implements SwipeHelper.Callback {
                             parent.requestDisallowInterceptTouchEvent(true);
                         }
 
-                        MetricsLogger.action(mSv.getContext(), MetricsEvent.OVERVIEW_SCROLL);
+                        // MetricsLogger.action(mSv.getContext(), MetricsEvent.OVERVIEW_SCROLL);
                     }
                 }
                 if (mIsScrolling) {
@@ -579,8 +579,8 @@ class TaskStackViewTouchHandler implements SwipeHelper.Callback {
             mSwipeHelperAnimations.remove(v);
         }
         // Keep track of deletions by keyboard
-        MetricsLogger.histogram(tv.getContext(), "overview_task_dismissed_source",
-                Constants.Metrics.DismissSourceSwipeGesture);
+        // MetricsLogger.histogram(tv.getContext(), "overview_task_dismissed_source",
+        //         Constants.Metrics.DismissSourceSwipeGesture);
     }
 
     /**

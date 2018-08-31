@@ -16,8 +16,8 @@
 
 package com.android.server.am;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -142,8 +142,8 @@ final class AppNotRespondingDialog extends BaseErrorDialog implements View.OnCli
         public void handleMessage(Message msg) {
             Intent appErrorIntent = null;
 
-            MetricsLogger.action(getContext(), MetricsProto.MetricsEvent.ACTION_APP_ANR,
-                    msg.what);
+            // MetricsLogger.action(getContext(), MetricsProto.MetricsEvent.ACTION_APP_ANR,
+            //         msg.what);
 
             switch (msg.what) {
                 case FORCE_CLOSE:

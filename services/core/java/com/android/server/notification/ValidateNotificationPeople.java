@@ -42,7 +42,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
 import android.os.SystemClock;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 
 /**
  * This {@link NotificationSignalExtractor} attempts to validate
@@ -255,8 +255,8 @@ public class ValidateNotificationPeople implements NotificationSignalExtractor {
         // record the best available data, so far:
         affinityOut[0] = affinity;
 
-        MetricsLogger.histogram(mBaseContext, "validate_people_cache_latency",
-                (int) (SystemClock.elapsedRealtime() - start));
+        // MetricsLogger.histogram(mBaseContext, "validate_people_cache_latency",
+        //         (int) (SystemClock.elapsedRealtime() - start));
 
         if (pendingLookups.isEmpty()) {
             if (VERBOSE) Slog.i(TAG, "final affinity: " + affinity);
@@ -477,8 +477,8 @@ public class ValidateNotificationPeople implements NotificationSignalExtractor {
                         mContactAffinity == STARRED_CONTACT, false /* cached */);
             }
 
-            MetricsLogger.histogram(mBaseContext, "validate_people_lookup_latency",
-                    (int) (SystemClock.elapsedRealtime() - start));
+            // MetricsLogger.histogram(mBaseContext, "validate_people_lookup_latency",
+            //         (int) (SystemClock.elapsedRealtime() - start));
         }
 
         @Override

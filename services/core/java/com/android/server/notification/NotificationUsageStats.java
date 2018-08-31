@@ -32,7 +32,7 @@ import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.Log;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.server.notification.NotificationManagerService.DumpFilter;
 
 import org.json.JSONArray;
@@ -180,8 +180,8 @@ public class NotificationUsageStats {
      * Called when the user dismissed the notification via the UI.
      */
     public synchronized void registerDismissedByUser(NotificationRecord notification) {
-        MetricsLogger.histogram(mContext, "note_dismiss_longevity",
-                (int) (System.currentTimeMillis() - notification.getRankingTimeMs()) / (60 * 1000));
+        // MetricsLogger.histogram(mContext, "note_dismiss_longevity",
+        //         (int) (System.currentTimeMillis() - notification.getRankingTimeMs()) / (60 * 1000));
         notification.stats.onDismiss();
         if (ENABLE_SQLITE_LOG) {
             mSQLiteLog.logDismissed(notification);
@@ -192,8 +192,8 @@ public class NotificationUsageStats {
      * Called when the user clicked the notification in the UI.
      */
     public synchronized void registerClickedByUser(NotificationRecord notification) {
-        MetricsLogger.histogram(mContext, "note_click_longevity",
-                (int) (System.currentTimeMillis() - notification.getRankingTimeMs()) / (60 * 1000));
+        // MetricsLogger.histogram(mContext, "note_click_longevity",
+        //         (int) (System.currentTimeMillis() - notification.getRankingTimeMs()) / (60 * 1000));
         notification.stats.onClick();
         if (ENABLE_SQLITE_LOG) {
             mSQLiteLog.logClicked(notification);
@@ -549,9 +549,9 @@ public class NotificationUsageStats {
         }
 
         void maybeCount(String name, int value) {
-            if (value > 0) {
-                MetricsLogger.count(mContext, name, value);
-            }
+            // if (value > 0) {
+            //     MetricsLogger.count(mContext, name, value);
+            // }
         }
 
         public void dump(PrintWriter pw, String indent) {
@@ -723,12 +723,12 @@ public class NotificationUsageStats {
         }
 
         void maybeCount(ImportanceHistogram prev) {
-            for (int i = 0; i < NUM_IMPORTANCES; i++) {
-                final int value = mCount[i] - prev.mCount[i];
-                if (value > 0) {
-                    MetricsLogger.count(mContext, mCounterNames[i], value);
-                }
-            }
+            // for (int i = 0; i < NUM_IMPORTANCES; i++) {
+            //     final int value = mCount[i] - prev.mCount[i];
+            //     if (value > 0) {
+            //         MetricsLogger.count(mContext, mCounterNames[i], value);
+            //     }
+            // }
         }
 
         void update(ImportanceHistogram that) {

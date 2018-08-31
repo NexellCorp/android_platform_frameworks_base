@@ -68,8 +68,8 @@ import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import com.android.internal.R;
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.google.android.collect.Lists;
 
 import java.io.File;
@@ -254,7 +254,7 @@ public class ChooserActivity extends ResolverActivity {
         super.onCreate(savedInstanceState, target, title, defaultTitleRes, initialIntents,
                 null, false);
 
-        MetricsLogger.action(this, MetricsEvent.ACTION_ACTIVITY_CHOOSER_SHOWN);
+        // MetricsLogger.action(this, MetricsEvent.ACTION_ACTIVITY_CHOOSER_SHOWN);
     }
 
     static SharedPreferences getPinnedSharedPrefs(Context context) {
@@ -398,30 +398,30 @@ public class ChooserActivity extends ResolverActivity {
     public void startSelected(int which, boolean always, boolean filtered) {
         super.startSelected(which, always, filtered);
 
-        if (mChooserListAdapter != null) {
-            // Log the index of which type of target the user picked.
-            // Lower values mean the ranking was better.
-            int cat = 0;
-            int value = which;
-            switch (mChooserListAdapter.getPositionTargetType(which)) {
-                case ChooserListAdapter.TARGET_CALLER:
-                    cat = MetricsEvent.ACTION_ACTIVITY_CHOOSER_PICKED_APP_TARGET;
-                    break;
-                case ChooserListAdapter.TARGET_SERVICE:
-                    cat = MetricsEvent.ACTION_ACTIVITY_CHOOSER_PICKED_SERVICE_TARGET;
-                    value -= mChooserListAdapter.getCallerTargetCount();
-                    break;
-                case ChooserListAdapter.TARGET_STANDARD:
-                    cat = MetricsEvent.ACTION_ACTIVITY_CHOOSER_PICKED_STANDARD_TARGET;
-                    value -= mChooserListAdapter.getCallerTargetCount()
-                            + mChooserListAdapter.getServiceTargetCount();
-                    break;
-            }
-
-            if (cat != 0) {
-                MetricsLogger.action(this, cat, value);
-            }
-        }
+        // if (mChooserListAdapter != null) {
+        //     // Log the index of which type of target the user picked.
+        //     // Lower values mean the ranking was better.
+        //     int cat = 0;
+        //     int value = which;
+        //     switch (mChooserListAdapter.getPositionTargetType(which)) {
+        //         case ChooserListAdapter.TARGET_CALLER:
+        //             cat = MetricsEvent.ACTION_ACTIVITY_CHOOSER_PICKED_APP_TARGET;
+        //             break;
+        //         case ChooserListAdapter.TARGET_SERVICE:
+        //             cat = MetricsEvent.ACTION_ACTIVITY_CHOOSER_PICKED_SERVICE_TARGET;
+        //             value -= mChooserListAdapter.getCallerTargetCount();
+        //             break;
+        //         case ChooserListAdapter.TARGET_STANDARD:
+        //             cat = MetricsEvent.ACTION_ACTIVITY_CHOOSER_PICKED_STANDARD_TARGET;
+        //             value -= mChooserListAdapter.getCallerTargetCount()
+        //                     + mChooserListAdapter.getServiceTargetCount();
+        //             break;
+        //     }
+        //
+        //     if (cat != 0) {
+        //         MetricsLogger.action(this, cat, value);
+        //     }
+        // }
     }
 
     void queryTargetServices(ChooserListAdapter adapter) {

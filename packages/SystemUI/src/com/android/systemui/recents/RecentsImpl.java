@@ -41,7 +41,7 @@ import android.view.ViewConfiguration;
 import android.view.WindowManager;
 
 import android.widget.Toast;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.policy.DockedDividerUtils;
 import com.android.systemui.R;
 import com.android.systemui.SystemUIApplication;
@@ -518,7 +518,7 @@ public class RecentsImpl implements ActivityOptions.OnAnimationFinishedListener 
         }
 
         // Keep track of actually launched affiliated tasks
-        MetricsLogger.count(mContext, "overview_affiliated_task_launch", 1);
+        // MetricsLogger.count(mContext, "overview_affiliated_task_launch", 1);
 
         // Launch the task
         ssp.startActivityFromRecents(mContext, toTask.key, toTask.title, launchOpts);
@@ -526,13 +526,13 @@ public class RecentsImpl implements ActivityOptions.OnAnimationFinishedListener 
 
     public void showNextAffiliatedTask() {
         // Keep track of when the affiliated task is triggered
-        MetricsLogger.count(mContext, "overview_affiliated_task_next", 1);
+        // MetricsLogger.count(mContext, "overview_affiliated_task_next", 1);
         showRelativeAffiliatedTask(true);
     }
 
     public void showPrevAffiliatedTask() {
         // Keep track of when the affiliated task is triggered
-        MetricsLogger.count(mContext, "overview_affiliated_task_prev", 1);
+        // MetricsLogger.count(mContext, "overview_affiliated_task_prev", 1);
         showRelativeAffiliatedTask(false);
     }
 

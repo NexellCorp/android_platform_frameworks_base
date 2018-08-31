@@ -1242,7 +1242,7 @@ final class ActivityRecord {
     }
 
     void windowsDrawnLocked() {
-        mStackSupervisor.mActivityMetricsLogger.notifyWindowsDrawn();
+        // mStackSupervisor.mActivityMetricsLogger.notifyWindowsDrawn();
         if (displayStartTime != 0) {
             reportLaunchTimeLocked(SystemClock.uptimeMillis());
         }

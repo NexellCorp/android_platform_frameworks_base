@@ -36,8 +36,8 @@ import com.android.documentsui.model.DocumentInfo;
 import com.android.documentsui.model.RootInfo;
 import com.android.documentsui.services.FileOperationService;
 import com.android.documentsui.services.FileOperationService.OpType;
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -574,52 +574,52 @@ public final class Metrics {
 
     public static void logValidScopedAccessRequest(Activity activity, String directory,
             @ScopedAccessGrant int type) {
-        int index = -1;
-        if (OpenExternalDirectoryActivity.DIRECTORY_ROOT.equals(directory)) {
-            index = -2;
-        } else {
-            for (int i = 0; i < STANDARD_DIRECTORIES.length; i++) {
-                if (STANDARD_DIRECTORIES[i].equals(directory)) {
-                    index = i;
-                    break;
-                }
-            }
-        }
-        final String packageName = activity.getCallingPackage();
-        switch (type) {
-            case SCOPED_DIRECTORY_ACCESS_ALREADY_GRANTED:
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_ALREADY_GRANTED_BY_PACKAGE, packageName);
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_ALREADY_GRANTED_BY_FOLDER, index);
-                break;
-            case SCOPED_DIRECTORY_ACCESS_GRANTED:
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_GRANTED_BY_PACKAGE, packageName);
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_GRANTED_BY_FOLDER, index);
-                break;
-            case SCOPED_DIRECTORY_ACCESS_DENIED:
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_DENIED_BY_PACKAGE, packageName);
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_DENIED_BY_FOLDER, index);
-                break;
-            case SCOPED_DIRECTORY_ACCESS_DENIED_AND_PERSIST:
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_DENIED_AND_PERSIST_BY_PACKAGE, packageName);
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_DENIED_AND_PERSIST_BY_FOLDER, index);
-                break;
-            case SCOPED_DIRECTORY_ACCESS_ALREADY_DENIED:
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_ALREADY_DENIED_BY_PACKAGE, packageName);
-                MetricsLogger.action(activity, MetricsEvent
-                        .ACTION_SCOPED_DIRECTORY_ACCESS_ALREADY_DENIED_BY_FOLDER, index);
-                break;
-            default:
-                Log.wtf(TAG, "invalid ScopedAccessGrant: " + type);
-        }
+        // int index = -1;
+        // if (OpenExternalDirectoryActivity.DIRECTORY_ROOT.equals(directory)) {
+        //     index = -2;
+        // } else {
+        //     for (int i = 0; i < STANDARD_DIRECTORIES.length; i++) {
+        //         if (STANDARD_DIRECTORIES[i].equals(directory)) {
+        //             index = i;
+        //             break;
+        //         }
+        //     }
+        // }
+        // final String packageName = activity.getCallingPackage();
+        // switch (type) {
+        //     case SCOPED_DIRECTORY_ACCESS_ALREADY_GRANTED:
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_ALREADY_GRANTED_BY_PACKAGE, packageName);
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_ALREADY_GRANTED_BY_FOLDER, index);
+        //         break;
+        //     case SCOPED_DIRECTORY_ACCESS_GRANTED:
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_GRANTED_BY_PACKAGE, packageName);
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_GRANTED_BY_FOLDER, index);
+        //         break;
+        //     case SCOPED_DIRECTORY_ACCESS_DENIED:
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_DENIED_BY_PACKAGE, packageName);
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_DENIED_BY_FOLDER, index);
+        //         break;
+        //     case SCOPED_DIRECTORY_ACCESS_DENIED_AND_PERSIST:
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_DENIED_AND_PERSIST_BY_PACKAGE, packageName);
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_DENIED_AND_PERSIST_BY_FOLDER, index);
+        //         break;
+        //     case SCOPED_DIRECTORY_ACCESS_ALREADY_DENIED:
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_ALREADY_DENIED_BY_PACKAGE, packageName);
+        //         MetricsLogger.action(activity, MetricsEvent
+        //                 .ACTION_SCOPED_DIRECTORY_ACCESS_ALREADY_DENIED_BY_FOLDER, index);
+        //         break;
+        //     default:
+        //         Log.wtf(TAG, "invalid ScopedAccessGrant: " + type);
+        // }
     }
 
     /**
@@ -639,7 +639,7 @@ public final class Metrics {
      */
     private static void logCount(Context context, String name) {
         if (DEBUG) Log.d(TAG, name + ": " + 1);
-        MetricsLogger.count(context, name, 1);
+        // MetricsLogger.count(context, name, 1);
     }
 
     /**
@@ -651,7 +651,7 @@ public final class Metrics {
      */
     private static void logHistogram(Context context, String name, @ActionType int bucket) {
         if (DEBUG) Log.d(TAG, name + ": " + bucket);
-        MetricsLogger.histogram(context, name, bucket);
+        // MetricsLogger.histogram(context, name, bucket);
     }
 
     /**

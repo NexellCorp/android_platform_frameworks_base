@@ -119,7 +119,7 @@ import android.view.animation.Interpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.statusbar.StatusBarIcon;
@@ -1124,7 +1124,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         mDismissView.setOnButtonClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_DISMISS_ALL_NOTES);
+                // MetricsLogger.action(mContext, MetricsEvent.ACTION_DISMISS_ALL_NOTES);
                 clearAllNotifications();
             }
         });
@@ -1341,9 +1341,9 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                     ActivityManager.DOCKED_STACK_CREATE_MODE_TOP_OR_LEFT, null, metricsDockAction);
         } else {
             EventBus.getDefault().send(new UndockingTaskEvent());
-            if (metricsUndockAction != -1) {
-                MetricsLogger.action(mContext, metricsUndockAction);
-            }
+            // if (metricsUndockAction != -1) {
+            //     MetricsLogger.action(mContext, metricsUndockAction);
+            // }
         }
     }
 
@@ -1354,7 +1354,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
             if (shouldDisableNavbarGestures()) {
                 return false;
             }
-            MetricsLogger.action(mContext, MetricsEvent.ACTION_ASSIST_LONG_PRESS);
+            // MetricsLogger.action(mContext, MetricsEvent.ACTION_ASSIST_LONG_PRESS);
             mAssistManager.startAssist(new Bundle() /* args */);
             awakenDreams();
             if (mNavigationBarView != null) {
@@ -1548,7 +1548,7 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
                             notification.getKey());
                     notification.getNotification().fullScreenIntent.send();
                     shadeEntry.notifyFullScreenIntentLaunched();
-                    MetricsLogger.count(mContext, "note_fullscreen", 1);
+                    // MetricsLogger.count(mContext, "note_fullscreen", 1);
                 } catch (PendingIntent.CanceledException e) {
                 }
             }
@@ -2767,16 +2767,16 @@ public class PhoneStatusBar extends BaseStatusBar implements DemoMode,
         if (!mUserSetup) return;
 
         if (KeyEvent.KEYCODE_SYSTEM_NAVIGATION_UP == key) {
-            MetricsLogger.action(mContext, MetricsEvent.ACTION_SYSTEM_NAVIGATION_KEY_UP);
+            // MetricsLogger.action(mContext, MetricsEvent.ACTION_SYSTEM_NAVIGATION_KEY_UP);
             mNotificationPanel.collapse(false /* delayed */, 1.0f /* speedUpFactor */);
         } else if (KeyEvent.KEYCODE_SYSTEM_NAVIGATION_DOWN == key) {
-            MetricsLogger.action(mContext, MetricsEvent.ACTION_SYSTEM_NAVIGATION_KEY_DOWN);
+            // MetricsLogger.action(mContext, MetricsEvent.ACTION_SYSTEM_NAVIGATION_KEY_DOWN);
             if (mNotificationPanel.isFullyCollapsed()) {
                 mNotificationPanel.expand(true /* animate */);
-                MetricsLogger.count(mContext, NotificationPanelView.COUNTER_PANEL_OPEN, 1);
+                // MetricsLogger.count(mContext, NotificationPanelView.COUNTER_PANEL_OPEN, 1);
             } else if (!mNotificationPanel.isInSettings() && !mNotificationPanel.isExpanding()){
                 mNotificationPanel.flingSettings(0 /* velocity */, true /* expand */);
-                MetricsLogger.count(mContext, NotificationPanelView.COUNTER_PANEL_OPEN_QS, 1);
+                // MetricsLogger.count(mContext, NotificationPanelView.COUNTER_PANEL_OPEN_QS, 1);
             }
         }
 

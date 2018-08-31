@@ -27,7 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Switch;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.settingslib.wifi.AccessPoint;
 import com.android.systemui.R;
@@ -103,7 +103,7 @@ public class WifiTile extends QSTile<QSTile.SignalState> {
     protected void handleSecondaryClick() {
         // Secondary clicks are header clicks, just toggle.
         mState.copyTo(mStateBeforeClick);
-        MetricsLogger.action(mContext, getMetricsCategory(), !mState.value);
+        // MetricsLogger.action(mContext, getMetricsCategory(), !mState.value);
         mController.setWifiEnabled(!mState.value);
     }
 
@@ -286,7 +286,7 @@ public class WifiTile extends QSTile<QSTile.SignalState> {
         @Override
         public void setToggleState(boolean state) {
             if (DEBUG) Log.d(TAG, "setToggleState " + state);
-            MetricsLogger.action(mContext, MetricsEvent.QS_WIFI_TOGGLE, state);
+            // MetricsLogger.action(mContext, MetricsEvent.QS_WIFI_TOGGLE, state);
             mController.setWifiEnabled(state);
             showDetail(false);
         }

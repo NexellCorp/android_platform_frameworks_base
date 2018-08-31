@@ -33,8 +33,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 
 public class TunerFragment extends PreferenceFragment {
@@ -79,14 +79,14 @@ public class TunerFragment extends PreferenceFragment {
         super.onResume();
         getActivity().setTitle(R.string.system_ui_tuner);
 
-        MetricsLogger.visibility(getContext(), MetricsEvent.TUNER, true);
+        // MetricsLogger.visibility(getContext(), MetricsEvent.TUNER, true);
     }
 
     @Override
     public void onPause() {
         super.onPause();
 
-        MetricsLogger.visibility(getContext(), MetricsEvent.TUNER, false);
+        // MetricsLogger.visibility(getContext(), MetricsEvent.TUNER, false);
     }
 
     @Override

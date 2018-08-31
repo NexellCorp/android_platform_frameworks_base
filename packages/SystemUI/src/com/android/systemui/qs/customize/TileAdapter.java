@@ -39,8 +39,8 @@ import android.view.accessibility.AccessibilityManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSIconView;
 import com.android.systemui.qs.customize.TileAdapter.Holder;
@@ -351,24 +351,24 @@ public class TileAdapter extends RecyclerView.Adapter<Holder> implements TileSta
         updateDividerLocations();
         CharSequence announcement;
         if (to >= mEditIndex) {
-            MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_REMOVE_SPEC,
-                    strip(mTiles.get(to)));
-            MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_REMOVE,
-                    from);
+            // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_REMOVE_SPEC,
+            //         strip(mTiles.get(to)));
+            // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_REMOVE,
+            //         from);
             announcement = mContext.getString(R.string.accessibility_qs_edit_tile_removed,
                     fromLabel);
         } else if (from >= mEditIndex) {
-            MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_ADD_SPEC,
-                    strip(mTiles.get(to)));
-            MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_ADD,
-                    to);
+            // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_ADD_SPEC,
+            //         strip(mTiles.get(to)));
+            // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_ADD,
+            //         to);
             announcement = mContext.getString(R.string.accessibility_qs_edit_tile_added,
                     fromLabel, (to + 1));
         } else {
-            MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_MOVE_SPEC,
-                    strip(mTiles.get(to)));
-            MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_MOVE,
-                    to);
+            // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_MOVE_SPEC,
+            //         strip(mTiles.get(to)));
+            // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_QS_EDIT_MOVE,
+            //         to);
             announcement = mContext.getString(R.string.accessibility_qs_edit_tile_moved,
                     fromLabel, (to + 1));
         }

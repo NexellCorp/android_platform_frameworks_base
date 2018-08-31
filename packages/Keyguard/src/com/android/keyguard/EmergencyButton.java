@@ -33,8 +33,8 @@ import android.view.View;
 import android.view.ViewConfiguration;
 import android.widget.Button;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.telephony.IccCardConstants.State;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.internal.policy.EmergencyAffordanceManager;
@@ -166,7 +166,7 @@ public class EmergencyButton extends Button {
      * Shows the emergency dialer or returns the user to the existing call.
      */
     public void takeEmergencyCallAction() {
-        MetricsLogger.action(mContext, MetricsEvent.ACTION_EMERGENCY_CALL);
+        // MetricsLogger.action(mContext, MetricsEvent.ACTION_EMERGENCY_CALL);
         // TODO: implement a shorter timeout once new PowerManager API is ready.
         // should be the equivalent to the old userActivity(EMERGENCY_CALL_TIMEOUT)
         mPowerManager.userActivity(SystemClock.uptimeMillis(), true);

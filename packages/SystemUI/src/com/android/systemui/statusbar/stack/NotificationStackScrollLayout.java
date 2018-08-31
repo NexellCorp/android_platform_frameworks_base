@@ -55,8 +55,8 @@ import android.view.animation.Interpolator;
 import android.widget.OverScroller;
 import android.widget.ScrollView;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.ExpandHelper;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
@@ -394,8 +394,8 @@ public class NotificationStackScrollLayout extends ViewGroup
     @Override
     public void onGearTouched(ExpandableNotificationRow row, int x, int y) {
         if (mLongPressListener != null) {
-            MetricsLogger.action(mContext, MetricsEvent.ACTION_TOUCH_GEAR,
-                    row.getStatusBarNotification().getPackageName());
+            // MetricsLogger.action(mContext, MetricsEvent.ACTION_TOUCH_GEAR,
+            //         row.getStatusBarNotification().getPackageName());
             mLongPressListener.onLongPress(row, x, y);
         }
     }
@@ -4132,11 +4132,11 @@ public class NotificationStackScrollLayout extends ViewGroup
             final float target = mCurrIconRow.isIconOnLeft() ? snapBackThreshold
                     : -snapBackThreshold;
             mGearExposedView = mTranslatingParentView;
-            if (animView instanceof ExpandableNotificationRow) {
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_REVEAL_GEAR,
-                        ((ExpandableNotificationRow) animView).getStatusBarNotification()
-                                .getPackageName());
-            }
+            // if (animView instanceof ExpandableNotificationRow) {
+            //     MetricsLogger.action(mContext, MetricsEvent.ACTION_REVEAL_GEAR,
+            //             ((ExpandableNotificationRow) animView).getStatusBarNotification()
+            //                     .getPackageName());
+            // }
             if (mCurrIconRow != null) {
                 mCurrIconRow.setSnapping(true);
                 setSnappedToGear(true);

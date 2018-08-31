@@ -22002,16 +22002,16 @@ public final class ActivityManagerService extends ActivityManagerNative
 
         @Override
         public void notifyStartingWindowDrawn() {
-            synchronized (ActivityManagerService.this) {
-                mStackSupervisor.mActivityMetricsLogger.notifyStartingWindowDrawn();
-            }
+            // synchronized (ActivityManagerService.this) {
+            //     mStackSupervisor.mActivityMetricsLogger.notifyStartingWindowDrawn();
+            // }
         }
 
         @Override
         public void notifyAppTransitionStarting(int reason) {
-            synchronized (ActivityManagerService.this) {
-                mStackSupervisor.mActivityMetricsLogger.notifyTransitionStarting(reason);
-            }
+            // synchronized (ActivityManagerService.this) {
+            //     mStackSupervisor.mActivityMetricsLogger.notifyTransitionStarting(reason);
+            // }
         }
 
         @Override

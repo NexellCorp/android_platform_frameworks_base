@@ -22,7 +22,7 @@ import android.os.UserManager;
 import android.provider.Settings;
 import android.widget.Switch;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
@@ -79,14 +79,14 @@ public class LocationTile extends QSTile<QSTile.BooleanState> {
                 public void run() {
                     final boolean wasEnabled = (Boolean) mState.value;
                     mHost.openPanels();
-                    MetricsLogger.action(mContext, getMetricsCategory(), !wasEnabled);
+                    // MetricsLogger.action(mContext, getMetricsCategory(), !wasEnabled);
                     mController.setLocationEnabled(!wasEnabled);
                 }
             });
             return;
         }
         final boolean wasEnabled = (Boolean) mState.value;
-        MetricsLogger.action(mContext, getMetricsCategory(), !wasEnabled);
+        // MetricsLogger.action(mContext, getMetricsCategory(), !wasEnabled);
         mController.setLocationEnabled(!wasEnabled);
     }
 

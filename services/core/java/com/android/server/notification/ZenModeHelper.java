@@ -60,7 +60,7 @@ import android.util.Log;
 import android.util.SparseArray;
 
 import com.android.internal.R;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.server.LocalServices;
 
 import libcore.io.IoUtils;
@@ -1074,9 +1074,9 @@ public class ZenModeHelper {
             final long now = SystemClock.elapsedRealtime();
             final long since = (now - mBeginningMs);
             if (mPreviousZenMode != mZenMode || since > MINIMUM_LOG_PERIOD_MS) {
-                if (mPreviousZenMode != -1) {
-                    MetricsLogger.count(mContext, COUNTER_PREFIX + mPreviousZenMode, (int) since);
-                }
+                // if (mPreviousZenMode != -1) {
+                //     MetricsLogger.count(mContext, COUNTER_PREFIX + mPreviousZenMode, (int) since);
+                // }
                 mPreviousZenMode = mZenMode;
                 mBeginningMs = now;
             }

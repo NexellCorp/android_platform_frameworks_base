@@ -229,7 +229,7 @@ import com.android.internal.app.IMediaContainerService;
 import com.android.internal.app.ResolverActivity;
 import com.android.internal.content.NativeLibraryHelper;
 import com.android.internal.content.PackageHelper;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.os.IParcelFileDescriptorFactory;
 import com.android.internal.os.InstallerConnection.InstallerException;
 import com.android.internal.os.SomeArgs;
@@ -2646,7 +2646,7 @@ public class PackageManagerService extends IPackageManager.Stub {
 
                 final int elapsedTimeSeconds =
                         (int) TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - start);
-                MetricsLogger.histogram(mContext, "opt_coreapps_time_s", elapsedTimeSeconds);
+                // MetricsLogger.histogram(mContext, "opt_coreapps_time_s", elapsedTimeSeconds);
 
                 if (DEBUG_DEXOPT) {
                     Slog.i(TAG, "Dex-opt core apps took : " + elapsedTimeSeconds + " seconds (" +
@@ -7267,11 +7267,11 @@ public class PackageManagerService extends IPackageManager.Stub {
         final int elapsedTimeSeconds =
                 (int) TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - startTime);
 
-        MetricsLogger.histogram(mContext, "opt_dialog_num_dexopted", stats[0]);
-        MetricsLogger.histogram(mContext, "opt_dialog_num_skipped", stats[1]);
-        MetricsLogger.histogram(mContext, "opt_dialog_num_failed", stats[2]);
-        MetricsLogger.histogram(mContext, "opt_dialog_num_total", getOptimizablePackages().size());
-        MetricsLogger.histogram(mContext, "opt_dialog_time_s", elapsedTimeSeconds);
+        // MetricsLogger.histogram(mContext, "opt_dialog_num_dexopted", stats[0]);
+        // MetricsLogger.histogram(mContext, "opt_dialog_num_skipped", stats[1]);
+        // MetricsLogger.histogram(mContext, "opt_dialog_num_failed", stats[2]);
+        // MetricsLogger.histogram(mContext, "opt_dialog_num_total", getOptimizablePackages().size());
+        // MetricsLogger.histogram(mContext, "opt_dialog_time_s", elapsedTimeSeconds);
     }
 
     /**

@@ -31,7 +31,7 @@ import android.os.ServiceManager;
 import android.os.storage.StorageManager;
 import android.util.Log;
 import android.util.Slog;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.os.InstallerConnection;
 import com.android.internal.os.InstallerConnection.InstallerException;
 
@@ -174,7 +174,7 @@ public class OtaDexoptService extends IOtaDexopt.Stub {
         mDexoptCommands = null;
         availableSpaceAfterDexopt = getAvailableSpace();
 
-        performMetricsLogging();
+        // performMetricsLogging();
     }
 
     @Override
@@ -375,28 +375,28 @@ public class OtaDexoptService extends IOtaDexopt.Stub {
         return (int)in_mega_bytes;
     }
 
-    private void performMetricsLogging() {
-        long finalTime = System.nanoTime();
-
-        MetricsLogger.histogram(mContext, "ota_dexopt_available_space_before_mb",
-                inMegabytes(availableSpaceBefore));
-        MetricsLogger.histogram(mContext, "ota_dexopt_available_space_after_bulk_delete_mb",
-                inMegabytes(availableSpaceAfterBulkDelete));
-        MetricsLogger.histogram(mContext, "ota_dexopt_available_space_after_dexopt_mb",
-                inMegabytes(availableSpaceAfterDexopt));
-
-        MetricsLogger.histogram(mContext, "ota_dexopt_num_important_packages",
-                importantPackageCount);
-        MetricsLogger.histogram(mContext, "ota_dexopt_num_other_packages", otherPackageCount);
-
-        MetricsLogger.histogram(mContext, "ota_dexopt_num_commands", dexoptCommandCountTotal);
-        MetricsLogger.histogram(mContext, "ota_dexopt_num_commands_executed",
-                dexoptCommandCountExecuted);
-
-        final int elapsedTimeSeconds =
-                (int) TimeUnit.NANOSECONDS.toSeconds(finalTime - otaDexoptTimeStart);
-        MetricsLogger.histogram(mContext, "ota_dexopt_time_s", elapsedTimeSeconds);
-    }
+    // private void performMetricsLogging() {
+    //     long finalTime = System.nanoTime();
+    //
+    //     MetricsLogger.histogram(mContext, "ota_dexopt_available_space_before_mb",
+    //             inMegabytes(availableSpaceBefore));
+    //     MetricsLogger.histogram(mContext, "ota_dexopt_available_space_after_bulk_delete_mb",
+    //             inMegabytes(availableSpaceAfterBulkDelete));
+    //     MetricsLogger.histogram(mContext, "ota_dexopt_available_space_after_dexopt_mb",
+    //             inMegabytes(availableSpaceAfterDexopt));
+    //
+    //     MetricsLogger.histogram(mContext, "ota_dexopt_num_important_packages",
+    //             importantPackageCount);
+    //     MetricsLogger.histogram(mContext, "ota_dexopt_num_other_packages", otherPackageCount);
+    //
+    //     MetricsLogger.histogram(mContext, "ota_dexopt_num_commands", dexoptCommandCountTotal);
+    //     MetricsLogger.histogram(mContext, "ota_dexopt_num_commands_executed",
+    //             dexoptCommandCountExecuted);
+    //
+    //     final int elapsedTimeSeconds =
+    //             (int) TimeUnit.NANOSECONDS.toSeconds(finalTime - otaDexoptTimeStart);
+    //     MetricsLogger.histogram(mContext, "ota_dexopt_time_s", elapsedTimeSeconds);
+    // }
 
     private static class OTADexoptPackageDexOptimizer extends
             PackageDexOptimizer.ForcedUpdatePackageDexOptimizer {

@@ -32,7 +32,7 @@ import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.FontSizeUtils;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile.DetailAdapter;
@@ -210,7 +210,7 @@ public class QSDetail extends LinearLayout {
             mDetailContent.removeAllViews();
             mDetailContent.addView(detailView);
             mDetailViews.put(viewCacheIndex, detailView);
-            MetricsLogger.visible(mContext, adapter.getMetricsCategory());
+            // MetricsLogger.visible(mContext, adapter.getMetricsCategory());
             announceForAccessibility(mContext.getString(
                     R.string.accessibility_quick_settings_detail,
                     adapter.getTitle()));
@@ -218,9 +218,9 @@ public class QSDetail extends LinearLayout {
             listener = mHideGridContentWhenDone;
             setVisibility(View.VISIBLE);
         } else {
-            if (mDetailAdapter != null) {
-                MetricsLogger.hidden(mContext, mDetailAdapter.getMetricsCategory());
-            }
+            // if (mDetailAdapter != null) {
+            //     MetricsLogger.hidden(mContext, mDetailAdapter.getMetricsCategory());
+            // }
             mClosingDetail = true;
             mDetailAdapter = null;
             listener = mTeardownDetailWhenDone;

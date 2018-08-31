@@ -33,8 +33,8 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toolbar;
 import android.widget.Toolbar.OnMenuItemClickListener;
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSContainer;
 import com.android.systemui.qs.QSDetailClipper;
@@ -132,7 +132,7 @@ public class QSCustomizer extends LinearLayout implements OnMenuItemClickListene
 
     public void show(int x, int y) {
         if (!isShown) {
-            MetricsLogger.visible(getContext(), MetricsProto.MetricsEvent.QS_EDIT);
+            // MetricsLogger.visible(getContext(), MetricsProto.MetricsEvent.QS_EDIT);
             isShown = true;
             setTileSpecs();
             setVisibility(View.VISIBLE);
@@ -148,7 +148,7 @@ public class QSCustomizer extends LinearLayout implements OnMenuItemClickListene
 
     public void hide(int x, int y) {
         if (isShown) {
-            MetricsLogger.hidden(getContext(), MetricsProto.MetricsEvent.QS_EDIT);
+            // MetricsLogger.hidden(getContext(), MetricsProto.MetricsEvent.QS_EDIT);
             isShown = false;
             mToolbar.dismissPopupMenus();
             setCustomizing(false);
@@ -175,7 +175,7 @@ public class QSCustomizer extends LinearLayout implements OnMenuItemClickListene
     public boolean onMenuItemClick(MenuItem item) {
         switch (item.getItemId()) {
             case MENU_RESET:
-                MetricsLogger.action(getContext(), MetricsProto.MetricsEvent.ACTION_QS_EDIT_RESET);
+                // MetricsLogger.action(getContext(), MetricsProto.MetricsEvent.ACTION_QS_EDIT_RESET);
                 reset();
                 break;
         }

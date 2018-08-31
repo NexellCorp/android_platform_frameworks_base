@@ -42,7 +42,7 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.util.NotificationColorUtil;
 import com.android.systemui.R;
@@ -146,8 +146,8 @@ public class ExpandableNotificationRow extends ActivatableNotificationView {
                 final boolean wasExpanded = mGroupManager.isGroupExpanded(mStatusBarNotification);
                 boolean nowExpanded = mGroupManager.toggleGroupExpansion(mStatusBarNotification);
                 mOnExpandClickListener.onExpandClicked(mEntry, nowExpanded);
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_NOTIFICATION_GROUP_EXPANDER,
-                        nowExpanded);
+                // MetricsLogger.action(mContext, MetricsEvent.ACTION_NOTIFICATION_GROUP_EXPANDER,
+                //         nowExpanded);
                 logExpansionEvent(true /* userAction */, wasExpanded);
             } else {
                 if (v.isAccessibilityFocused()) {
@@ -163,8 +163,8 @@ public class ExpandableNotificationRow extends ActivatableNotificationView {
                 }
                 notifyHeightChanged(true);
                 mOnExpandClickListener.onExpandClicked(mEntry, nowExpanded);
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_NOTIFICATION_EXPANDER,
-                        nowExpanded);
+                // MetricsLogger.action(mContext, MetricsEvent.ACTION_NOTIFICATION_EXPANDER,
+                //         nowExpanded);
             }
         }
     };
@@ -1625,7 +1625,7 @@ public class ExpandableNotificationRow extends ActivatableNotificationView {
         if (mGroupManager.isSummaryOfGroup(getStatusBarNotification())) {
             event = MetricsEvent.ACTION_NOTIFICATION_GROUP_GESTURE_EXPANDER;
         }
-        MetricsLogger.action(mContext, event, userExpanded);
+        // MetricsLogger.action(mContext, event, userExpanded);
     }
 
     @Override

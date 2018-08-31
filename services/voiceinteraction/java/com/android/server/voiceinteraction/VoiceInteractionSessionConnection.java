@@ -50,7 +50,7 @@ import com.android.internal.app.AssistUtils;
 import com.android.internal.app.IAssistScreenshotReceiver;
 import com.android.internal.app.IVoiceInteractionSessionShowCallback;
 import com.android.internal.app.IVoiceInteractor;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.os.IResultReceiver;
 import com.android.server.LocalServices;
 import com.android.server.statusbar.StatusBarManagerInternal;
@@ -258,7 +258,7 @@ final class VoiceInteractionSessionConnection implements ServiceConnection {
                     for (int i = 0; i < count && i < 1; i++) {
                         IBinder topActivity = count == 1 ? activityToken : topActivities.get(i);
                         try {
-                            MetricsLogger.count(mContext, "assist_with_context", 1);
+                            // MetricsLogger.count(mContext, "assist_with_context", 1);
                             Bundle receiverExtras = new Bundle();
                             receiverExtras.putInt(KEY_RECEIVER_EXTRA_INDEX, i);
                             receiverExtras.putInt(KEY_RECEIVER_EXTRA_COUNT, count);
@@ -290,7 +290,7 @@ final class VoiceInteractionSessionConnection implements ServiceConnection {
                         mSessionComponentName.getPackageName()) == AppOpsManager.MODE_ALLOWED
                         && screenshotEnabled) {
                     try {
-                        MetricsLogger.count(mContext, "assist_with_screen", 1);
+                        // MetricsLogger.count(mContext, "assist_with_screen", 1);
                         needDisclosure = true;
                         mIWindowManager.requestAssistScreenshot(mScreenshotReceiver);
                     } catch (RemoteException e) {

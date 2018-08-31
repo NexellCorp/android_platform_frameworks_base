@@ -17,8 +17,8 @@
 package com.android.server.am;
 
 import com.android.internal.app.ProcessMap;
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto;
 import com.android.internal.os.ProcessCpuTracker;
 import com.android.server.Watchdog;
 
@@ -365,7 +365,7 @@ class AppErrors {
         int res = result.get();
 
         Intent appErrorIntent = null;
-        MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_APP_CRASH, res);
+        // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_APP_CRASH, res);
         if (res == AppErrorDialog.TIMEOUT || res == AppErrorDialog.CANCEL) {
             res = AppErrorDialog.FORCE_QUIT;
         }
@@ -927,8 +927,8 @@ class AppErrors {
             ProcessRecord proc = (ProcessRecord)data.get("app");
             if (proc != null && proc.anrDialog != null) {
                 Slog.e(TAG, "App already has anr dialog: " + proc);
-                MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_APP_ANR,
-                        AppNotRespondingDialog.ALREADY_SHOWING);
+                // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_APP_ANR,
+                //         AppNotRespondingDialog.ALREADY_SHOWING);
                 return;
             }
 
@@ -949,8 +949,8 @@ class AppErrors {
                         msg.arg1 != 0);
                 proc.anrDialog = d;
             } else {
-                MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_APP_ANR,
-                        AppNotRespondingDialog.CANT_SHOW);
+                // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_APP_ANR,
+                //         AppNotRespondingDialog.CANT_SHOW);
                 // Just kill the app if there is no dialog to be shown.
                 mService.killAppAtUsersRequest(proc, null);
             }

@@ -20,7 +20,7 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.widget.Switch;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
@@ -64,7 +64,7 @@ public class WorkModeTile extends QSTile<QSTile.BooleanState> implements
 
     @Override
     public void handleClick() {
-        MetricsLogger.action(mContext, getMetricsCategory(), !mState.value);
+        // MetricsLogger.action(mContext, getMetricsCategory(), !mState.value);
         mProfileController.setWorkModeEnabled(!mState.value);
     }
 

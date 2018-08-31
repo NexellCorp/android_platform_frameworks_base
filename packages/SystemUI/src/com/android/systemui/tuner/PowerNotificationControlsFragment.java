@@ -15,8 +15,8 @@
  */
 package com.android.systemui.tuner;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 
 import android.annotation.Nullable;
@@ -59,8 +59,8 @@ public class PowerNotificationControlsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 boolean newState = !isEnabled();
-                MetricsLogger.action(getContext(),
-                        MetricsEvent.ACTION_TUNER_POWER_NOTIFICATION_CONTROLS, newState);
+                // MetricsLogger.action(getContext(),
+                //         MetricsEvent.ACTION_TUNER_POWER_NOTIFICATION_CONTROLS, newState);
                 Settings.Secure.putInt(getContext().getContentResolver(),
                         KEY_SHOW_PNC, newState ? 1 : 0);
                 switchWidget.setChecked(newState);
@@ -74,15 +74,15 @@ public class PowerNotificationControlsFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        MetricsLogger.visibility(
-                getContext(), MetricsEvent.TUNER_POWER_NOTIFICATION_CONTROLS, true);
+        // MetricsLogger.visibility(
+        //         getContext(), MetricsEvent.TUNER_POWER_NOTIFICATION_CONTROLS, true);
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        MetricsLogger.visibility(
-                getContext(), MetricsEvent.TUNER_POWER_NOTIFICATION_CONTROLS, false);
+        // MetricsLogger.visibility(
+        //         getContext(), MetricsEvent.TUNER_POWER_NOTIFICATION_CONTROLS, false);
     }
 
     private boolean isEnabled() {

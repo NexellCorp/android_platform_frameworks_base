@@ -27,8 +27,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile.DetailAdapter;
 import com.android.systemui.qs.QSTile.Host.Callback;
@@ -228,7 +228,7 @@ public class QSPanel extends LinearLayout implements Tunable, Callback {
         if (!mExpanded && mTileLayout instanceof PagedTileLayout) {
             ((PagedTileLayout) mTileLayout).setCurrentItem(0, false);
         }
-        MetricsLogger.visibility(mContext, MetricsEvent.QS_PANEL, mExpanded);
+        // MetricsLogger.visibility(mContext, MetricsEvent.QS_PANEL, mExpanded);
         if (!mExpanded) {
             closeDetail();
         } else {
@@ -455,16 +455,16 @@ public class QSPanel extends LinearLayout implements Tunable, Callback {
     void setGridContentVisibility(boolean visible) {
         int newVis = visible ? VISIBLE : INVISIBLE;
         setVisibility(newVis);
-        if (mGridContentVisible != visible) {
-            MetricsLogger.visibility(mContext, MetricsEvent.QS_PANEL, newVis);
-        }
+        // if (mGridContentVisible != visible) {
+        //     MetricsLogger.visibility(mContext, MetricsEvent.QS_PANEL, newVis);
+        // }
         mGridContentVisible = visible;
     }
 
     private void logTiles() {
         for (int i = 0; i < mRecords.size(); i++) {
             TileRecord tileRecord = mRecords.get(i);
-            MetricsLogger.visible(mContext, tileRecord.tile.getMetricsCategory());
+            // MetricsLogger.visible(mContext, tileRecord.tile.getMetricsCategory());
         }
     }
 

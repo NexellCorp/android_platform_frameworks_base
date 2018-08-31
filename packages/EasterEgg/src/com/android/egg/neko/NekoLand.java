@@ -45,7 +45,7 @@ import android.widget.TextView;
 
 import com.android.egg.R;
 import com.android.egg.neko.PrefState.PrefsListener;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -87,7 +87,7 @@ public class NekoLand extends Activity implements PrefsListener {
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         int numCats = updateCats();
-        MetricsLogger.histogram(this, "egg_neko_visit_gallery", numCats);
+        // MetricsLogger.histogram(this, "egg_neko_visit_gallery", numCats);
     }
 
     @Override

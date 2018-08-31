@@ -22,8 +22,8 @@ import android.media.AudioSystem;
 import android.provider.Settings.Global;
 import android.util.Log;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.volume.VolumeDialogController.State;
 
 import java.util.Arrays;
@@ -112,34 +112,34 @@ public class Events {
             sb.append(" ");
             switch (tag) {
                 case EVENT_SHOW_DIALOG:
-                    MetricsLogger.visible(context, MetricsEvent.VOLUME_DIALOG);
-                    MetricsLogger.histogram(context, "volume_from_keyguard",
-                            (Boolean) list[1] ? 1 : 0);
+                    // MetricsLogger.visible(context, MetricsEvent.VOLUME_DIALOG);
+                    // MetricsLogger.histogram(context, "volume_from_keyguard",
+                    //         (Boolean) list[1] ? 1 : 0);
                     sb.append(SHOW_REASONS[(Integer) list[0]]).append(" keyguard=").append(list[1]);
                     break;
                 case EVENT_EXPAND:
-                    MetricsLogger.visibility(context, MetricsEvent.VOLUME_DIALOG_DETAILS,
-                            (Boolean) list[0]);
+                    // MetricsLogger.visibility(context, MetricsEvent.VOLUME_DIALOG_DETAILS,
+                    //         (Boolean) list[0]);
                     sb.append(list[0]);
                     break;
                 case EVENT_DISMISS_DIALOG:
-                    MetricsLogger.hidden(context, MetricsEvent.VOLUME_DIALOG);
+                    // MetricsLogger.hidden(context, MetricsEvent.VOLUME_DIALOG);
                     sb.append(DISMISS_REASONS[(Integer) list[0]]);
                     break;
                 case EVENT_ACTIVE_STREAM_CHANGED:
-                    MetricsLogger.action(context, MetricsEvent.ACTION_VOLUME_STREAM,
-                            (Integer) list[0]);
+                    // MetricsLogger.action(context, MetricsEvent.ACTION_VOLUME_STREAM,
+                    //         (Integer) list[0]);
                     sb.append(AudioSystem.streamToString((Integer) list[0]));
                     break;
                 case EVENT_ICON_CLICK:
-                    MetricsLogger.action(context, MetricsEvent.ACTION_VOLUME_ICON,
-                            (Integer) list[1]);
+                    // MetricsLogger.action(context, MetricsEvent.ACTION_VOLUME_ICON,
+                    //         (Integer) list[1]);
                     sb.append(AudioSystem.streamToString((Integer) list[0])).append(' ')
                             .append(iconStateToString((Integer) list[1]));
                     break;
                 case EVENT_TOUCH_LEVEL_DONE:
-                    MetricsLogger.action(context, MetricsEvent.ACTION_VOLUME_SLIDER,
-                            (Integer) list[1]);
+                    // MetricsLogger.action(context, MetricsEvent.ACTION_VOLUME_SLIDER,
+                    //         (Integer) list[1]);
                     // fall through
                 case EVENT_TOUCH_LEVEL_CHANGED:
                 case EVENT_LEVEL_CHANGED:
@@ -148,14 +148,14 @@ public class Events {
                             .append(list[1]);
                     break;
                 case EVENT_KEY:
-                    MetricsLogger.action(context, MetricsEvent.ACTION_VOLUME_KEY,
-                            (Integer) list[1]);
+                    // MetricsLogger.action(context, MetricsEvent.ACTION_VOLUME_KEY,
+                    //         (Integer) list[1]);
                     sb.append(AudioSystem.streamToString((Integer) list[0])).append(' ')
                             .append(list[1]);
                     break;
                 case EVENT_EXTERNAL_RINGER_MODE_CHANGED:
-                    MetricsLogger.action(context, MetricsEvent.ACTION_RINGER_MODE,
-                            (Integer) list[0]);
+                    // MetricsLogger.action(context, MetricsEvent.ACTION_RINGER_MODE,
+                    //         (Integer) list[0]);
                     // fall through
                 case EVENT_INTERNAL_RINGER_MODE_CHANGED:
                     sb.append(ringerModeToString((Integer) list[0]));

@@ -48,7 +48,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.R;
 
 import java.util.ArrayList;
@@ -211,7 +211,7 @@ public class MLand extends FrameLayout {
 
         setupPlayers(DEFAULT_PLAYERS);
 
-        MetricsLogger.count(getContext(), "egg_mland_create", 1);
+        // MetricsLogger.count(getContext(), "egg_mland_create", 1);
     }
 
     @Override
@@ -593,7 +593,7 @@ public class MLand extends FrameLayout {
         mTaps = 0;
 
         final int N = mPlayers.size();
-        MetricsLogger.histogram(getContext(), "egg_mland_players", N);
+        // MetricsLogger.histogram(getContext(), "egg_mland_players", N);
         for (int i=0; i<N; i++) {
             final Player p = mPlayers.get(i);
             p.setVisibility(View.VISIBLE);
@@ -716,13 +716,13 @@ public class MLand extends FrameLayout {
             if (livingPlayers == 0) {
                 stop();
 
-                MetricsLogger.count(getContext(), "egg_mland_taps", mTaps);
-                mTaps = 0;
-                final int playerCount = mPlayers.size();
-                for (int pi=0; pi<playerCount; pi++) {
-                    final Player p = mPlayers.get(pi);
-                    MetricsLogger.histogram(getContext(), "egg_mland_score", p.getScore());
-                }
+                // MetricsLogger.count(getContext(), "egg_mland_taps", mTaps);
+                // mTaps = 0;
+                // final int playerCount = mPlayers.size();
+                // for (int pi=0; pi<playerCount; pi++) {
+                //     final Player p = mPlayers.get(pi);
+                //     MetricsLogger.histogram(getContext(), "egg_mland_score", p.getScore());
+                // }
             }
         }
 

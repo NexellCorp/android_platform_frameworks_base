@@ -48,8 +48,8 @@ import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.FrameLayout;
 import android.widget.ScrollView;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
 import com.android.systemui.recents.Recents;
@@ -1753,8 +1753,8 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
         final Task launchTask = mStack.getNextLaunchTarget();
         if (launchTask != null) {
             launchTask(launchTask);
-            MetricsLogger.action(getContext(), MetricsEvent.OVERVIEW_LAUNCH_PREVIOUS_TASK,
-                    launchTask.key.getComponent().toString());
+            // MetricsLogger.action(getContext(), MetricsEvent.OVERVIEW_LAUNCH_PREVIOUS_TASK,
+            //         launchTask.key.getComponent().toString());
         } else if (mStack.getTaskCount() == 0) {
             // If there are no tasks, then just hide recents back to home.
             EventBus.getDefault().send(new HideRecentsEvent(false, true));
@@ -1824,7 +1824,7 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
                     EventBus.getDefault().send(new DeleteTaskDataEvent(tasks.get(i)));
                 }
 
-                MetricsLogger.action(getContext(), MetricsEvent.OVERVIEW_DISMISS_ALL);
+                // MetricsLogger.action(getContext(), MetricsEvent.OVERVIEW_DISMISS_ALL);
             }
         });
 
@@ -1850,8 +1850,8 @@ public class TaskStackView extends FrameLayout implements TaskStack.TaskStackCal
         mStack.removeTask(event.task, event.animation, false /* fromDockGesture */);
         EventBus.getDefault().send(new DeleteTaskDataEvent(event.task));
 
-        MetricsLogger.action(getContext(), MetricsEvent.OVERVIEW_DISMISS,
-                event.task.key.getComponent().toString());
+        // MetricsLogger.action(getContext(), MetricsEvent.OVERVIEW_DISMISS,
+                // event.task.key.getComponent().toString());
     }
 
     public final void onBusEvent(FocusNextTaskViewEvent event) {

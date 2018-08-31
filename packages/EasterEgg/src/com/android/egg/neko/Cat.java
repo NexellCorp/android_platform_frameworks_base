@@ -29,7 +29,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import com.android.egg.R;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 
 public class Cat extends Drawable {
     public static final long[] PURR = {0, 40, 20, 40, 20, 40, 20, 40, 20, 40, 20, 40};
@@ -339,11 +339,11 @@ public class Cat extends Drawable {
     }
 
     private void logCatAction(Context context, String prefix) {
-        MetricsLogger.count(context, prefix, 1);
-        MetricsLogger.histogram(context, prefix +"_color",
-                getColorIndex(mBodyColor, P_BODY_COLORS));
-        MetricsLogger.histogram(context, prefix + "_bowtie", mBowTie ? 1 : 0);
-        MetricsLogger.histogram(context, prefix + "_feet", mFootType);
+        // MetricsLogger.count(context, prefix, 1);
+        // MetricsLogger.histogram(context, prefix +"_color",
+        //         getColorIndex(mBodyColor, P_BODY_COLORS));
+        // MetricsLogger.histogram(context, prefix + "_bowtie", mBowTie ? 1 : 0);
+        // MetricsLogger.histogram(context, prefix + "_feet", mFootType);
     }
 
     public static class CatParts {

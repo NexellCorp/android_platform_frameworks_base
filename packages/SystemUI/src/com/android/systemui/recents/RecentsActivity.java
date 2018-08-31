@@ -40,7 +40,7 @@ import android.view.ViewTreeObserver.OnPreDrawListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
@@ -364,7 +364,7 @@ public class RecentsActivity extends Activity implements ViewTreeObserver.OnPreD
 
         // Notify that recents is now visible
         EventBus.getDefault().send(new RecentsVisibilityChangedEvent(this, true));
-        MetricsLogger.visible(this, MetricsEvent.OVERVIEW_ACTIVITY);
+        // MetricsLogger.visible(this, MetricsEvent.OVERVIEW_ACTIVITY);
 
         // Notify of the next draw
         mRecentsView.getViewTreeObserver().addOnPreDrawListener(mRecentsDrawnEventListener);
@@ -421,28 +421,28 @@ public class RecentsActivity extends Activity implements ViewTreeObserver.OnPreD
         }
 
         // Keep track of whether we launched from the nav bar button or via alt-tab
-        if (launchState.launchedWithAltTab) {
-            MetricsLogger.count(this, "overview_trigger_alttab", 1);
-        } else {
-            MetricsLogger.count(this, "overview_trigger_nav_btn", 1);
-        }
+        // if (launchState.launchedWithAltTab) {
+        //     MetricsLogger.count(this, "overview_trigger_alttab", 1);
+        // } else {
+        //     MetricsLogger.count(this, "overview_trigger_nav_btn", 1);
+        // }
 
         // Keep track of whether we launched from an app or from home
-        if (launchState.launchedFromApp) {
-            Task launchTarget = stack.getLaunchTarget();
-            int launchTaskIndexInStack = launchTarget != null
-                    ? stack.indexOfStackTask(launchTarget)
-                    : 0;
-            MetricsLogger.count(this, "overview_source_app", 1);
-            // If from an app, track the stack index of the app in the stack (for affiliated tasks)
-            MetricsLogger.histogram(this, "overview_source_app_index", launchTaskIndexInStack);
-        } else {
-            MetricsLogger.count(this, "overview_source_home", 1);
-        }
+        // if (launchState.launchedFromApp) {
+        //     Task launchTarget = stack.getLaunchTarget();
+        //     int launchTaskIndexInStack = launchTarget != null
+        //             ? stack.indexOfStackTask(launchTarget)
+        //             : 0;
+        //     MetricsLogger.count(this, "overview_source_app", 1);
+        //     // If from an app, track the stack index of the app in the stack (for affiliated tasks)
+        //     MetricsLogger.histogram(this, "overview_source_app_index", launchTaskIndexInStack);
+        // } else {
+        //     MetricsLogger.count(this, "overview_source_home", 1);
+        // }
 
         // Keep track of the total stack task count
-        int taskCount = mRecentsView.getStack().getTaskCount();
-        MetricsLogger.histogram(this, "overview_task_count", taskCount);
+        // int taskCount = mRecentsView.getStack().getTaskCount();
+        // MetricsLogger.histogram(this, "overview_task_count", taskCount);
 
         // After we have resumed, set the visible state until the next onStop() call
         mIsVisible = true;
@@ -521,7 +521,7 @@ public class RecentsActivity extends Activity implements ViewTreeObserver.OnPreD
         mIsVisible = false;
         mReceivedNewIntent = false;
         EventBus.getDefault().send(new RecentsVisibilityChangedEvent(this, false));
-        MetricsLogger.hidden(this, MetricsEvent.OVERVIEW_ACTIVITY);
+        // MetricsLogger.hidden(this, MetricsEvent.OVERVIEW_ACTIVITY);
 
         // Workaround for b/22542869, if the RecentsActivity is started again, but without going
         // through SystemUI, we need to reset the config launch flags to ensure that we do not
@@ -608,8 +608,8 @@ public class RecentsActivity extends Activity implements ViewTreeObserver.OnPreD
                     EventBus.getDefault().send(new DismissFocusedTaskViewEvent());
 
                     // Keep track of deletions by keyboard
-                    MetricsLogger.histogram(this, "overview_task_dismissed_source",
-                            Constants.Metrics.DismissSourceKeyboard);
+                    // MetricsLogger.histogram(this, "overview_task_dismissed_source",
+                    //         Constants.Metrics.DismissSourceKeyboard);
                     return true;
                 }
             }
@@ -661,7 +661,7 @@ public class RecentsActivity extends Activity implements ViewTreeObserver.OnPreD
         // Focus the next task
         EventBus.getDefault().send(new FocusNextTaskViewEvent(timerIndicatorDuration));
 
-        MetricsLogger.action(this, MetricsEvent.ACTION_OVERVIEW_PAGE);
+        // MetricsLogger.action(this, MetricsEvent.ACTION_OVERVIEW_PAGE);
     }
 
     public final void onBusEvent(UserInteractionEvent event) {
@@ -725,7 +725,7 @@ public class RecentsActivity extends Activity implements ViewTreeObserver.OnPreD
                         new UserHandle(event.task.key.userId));
 
         // Keep track of app-info invocations
-        MetricsLogger.count(this, "overview_app_info", 1);
+        // MetricsLogger.count(this, "overview_app_info", 1);
     }
 
     public final void onBusEvent(ShowIncompatibleAppOverlayEvent event) {
@@ -772,22 +772,22 @@ public class RecentsActivity extends Activity implements ViewTreeObserver.OnPreD
         }
 
         // Keep track of all-deletions
-        MetricsLogger.count(this, "overview_task_all_dismissed", 1);
+        // MetricsLogger.count(this, "overview_task_all_dismissed", 1);
     }
 
     public final void onBusEvent(LaunchTaskSucceededEvent event) {
-        MetricsLogger.histogram(this, "overview_task_launch_index", event.taskIndexFromStackFront);
+        // MetricsLogger.histogram(this, "overview_task_launch_index", event.taskIndexFromStackFront);
     }
 
     public final void onBusEvent(LaunchTaskFailedEvent event) {
         // Return to Home
         dismissRecentsToHome(true /* animateTaskViews */);
 
-        MetricsLogger.count(this, "overview_task_launch_failed", 1);
+        // MetricsLogger.count(this, "overview_task_launch_failed", 1);
     }
 
     public final void onBusEvent(ScreenPinningRequestEvent event) {
-        MetricsLogger.count(this, "overview_screen_pinned", 1);
+        // MetricsLogger.count(this, "overview_screen_pinned", 1);
     }
 
     public final void onBusEvent(DebugFlagsChangedEvent event) {

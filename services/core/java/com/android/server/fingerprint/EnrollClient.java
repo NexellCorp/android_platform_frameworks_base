@@ -24,8 +24,8 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Slog;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 
 import java.util.Arrays;
 
@@ -66,7 +66,7 @@ public abstract class EnrollClient extends ClientMonitor {
             return true; // client not listening
 
         FingerprintUtils.vibrateFingerprintSuccess(getContext());
-        MetricsLogger.action(getContext(), MetricsEvent.ACTION_FINGERPRINT_ENROLL);
+        // MetricsLogger.action(getContext(), MetricsEvent.ACTION_FINGERPRINT_ENROLL);
         try {
             receiver.onEnrollResult(getHalDeviceId(), fpId, groupId, remaining);
             return remaining == 0;
@@ -88,7 +88,7 @@ public abstract class EnrollClient extends ClientMonitor {
             final int result = daemon.enroll(mCryptoToken, getGroupId(), timeout);
             if (result != 0) {
                 Slog.w(TAG, "startEnroll failed, result=" + result);
-                MetricsLogger.histogram(getContext(), "fingerprintd_enroll_start_error", result);
+                // MetricsLogger.histogram(getContext(), "fingerprintd_enroll_start_error", result);
                 onError(FingerprintManager.FINGERPRINT_ERROR_HW_UNAVAILABLE);
                 return result;
             }

@@ -45,7 +45,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
 import com.android.systemui.recents.Constants;
@@ -617,8 +617,8 @@ public class TaskViewHeader extends FrameLayout
             tv.dismissTask();
 
             // Keep track of deletions by the dismiss button
-            MetricsLogger.histogram(getContext(), "overview_task_dismissed_source",
-                    Constants.Metrics.DismissSourceHeaderButton);
+            // MetricsLogger.histogram(getContext(), "overview_task_dismissed_source",
+            //         Constants.Metrics.DismissSourceHeaderButton);
         } else if (v == mMoveTaskButton) {
             TaskView tv = Utilities.findParent(this, TaskView.class);
             EventBus.getDefault().send(new LaunchTaskEvent(tv, mTask, null,

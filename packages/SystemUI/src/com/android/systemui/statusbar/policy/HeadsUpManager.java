@@ -30,7 +30,7 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.accessibility.AccessibilityEvent;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.ExpandableNotificationRow;
 import com.android.systemui.statusbar.NotificationData;
@@ -258,9 +258,9 @@ public class HeadsUpManager implements ViewTreeObserver.OnComputeInternalInsetsL
             return;
         }
         mHasPinnedNotification = hasPinnedNotification;
-        if (mHasPinnedNotification) {
-            MetricsLogger.count(mContext, "note_peek", 1);
-        }
+        // if (mHasPinnedNotification) {
+        //     MetricsLogger.count(mContext, "note_peek", 1);
+        // }
         updateTouchableRegionListener();
         for (OnHeadsUpChangedListener listener : mListeners) {
             listener.onHeadsUpPinnedModeChanged(hasPinnedNotification);

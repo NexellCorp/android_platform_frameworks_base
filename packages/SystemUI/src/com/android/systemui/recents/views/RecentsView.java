@@ -42,8 +42,8 @@ import android.view.WindowInsets;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
 import com.android.systemui.recents.Recents;
@@ -241,10 +241,10 @@ public class RecentsView extends FrameLayout {
                 EventBus.getDefault().send(new LaunchTaskEvent(taskView, task, null,
                         INVALID_STACK_ID, false));
 
-                if (logEvent != 0) {
-                    MetricsLogger.action(getContext(), logEvent,
-                            task.key.getComponent().toString());
-                }
+                // if (logEvent != 0) {
+                //     MetricsLogger.action(getContext(), logEvent,
+                //             task.key.getComponent().toString());
+                // }
                 return true;
             }
         }
@@ -535,8 +535,8 @@ public class RecentsView extends FrameLayout {
                         mTransitionHelper.wrapStartedListener(startedListener),
                         true /* scaleUp */);
 
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_WINDOW_DOCK_DRAG_DROP,
-                        event.task.getTopComponent().flattenToShortString());
+                // MetricsLogger.action(mContext, MetricsEvent.ACTION_WINDOW_DOCK_DRAG_DROP,
+                //         event.task.getTopComponent().flattenToShortString());
             } else {
                 EventBus.getDefault().send(new DragEndCancelledEvent(getStack(), event.task,
                         event.taskView));

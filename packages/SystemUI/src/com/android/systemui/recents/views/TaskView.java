@@ -38,8 +38,8 @@ import android.view.ViewOutlineProvider;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
 import com.android.systemui.recents.Recents;
@@ -664,8 +664,8 @@ public class TaskView extends FixedSizeFrameLayout implements Task.TaskCallbacks
         EventBus.getDefault().send(new LaunchTaskEvent(this, mTask, null, INVALID_STACK_ID,
                 screenPinningRequested));
 
-        MetricsLogger.action(v.getContext(), MetricsEvent.ACTION_OVERVIEW_SELECT,
-                mTask.key.getComponent().toString());
+        // MetricsLogger.action(v.getContext(), MetricsEvent.ACTION_OVERVIEW_SELECT,
+        //         mTask.key.getComponent().toString());
     }
 
     /**** View.OnLongClickListener Implementation ****/

@@ -415,7 +415,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
     // Whether tasks have moved and we need to rank the tasks before next OOM scoring
     private boolean mTaskLayersChanged = true;
 
-    final ActivityMetricsLogger mActivityMetricsLogger;
+    // final ActivityMetricsLogger mActivityMetricsLogger;
 
     private final ResizeDockedStackTimeout mResizeDockedStackTimeout;
 
@@ -485,7 +485,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
     public ActivityStackSupervisor(ActivityManagerService service) {
         mService = service;
         mHandler = new ActivityStackSupervisorHandler(mService.mHandler.getLooper());
-        mActivityMetricsLogger = new ActivityMetricsLogger(this, mService.mContext);
+        // mActivityMetricsLogger = new ActivityMetricsLogger(this, mService.mContext);
         mResizeDockedStackTimeout = new ResizeDockedStackTimeout(service, this, mHandler);
     }
 
@@ -3780,7 +3780,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
     }
 
     void logStackState() {
-        mActivityMetricsLogger.logWindowState();
+        // mActivityMetricsLogger.logWindowState();
     }
 
     void scheduleReportMultiWindowModeChanged(TaskRecord task) {
@@ -4525,10 +4525,10 @@ public final class ActivityStackSupervisor implements DisplayListener {
         if (!mService.mUserController.shouldConfirmCredentials(task.userId)
                 && task.getRootActivity() != null) {
             mService.mActivityStarter.sendPowerHintForLaunchStartIfNeeded(true /* forceSend */);
-            mActivityMetricsLogger.notifyActivityLaunching();
+            // mActivityMetricsLogger.notifyActivityLaunching();
             mService.moveTaskToFrontLocked(task.taskId, 0, bOptions);
-            mActivityMetricsLogger.notifyActivityLaunched(ActivityManager.START_TASK_TO_FRONT,
-                    task.getTopActivity());
+            // mActivityMetricsLogger.notifyActivityLaunched(ActivityManager.START_TASK_TO_FRONT,
+            //         task.getTopActivity());
 
             // If we are launching the task in the docked stack, put it into resizing mode so
             // the window renders full-screen with the background filling the void. Also only

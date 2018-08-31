@@ -64,7 +64,7 @@ import android.util.Slog;
 import com.android.internal.os.BackgroundThread;
 import com.android.internal.R;
 import com.android.internal.annotations.GuardedBy;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.server.LocalServices;
 import com.android.server.ServiceThread;
@@ -442,7 +442,7 @@ public class RetailDemoModeService extends SystemService {
         synchronized (mActivityLock) {
             sessionDuration = (int) ((mLastUserActivityTime - mFirstUserActivityTime) / 1000);
         }
-        MetricsLogger.histogram(getContext(), DEMO_SESSION_DURATION, sessionDuration);
+        // MetricsLogger.histogram(getContext(), DEMO_SESSION_DURATION, sessionDuration);
     }
 
     private ActivityManagerService getActivityManager() {
@@ -615,7 +615,7 @@ public class RetailDemoModeService extends SystemService {
             synchronized (mActivityLock) {
                 mUserUntouched = true;
             }
-            MetricsLogger.count(getContext(), DEMO_SESSION_COUNT, 1);
+            // MetricsLogger.count(getContext(), DEMO_SESSION_COUNT, 1);
             mHandler.removeMessages(MSG_INACTIVITY_TIME_OUT);
             mHandler.post(new Runnable() {
                 @Override

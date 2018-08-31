@@ -28,7 +28,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.ForegroundColorSpan;
 import android.widget.Switch;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 import com.android.systemui.qs.GlobalSetting;
@@ -103,7 +103,7 @@ public class HotspotTile extends QSTile<QSTile.AirplaneBooleanState> {
         if (!isEnabled && mAirplaneMode.getValue() != 0) {
             return;
         }
-        MetricsLogger.action(mContext, getMetricsCategory(), !isEnabled);
+        // MetricsLogger.action(mContext, getMetricsCategory(), !isEnabled);
         mController.setHotspotEnabled(!isEnabled);
     }
 

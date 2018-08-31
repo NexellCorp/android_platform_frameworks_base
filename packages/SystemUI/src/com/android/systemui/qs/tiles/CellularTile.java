@@ -26,7 +26,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Switch;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.settingslib.net.DataUsageController;
 import com.android.systemui.R;
@@ -86,7 +86,7 @@ public class CellularTile extends QSTile<QSTile.SignalState> {
 
     @Override
     protected void handleClick() {
-        MetricsLogger.action(mContext, getMetricsCategory());
+        // MetricsLogger.action(mContext, getMetricsCategory());
         if (mDataController.isMobileDataSupported()) {
             showDetail(true);
         } else {
@@ -265,7 +265,7 @@ public class CellularTile extends QSTile<QSTile.SignalState> {
 
         @Override
         public void setToggleState(boolean state) {
-            MetricsLogger.action(mContext, MetricsEvent.QS_CELLULAR_TOGGLE, state);
+            // MetricsLogger.action(mContext, MetricsEvent.QS_CELLULAR_TOGGLE, state);
             mDataController.setMobileDataEnabled(state);
         }
 

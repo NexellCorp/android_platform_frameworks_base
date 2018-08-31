@@ -16,8 +16,8 @@
 
 package com.android.server.fingerprint;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 
 import android.content.Context;
 import android.hardware.fingerprint.Fingerprint;
@@ -53,8 +53,8 @@ public abstract class AuthenticationClient extends ClientMonitor {
         IFingerprintServiceReceiver receiver = getReceiver();
         if (receiver != null) {
             try {
-                MetricsLogger.action(getContext(), MetricsEvent.ACTION_FINGERPRINT_AUTH,
-                        authenticated);
+                // MetricsLogger.action(getContext(), MetricsEvent.ACTION_FINGERPRINT_AUTH,
+                //         authenticated);
                 if (!authenticated) {
                     receiver.onAuthenticationFailed(getHalDeviceId());
                 } else {
@@ -115,7 +115,7 @@ public abstract class AuthenticationClient extends ClientMonitor {
             final int result = daemon.authenticate(mOpId, getGroupId());
             if (result != 0) {
                 Slog.w(TAG, "startAuthentication failed, result=" + result);
-                MetricsLogger.histogram(getContext(), "fingeprintd_auth_start_error", result);
+                // MetricsLogger.histogram(getContext(), "fingeprintd_auth_start_error", result);
                 onError(FingerprintManager.FINGERPRINT_ERROR_HW_UNAVAILABLE);
                 return result;
             }

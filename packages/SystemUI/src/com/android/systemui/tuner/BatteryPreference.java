@@ -20,8 +20,8 @@ import android.support.v7.preference.DropDownPreference;
 import android.text.TextUtils;
 import android.util.ArraySet;
 import android.util.AttributeSet;
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.statusbar.phone.StatusBarIconController;
 
 import static com.android.systemui.BatteryMeterDrawable.SHOW_PERCENT_SETTING;
@@ -82,7 +82,7 @@ public class BatteryPreference extends DropDownPreference implements TunerServic
     @Override
     protected boolean persistString(String value) {
         final boolean v = PERCENT.equals(value);
-        MetricsLogger.action(getContext(), MetricsEvent.TUNER_BATTERY_PERCENTAGE, v);
+        // MetricsLogger.action(getContext(), MetricsEvent.TUNER_BATTERY_PERCENTAGE, v);
         Settings.System.putInt(getContext().getContentResolver(), SHOW_PERCENT_SETTING, v ? 1 : 0);
         if (DISABLED.equals(value)) {
             mBlacklist.add(mBattery);

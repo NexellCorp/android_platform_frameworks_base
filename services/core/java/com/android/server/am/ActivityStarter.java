@@ -724,7 +724,7 @@ class ActivityStarter {
         if (intent != null && intent.hasFileDescriptors()) {
             throw new IllegalArgumentException("File descriptors passed in Intent");
         }
-        mSupervisor.mActivityMetricsLogger.notifyActivityLaunching();
+        // mSupervisor.mActivityMetricsLogger.notifyActivityLaunching();
         boolean componentSpecified = intent.getComponent() != null;
 
         // Save a copy in case ephemeral needs it
@@ -916,7 +916,7 @@ class ActivityStarter {
 
             final ActivityRecord launchedActivity = mReusedActivity != null
                     ? mReusedActivity : outRecord[0];
-            mSupervisor.mActivityMetricsLogger.notifyActivityLaunched(res, launchedActivity);
+            // mSupervisor.mActivityMetricsLogger.notifyActivityLaunched(res, launchedActivity);
             return res;
         }
     }

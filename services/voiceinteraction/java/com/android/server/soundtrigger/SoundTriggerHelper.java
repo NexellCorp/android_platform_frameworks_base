@@ -41,7 +41,7 @@ import android.os.RemoteException;
 import android.telephony.PhoneStateListener;
 import android.telephony.TelephonyManager;
 import android.util.Slog;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -137,7 +137,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
      */
     int startGenericRecognition(UUID modelId, GenericSoundModel soundModel,
             IRecognitionStatusCallback callback, RecognitionConfig recognitionConfig) {
-        MetricsLogger.count(mContext, "sth_start_recognition", 1);
+        // MetricsLogger.count(mContext, "sth_start_recognition", 1);
         if (modelId == null || soundModel == null || callback == null ||
                 recognitionConfig == null) {
             Slog.w(TAG, "Passed in bad data to startGenericRecognition().");
@@ -167,7 +167,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
     int startKeyphraseRecognition(int keyphraseId, KeyphraseSoundModel soundModel,
             IRecognitionStatusCallback callback, RecognitionConfig recognitionConfig) {
         synchronized (mLock) {
-            MetricsLogger.count(mContext, "sth_start_recognition", 1);
+            // MetricsLogger.count(mContext, "sth_start_recognition", 1);
             if (soundModel == null || callback == null || recognitionConfig == null) {
                 return STATUS_ERROR;
             }
@@ -335,7 +335,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
      */
     int stopGenericRecognition(UUID modelId, IRecognitionStatusCallback callback) {
         synchronized (mLock) {
-            MetricsLogger.count(mContext, "sth_stop_recognition", 1);
+            // MetricsLogger.count(mContext, "sth_stop_recognition", 1);
             if (callback == null || modelId == null) {
                 Slog.e(TAG, "Null callbackreceived for stopGenericRecognition() for modelid:" +
                         modelId);
@@ -368,7 +368,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
      */
     int stopKeyphraseRecognition(int keyphraseId, IRecognitionStatusCallback callback) {
         synchronized (mLock) {
-            MetricsLogger.count(mContext, "sth_stop_recognition", 1);
+            // MetricsLogger.count(mContext, "sth_stop_recognition", 1);
             if (callback == null) {
                 Slog.e(TAG, "Null callback received for stopKeyphraseRecognition() for keyphraseId:" +
                         keyphraseId);
@@ -471,7 +471,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
         if (unloadModel && modelData.isModelLoaded()) {
             Slog.d(TAG, "Unloading previously loaded stale model.");
             status = mModule.unloadSoundModel(modelData.getHandle());
-            MetricsLogger.count(mContext, "sth_unloading_stale_model", 1);
+            // MetricsLogger.count(mContext, "sth_unloading_stale_model", 1);
             if (status != SoundTrigger.STATUS_OK) {
                 Slog.w(TAG, "unloadSoundModel call failed with " + status);
             } else {
@@ -488,7 +488,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
 
     int unloadKeyphraseSoundModel(int keyphraseId) {
         synchronized (mLock) {
-            MetricsLogger.count(mContext, "sth_unload_keyphrase_sound_model", 1);
+            // MetricsLogger.count(mContext, "sth_unload_keyphrase_sound_model", 1);
             ModelData modelData = getKeyphraseModelDataLocked(keyphraseId);
             if (mModule == null || modelData == null || modelData.getHandle() == INVALID_VALUE ||
                     !modelData.isKeyphraseModel()) {
@@ -516,7 +516,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
 
     int unloadGenericSoundModel(UUID modelId) {
         synchronized (mLock) {
-            MetricsLogger.count(mContext, "sth_unload_generic_sound_model", 1);
+            // MetricsLogger.count(mContext, "sth_unload_generic_sound_model", 1);
             if (modelId == null || mModule == null) {
                 return STATUS_ERROR;
             }
@@ -592,7 +592,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
     }
 
     private void onGenericRecognitionSuccessLocked(GenericRecognitionEvent event) {
-        MetricsLogger.count(mContext, "sth_generic_recognition_event", 1);
+        // MetricsLogger.count(mContext, "sth_generic_recognition_event", 1);
         if (event.status != SoundTrigger.RECOGNITION_STATUS_SUCCESS) {
             return;
         }
@@ -640,7 +640,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
         }
         if (DBG) Slog.d(TAG, "onSoundModelUpdate: " + event);
         synchronized (mLock) {
-            MetricsLogger.count(mContext, "sth_sound_model_updated", 1);
+            // MetricsLogger.count(mContext, "sth_sound_model_updated", 1);
             onSoundModelUpdatedLocked(event);
         }
     }
@@ -656,7 +656,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
     @Override
     public void onServiceDied() {
         Slog.e(TAG, "onServiceDied!!");
-        MetricsLogger.count(mContext, "sth_service_died", 1);
+        // MetricsLogger.count(mContext, "sth_service_died", 1);
         synchronized (mLock) {
             onServiceDiedLocked();
         }
@@ -694,7 +694,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
 
     private void onRecognitionAbortLocked(RecognitionEvent event) {
         Slog.w(TAG, "Recognition aborted");
-        MetricsLogger.count(mContext, "sth_recognition_aborted", 1);
+        // MetricsLogger.count(mContext, "sth_recognition_aborted", 1);
         ModelData modelData = getModelDataForLocked(event.soundModelHandle);
         if (modelData != null && modelData.isModelStarted()) {
             modelData.setStopped();
@@ -708,7 +708,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
 
     private void onRecognitionFailureLocked() {
         Slog.w(TAG, "Recognition failure");
-        MetricsLogger.count(mContext, "sth_recognition_failure_event", 1);
+        // MetricsLogger.count(mContext, "sth_recognition_failure_event", 1);
         try {
             sendErrorCallbacksToAll(STATUS_ERROR);
         } catch (RemoteException e) {
@@ -736,7 +736,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
 
     private void onKeyphraseRecognitionSuccessLocked(KeyphraseRecognitionEvent event) {
         Slog.i(TAG, "Recognition success");
-        MetricsLogger.count(mContext, "sth_keyphrase_recognition_event", 1);
+        // MetricsLogger.count(mContext, "sth_keyphrase_recognition_event", 1);
         int keyphraseId = getKeyphraseIdFromEvent(event);
         ModelData modelData = getKeyphraseModelDataLocked(keyphraseId);
 
@@ -792,7 +792,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
 
     private void onServiceDiedLocked() {
         try {
-          MetricsLogger.count(mContext, "sth_service_died", 1);
+          // MetricsLogger.count(mContext, "sth_service_died", 1);
             sendErrorCallbacksToAll(SoundTrigger.STATUS_DEAD_OBJECT);
         } catch (RemoteException e) {
             Slog.w(TAG, "RemoteException in onError", e);
@@ -956,21 +956,21 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
         if (callback == null || handle == INVALID_VALUE || config == null) {
             // Nothing to do here.
             Slog.w(TAG, "startRecognition: Bad data passed in.");
-            MetricsLogger.count(mContext, "sth_start_recognition_error", 1);
+            // MetricsLogger.count(mContext, "sth_start_recognition_error", 1);
             return STATUS_ERROR;
         }
 
         if (!isRecognitionAllowed()) {
             // Nothing to do here.
             Slog.w(TAG, "startRecognition requested but not allowed.");
-            MetricsLogger.count(mContext, "sth_start_recognition_not_allowed", 1);
+            // MetricsLogger.count(mContext, "sth_start_recognition_not_allowed", 1);
             return STATUS_OK;
         }
 
         int status = mModule.startRecognition(handle, config);
         if (status != SoundTrigger.STATUS_OK) {
             Slog.w(TAG, "startRecognition failed with " + status);
-            MetricsLogger.count(mContext, "sth_start_recognition_error", 1);
+            // MetricsLogger.count(mContext, "sth_start_recognition_error", 1);
             // Notify of error if needed.
             if (notify) {
                 try {
@@ -981,7 +981,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
             }
         } else {
             Slog.i(TAG, "startRecognition successful.");
-            MetricsLogger.count(mContext, "sth_start_recognition_success", 1);
+            // MetricsLogger.count(mContext, "sth_start_recognition_success", 1);
             modelData.setStarted();
             // Notify of resume if needed.
             if (notify) {
@@ -1008,7 +1008,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
 
         if (status != SoundTrigger.STATUS_OK) {
             Slog.w(TAG, "stopRecognition call failed with " + status);
-            MetricsLogger.count(mContext, "sth_stop_recognition_error", 1);
+            // MetricsLogger.count(mContext, "sth_stop_recognition_error", 1);
             if (notify) {
                 try {
                     callback.onError(status);
@@ -1018,7 +1018,7 @@ public class SoundTriggerHelper implements SoundTrigger.StatusListener {
             }
         } else {
             modelData.setStopped();
-            MetricsLogger.count(mContext, "sth_stop_recognition_success", 1);
+            // MetricsLogger.count(mContext, "sth_stop_recognition_success", 1);
             // Notify of pause if needed.
             if (notify) {
                 try {

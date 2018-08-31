@@ -28,7 +28,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Switch;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.settingslib.bluetooth.CachedBluetoothDevice;
 import com.android.systemui.R;
@@ -76,7 +76,7 @@ public class BluetoothTile extends QSTile<QSTile.BooleanState>  {
     protected void handleSecondaryClick() {
         // Secondary clicks are header clicks, just toggle.
         final boolean isEnabled = (Boolean)mState.value;
-        MetricsLogger.action(mContext, getMetricsCategory(), !isEnabled);
+        // MetricsLogger.action(mContext, getMetricsCategory(), !isEnabled);
         mController.setBluetoothEnabled(!isEnabled);
     }
 
@@ -221,7 +221,7 @@ public class BluetoothTile extends QSTile<QSTile.BooleanState>  {
 
         @Override
         public void setToggleState(boolean state) {
-            MetricsLogger.action(mContext, MetricsEvent.QS_BLUETOOTH_TOGGLE, state);
+            // MetricsLogger.action(mContext, MetricsEvent.QS_BLUETOOTH_TOGGLE, state);
             mController.setBluetoothEnabled(state);
             showDetail(false);
         }

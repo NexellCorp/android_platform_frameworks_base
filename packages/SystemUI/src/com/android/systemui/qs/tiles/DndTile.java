@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 import android.widget.Switch;
 import android.widget.Toast;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.Prefs;
 import com.android.systemui.R;
@@ -118,7 +118,7 @@ public class DndTile extends QSTile<QSTile.BooleanState> {
                     Toast.LENGTH_LONG).show();
             return;
         }
-        MetricsLogger.action(mContext, getMetricsCategory(), !mState.value);
+        // MetricsLogger.action(mContext, getMetricsCategory(), !mState.value);
         if (mState.value) {
             mController.setZen(Global.ZEN_MODE_OFF, null, TAG);
         } else {
@@ -254,7 +254,7 @@ public class DndTile extends QSTile<QSTile.BooleanState> {
 
         @Override
         public void setToggleState(boolean state) {
-            MetricsLogger.action(mContext, MetricsEvent.QS_DND_TOGGLE, state);
+            // MetricsLogger.action(mContext, MetricsEvent.QS_DND_TOGGLE, state);
             if (!state) {
                 mController.setZen(Global.ZEN_MODE_OFF, null, TAG);
                 showDetail(false);

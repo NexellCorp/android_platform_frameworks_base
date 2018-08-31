@@ -40,8 +40,8 @@ import android.util.Log;
 import android.view.Display;
 import android.widget.Toast;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.EventLogConstants;
 import com.android.systemui.EventLogTags;
 import com.android.systemui.R;
@@ -439,10 +439,10 @@ public class Recents extends SystemUI
         if (runningTask != null && !isRunningTaskInHomeStack && !screenPinningActive) {
             logDockAttempt(mContext, runningTask.topActivity, runningTask.resizeMode);
             if (runningTask.isDockable) {
-                if (metricsDockAction != -1) {
-                    MetricsLogger.action(mContext, metricsDockAction,
-                            runningTask.topActivity.flattenToShortString());
-                }
+                // if (metricsDockAction != -1) {
+                //     MetricsLogger.action(mContext, metricsDockAction,
+                //             runningTask.topActivity.flattenToShortString());
+                // }
                 if (sSystemServicesProxy.isSystemUser(currentUser)) {
                     mImpl.dockTopTask(runningTask.id, dragMode, stackCreateMode, initialBounds);
                 } else {
@@ -474,11 +474,11 @@ public class Recents extends SystemUI
     }
 
     public static void logDockAttempt(Context ctx, ComponentName activity, int resizeMode) {
-        if (resizeMode == ActivityInfo.RESIZE_MODE_UNRESIZEABLE) {
-            MetricsLogger.action(ctx, MetricsEvent.ACTION_WINDOW_DOCK_UNRESIZABLE,
-                    activity.flattenToShortString());
-        }
-        MetricsLogger.count(ctx, getMetricsCounterForResizeMode(resizeMode), 1);
+        // if (resizeMode == ActivityInfo.RESIZE_MODE_UNRESIZEABLE) {
+        //     MetricsLogger.action(ctx, MetricsEvent.ACTION_WINDOW_DOCK_UNRESIZABLE,
+        //             activity.flattenToShortString());
+        // }
+        // MetricsLogger.count(ctx, getMetricsCounterForResizeMode(resizeMode), 1);
     }
 
     private static String getMetricsCounterForResizeMode(int resizeMode) {

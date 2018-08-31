@@ -42,8 +42,8 @@ import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.settingslib.Utils;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
@@ -225,8 +225,8 @@ public class NotificationGuts extends LinearLayout implements TunerService.Tunab
 
     void saveImportance(final StatusBarNotification sbn) {
         int progress = getSelectedImportance();
-        MetricsLogger.action(mContext, MetricsEvent.ACTION_SAVE_IMPORTANCE,
-                progress - mStartingUserImportance);
+        // MetricsLogger.action(mContext, MetricsEvent.ACTION_SAVE_IMPORTANCE,
+        //         progress - mStartingUserImportance);
         try {
             mINotificationManager.setImportance(sbn.getPackageName(), sbn.getUid(), progress);
         } catch (RemoteException e) {
@@ -300,9 +300,9 @@ public class NotificationGuts extends LinearLayout implements TunerService.Tunab
                     progress = minProgress;
                 }
                 updateTitleAndSummary(progress);
-                if (fromUser) {
-                    MetricsLogger.action(mContext, MetricsEvent.ACTION_MODIFY_IMPORTANCE_SLIDER);
-                }
+                // if (fromUser) {
+                //     MetricsLogger.action(mContext, MetricsEvent.ACTION_MODIFY_IMPORTANCE_SLIDER);
+                // }
             }
 
             @Override

@@ -53,8 +53,8 @@ import android.view.animation.Interpolator;
 import android.view.animation.PathInterpolator;
 import android.widget.FrameLayout;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.policy.DividerSnapAlgorithm;
 import com.android.internal.policy.DividerSnapAlgorithm.SnapTarget;
 import com.android.internal.policy.DockedDividerUtils;
@@ -518,32 +518,32 @@ public class DividerView extends FrameLayout implements OnTouchListener,
         return true;
     }
 
-    private void logResizeEvent(SnapTarget snapTarget) {
-        if (snapTarget == mSnapAlgorithm.getDismissStartTarget()) {
-            MetricsLogger.action(
-                    mContext, MetricsEvent.ACTION_WINDOW_UNDOCK_MAX, dockSideTopLeft(mDockSide)
-                            ? LOG_VALUE_UNDOCK_MAX_OTHER
-                            : LOG_VALUE_UNDOCK_MAX_DOCKED);
-        } else if (snapTarget == mSnapAlgorithm.getDismissEndTarget()) {
-            MetricsLogger.action(
-                    mContext, MetricsEvent.ACTION_WINDOW_UNDOCK_MAX, dockSideBottomRight(mDockSide)
-                            ? LOG_VALUE_UNDOCK_MAX_OTHER
-                            : LOG_VALUE_UNDOCK_MAX_DOCKED);
-        } else if (snapTarget == mSnapAlgorithm.getMiddleTarget()) {
-            MetricsLogger.action(mContext, MetricsEvent.ACTION_WINDOW_DOCK_RESIZE,
-                    LOG_VALUE_RESIZE_50_50);
-        } else if (snapTarget == mSnapAlgorithm.getFirstSplitTarget()) {
-            MetricsLogger.action(mContext, MetricsEvent.ACTION_WINDOW_DOCK_RESIZE,
-                    dockSideTopLeft(mDockSide)
-                            ? LOG_VALUE_RESIZE_DOCKED_SMALLER
-                            : LOG_VALUE_RESIZE_DOCKED_LARGER);
-        } else if (snapTarget == mSnapAlgorithm.getLastSplitTarget()) {
-            MetricsLogger.action(mContext, MetricsEvent.ACTION_WINDOW_DOCK_RESIZE,
-                    dockSideTopLeft(mDockSide)
-                            ? LOG_VALUE_RESIZE_DOCKED_LARGER
-                            : LOG_VALUE_RESIZE_DOCKED_SMALLER);
-        }
-    }
+    // private void logResizeEvent(SnapTarget snapTarget) {
+    //     if (snapTarget == mSnapAlgorithm.getDismissStartTarget()) {
+    //         MetricsLogger.action(
+    //                 mContext, MetricsEvent.ACTION_WINDOW_UNDOCK_MAX, dockSideTopLeft(mDockSide)
+    //                         ? LOG_VALUE_UNDOCK_MAX_OTHER
+    //                         : LOG_VALUE_UNDOCK_MAX_DOCKED);
+    //     } else if (snapTarget == mSnapAlgorithm.getDismissEndTarget()) {
+    //         MetricsLogger.action(
+    //                 mContext, MetricsEvent.ACTION_WINDOW_UNDOCK_MAX, dockSideBottomRight(mDockSide)
+    //                         ? LOG_VALUE_UNDOCK_MAX_OTHER
+    //                         : LOG_VALUE_UNDOCK_MAX_DOCKED);
+    //     } else if (snapTarget == mSnapAlgorithm.getMiddleTarget()) {
+    //         MetricsLogger.action(mContext, MetricsEvent.ACTION_WINDOW_DOCK_RESIZE,
+    //                 LOG_VALUE_RESIZE_50_50);
+    //     } else if (snapTarget == mSnapAlgorithm.getFirstSplitTarget()) {
+    //         MetricsLogger.action(mContext, MetricsEvent.ACTION_WINDOW_DOCK_RESIZE,
+    //                 dockSideTopLeft(mDockSide)
+    //                         ? LOG_VALUE_RESIZE_DOCKED_SMALLER
+    //                         : LOG_VALUE_RESIZE_DOCKED_LARGER);
+    //     } else if (snapTarget == mSnapAlgorithm.getLastSplitTarget()) {
+    //         MetricsLogger.action(mContext, MetricsEvent.ACTION_WINDOW_DOCK_RESIZE,
+    //                 dockSideTopLeft(mDockSide)
+    //                         ? LOG_VALUE_RESIZE_DOCKED_LARGER
+    //                         : LOG_VALUE_RESIZE_DOCKED_SMALLER);
+    //     }
+    // }
 
     private void convertToScreenCoordinates(MotionEvent event) {
         event.setLocation(event.getRawX(), event.getRawY());
@@ -555,9 +555,9 @@ public class DividerView extends FrameLayout implements OnTouchListener,
         if (avoidDismissStart && snapTarget == mSnapAlgorithm.getDismissStartTarget()) {
             snapTarget = mSnapAlgorithm.getFirstSplitTarget();
         }
-        if (logMetrics) {
-            logResizeEvent(snapTarget);
-        }
+        // if (logMetrics) {
+        //     logResizeEvent(snapTarget);
+        // }
         ValueAnimator anim = getFlingAnimator(position, snapTarget, 0 /* endDelay */);
         mFlingAnimationUtils.apply(anim, position, snapTarget.position, velocity);
         anim.start();

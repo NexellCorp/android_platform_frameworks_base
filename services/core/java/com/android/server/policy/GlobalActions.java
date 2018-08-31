@@ -18,8 +18,8 @@ package com.android.server.policy;
 
 import com.android.internal.app.AlertController;
 import com.android.internal.app.AlertController.AlertParams;
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.policy.EmergencyAffordanceManager;
 import com.android.internal.telephony.TelephonyIntents;
 import com.android.internal.telephony.TelephonyProperties;
@@ -432,8 +432,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
                 public void run() {
                     try {
                         // Take an "interactive" bugreport.
-                        MetricsLogger.action(mContext,
-                                MetricsEvent.ACTION_BUGREPORT_FROM_POWER_MENU_INTERACTIVE);
+                        // MetricsLogger.action(mContext,
+                        //         MetricsEvent.ACTION_BUGREPORT_FROM_POWER_MENU_INTERACTIVE);
                         ActivityManagerNative.getDefault().requestBugReport(
                                 ActivityManager.BUGREPORT_OPTION_INTERACTIVE);
                     } catch (RemoteException e) {
@@ -451,7 +451,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             }
             try {
                 // Take a "full" bugreport.
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_BUGREPORT_FROM_POWER_MENU_FULL);
+                // MetricsLogger.action(mContext, MetricsEvent.ACTION_BUGREPORT_FROM_POWER_MENU_FULL);
                 ActivityManagerNative.getDefault().requestBugReport(
                         ActivityManager.BUGREPORT_OPTION_FULL);
             } catch (RemoteException e) {

@@ -22,7 +22,7 @@ import android.provider.Settings;
 import android.widget.Switch;
 
 import com.android.internal.app.NightDisplayController;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
@@ -51,7 +51,7 @@ public class NightDisplayTile extends QSTile<QSTile.BooleanState>
     @Override
     protected void handleClick() {
         final boolean activated = !mState.value;
-        MetricsLogger.action(mContext, getMetricsCategory(), activated);
+        // MetricsLogger.action(mContext, getMetricsCategory(), activated);
         mController.setActivated(activated);
     }
 

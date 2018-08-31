@@ -30,8 +30,8 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.systemui.qs.QSTile.State;
 import com.android.systemui.qs.external.TileServices;
@@ -244,7 +244,7 @@ public abstract class QSTile<TState extends State> {
     }
 
     protected void handleLongClick() {
-        MetricsLogger.action(mContext, MetricsEvent.ACTION_QS_LONG_PRESS, getTileSpec());
+        // MetricsLogger.action(mContext, MetricsEvent.ACTION_QS_LONG_PRESS, getTileSpec());
         mHost.startActivityDismissingKeyguard(getLongClickIntent());
     }
 

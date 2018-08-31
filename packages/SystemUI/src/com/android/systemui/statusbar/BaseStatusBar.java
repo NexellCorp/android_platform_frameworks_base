@@ -84,8 +84,8 @@ import android.widget.RemoteViews;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.messages.SystemMessageProto.SystemMessage;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.statusbar.StatusBarIcon;
@@ -1087,7 +1087,7 @@ public abstract class BaseStatusBar extends SystemUI implements
             final int appUidF = appUid;
             settingsButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
-                    MetricsLogger.action(mContext, MetricsEvent.ACTION_NOTE_INFO);
+                    // MetricsLogger.action(mContext, MetricsEvent.ACTION_NOTE_INFO);
                     guts.resetFalsingCheck();
                     startAppNotificationSettingsActivity(pkg, appUidF);
                 }
@@ -1169,7 +1169,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                     return false;
                 }
 
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_NOTE_CONTROLS);
+                // MetricsLogger.action(mContext, MetricsEvent.ACTION_NOTE_CONTROLS);
 
                 // ensure that it's laid but not visible until actually laid out
                 guts.setVisibility(View.INVISIBLE);
@@ -2120,8 +2120,8 @@ public abstract class BaseStatusBar extends SystemUI implements
                 int notificationLoad = mNotificationData.getActiveNotifications().size();
                 if (pinnedHeadsUp && isPanelFullyCollapsed())  {
                     notificationLoad = 1;
-                } else {
-                    MetricsLogger.histogram(mContext, "note_load", notificationLoad);
+                // } else {
+                //     MetricsLogger.histogram(mContext, "note_load", notificationLoad);
                 }
                 mBarService.onPanelRevealed(clearNotificationEffects, notificationLoad);
             } else {

@@ -23,7 +23,7 @@ import android.content.res.Configuration;
 import android.provider.Settings;
 import android.widget.Switch;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
@@ -75,7 +75,7 @@ public class RotationLockTile extends QSTile<QSTile.BooleanState> {
     @Override
     protected void handleClick() {
         if (mController == null) return;
-        MetricsLogger.action(mContext, getMetricsCategory(), !mState.value);
+        // MetricsLogger.action(mContext, getMetricsCategory(), !mState.value);
         final boolean newState = !mState.value;
         mController.setRotationLocked(!newState);
         refreshState(newState);

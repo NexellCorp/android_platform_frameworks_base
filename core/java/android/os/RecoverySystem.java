@@ -47,7 +47,7 @@ import java.util.Locale;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 
 import sun.security.pkcs.PKCS7;
 import sun.security.pkcs.SignerInfo;
@@ -776,21 +776,21 @@ public class RecoverySystem {
             }
 
             // Don't report data to tron if corresponding entry isn't found in last_install.
-            if (timeTotal != -1) {
-                MetricsLogger.histogram(context, "ota_time_total", timeTotal);
-            }
-            if (uncryptTime != -1) {
-                MetricsLogger.histogram(context, "ota_uncrypt_time", uncryptTime);
-            }
-            if (sourceVersion != -1) {
-                MetricsLogger.histogram(context, "ota_source_version", sourceVersion);
-            }
-            if (bytesWrittenInMiB != -1) {
-                MetricsLogger.histogram(context, "ota_written_in_MiBs", bytesWrittenInMiB);
-            }
-            if (bytesStashedInMiB != -1) {
-                MetricsLogger.histogram(context, "ota_stashed_in_MiBs", bytesStashedInMiB);
-            }
+            // if (timeTotal != -1) {
+            //     MetricsLogger.histogram(context, "ota_time_total", timeTotal);
+            // }
+            // if (uncryptTime != -1) {
+            //     MetricsLogger.histogram(context, "ota_uncrypt_time", uncryptTime);
+            // }
+            // if (sourceVersion != -1) {
+            //     MetricsLogger.histogram(context, "ota_source_version", sourceVersion);
+            // }
+            // if (bytesWrittenInMiB != -1) {
+            //     MetricsLogger.histogram(context, "ota_written_in_MiBs", bytesWrittenInMiB);
+            // }
+            // if (bytesStashedInMiB != -1) {
+            //     MetricsLogger.histogram(context, "ota_stashed_in_MiBs", bytesStashedInMiB);
+            // }
 
         } catch (IOException e) {
             Log.e(TAG, "Failed to read lines in last_install", e);

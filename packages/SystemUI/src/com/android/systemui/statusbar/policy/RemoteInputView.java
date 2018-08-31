@@ -49,8 +49,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto;
 import com.android.systemui.Interpolators;
 import com.android.systemui.R;
 import com.android.systemui.statusbar.ExpandableView;
@@ -156,14 +156,14 @@ public class RemoteInputView extends LinearLayout implements View.OnClickListene
                 mEntry.notification.getPackageName(),
                 mEntry.notification.getUser().getIdentifier());
 
-        MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_REMOTE_INPUT_SEND,
-                mEntry.notification.getPackageName());
+        // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_REMOTE_INPUT_SEND,
+        //         mEntry.notification.getPackageName());
         try {
             mPendingIntent.send(mContext, 0, fillInIntent);
         } catch (PendingIntent.CanceledException e) {
             Log.i(TAG, "Unable to send remote input result", e);
-            MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_REMOTE_INPUT_FAIL,
-                    mEntry.notification.getPackageName());
+            // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_REMOTE_INPUT_FAIL,
+            //         mEntry.notification.getPackageName());
         }
     }
 
@@ -217,8 +217,8 @@ public class RemoteInputView extends LinearLayout implements View.OnClickListene
                 setVisibility(INVISIBLE);
             }
         }
-        MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_REMOTE_INPUT_CLOSE,
-                mEntry.notification.getPackageName());
+        // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_REMOTE_INPUT_CLOSE,
+        //         mEntry.notification.getPackageName());
     }
 
     @Override
@@ -263,8 +263,8 @@ public class RemoteInputView extends LinearLayout implements View.OnClickListene
     }
 
     public void focus() {
-        MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_REMOTE_INPUT_OPEN,
-                mEntry.notification.getPackageName());
+        // MetricsLogger.action(mContext, MetricsProto.MetricsEvent.ACTION_REMOTE_INPUT_OPEN,
+        //         mEntry.notification.getPackageName());
 
         setVisibility(VISIBLE);
         mController.addRemoteInput(mEntry, mToken);

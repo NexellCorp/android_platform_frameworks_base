@@ -46,7 +46,7 @@ import android.os.UserHandle;
 import android.os.UserManager;
 import android.util.Slog;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.server.SystemService;
 
 import org.json.JSONArray;
@@ -196,7 +196,7 @@ public class FingerprintService extends SystemService implements IBinder.DeathRe
     @Override
     public void binderDied() {
         Slog.v(TAG, "fingerprintd died");
-        MetricsLogger.count(mContext, "fingerprintd_died", 1);
+        // MetricsLogger.count(mContext, "fingerprintd_died", 1);
         mDaemon = null;
         mCurrentUserId = UserHandle.USER_CURRENT;
         handleError(mHalDeviceId, FingerprintManager.FINGERPRINT_ERROR_HW_UNAVAILABLE);
@@ -215,7 +215,7 @@ public class FingerprintService extends SystemService implements IBinder.DeathRe
                         updateActiveGroup(ActivityManager.getCurrentUser(), null);
                     } else {
                         Slog.w(TAG, "Failed to open Fingerprint HAL!");
-                        MetricsLogger.count(mContext, "fingerprintd_openhal_error", 1);
+                        // MetricsLogger.count(mContext, "fingerprintd_openhal_error", 1);
                         mDaemon = null;
                     }
                 } catch (RemoteException e) {
@@ -821,7 +821,7 @@ public class FingerprintService extends SystemService implements IBinder.DeathRe
                         return;
                     }
 
-                    MetricsLogger.histogram(mContext, "fingerprint_token", opId != 0L ? 1 : 0);
+                    // MetricsLogger.histogram(mContext, "fingerprint_token", opId != 0L ? 1 : 0);
 
                     // Get performance stats object for this user.
                     HashMap<Integer, PerformanceStats> pmap

@@ -87,7 +87,7 @@ import android.util.SparseIntArray;
 
 import com.android.internal.R;
 import com.android.internal.annotations.GuardedBy;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.Preconditions;
 import com.android.internal.widget.LockPatternUtils;
@@ -246,8 +246,8 @@ final class UserController {
                         && !mService.mSystemServiceManager.isRuntimeRestarted()
                         && !isFirstBootOrUpgrade()) {
                     int uptimeSeconds = (int)(SystemClock.elapsedRealtime() / 1000);
-                    MetricsLogger.histogram(mService.mContext, "framework_locked_boot_completed",
-                            uptimeSeconds);
+                    // MetricsLogger.histogram(mService.mContext, "framework_locked_boot_completed",
+                    //         uptimeSeconds);
                 }
                 Intent intent = new Intent(Intent.ACTION_LOCKED_BOOT_COMPLETED, null);
                 intent.putExtra(Intent.EXTRA_USER_HANDLE, userId);
@@ -425,8 +425,8 @@ final class UserController {
                     && !mService.mSystemServiceManager.isRuntimeRestarted()
                     && !isFirstBootOrUpgrade()) {
                 int uptimeSeconds = (int) (SystemClock.elapsedRealtime() / 1000);
-                MetricsLogger
-                        .histogram(mService.mContext, "framework_boot_completed", uptimeSeconds);
+                // MetricsLogger
+                //         .histogram(mService.mContext, "framework_boot_completed", uptimeSeconds);
             }
             final Intent bootIntent = new Intent(Intent.ACTION_BOOT_COMPLETED, null);
             bootIntent.putExtra(Intent.EXTRA_USER_HANDLE, userId);

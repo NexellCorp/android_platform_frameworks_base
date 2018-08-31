@@ -23,8 +23,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.settingslib.RestrictedLockUtils;
 import com.android.systemui.R;
 import com.android.systemui.qs.PseudoGridView;
@@ -98,7 +98,7 @@ public class UserDetailView extends PseudoGridView {
                         mContext, tag.enforcedAdmin);
                 mController.startActivity(intent);
             } else if (tag.isSwitchToEnabled) {
-                MetricsLogger.action(mContext, MetricsEvent.QS_SWITCH_USER);
+                // MetricsLogger.action(mContext, MetricsEvent.QS_SWITCH_USER);
                 switchTo(tag);
             }
         }

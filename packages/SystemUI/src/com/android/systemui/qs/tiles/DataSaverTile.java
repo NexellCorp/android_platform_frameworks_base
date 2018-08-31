@@ -18,7 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.widget.Switch;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.Prefs;
 import com.android.systemui.R;
@@ -82,7 +82,7 @@ public class DataSaverTile extends QSTile<QSTile.BooleanState> implements
 
     private void toggleDataSaver() {
         mState.value = !mDataSaverController.isDataSaverEnabled();
-        MetricsLogger.action(mContext, getMetricsCategory(), mState.value);
+        // MetricsLogger.action(mContext, getMetricsCategory(), mState.value);
         mDataSaverController.setDataSaverEnabled(mState.value);
         refreshState(mState.value);
     }

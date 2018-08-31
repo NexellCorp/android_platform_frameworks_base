@@ -39,7 +39,7 @@ import android.util.Log;
 import android.view.IWindowManager;
 import android.view.WindowManager;
 import android.view.WindowManagerGlobal;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.systemui.R;
 import com.android.systemui.qs.QSTile;
@@ -271,7 +271,7 @@ public class CustomTile extends QSTile<QSTile.State> implements TileChangeListen
         } catch (RemoteException e) {
             // Called through wrapper, won't happen here.
         }
-        MetricsLogger.action(mContext, getMetricsCategory(), mComponent.getPackageName());
+        // MetricsLogger.action(mContext, getMetricsCategory(), mComponent.getPackageName());
     }
 
     @Override

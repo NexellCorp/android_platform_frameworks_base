@@ -33,7 +33,7 @@ import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.util.Log;
 import android.util.Slog;
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.R;
 import com.android.systemui.SystemUI;
 import com.android.systemui.statusbar.phone.PhoneStatusBar;
@@ -315,9 +315,9 @@ public class PowerUI extends SystemUI {
 
             float avg = sum / mNumTemps;
             Slog.i(TAG, "avg=" + avg + ",min=" + min + ",max=" + max);
-            MetricsLogger.histogram(mContext, "device_skin_temp_avg", (int) avg);
-            MetricsLogger.histogram(mContext, "device_skin_temp_min", (int) min);
-            MetricsLogger.histogram(mContext, "device_skin_temp_max", (int) max);
+            // MetricsLogger.histogram(mContext, "device_skin_temp_avg", (int) avg);
+            // MetricsLogger.histogram(mContext, "device_skin_temp_min", (int) min);
+            // MetricsLogger.histogram(mContext, "device_skin_temp_max", (int) max);
         }
         setNextLogTime();
         mNumTemps = 0;

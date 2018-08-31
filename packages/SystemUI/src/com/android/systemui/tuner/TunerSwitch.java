@@ -6,7 +6,7 @@ import android.provider.Settings;
 import android.support.v14.preference.SwitchPreference;
 import android.util.AttributeSet;
 
-import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsLogger;
 import com.android.systemui.R;
 import com.android.systemui.tuner.TunerService.Tunable;
 
@@ -43,9 +43,9 @@ public class TunerSwitch extends SwitchPreference implements Tunable {
     @Override
     protected void onClick() {
         super.onClick();
-        if (mAction != -1) {
-            MetricsLogger.action(getContext(), mAction, isChecked());
-        }
+        // if (mAction != -1) {
+        //     MetricsLogger.action(getContext(), mAction, isChecked());
+        // }
     }
 
     @Override

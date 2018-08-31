@@ -65,8 +65,8 @@ import android.view.WindowManagerPolicy;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 import com.android.internal.policy.IKeyguardDrawnCallback;
 import com.android.internal.policy.IKeyguardExitCallback;
 import com.android.internal.policy.IKeyguardStateCallback;
@@ -500,8 +500,8 @@ public class KeyguardViewMediator extends SystemUI {
         private void onSimAbsentLocked() {
             if (isSecure() && mLockWhenSimRemoved && !mShuttingDown) {
                 mLockWhenSimRemoved = false;
-                MetricsLogger.action(mContext,
-                        MetricsEvent.ACTION_LOCK_BECAUSE_SIM_REMOVED, mShowing);
+                // MetricsLogger.action(mContext,
+                //         MetricsEvent.ACTION_LOCK_BECAUSE_SIM_REMOVED, mShowing);
                 if (!mShowing) {
                     Log.i(TAG, "SIM removed, showing keyguard");
                     doKeyguardLocked(null);

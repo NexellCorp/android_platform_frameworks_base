@@ -35,8 +35,8 @@ import android.service.vr.IVrStateCallbacks;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.android.internal.logging.MetricsLogger;
-import com.android.internal.logging.MetricsProto.MetricsEvent;
+// import com.android.internal.logging.MetricsLogger;
+// import com.android.internal.logging.MetricsProto.MetricsEvent;
 
 import java.util.ArrayList;
 
@@ -359,9 +359,9 @@ public class BrightnessController implements ToggleSlider.Listener {
 
         if (mIsVrModeEnabled) {
             final int val = value + mMinimumBacklightForVr;
-            if (stopTracking) {
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_BRIGHTNESS_FOR_VR, val);
-            }
+            // if (stopTracking) {
+            //     MetricsLogger.action(mContext, MetricsEvent.ACTION_BRIGHTNESS_FOR_VR, val);
+            // }
             setBrightness(val);
             if (!tracking) {
                 AsyncTask.execute(new Runnable() {
@@ -374,9 +374,9 @@ public class BrightnessController implements ToggleSlider.Listener {
             }
         } else if (!mAutomatic) {
             final int val = value + mMinimumBacklight;
-            if (stopTracking) {
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_BRIGHTNESS, val);
-            }
+            // if (stopTracking) {
+            //     MetricsLogger.action(mContext, MetricsEvent.ACTION_BRIGHTNESS, val);
+            // }
             setBrightness(val);
             if (!tracking) {
                 AsyncTask.execute(new Runnable() {
@@ -389,9 +389,9 @@ public class BrightnessController implements ToggleSlider.Listener {
             }
         } else {
             final float adj = value / (BRIGHTNESS_ADJ_RESOLUTION / 2f) - 1;
-            if (stopTracking) {
-                MetricsLogger.action(mContext, MetricsEvent.ACTION_BRIGHTNESS_AUTO, value);
-            }
+            // if (stopTracking) {
+            //     MetricsLogger.action(mContext, MetricsEvent.ACTION_BRIGHTNESS_AUTO, value);
+            // }
             setBrightnessAdj(adj);
             if (!tracking) {
                 AsyncTask.execute(new Runnable() {
