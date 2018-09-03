@@ -952,7 +952,7 @@ public final class SystemServer {
                 // Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
             }
 
-            mSystemServiceManager.startService(DropBoxManagerService.class);
+            // mSystemServiceManager.startService(DropBoxManagerService.class);
 
             if (!disableNonCoreServices && context.getResources().getBoolean(
                         R.bool.config_enableWallpaperService)) {
