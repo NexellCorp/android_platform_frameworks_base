@@ -743,7 +743,7 @@ public class ZygoteInit {
             // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "ZygotePreload");
             // EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_START,
             //     SystemClock.uptimeMillis());
-            preload();
+            // preload();
             // EventLog.writeEvent(LOG_BOOT_PROGRESS_PRELOAD_END,
             //     SystemClock.uptimeMillis());
             // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
@@ -753,7 +753,7 @@ public class ZygoteInit {
 
             // Do an initial gc to clean up after startup
             // Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PostZygoteInitGC");
-            gcAndFinalize();
+            // gcAndFinalize();
             // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
 
             // Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
@@ -770,6 +770,8 @@ public class ZygoteInit {
             if (startSystemServer) {
                 startSystemServer(abiList, socketName);
             }
+
+            preload();
 
             Log.i(TAG, "Accepting command socket connections");
             runSelectLoop(abiList);
