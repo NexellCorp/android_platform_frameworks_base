@@ -183,7 +183,9 @@ public class EventLog {
      * @param value A value to log
      * @return The number of bytes written
      */
-    public static native int writeEvent(int tag, int value);
+    public static int writeEvent(int tag, int value) {
+        return 0;
+    }
 
     /**
      * Record an event log message.
@@ -191,7 +193,9 @@ public class EventLog {
      * @param value A value to log
      * @return The number of bytes written
      */
-    public static native int writeEvent(int tag, long value);
+    public static int writeEvent(int tag, long value) {
+        return 0;
+    }
 
     /**
      * Record an event log message.
@@ -199,7 +203,9 @@ public class EventLog {
      * @param value A value to log
      * @return The number of bytes written
      */
-    public static native int writeEvent(int tag, float value);
+    public static int writeEvent(int tag, float value) {
+        return 0;
+    }
 
     /**
      * Record an event log message.
@@ -207,7 +213,9 @@ public class EventLog {
      * @param str A value to log
      * @return The number of bytes written
      */
-    public static native int writeEvent(int tag, String str);
+    public static int writeEvent(int tag, String str) {
+        return 0;
+    }
 
     /**
      * Record an event log message.
@@ -215,7 +223,9 @@ public class EventLog {
      * @param list A list of values to log
      * @return The number of bytes written
      */
-    public static native int writeEvent(int tag, Object... list);
+    public static int writeEvent(int tag, Object... list) {
+        return 0;
+    }
 
     /**
      * Read events from the log, filtered by type.
@@ -223,8 +233,9 @@ public class EventLog {
      * @param output container to add events into
      * @throws IOException if something goes wrong reading events
      */
-    public static native void readEvents(int[] tags, Collection<Event> output)
-            throws IOException;
+    public static void readEvents(int[] tags, Collection<Event> output)
+            throws IOException {
+    }
 
     /**
      * Get the name associated with an event type tag code.

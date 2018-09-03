@@ -94,7 +94,6 @@ LOCAL_SRC_FILES:= \
     android_nio_utils.cpp \
     android_util_AssetManager.cpp \
     android_util_Binder.cpp \
-    android_util_EventLog.cpp \
     android_util_MemoryIntArray.cpp \
     android_util_Log.cpp \
     android_util_PathParser.cpp \

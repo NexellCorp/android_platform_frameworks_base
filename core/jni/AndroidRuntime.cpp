@@ -111,7 +111,6 @@ namespace android {
  */
 extern int register_android_app_admin_SecurityLog(JNIEnv* env);
 extern int register_android_content_AssetManager(JNIEnv* env);
-extern int register_android_util_EventLog(JNIEnv* env);
 extern int register_android_util_Log(JNIEnv* env);
 extern int register_android_util_MemoryIntArray(JNIEnv* env);
 extern int register_android_util_PathParser(JNIEnv* env);
@@ -1263,7 +1262,6 @@ static int register_jni_procs(const RegJNIRec array[], size_t count, JNIEnv* env
 static const RegJNIRec gRegJNI[] = {
     REG_JNI(register_com_android_internal_os_RuntimeInit),
     REG_JNI(register_android_os_SystemClock),
-    REG_JNI(register_android_util_EventLog),
     REG_JNI(register_android_util_Log),
     REG_JNI(register_android_util_MemoryIntArray),
     REG_JNI(register_android_util_PathParser),
