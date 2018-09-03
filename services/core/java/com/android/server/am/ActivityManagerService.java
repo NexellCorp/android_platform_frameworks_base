@@ -2506,7 +2506,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     public void setUsageStatsManager(UsageStatsManagerInternal usageStatsManager) {
-        mUsageStatsService = usageStatsManager;
+        // mUsageStatsService = usageStatsManager;
     }
 
     public void startObservingNativeCrashes() {
@@ -13405,7 +13405,8 @@ public final class ActivityManagerService extends ActivityManagerNative
         synchronized (this) {
             // Only start up encryption-aware persistent apps; once user is
             // unlocked we'll come back around and start unaware apps
-            startPersistentApps(PackageManager.MATCH_DIRECT_BOOT_AWARE);
+            if (!mQuickBoot)
+                startPersistentApps(PackageManager.MATCH_DIRECT_BOOT_AWARE);
 
             // Start up initial activity.
             mBooting = true;
@@ -19066,8 +19067,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                 newConfig.seq = mConfigurationSeq;
                 mConfiguration = newConfig;
                 Slog.i(TAG, "Config changes=" + Integer.toHexString(changes) + " " + newConfig);
-                mUsageStatsService.reportConfigurationChange(newConfig,
-                        mUserController.getCurrentUserIdLocked());
+                if (mUsageStatsService != null)
+                    mUsageStatsService.reportConfigurationChange(newConfig,
+                            mUserController.getCurrentUserIdLocked());
                 //mUsageStatsService.noteStartConfig(newConfig);
 
                 final Configuration configCopy = new Configuration(mConfiguration);
@@ -20750,6 +20752,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     private void maybeUpdateProviderUsageStatsLocked(ProcessRecord app, String providerPkgName,
             String authority) {
         if (app == null) return;
+        if (mUsageStatsService == null) return;
         if (app.curProcState <= ActivityManager.PROCESS_STATE_IMPORTANT_FOREGROUND) {
             UserState userState = mUserController.getStartedUserStateLocked(app.userId);
             if (userState == null) return;
@@ -20796,16 +20799,18 @@ public final class ActivityManagerService extends ActivityManagerNative
                     && app.curProcState <= ActivityManager.PROCESS_STATE_IMPORTANT_FOREGROUND;
             app.fgInteractionTime = 0;
         }
-        if (isInteraction && (!app.reportedInteraction
-                || (nowElapsed-app.interactionEventTime) > USAGE_STATS_INTERACTION_INTERVAL)) {
-            app.interactionEventTime = nowElapsed;
-            String[] packages = app.getPackageList();
-            if (packages != null) {
-                for (int i = 0; i < packages.length; i++) {
-                    mUsageStatsService.reportEvent(packages[i], app.userId,
-                            UsageEvents.Event.SYSTEM_INTERACTION);
+        if (mUsageStatsService != null) {
+            if (isInteraction && (!app.reportedInteraction
+                        || (nowElapsed-app.interactionEventTime) > USAGE_STATS_INTERACTION_INTERVAL)) {
+                app.interactionEventTime = nowElapsed;
+                String[] packages = app.getPackageList();
+                if (packages != null) {
+                    for (int i = 0; i < packages.length; i++) {
+                        mUsageStatsService.reportEvent(packages[i], app.userId,
+                                UsageEvents.Event.SYSTEM_INTERACTION);
+                    }
                 }
-            }
+                        }
         }
         app.reportedInteraction = isInteraction;
         if (!isInteraction) {
