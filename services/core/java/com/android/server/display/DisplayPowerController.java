@@ -121,7 +121,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
     private final IBatteryStats mBatteryStats;
 
     // The sensor manager.
-    private final SensorManager mSensorManager;
+    // private final SensorManager mSensorManager;
 
     // The window manager policy.
     private final WindowManagerPolicy mWindowManagerPolicy;
@@ -265,7 +265,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
         mCallbacks = callbacks;
 
         mBatteryStats = BatteryStatsService.getService();
-        mSensorManager = sensorManager;
+        // mSensorManager = sensorManager;
         mWindowManagerPolicy = LocalServices.getService(WindowManagerPolicy.class);
         mBlanker = blanker;
         mContext = context;
@@ -400,13 +400,13 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
         mColorFadeFadesConfig = resources.getBoolean(
                 com.android.internal.R.bool.config_animateScreenLights);
 
-        if (!DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT) {
-            mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
-            if (mProximitySensor != null) {
-                mProximityThreshold = Math.min(mProximitySensor.getMaximumRange(),
-                        TYPICAL_PROXIMITY_THRESHOLD);
-            }
-        }
+        // if (!DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT) {
+        //     mProximitySensor = mSensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        //     if (mProximitySensor != null) {
+        //         mProximityThreshold = Math.min(mProximitySensor.getMaximumRange(),
+        //                 TYPICAL_PROXIMITY_THRESHOLD);
+        //     }
+        // }
 
     }
 
@@ -1022,8 +1022,8 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
                 // Register the listener.
                 // Proximity sensor state already cleared initially.
                 mProximitySensorEnabled = true;
-                mSensorManager.registerListener(mProximitySensorListener, mProximitySensor,
-                        SensorManager.SENSOR_DELAY_NORMAL, mHandler);
+                // mSensorManager.registerListener(mProximitySensorListener, mProximitySensor,
+                //         SensorManager.SENSOR_DELAY_NORMAL, mHandler);
             }
         } else {
             if (mProximitySensorEnabled) {
@@ -1033,7 +1033,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
                 mProximity = PROXIMITY_UNKNOWN;
                 mPendingProximity = PROXIMITY_UNKNOWN;
                 mHandler.removeMessages(MSG_PROXIMITY_SENSOR_DEBOUNCED);
-                mSensorManager.unregisterListener(mProximitySensorListener);
+                // mSensorManager.unregisterListener(mProximitySensorListener);
                 clearPendingProximityDebounceTime(); // release wake lock (must be last)
             }
         }
