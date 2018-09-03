@@ -1909,6 +1909,7 @@ public class AudioManager {
 
         IAudioService service = getService();
         try {
+            if (service == null) return;
             service.playSoundEffect(effectType);
         } catch (RemoteException e) {
             throw e.rethrowFromSystemServer();
