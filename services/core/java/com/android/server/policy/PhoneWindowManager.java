@@ -7037,9 +7037,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     /** {@inheritDoc} */
     @Override
     public void systemReady() {
-        mKeyguardDelegate = new KeyguardServiceDelegate(mContext,
-                this::onKeyguardShowingStateChanged);
-        mKeyguardDelegate.onSystemReady();
+        // mKeyguardDelegate = new KeyguardServiceDelegate(mContext,
+        //         this::onKeyguardShowingStateChanged);
+        // mKeyguardDelegate.onSystemReady();
 
         readCameraLensCoverState();
         updateUiMode();
