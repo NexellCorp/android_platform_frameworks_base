@@ -341,7 +341,6 @@ android.app.ActivityThread$ApplicationThread
 android.app.ActivityThread$BindServiceData
 android.app.ActivityThread$ContextCleanupInfo
 android.app.ActivityThread$CreateServiceData
-android.app.ActivityThread$DropBoxReporter
 android.app.ActivityThread$EventLoggingReporter
 android.app.ActivityThread$GcIdler
 android.app.ActivityThread$H
@@ -1621,7 +1620,6 @@ android.os.DeadSystemException
 android.os.Debug
 android.os.Debug$MemoryInfo
 android.os.Debug$MemoryInfo$1
-android.os.DropBoxManager
 android.os.Environment
 android.os.Environment$UserEnvironment
 android.os.FileObserver$ObserverThread
