@@ -183,8 +183,21 @@ static const char ABI_LIST_PROPERTY[] = "ro.product.cpu.abilist32";
 static const char ZYGOTE_NICE_NAME[] = "zygote";
 #endif
 
+#include <fcntl.h>
+#include <unistd.h>
+
 int main(int argc, char* const argv[])
 {
+    int fdDmesg = open("/dev/kmsg", O_WRONLY);
+    if (fdDmesg > 0) {
+        static const char _message[] = { '<', '0', '3', '>',
+            'a', 'p', 'p', '_', 'p', 'r', 'o', 'c', 'e', 's', 's', ' ',
+            's', 't', 'a', 'r', 't',
+            '\n' };
+        write(fdDmesg, _message, sizeof(_message));
+        close(fdDmesg);
+    }
+
     if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0) < 0) {
         // Older kernels don't understand PR_SET_NO_NEW_PRIVS and return
         // EINVAL. Don't die on such kernels.
