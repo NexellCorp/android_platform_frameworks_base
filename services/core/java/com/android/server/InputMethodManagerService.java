@@ -1074,44 +1074,44 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
     }
 
     public void systemRunning(StatusBarManagerService statusBar) {
-        synchronized (mMethodMap) {
-            if (DEBUG) {
-                Slog.d(TAG, "--- systemReady");
-            }
-            if (!mSystemReady) {
-                mSystemReady = true;
-                final int currentUserId = mSettings.getCurrentUserId();
-                mSettings.switchCurrentUser(currentUserId,
-                        !mUserManager.isUserUnlockingOrUnlocked(currentUserId));
-                mKeyguardManager = mContext.getSystemService(KeyguardManager.class);
-                mNotificationManager = mContext.getSystemService(NotificationManager.class);
-                mStatusBar = statusBar;
-                if (mStatusBar != null) {
-                    mStatusBar.setIconVisibility(mSlotIme, false);
-                }
-                updateSystemUiLocked(mCurToken, mImeWindowVis, mBackDisposition);
-                mShowOngoingImeSwitcherForPhones = mRes.getBoolean(
-                        com.android.internal.R.bool.show_ongoing_ime_switcher);
-                if (mShowOngoingImeSwitcherForPhones) {
-                    mWindowManagerInternal.setOnHardKeyboardStatusChangeListener(
-                            mHardKeyboardListener);
-                }
-                buildInputMethodListLocked(!mImeSelectedOnBoot /* resetDefaultEnabledIme */);
-                if (!mImeSelectedOnBoot) {
-                    Slog.w(TAG, "Reset the default IME as \"Resource\" is ready here.");
-                    resetStateIfCurrentLocaleChangedLocked();
-                    InputMethodUtils.setNonSelectedSystemImesDisabledUntilUsed(mIPackageManager,
-                            mSettings.getEnabledInputMethodListLocked(),
-                            mSettings.getCurrentUserId(), mContext.getBasePackageName());
-                }
-                mLastSystemLocales = mRes.getConfiguration().getLocales();
-                try {
-                    startInputInnerLocked();
-                } catch (RuntimeException e) {
-                    Slog.w(TAG, "Unexpected exception", e);
-                }
-            }
-        }
+        // synchronized (mMethodMap) {
+        //     if (DEBUG) {
+        //         Slog.d(TAG, "--- systemReady");
+        //     }
+        //     if (!mSystemReady) {
+        //         mSystemReady = true;
+        //         final int currentUserId = mSettings.getCurrentUserId();
+        //         mSettings.switchCurrentUser(currentUserId,
+        //                 !mUserManager.isUserUnlockingOrUnlocked(currentUserId));
+        //         mKeyguardManager = mContext.getSystemService(KeyguardManager.class);
+        //         mNotificationManager = mContext.getSystemService(NotificationManager.class);
+        //         mStatusBar = statusBar;
+        //         if (mStatusBar != null) {
+        //             mStatusBar.setIconVisibility(mSlotIme, false);
+        //         }
+        //         updateSystemUiLocked(mCurToken, mImeWindowVis, mBackDisposition);
+        //         mShowOngoingImeSwitcherForPhones = mRes.getBoolean(
+        //                 com.android.internal.R.bool.show_ongoing_ime_switcher);
+        //         if (mShowOngoingImeSwitcherForPhones) {
+        //             mWindowManagerInternal.setOnHardKeyboardStatusChangeListener(
+        //                     mHardKeyboardListener);
+        //         }
+        //         buildInputMethodListLocked(!mImeSelectedOnBoot #<{(| resetDefaultEnabledIme |)}>#);
+        //         if (!mImeSelectedOnBoot) {
+        //             Slog.w(TAG, "Reset the default IME as \"Resource\" is ready here.");
+        //             resetStateIfCurrentLocaleChangedLocked();
+        //             InputMethodUtils.setNonSelectedSystemImesDisabledUntilUsed(mIPackageManager,
+        //                     mSettings.getEnabledInputMethodListLocked(),
+        //                     mSettings.getCurrentUserId(), mContext.getBasePackageName());
+        //         }
+        //         mLastSystemLocales = mRes.getConfiguration().getLocales();
+        //         try {
+        //             startInputInnerLocked();
+        //         } catch (RuntimeException e) {
+        //             Slog.w(TAG, "Unexpected exception", e);
+        //         }
+        //     }
+        // }
     }
 
     // ---------------------------------------------------------------------------------------
