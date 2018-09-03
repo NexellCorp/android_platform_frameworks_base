@@ -790,13 +790,13 @@ public final class JobSchedulerService extends com.android.server.SystemService
 
         // Create the controllers.
         mControllers = new ArrayList<StateController>();
-        mControllers.add(ConnectivityController.get(this));
-        mControllers.add(TimeController.get(this));
-        mControllers.add(IdleController.get(this));
-        mControllers.add(BatteryController.get(this));
-        mControllers.add(AppIdleController.get(this));
-        mControllers.add(ContentObserverController.get(this));
-        mControllers.add(DeviceIdleJobsController.get(this));
+        // mControllers.add(ConnectivityController.get(this));
+        // mControllers.add(TimeController.get(this));
+        // mControllers.add(IdleController.get(this));
+        // mControllers.add(BatteryController.get(this));
+        // mControllers.add(AppIdleController.get(this));
+        // mControllers.add(ContentObserverController.get(this));
+        // mControllers.add(DeviceIdleJobsController.get(this));
     }
 
     @Override
