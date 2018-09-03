@@ -121,50 +121,50 @@ public abstract class PreBootBroadcaster extends IIntentReceiver.Stub {
     private Handler mHandler = new Handler(UiThread.get().getLooper(), null, true) {
         @Override
         public void handleMessage(Message msg) {
-            final Context context = mService.mContext;
-            final NotificationManager notifManager = context
-                    .getSystemService(NotificationManager.class);
-            final int max = msg.arg1;
-            final int index = msg.arg2;
-
-            switch (msg.what) {
-                case MSG_SHOW:
-                    final CharSequence title = context
-                            .getText(R.string.android_upgrading_notification_title);
-
-                    final Intent intent = new Intent();
-                    intent.setClassName("com.android.settings",
-                            "com.android.settings.HelpTrampoline");
-                    intent.putExtra(Intent.EXTRA_TEXT, "help_url_upgrading");
-
-                    final PendingIntent contentIntent;
-                    if (context.getPackageManager().resolveActivity(intent, 0) != null) {
-                        contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
-                    } else {
-                        contentIntent = null;
-                    }
-
-                    final Notification notif = new Notification.Builder(mService.mContext)
-                            .setSmallIcon(R.drawable.stat_sys_adb)
-                            .setWhen(0)
-                            .setOngoing(true)
-                            .setTicker(title)
-                            .setDefaults(0)
-                            .setPriority(Notification.PRIORITY_MAX)
-                            .setColor(context.getColor(
-                                    com.android.internal.R.color.system_notification_accent_color))
-                            .setContentTitle(title)
-                            .setContentIntent(contentIntent)
-                            .setVisibility(Notification.VISIBILITY_PUBLIC)
-                            .setProgress(max, index, false)
-                            .build();
-                    notifManager.notifyAsUser(TAG, 0, notif, UserHandle.of(mUserId));
-                    break;
-
-                case MSG_HIDE:
-                    notifManager.cancelAsUser(TAG, 0, UserHandle.of(mUserId));
-                    break;
-            }
+        //     final Context context = mService.mContext;
+        //     final NotificationManager notifManager = context
+        //             .getSystemService(NotificationManager.class);
+        //     final int max = msg.arg1;
+        //     final int index = msg.arg2;
+        //
+        //     switch (msg.what) {
+        //         case MSG_SHOW:
+        //             final CharSequence title = context
+        //                     .getText(R.string.android_upgrading_notification_title);
+        //
+        //             final Intent intent = new Intent();
+        //             intent.setClassName("com.android.settings",
+        //                     "com.android.settings.HelpTrampoline");
+        //             intent.putExtra(Intent.EXTRA_TEXT, "help_url_upgrading");
+        //
+        //             final PendingIntent contentIntent;
+        //             if (context.getPackageManager().resolveActivity(intent, 0) != null) {
+        //                 contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        //             } else {
+        //                 contentIntent = null;
+        //             }
+        //
+        //             final Notification notif = new Notification.Builder(mService.mContext)
+        //                     .setSmallIcon(R.drawable.stat_sys_adb)
+        //                     .setWhen(0)
+        //                     .setOngoing(true)
+        //                     .setTicker(title)
+        //                     .setDefaults(0)
+        //                     .setPriority(Notification.PRIORITY_MAX)
+        //                     .setColor(context.getColor(
+        //                             com.android.internal.R.color.system_notification_accent_color))
+        //                     .setContentTitle(title)
+        //                     .setContentIntent(contentIntent)
+        //                     .setVisibility(Notification.VISIBILITY_PUBLIC)
+        //                     .setProgress(max, index, false)
+        //                     .build();
+        //             notifManager.notifyAsUser(TAG, 0, notif, UserHandle.of(mUserId));
+        //             break;
+        //
+        //         case MSG_HIDE:
+        //             notifManager.cancelAsUser(TAG, 0, UserHandle.of(mUserId));
+        //             break;
+        //     }
         }
     };
 
