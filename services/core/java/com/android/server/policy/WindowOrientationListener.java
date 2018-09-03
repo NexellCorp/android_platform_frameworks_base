@@ -52,7 +52,7 @@ public abstract class WindowOrientationListener {
     private static final int DEFAULT_BATCH_LATENCY = 100000;
 
     private Handler mHandler;
-    private SensorManager mSensorManager;
+    // private SensorManager mSensorManager;
     private boolean mEnabled;
     private int mRate;
     private String mSensorType;
@@ -86,22 +86,22 @@ public abstract class WindowOrientationListener {
      */
     private WindowOrientationListener(Context context, Handler handler, int rate) {
         mHandler = handler;
-        mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+        // mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
         mRate = rate;
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_DEVICE_ORIENTATION);
+        // mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_DEVICE_ORIENTATION);
 
         if (mSensor != null) {
             mOrientationJudge = new OrientationSensorJudge();
         }
 
-        if (mOrientationJudge == null) {
-            mSensor = mSensorManager.getDefaultSensor(USE_GRAVITY_SENSOR
-                    ? Sensor.TYPE_GRAVITY : Sensor.TYPE_ACCELEROMETER);
-            if (mSensor != null) {
-                // Create listener only if sensors do exist
-                mOrientationJudge = new AccelSensorJudge(context);
-            }
-        }
+        // if (mOrientationJudge == null) {
+        //     mSensor = mSensorManager.getDefaultSensor(USE_GRAVITY_SENSOR
+        //             ? Sensor.TYPE_GRAVITY : Sensor.TYPE_ACCELEROMETER);
+        //     if (mSensor != null) {
+        //         // Create listener only if sensors do exist
+        //         mOrientationJudge = new AccelSensorJudge(context);
+        //     }
+        // }
     }
 
     /**
@@ -119,12 +119,12 @@ public abstract class WindowOrientationListener {
                     Slog.d(TAG, "WindowOrientationListener enabled");
                 }
                 mOrientationJudge.resetLocked();
-                if (mSensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-                    mSensorManager.registerListener(
-                            mOrientationJudge, mSensor, mRate, DEFAULT_BATCH_LATENCY, mHandler);
-                } else {
-                    mSensorManager.registerListener(mOrientationJudge, mSensor, mRate, mHandler);
-                }
+                // if (mSensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+                //     mSensorManager.registerListener(
+                //             mOrientationJudge, mSensor, mRate, DEFAULT_BATCH_LATENCY, mHandler);
+                // } else {
+                //     mSensorManager.registerListener(mOrientationJudge, mSensor, mRate, mHandler);
+                // }
                 mEnabled = true;
             }
         }
@@ -143,7 +143,7 @@ public abstract class WindowOrientationListener {
                 if (LOG) {
                     Slog.d(TAG, "WindowOrientationListener disabled");
                 }
-                mSensorManager.unregisterListener(mOrientationJudge);
+                // mSensorManager.unregisterListener(mOrientationJudge);
                 mEnabled = false;
             }
         }

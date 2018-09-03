@@ -19,7 +19,7 @@ package com.android.server.policy;
 import android.os.Handler;
 import android.content.Context;
 import android.hardware.Sensor;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.hardware.TriggerEvent;
 import android.hardware.TriggerEventListener;
 
@@ -31,7 +31,7 @@ import java.io.PrintWriter;
 public abstract class WakeGestureListener {
     private static final String TAG = "WakeGestureListener";
 
-    private final SensorManager mSensorManager;
+    // private final SensorManager mSensorManager;
     private final Handler mHandler;
 
     private final Object mLock = new Object();
@@ -40,10 +40,10 @@ public abstract class WakeGestureListener {
     private Sensor mSensor;
 
     public WakeGestureListener(Context context, Handler handler) {
-        mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+        // mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
         mHandler = handler;
 
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_WAKE_GESTURE);
+        // mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_WAKE_GESTURE);
     }
 
     public abstract void onWakeUp();
@@ -58,7 +58,7 @@ public abstract class WakeGestureListener {
         synchronized (mLock) {
             if (mSensor != null && !mTriggerRequested) {
                 mTriggerRequested = true;
-                mSensorManager.requestTriggerSensor(mListener, mSensor);
+                // mSensorManager.requestTriggerSensor(mListener, mSensor);
             }
         }
     }
@@ -67,7 +67,7 @@ public abstract class WakeGestureListener {
         synchronized (mLock) {
             if (mSensor != null && mTriggerRequested) {
                 mTriggerRequested = false;
-                mSensorManager.cancelTriggerSensor(mListener, mSensor);
+                // mSensorManager.cancelTriggerSensor(mListener, mSensor);
             }
         }
     }
