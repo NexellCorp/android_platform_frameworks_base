@@ -2,7 +2,7 @@ package com.android.server.backup;
 
 
 import android.app.backup.BlobBackupHelper;
-import android.app.usage.UsageStatsManagerInternal;
+// import android.app.usage.UsageStatsManagerInternal;
 import android.content.Context;
 import android.os.UserHandle;
 import android.util.Log;
@@ -33,13 +33,13 @@ public class UsageStatsBackupHelper extends BlobBackupHelper {
     @Override
     protected byte[] getBackupPayload(String key) {
         if (KEY_USAGE_STATS.equals(key)) {
-            UsageStatsManagerInternal localUsageStatsManager =
-                    LocalServices.getService(UsageStatsManagerInternal.class);
+            // UsageStatsManagerInternal localUsageStatsManager =
+            //         LocalServices.getService(UsageStatsManagerInternal.class);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             DataOutputStream out  = new DataOutputStream(baos);
             try {
                 out.writeInt(UserHandle.USER_SYSTEM);
-                out.write(localUsageStatsManager.getBackupPayload(UserHandle.USER_SYSTEM, key));
+                // out.write(localUsageStatsManager.getBackupPayload(UserHandle.USER_SYSTEM, key));
             } catch (IOException ioe) {
                 if (DEBUG) Log.e(TAG, "Failed to backup Usage Stats", ioe);
                 baos.reset();
@@ -53,14 +53,14 @@ public class UsageStatsBackupHelper extends BlobBackupHelper {
     @Override
     protected void applyRestoredPayload(String key, byte[] payload)  {
         if (KEY_USAGE_STATS.equals(key)) {
-            UsageStatsManagerInternal localUsageStatsManager =
-                    LocalServices.getService(UsageStatsManagerInternal.class);
+            // UsageStatsManagerInternal localUsageStatsManager =
+            //         LocalServices.getService(UsageStatsManagerInternal.class);
             DataInputStream in = new DataInputStream(new ByteArrayInputStream(payload));
             try {
                 int user = in.readInt();
                 byte[] restoreData = new byte[payload.length - 4];
                 in.read(restoreData, 0, restoreData.length);
-                localUsageStatsManager.applyRestoredPayload(user, key, restoreData);
+                // localUsageStatsManager.applyRestoredPayload(user, key, restoreData);
             } catch (IOException ioe) {
                 if (DEBUG) Log.e(TAG, "Failed to restore Usage Stats", ioe);
             }

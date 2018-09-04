@@ -18,7 +18,7 @@ package android.app;
 
 import android.Manifest;
 import android.annotation.SystemApi;
-import android.app.usage.UsageStatsManager;
+// import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.media.AudioAttributes.AttributeUsage;
 import android.os.Binder;

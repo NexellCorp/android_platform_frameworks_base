@@ -27,9 +27,9 @@ import android.app.admin.DevicePolicyManager;
 import android.app.job.IJobScheduler;
 import android.app.job.JobScheduler;
 import android.app.trust.TrustManager;
-import android.app.usage.IUsageStatsManager;
+// import android.app.usage.IUsageStatsManager;
 import android.app.usage.NetworkStatsManager;
-import android.app.usage.UsageStatsManager;
+// import android.app.usage.UsageStatsManager;
 import android.appwidget.AppWidgetManager;
 import android.bluetooth.BluetoothManager;
 import android.content.ClipboardManager;
@@ -660,14 +660,14 @@ final class SystemServiceRegistry {
                 return new NetworkScoreManager(ctx);
             }});
 
-        registerService(Context.USAGE_STATS_SERVICE, UsageStatsManager.class,
-                new CachedServiceFetcher<UsageStatsManager>() {
-            @Override
-            public UsageStatsManager createService(ContextImpl ctx) {
-                IBinder iBinder = ServiceManager.getService(Context.USAGE_STATS_SERVICE);
-                IUsageStatsManager service = IUsageStatsManager.Stub.asInterface(iBinder);
-                return new UsageStatsManager(ctx.getOuterContext(), service);
-            }});
+        // registerService(Context.USAGE_STATS_SERVICE, UsageStatsManager.class,
+        //         new CachedServiceFetcher<UsageStatsManager>() {
+        //     @Override
+        //     public UsageStatsManager createService(ContextImpl ctx) {
+        //         IBinder iBinder = ServiceManager.getService(Context.USAGE_STATS_SERVICE);
+        //         IUsageStatsManager service = IUsageStatsManager.Stub.asInterface(iBinder);
+        //         return new UsageStatsManager(ctx.getOuterContext(), service);
+        //     }});
 
         registerService(Context.NETWORK_STATS_SERVICE, NetworkStatsManager.class,
                 new CachedServiceFetcher<NetworkStatsManager>() {

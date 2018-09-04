@@ -36,8 +36,8 @@ import android.app.IStopUserCallback;
 import android.app.ProfilerInfo;
 import android.app.UiAutomationConnection;
 import android.app.usage.ConfigurationStats;
-import android.app.usage.IUsageStatsManager;
-import android.app.usage.UsageStatsManager;
+// import android.app.usage.IUsageStatsManager;
+// import android.app.usage.UsageStatsManager;
 import android.content.ComponentCallbacks2;
 import android.content.ComponentName;
 import android.content.Context;
@@ -2355,14 +2355,15 @@ public class Am extends BaseCommand {
     }
 
     private List<Configuration> getRecentConfigurations(int days) {
-        IUsageStatsManager usm = IUsageStatsManager.Stub.asInterface(ServiceManager.getService(
-                    Context.USAGE_STATS_SERVICE));
+        // IUsageStatsManager usm = IUsageStatsManager.Stub.asInterface(ServiceManager.getService(
+        //             Context.USAGE_STATS_SERVICE));
         final long now = System.currentTimeMillis();
         final long nDaysAgo = now - (days * 24 * 60 * 60 * 1000);
-        try {
+        // try {
             @SuppressWarnings("unchecked")
-            ParceledListSlice<ConfigurationStats> configStatsSlice = usm.queryConfigurationStats(
-                    UsageStatsManager.INTERVAL_BEST, nDaysAgo, now, "com.android.shell");
+            // ParceledListSlice<ConfigurationStats> configStatsSlice = usm.queryConfigurationStats(
+            //         UsageStatsManager.INTERVAL_BEST, nDaysAgo, now, "com.android.shell");
+            ParceledListSlice<ConfigurationStats> configStatsSlice = null;
             if (configStatsSlice == null) {
                 return Collections.emptyList();
             }
@@ -2393,9 +2394,9 @@ public class Am extends BaseCommand {
             Collections.sort(configs, comparator);
             return configs;
 
-        } catch (RemoteException e) {
-            return Collections.emptyList();
-        }
+        // } catch (RemoteException e) {
+        //     return Collections.emptyList();
+        // }
     }
 
     private void runGetConfig() throws Exception {
@@ -2462,9 +2463,9 @@ public class Am extends BaseCommand {
         String packageName = nextArgRequired();
         String value = nextArgRequired();
 
-        IUsageStatsManager usm = IUsageStatsManager.Stub.asInterface(ServiceManager.getService(
-                Context.USAGE_STATS_SERVICE));
-        usm.setAppInactive(packageName, Boolean.parseBoolean(value), userId);
+        // IUsageStatsManager usm = IUsageStatsManager.Stub.asInterface(ServiceManager.getService(
+        //         Context.USAGE_STATS_SERVICE));
+        // usm.setAppInactive(packageName, Boolean.parseBoolean(value), userId);
     }
 
     private void runGetInactive() throws Exception {
@@ -2479,12 +2480,12 @@ public class Am extends BaseCommand {
                 return;
             }
         }
-        String packageName = nextArgRequired();
+        // String packageName = nextArgRequired();
 
-        IUsageStatsManager usm = IUsageStatsManager.Stub.asInterface(ServiceManager.getService(
-                Context.USAGE_STATS_SERVICE));
-        boolean isIdle = usm.isAppInactive(packageName, userId);
-        System.out.println("Idle=" + isIdle);
+        // IUsageStatsManager usm = IUsageStatsManager.Stub.asInterface(ServiceManager.getService(
+        //         Context.USAGE_STATS_SERVICE));
+        // boolean isIdle = usm.isAppInactive(packageName, userId);
+        // System.out.println("Idle=" + isIdle);
     }
 
     private void runSendTrimMemory() throws Exception {

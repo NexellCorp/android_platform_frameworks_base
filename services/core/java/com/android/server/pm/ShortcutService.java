@@ -24,7 +24,7 @@ import android.app.ActivityManagerInternal;
 import android.app.ActivityManagerNative;
 import android.app.AppGlobals;
 import android.app.IUidObserver;
-import android.app.usage.UsageStatsManagerInternal;
+// import android.app.usage.UsageStatsManagerInternal;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -294,7 +294,7 @@ public class ShortcutService extends IShortcutService.Stub {
     private final IPackageManager mIPackageManager;
     private final PackageManagerInternal mPackageManagerInternal;
     private final UserManager mUserManager;
-    private final UsageStatsManagerInternal mUsageStatsManagerInternal;
+    // private final UsageStatsManagerInternal mUsageStatsManagerInternal;
     private final ActivityManagerInternal mActivityManagerInternal;
 
     @GuardedBy("mLock")
@@ -408,8 +408,8 @@ public class ShortcutService extends IShortcutService.Stub {
         mPackageManagerInternal = Preconditions.checkNotNull(
                 LocalServices.getService(PackageManagerInternal.class));
         mUserManager = Preconditions.checkNotNull(context.getSystemService(UserManager.class));
-        mUsageStatsManagerInternal = Preconditions.checkNotNull(
-                LocalServices.getService(UsageStatsManagerInternal.class));
+        // mUsageStatsManagerInternal = Preconditions.checkNotNull(
+        //         LocalServices.getService(UsageStatsManagerInternal.class));
         mActivityManagerInternal = Preconditions.checkNotNull(
                 LocalServices.getService(ActivityManagerInternal.class));
 
@@ -2036,11 +2036,11 @@ public class ShortcutService extends IShortcutService.Stub {
         }
 
         final long token = injectClearCallingIdentity();
-        try {
-            mUsageStatsManagerInternal.reportShortcutUsage(packageName, shortcutId, userId);
-        } finally {
+        // try {
+        //     mUsageStatsManagerInternal.reportShortcutUsage(packageName, shortcutId, userId);
+        // } finally {
             injectRestoreCallingIdentity(token);
-        }
+        // }
     }
 
     /**

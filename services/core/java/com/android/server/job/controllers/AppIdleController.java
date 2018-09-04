@@ -16,7 +16,7 @@
 
 package com.android.server.job.controllers;
 
-import android.app.usage.UsageStatsManagerInternal;
+// import android.app.usage.UsageStatsManagerInternal;
 import android.content.Context;
 import android.os.UserHandle;
 import android.util.Slog;
@@ -42,7 +42,7 @@ public class AppIdleController extends StateController {
     private static Object sCreationLock = new Object();
     private static volatile AppIdleController sController;
     private final JobSchedulerService mJobSchedulerService;
-    private final UsageStatsManagerInternal mUsageStatsInternal;
+    // private final UsageStatsManagerInternal mUsageStatsInternal;
     private boolean mInitializedParoleOn;
     boolean mAppIdleParoleOn;
 
@@ -51,8 +51,9 @@ public class AppIdleController extends StateController {
 
         @Override public void process(JobStatus jobStatus) {
             String packageName = jobStatus.getSourcePackageName();
-            final boolean appIdle = !mAppIdleParoleOn && mUsageStatsInternal.isAppIdle(packageName,
-                    jobStatus.getSourceUid(), jobStatus.getSourceUserId());
+            // final boolean appIdle = !mAppIdleParoleOn && mUsageStatsInternal.isAppIdle(packageName,
+            //         jobStatus.getSourceUid(), jobStatus.getSourceUserId());
+            final boolean appIdle = !mAppIdleParoleOn;
             if (DEBUG) {
                 Slog.d(LOG_TAG, "Setting idle state of " + packageName + " to " + appIdle);
             }
@@ -101,20 +102,21 @@ public class AppIdleController extends StateController {
     private AppIdleController(JobSchedulerService service, Context context, Object lock) {
         super(service, context, lock);
         mJobSchedulerService = service;
-        mUsageStatsInternal = LocalServices.getService(UsageStatsManagerInternal.class);
+        // mUsageStatsInternal = LocalServices.getService(UsageStatsManagerInternal.class);
         mAppIdleParoleOn = true;
-        mUsageStatsInternal.addAppIdleStateChangeListener(new AppIdleStateChangeListener());
+        // mUsageStatsInternal.addAppIdleStateChangeListener(new AppIdleStateChangeListener());
     }
 
     @Override
     public void maybeStartTrackingJobLocked(JobStatus jobStatus, JobStatus lastJob) {
         if (!mInitializedParoleOn) {
             mInitializedParoleOn = true;
-            mAppIdleParoleOn = mUsageStatsInternal.isAppIdleParoleOn();
+            // mAppIdleParoleOn = mUsageStatsInternal.isAppIdleParoleOn();
         }
         String packageName = jobStatus.getSourcePackageName();
-        final boolean appIdle = !mAppIdleParoleOn && mUsageStatsInternal.isAppIdle(packageName,
-                jobStatus.getSourceUid(), jobStatus.getSourceUserId());
+        // final boolean appIdle = !mAppIdleParoleOn && mUsageStatsInternal.isAppIdle(packageName,
+        //         jobStatus.getSourceUid(), jobStatus.getSourceUserId());
+        final boolean appIdle = !mAppIdleParoleOn;
         if (DEBUG) {
             Slog.d(LOG_TAG, "Start tracking, setting idle state of "
                     + packageName + " to " + appIdle);
@@ -170,32 +172,32 @@ public class AppIdleController extends StateController {
         }
     }
 
-    private class AppIdleStateChangeListener
-            extends UsageStatsManagerInternal.AppIdleStateChangeListener {
-        @Override
-        public void onAppIdleStateChanged(String packageName, int userId, boolean idle) {
-            boolean changed = false;
-            synchronized (mLock) {
-                if (mAppIdleParoleOn) {
-                    return;
-                }
-                PackageUpdateFunc update = new PackageUpdateFunc(userId, packageName, idle);
-                mJobSchedulerService.getJobStore().forEachJob(update);
-                if (update.mChanged) {
-                    changed = true;
-                }
-            }
-            if (changed) {
-                mStateChangedListener.onControllerStateChanged();
-            }
-        }
-
-        @Override
-        public void onParoleStateChanged(boolean isParoleOn) {
-            if (DEBUG) {
-                Slog.d(LOG_TAG, "Parole on: " + isParoleOn);
-            }
-            setAppIdleParoleOn(isParoleOn);
-        }
-    }
+    // private class AppIdleStateChangeListener
+    //         extends UsageStatsManagerInternal.AppIdleStateChangeListener {
+    //     @Override
+    //     public void onAppIdleStateChanged(String packageName, int userId, boolean idle) {
+    //         boolean changed = false;
+    //         synchronized (mLock) {
+    //             if (mAppIdleParoleOn) {
+    //                 return;
+    //             }
+    //             PackageUpdateFunc update = new PackageUpdateFunc(userId, packageName, idle);
+    //             mJobSchedulerService.getJobStore().forEachJob(update);
+    //             if (update.mChanged) {
+    //                 changed = true;
+    //             }
+    //         }
+    //         if (changed) {
+    //             mStateChangedListener.onControllerStateChanged();
+    //         }
+    //     }
+    //
+    //     @Override
+    //     public void onParoleStateChanged(boolean isParoleOn) {
+    //         if (DEBUG) {
+    //             Slog.d(LOG_TAG, "Parole on: " + isParoleOn);
+    //         }
+    //         setAppIdleParoleOn(isParoleOn);
+    //     }
+    // }
 }

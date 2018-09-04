@@ -563,7 +563,6 @@ android.app.trust.ITrustManager$Stub
 android.app.trust.ITrustManager$Stub$Proxy
 android.app.trust.TrustManager
 android.app.usage.NetworkStatsManager
-android.app.usage.UsageStatsManager
 android.appwidget.AppWidgetManager
 android.appwidget.AppWidgetProvider
 android.bluetooth.BluetoothAdapter

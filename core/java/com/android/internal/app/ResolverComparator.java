@@ -18,7 +18,7 @@
 package com.android.internal.app;
 
 import android.app.usage.UsageStats;
-import android.app.usage.UsageStatsManager;
+// import android.app.usage.UsageStatsManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -57,8 +57,9 @@ class ResolverComparator implements Comparator<ResolvedComponentInfo> {
     private final Collator mCollator;
     private final boolean mHttp;
     private final PackageManager mPm;
-    private final UsageStatsManager mUsm;
-    private final Map<String, UsageStats> mStats;
+    // private final UsageStatsManager mUsm;
+    // private final Map<String, UsageStats> mStats;
+    private Map<String, UsageStats> mStats;
     private final long mCurrentTime;
     private final long mSinceTime;
     private final LinkedHashMap<ComponentName, ScoredTarget> mScoredTargets = new LinkedHashMap<>();
@@ -71,11 +72,11 @@ class ResolverComparator implements Comparator<ResolvedComponentInfo> {
         mReferrerPackage = referrerPackage;
 
         mPm = context.getPackageManager();
-        mUsm = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+        // mUsm = (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
 
         mCurrentTime = System.currentTimeMillis();
         mSinceTime = mCurrentTime - USAGE_STATS_PERIOD;
-        mStats = mUsm.queryAndAggregateUsageStats(mSinceTime, mCurrentTime);
+        // mStats = mUsm.queryAndAggregateUsageStats(mSinceTime, mCurrentTime);
     }
 
     public void compute(List<ResolvedComponentInfo> targets) {
@@ -91,28 +92,30 @@ class ResolverComparator implements Comparator<ResolvedComponentInfo> {
             final ScoredTarget scoredTarget
                     = new ScoredTarget(target.getResolveInfoAt(0).activityInfo);
             mScoredTargets.put(target.name, scoredTarget);
-            final UsageStats pkStats = mStats.get(target.name.getPackageName());
-            if (pkStats != null) {
-                // Only count recency for apps that weren't the caller
-                // since the caller is always the most recent.
-                // Persistent processes muck this up, so omit them too.
-                if (!target.name.getPackageName().equals(mReferrerPackage)
-                        && !isPersistentProcess(target)) {
-                    final long lastTimeUsed = pkStats.getLastTimeUsed();
-                    scoredTarget.lastTimeUsed = lastTimeUsed;
-                    if (lastTimeUsed > mostRecentlyUsedTime) {
-                        mostRecentlyUsedTime = lastTimeUsed;
+            if (mStats != null) {
+                final UsageStats pkStats = mStats.get(target.name.getPackageName());
+                if (pkStats != null) {
+                    // Only count recency for apps that weren't the caller
+                    // since the caller is always the most recent.
+                    // Persistent processes muck this up, so omit them too.
+                    if (!target.name.getPackageName().equals(mReferrerPackage)
+                            && !isPersistentProcess(target)) {
+                        final long lastTimeUsed = pkStats.getLastTimeUsed();
+                        scoredTarget.lastTimeUsed = lastTimeUsed;
+                        if (lastTimeUsed > mostRecentlyUsedTime) {
+                            mostRecentlyUsedTime = lastTimeUsed;
+                        }
+                            }
+                    final long timeSpent = pkStats.getTotalTimeInForeground();
+                    scoredTarget.timeSpent = timeSpent;
+                    if (timeSpent > mostTimeSpent) {
+                        mostTimeSpent = timeSpent;
                     }
-                }
-                final long timeSpent = pkStats.getTotalTimeInForeground();
-                scoredTarget.timeSpent = timeSpent;
-                if (timeSpent > mostTimeSpent) {
-                    mostTimeSpent = timeSpent;
-                }
-                final int launched = pkStats.mLaunchCount;
-                scoredTarget.launchCount = launched;
-                if (launched > mostLaunched) {
-                    mostLaunched = launched;
+                    final int launched = pkStats.mLaunchCount;
+                    scoredTarget.launchCount = launched;
+                    if (launched > mostLaunched) {
+                        mostLaunched = launched;
+                    }
                 }
             }
         }

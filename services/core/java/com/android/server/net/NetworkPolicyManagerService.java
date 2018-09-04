@@ -99,7 +99,7 @@ import android.app.INotificationManager;
 import android.app.IUidObserver;
 import android.app.Notification;
 import android.app.PendingIntent;
-import android.app.usage.UsageStatsManagerInternal;
+// import android.app.usage.UsageStatsManagerInternal;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -296,7 +296,7 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     private final IActivityManager mActivityManager;
     private final INetworkStatsService mNetworkStats;
     private final INetworkManagementService mNetworkManager;
-    private UsageStatsManagerInternal mUsageStats;
+    // private UsageStatsManagerInternal mUsageStats;
     private final TrustedTime mTime;
     private final UserManager mUserManager;
 
@@ -576,7 +576,7 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                 return;
             }
 
-            mUsageStats = LocalServices.getService(UsageStatsManagerInternal.class);
+            // mUsageStats = LocalServices.getService(UsageStatsManagerInternal.class);
 
             synchronized (mUidRulesFirstLock) {
                 synchronized (mNetworkPoliciesSecondLock) {
@@ -673,7 +673,7 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                     WifiManager.NETWORK_STATE_CHANGED_ACTION);
             mContext.registerReceiver(mWifiStateReceiver, wifiStateFilter, null, mHandler);
 
-            mUsageStats.addAppIdleStateChangeListener(new AppIdleStateChangeListener());
+            // mUsageStats.addAppIdleStateChangeListener(new AppIdleStateChangeListener());
         // } finally {
         //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
         // }
@@ -2685,27 +2685,27 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     void updateRulesForAppIdleUL() {
         // Trace.traceBegin(Trace.TRACE_TAG_NETWORK, "updateRulesForAppIdleUL");
         // try {
-            final SparseIntArray uidRules = mUidFirewallStandbyRules;
-            uidRules.clear();
-
-            // Fully update the app idle firewall chain.
-            final List<UserInfo> users = mUserManager.getUsers();
-            for (int ui = users.size() - 1; ui >= 0; ui--) {
-                UserInfo user = users.get(ui);
-                int[] idleUids = mUsageStats.getIdleUidsForUser(user.id);
-                for (int uid : idleUids) {
-                    if (!mPowerSaveTempWhitelistAppIds.get(UserHandle.getAppId(uid), false)) {
-                        // quick check: if this uid doesn't have INTERNET permission, it
-                        // doesn't have network access anyway, so it is a waste to mess
-                        // with it here.
-                        if (hasInternetPermissions(uid)) {
-                            uidRules.put(uid, FIREWALL_RULE_DENY);
-                        }
-                    }
-                }
-            }
-
-            setUidFirewallRulesAsync(FIREWALL_CHAIN_STANDBY, uidRules, CHAIN_TOGGLE_NONE);
+            // final SparseIntArray uidRules = mUidFirewallStandbyRules;
+            // uidRules.clear();
+            //
+            // // Fully update the app idle firewall chain.
+            // final List<UserInfo> users = mUserManager.getUsers();
+            // for (int ui = users.size() - 1; ui >= 0; ui--) {
+            //     UserInfo user = users.get(ui);
+            //     int[] idleUids = mUsageStats.getIdleUidsForUser(user.id);
+            //     for (int uid : idleUids) {
+            //         if (!mPowerSaveTempWhitelistAppIds.get(UserHandle.getAppId(uid), false)) {
+            //             // quick check: if this uid doesn't have INTERNET permission, it
+            //             // doesn't have network access anyway, so it is a waste to mess
+            //             // with it here.
+            //             if (hasInternetPermissions(uid)) {
+            //                 uidRules.put(uid, FIREWALL_RULE_DENY);
+            //             }
+            //         }
+            //     }
+            // }
+            //
+            // setUidFirewallRulesAsync(FIREWALL_CHAIN_STANDBY, uidRules, CHAIN_TOGGLE_NONE);
         // } finally {
         //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
         // }
@@ -2728,26 +2728,26 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
      * changed.
      */
     void updateRulesForAppIdleParoleUL() {
-        boolean paroled = mUsageStats.isAppIdleParoleOn();
-        boolean enableChain = !paroled;
-        enableFirewallChainUL(FIREWALL_CHAIN_STANDBY, enableChain);
-
-        int ruleCount = mUidFirewallStandbyRules.size();
-        for (int i = 0; i < ruleCount; i++) {
-            int uid = mUidFirewallStandbyRules.keyAt(i);
-            int oldRules = mUidRules.get(uid);
-            if (enableChain) {
-                // Chain wasn't enabled before and the other power-related
-                // chains are whitelists, so we can clear the
-                // MASK_ALL_NETWORKS part of the rules and re-inform listeners if
-                // the effective rules result in blocking network access.
-                oldRules &= MASK_METERED_NETWORKS;
-            } else {
-                // Skip if it had no restrictions to begin with
-                if ((oldRules & MASK_ALL_NETWORKS) == 0) continue;
-            }
-            updateRulesForPowerRestrictionsUL(uid, oldRules, paroled);
-        }
+        // boolean paroled = mUsageStats.isAppIdleParoleOn();
+        // boolean enableChain = !paroled;
+        // enableFirewallChainUL(FIREWALL_CHAIN_STANDBY, enableChain);
+        //
+        // int ruleCount = mUidFirewallStandbyRules.size();
+        // for (int i = 0; i < ruleCount; i++) {
+        //     int uid = mUidFirewallStandbyRules.keyAt(i);
+        //     int oldRules = mUidRules.get(uid);
+        //     if (enableChain) {
+        //         // Chain wasn't enabled before and the other power-related
+        //         // chains are whitelists, so we can clear the
+        //         // MASK_ALL_NETWORKS part of the rules and re-inform listeners if
+        //         // the effective rules result in blocking network access.
+        //         oldRules &= MASK_METERED_NETWORKS;
+        //     } else {
+        //         // Skip if it had no restrictions to begin with
+        //         if ((oldRules & MASK_ALL_NETWORKS) == 0) continue;
+        //     }
+        //     updateRulesForPowerRestrictionsUL(uid, oldRules, paroled);
+        // }
     }
 
     /**
@@ -2877,17 +2877,18 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     }
 
     private boolean isUidIdle(int uid) {
-        final String[] packages = mContext.getPackageManager().getPackagesForUid(uid);
-        final int userId = UserHandle.getUserId(uid);
-
-        if (!ArrayUtils.isEmpty(packages)) {
-            for (String packageName : packages) {
-                if (!mUsageStats.isAppIdle(packageName, uid, userId)) {
-                    return false;
-                }
-            }
-        }
-        return true;
+        // final String[] packages = mContext.getPackageManager().getPackagesForUid(uid);
+        // final int userId = UserHandle.getUserId(uid);
+        //
+        // if (!ArrayUtils.isEmpty(packages)) {
+        //     for (String packageName : packages) {
+        //         if (!mUsageStats.isAppIdle(packageName, uid, userId)) {
+        //             return false;
+        //         }
+        //     }
+        // }
+        // return true;
+		return false;
     }
 
     /**
@@ -3182,30 +3183,30 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
         return newUidRules;
     }
 
-    private class AppIdleStateChangeListener
-            extends UsageStatsManagerInternal.AppIdleStateChangeListener {
-
-        @Override
-        public void onAppIdleStateChanged(String packageName, int userId, boolean idle) {
-            try {
-                final int uid = mContext.getPackageManager().getPackageUidAsUser(packageName,
-                        PackageManager.MATCH_UNINSTALLED_PACKAGES, userId);
-                if (LOGV) Log.v(TAG, "onAppIdleStateChanged(): uid=" + uid + ", idle=" + idle);
-                synchronized (mUidRulesFirstLock) {
-                    updateRuleForAppIdleUL(uid);
-                    updateRulesForPowerRestrictionsUL(uid);
-                }
-            } catch (NameNotFoundException nnfe) {
-            }
-        }
-
-        @Override
-        public void onParoleStateChanged(boolean isParoleOn) {
-            synchronized (mUidRulesFirstLock) {
-                updateRulesForAppIdleParoleUL();
-            }
-        }
-    }
+    // private class AppIdleStateChangeListener
+    //         extends UsageStatsManagerInternal.AppIdleStateChangeListener {
+    //
+    //     @Override
+    //     public void onAppIdleStateChanged(String packageName, int userId, boolean idle) {
+    //         try {
+    //             final int uid = mContext.getPackageManager().getPackageUidAsUser(packageName,
+    //                     PackageManager.MATCH_UNINSTALLED_PACKAGES, userId);
+    //             if (LOGV) Log.v(TAG, "onAppIdleStateChanged(): uid=" + uid + ", idle=" + idle);
+    //             synchronized (mUidRulesFirstLock) {
+    //                 updateRuleForAppIdleUL(uid);
+    //                 updateRulesForPowerRestrictionsUL(uid);
+    //             }
+    //         } catch (NameNotFoundException nnfe) {
+    //         }
+    //     }
+    //
+    //     @Override
+    //     public void onParoleStateChanged(boolean isParoleOn) {
+    //         synchronized (mUidRulesFirstLock) {
+    //             updateRulesForAppIdleParoleUL();
+    //         }
+    //     }
+    // }
 
     private void dispatchUidRulesChanged(INetworkPolicyListener listener, int uid, int uidRules) {
         if (listener != null) {

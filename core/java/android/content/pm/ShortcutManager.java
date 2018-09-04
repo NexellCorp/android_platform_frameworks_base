@@ -19,7 +19,7 @@ import android.annotation.NonNull;
 import android.annotation.TestApi;
 import android.annotation.UserIdInt;
 import android.app.Activity;
-import android.app.usage.UsageStatsManager;
+// import android.app.usage.UsageStatsManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.RemoteException;

@@ -61,7 +61,7 @@ import android.app.PendingIntent;
 import android.app.StatusBarManager;
 import android.app.backup.BackupManager;
 import android.app.usage.UsageEvents;
-import android.app.usage.UsageStatsManagerInternal;
+// import android.app.usage.UsageStatsManagerInternal;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -280,7 +280,7 @@ public class NotificationManagerService extends SystemService {
     ArrayList<String> mLights = new ArrayList<>();
 
     private AppOpsManager mAppOps;
-    private UsageStatsManagerInternal mAppUsageStats;
+    // private UsageStatsManagerInternal mAppUsageStats;
 
     private Archive mArchive;
 
@@ -930,7 +930,7 @@ public class NotificationManagerService extends SystemService {
         mAm = ActivityManagerNative.getDefault();
         mAppOps = (AppOpsManager) getContext().getSystemService(Context.APP_OPS_SERVICE);
         mVibrator = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
-        mAppUsageStats = LocalServices.getService(UsageStatsManagerInternal.class);
+        // mAppUsageStats = LocalServices.getService(UsageStatsManagerInternal.class);
 
         // This is the package that contains the AOSP framework update.
         mRankerServicePackageName = getContext().getPackageManager()
@@ -1691,10 +1691,10 @@ public class NotificationManagerService extends SystemService {
                             }
                             if (!r.isSeen()) {
                                 if (DBG) Slog.d(TAG, "Marking notification as seen " + keys[i]);
-                                mAppUsageStats.reportEvent(r.sbn.getPackageName(),
-                                        userId == UserHandle.USER_ALL ? UserHandle.USER_SYSTEM
-                                                : userId,
-                                        UsageEvents.Event.USER_INTERACTION);
+                                // mAppUsageStats.reportEvent(r.sbn.getPackageName(),
+                                //         userId == UserHandle.USER_ALL ? UserHandle.USER_SYSTEM
+                                //                 : userId,
+                                //         UsageEvents.Event.USER_INTERACTION);
                                 r.setSeen();
                             }
                         }
