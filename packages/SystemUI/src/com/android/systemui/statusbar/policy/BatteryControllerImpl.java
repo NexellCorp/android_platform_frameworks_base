@@ -20,7 +20,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.PowerManager;
@@ -111,15 +111,19 @@ public class BatteryControllerImpl extends BroadcastReceiver implements BatteryC
         if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
             if (mTestmode && !intent.getBooleanExtra("testmode", false)) return;
             mHasReceivedBattery = true;
-            mLevel = (int)(100f
-                    * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
-                    / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100));
-            mPluggedIn = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0;
-
-            final int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
-                    BatteryManager.BATTERY_STATUS_UNKNOWN);
-            mCharged = status == BatteryManager.BATTERY_STATUS_FULL;
-            mCharging = mCharged || status == BatteryManager.BATTERY_STATUS_CHARGING;
+            // mLevel = (int)(100f
+            //         * intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0)
+            //         / intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100));
+            // mPluggedIn = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0;
+            //
+            // final int status = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
+            //         BatteryManager.BATTERY_STATUS_UNKNOWN);
+            // mCharged = status == BatteryManager.BATTERY_STATUS_FULL;
+            // mCharging = mCharged || status == BatteryManager.BATTERY_STATUS_CHARGING;
+			mLevel = 100;
+			mPluggedIn = true;
+			mCharged = true;
+			mCharging = true;
 
             fireBatteryLevelChanged();
         } else if (action.equals(PowerManager.ACTION_POWER_SAVE_MODE_CHANGED)) {
@@ -143,7 +147,8 @@ public class BatteryControllerImpl extends BroadcastReceiver implements BatteryC
                         dummy.putExtra("testmode", false);
                     } else {
                         dummy.putExtra("level", curLevel);
-                        dummy.putExtra("plugged", incr > 0 ? BatteryManager.BATTERY_PLUGGED_AC
+                        // dummy.putExtra("plugged", incr > 0 ? BatteryManager.BATTERY_PLUGGED_AC
+                        dummy.putExtra("plugged", incr > 0 ? 1
                                 : 0);
                         dummy.putExtra("testmode", true);
                     }

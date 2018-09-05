@@ -24,7 +24,7 @@ import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.hardware.fingerprint.FingerprintManager;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.BatteryStats;
 import android.os.Handler;
 import android.os.Message;
@@ -232,8 +232,9 @@ public class KeyguardIndicationController {
 
         @Override
         public void onRefreshBatteryInfo(KeyguardUpdateMonitor.BatteryStatus status) {
-            boolean isChargingOrFull = status.status == BatteryManager.BATTERY_STATUS_CHARGING
-                    || status.status == BatteryManager.BATTERY_STATUS_FULL;
+            // boolean isChargingOrFull = status.status == BatteryManager.BATTERY_STATUS_CHARGING
+            //         || status.status == BatteryManager.BATTERY_STATUS_FULL;
+            boolean isChargingOrFull = status.status == 2 || status.status == 5;
             mPowerPluggedIn = status.isPluggedIn() && isChargingOrFull;
             mPowerCharged = status.isCharged();
             mChargingWattage = status.maxChargingWattage;

@@ -32,8 +32,8 @@ import android.hardware.SystemSensorManager;
 import android.hardware.display.DisplayManagerInternal;
 import android.hardware.display.DisplayManagerInternal.DisplayPowerRequest;
 import android.net.Uri;
-import android.os.BatteryManager;
-import android.os.BatteryManagerInternal;
+// import android.os.BatteryManager;
+// import android.os.BatteryManagerInternal;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -64,14 +64,14 @@ import android.view.Display;
 import android.view.WindowManagerPolicy;
 
 import com.android.internal.app.IAppOpsService;
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.internal.os.BackgroundThread;
 import com.android.internal.util.ArrayUtils;
 import com.android.server.EventLogTags;
 import com.android.server.ServiceThread;
 import com.android.server.SystemService;
 import com.android.server.Watchdog;
-import com.android.server.am.BatteryStatsService;
+// import com.android.server.am.BatteryStatsService;
 import com.android.server.lights.Light;
 import com.android.server.lights.LightsManager;
 import com.android.server.vr.VrManagerService;
@@ -188,9 +188,9 @@ public final class PowerManagerService extends SystemService
     private final PowerManagerHandler mHandler;
 
     private LightsManager mLightsManager;
-    private BatteryManagerInternal mBatteryManagerInternal;
+    // private BatteryManagerInternal mBatteryManagerInternal;
     private DisplayManagerInternal mDisplayManagerInternal;
-    private IBatteryStats mBatteryStats;
+    // private IBatteryStats mBatteryStats;
     private IAppOpsService mAppOps;
     private WindowManagerPolicy mPolicy;
     private Notifier mNotifier;
@@ -756,8 +756,9 @@ public final class PowerManagerService extends SystemService
         mSleepTimeoutSetting = Settings.Secure.getIntForUser(resolver,
                 Settings.Secure.SLEEP_TIMEOUT, DEFAULT_SLEEP_TIMEOUT,
                 UserHandle.USER_CURRENT);
-        mStayOnWhilePluggedInSetting = Settings.Global.getInt(resolver,
-                Settings.Global.STAY_ON_WHILE_PLUGGED_IN, BatteryManager.BATTERY_PLUGGED_AC);
+        // mStayOnWhilePluggedInSetting = Settings.Global.getInt(resolver,
+        //         Settings.Global.STAY_ON_WHILE_PLUGGED_IN, BatteryManager.BATTERY_PLUGGED_AC);
+        mStayOnWhilePluggedInSetting = 1;
         mTheaterModeEnabled = Settings.Global.getInt(mContext.getContentResolver(),
                 Settings.Global.THEATER_MODE_ON, 0) == 1;
 
@@ -1554,14 +1555,16 @@ public final class PowerManagerService extends SystemService
         // Don't wake when undocked from wireless charger.
         // See WirelessChargerDetector for justification.
         if (wasPowered && !mIsPowered
-                && oldPlugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) {
+                // && oldPlugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) {
+                && oldPlugType == 4) {
             return false;
         }
 
         // Don't wake when docked on wireless charger unless we are certain of it.
         // See WirelessChargerDetector for justification.
         if (!wasPowered && mIsPowered
-                && mPlugType == BatteryManager.BATTERY_PLUGGED_WIRELESS
+                // && mPlugType == BatteryManager.BATTERY_PLUGGED_WIRELESS
+                && mPlugType == 4
                 && !dockedOnWirelessCharger) {
             return false;
         }
@@ -3061,14 +3064,14 @@ public final class PowerManagerService extends SystemService
         return workSource != null ? new WorkSource(workSource) : null;
     }
 
-    private final class BatteryReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            synchronized (mLock) {
-                handleBatteryStateChangedLocked();
-            }
-        }
-    }
+    // private final class BatteryReceiver extends BroadcastReceiver {
+    //     @Override
+    //     public void onReceive(Context context, Intent intent) {
+    //         synchronized (mLock) {
+    //             handleBatteryStateChangedLocked();
+    //         }
+    //     }
+    // }
 
     private final class DreamReceiver extends BroadcastReceiver {
         @Override

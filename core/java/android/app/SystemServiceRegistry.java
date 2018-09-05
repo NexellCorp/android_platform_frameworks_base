@@ -89,7 +89,7 @@ import android.net.wifi.nan.WifiNanManager;
 import android.net.wifi.p2p.IWifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.nfc.NfcManager;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 // import android.os.DropBoxManager;
 import android.os.HardwarePropertiesManager;
 import android.os.IBinder;
@@ -261,12 +261,12 @@ final class SystemServiceRegistry {
                 return new DownloadManager(ctx);
             }});
 
-        registerService(Context.BATTERY_SERVICE, BatteryManager.class,
-                new StaticServiceFetcher<BatteryManager>() {
-            @Override
-            public BatteryManager createService() {
-                return new BatteryManager();
-            }});
+        // registerService(Context.BATTERY_SERVICE, BatteryManager.class,
+        //         new StaticServiceFetcher<BatteryManager>() {
+        //     @Override
+        //     public BatteryManager createService() {
+        //         return new BatteryManager();
+        //     }});
 
         registerService(Context.NFC_SERVICE, NfcManager.class,
                 new CachedServiceFetcher<NfcManager>() {

@@ -25,7 +25,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.pm.PackageStats;
 import android.os.AsyncTask;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.Environment;
 import android.os.Environment.UserEnvironment;
 import android.os.UserHandle;
@@ -106,11 +106,12 @@ public class DiskStatsLoggingService extends JobService {
     }
 
     private static boolean isCharging(Context context) {
-        BatteryManager batteryManager = context.getSystemService(BatteryManager.class);
-        if (batteryManager != null) {
-            return batteryManager.isCharging();
-        }
-        return false;
+        // BatteryManager batteryManager = context.getSystemService(BatteryManager.class);
+        // if (batteryManager != null) {
+        //     return batteryManager.isCharging();
+        // }
+        // return false;
+        return true;
     }
 
     @VisibleForTesting

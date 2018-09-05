@@ -23,7 +23,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Resources;
 import android.database.ContentObserver;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.HardwarePropertiesManager;
 import android.os.PowerManager;
@@ -56,7 +56,8 @@ public class PowerUI extends SystemUI {
     private HardwarePropertiesManager mHardwarePropertiesManager;
     private WarningsUI mWarnings;
     private int mBatteryLevel = 100;
-    private int mBatteryStatus = BatteryManager.BATTERY_STATUS_UNKNOWN;
+    // private int mBatteryStatus = BatteryManager.BATTERY_STATUS_UNKNOWN;
+    private int mBatteryStatus = 1;
     private int mPlugType = 0;
     private int mInvalidCharger = 0;
 
@@ -161,17 +162,24 @@ public class PowerUI extends SystemUI {
             String action = intent.getAction();
             if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
                 final int oldBatteryLevel = mBatteryLevel;
-                mBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 100);
+                // mBatteryLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 100);
+                // final int oldBatteryStatus = mBatteryStatus;
+                // mBatteryStatus = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
+                //         BatteryManager.BATTERY_STATUS_UNKNOWN);
+                // final int oldPlugType = mPlugType;
+                // mPlugType = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 1);
+                // final int oldInvalidCharger = mInvalidCharger;
+                // mInvalidCharger = intent.getIntExtra(BatteryManager.EXTRA_INVALID_CHARGER, 0);
+                mBatteryLevel = 100;
                 final int oldBatteryStatus = mBatteryStatus;
-                mBatteryStatus = intent.getIntExtra(BatteryManager.EXTRA_STATUS,
-                        BatteryManager.BATTERY_STATUS_UNKNOWN);
+                mBatteryStatus = 5; // BatteryManager.BATTERY_STATUS_FULL
                 final int oldPlugType = mPlugType;
-                mPlugType = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 1);
+                mPlugType = 1; // BatteryManager.PLUGGED_AC
                 final int oldInvalidCharger = mInvalidCharger;
-                mInvalidCharger = intent.getIntExtra(BatteryManager.EXTRA_INVALID_CHARGER, 0);
 
                 final boolean plugged = mPlugType != 0;
                 final boolean oldPlugged = oldPlugType != 0;
+                mInvalidCharger = 0;
 
                 int oldBucket = findBatteryLevelBucket(oldBatteryLevel);
                 int bucket = findBatteryLevelBucket(mBatteryLevel);
@@ -204,7 +212,8 @@ public class PowerUI extends SystemUI {
                 if (!plugged
                         && !isPowerSaver
                         && (bucket < oldBucket || oldPlugged)
-                        && mBatteryStatus != BatteryManager.BATTERY_STATUS_UNKNOWN
+                        // && mBatteryStatus != BatteryManager.BATTERY_STATUS_UNKNOWN
+                        && mBatteryStatus != 1
                         && bucket < 0) {
                     // only play SFX when the dialog comes up or the bucket changes
                     final boolean playSound = bucket != oldBucket || oldPlugged;

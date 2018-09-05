@@ -27,7 +27,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.Environment;
 import android.os.ServiceManager;
 import android.os.storage.StorageManager;
@@ -105,17 +105,18 @@ public class BackgroundDexOptService extends JobService {
 
     // Returns the current battery level as a 0-100 integer.
     private int getBatteryLevel() {
-        IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-        Intent intent = registerReceiver(null, filter);
-        int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-
-        if (level < 0 || scale <= 0) {
-            // Battery data unavailable. This should never happen, so assume the worst.
-            return 0;
-        }
-
-        return (100 * level / scale);
+        // IntentFilter filter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        // Intent intent = registerReceiver(null, filter);
+        // int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+        // int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+        //
+        // if (level < 0 || scale <= 0) {
+        //     // Battery data unavailable. This should never happen, so assume the worst.
+        //     return 0;
+        // }
+        //
+        // return (100 * level / scale);
+        return 100;
     }
 
     private long getLowStorageThreshold() {

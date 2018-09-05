@@ -49,23 +49,7 @@ public class PowerCommand extends Svc.Command {
                 IPowerManager pm = IPowerManager.Stub.asInterface(
                         ServiceManager.getService(Context.POWER_SERVICE));
                 if ("stayon".equals(args[1]) && args.length == 3) {
-                    int val;
-                    if ("true".equals(args[2])) {
-                        val = BatteryManager.BATTERY_PLUGGED_AC |
-                                BatteryManager.BATTERY_PLUGGED_USB |
-                                BatteryManager.BATTERY_PLUGGED_WIRELESS;
-                    }
-                    else if ("false".equals(args[2])) {
-                        val = 0;
-                    } else if ("usb".equals(args[2])) {
-                        val = BatteryManager.BATTERY_PLUGGED_USB;
-                    } else if ("ac".equals(args[2])) {
-                        val = BatteryManager.BATTERY_PLUGGED_AC;
-                    } else if ("wireless".equals(args[2])) {
-                        val = BatteryManager.BATTERY_PLUGGED_WIRELESS;
-                    } else {
-                        break fail;
-                    }
+                    int val = BatteryManager.BATTERY_PLUGGED_AC;;
                     try {
                         if (val != 0) {
                             // if the request is not to set it to false, wake up the screen so that

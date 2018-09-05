@@ -20,7 +20,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -183,7 +183,8 @@ final class WirelessChargerDetector {
         synchronized (mLock) {
             final boolean wasPoweredWirelessly = mPoweredWirelessly;
 
-            if (isPowered && plugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) {
+            // if (isPowered && plugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) {
+            if (isPowered && plugType == 4) {
                 // The device is receiving power from the wireless charger.
                 // Update the rest position asynchronously.
                 mPoweredWirelessly = true;
@@ -194,7 +195,8 @@ final class WirelessChargerDetector {
                 // the unplug signal that we received was spurious.
                 mPoweredWirelessly = false;
                 if (mAtRest) {
-                    if (plugType != 0 && plugType != BatteryManager.BATTERY_PLUGGED_WIRELESS) {
+                    // if (plugType != 0 && plugType != BatteryManager.BATTERY_PLUGGED_WIRELESS) {
+                    if (plugType != 0 && plugType != 4) {
                         // The device was plugged into a new non-wireless power source.
                         // It's safe to assume that it is no longer on the wireless charger.
                         mMustUpdateRestPosition = false;

@@ -27,7 +27,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaScanner;
 import android.net.Uri;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Audio;
@@ -137,24 +137,24 @@ public class MtpDatabase implements AutoCloseable {
         System.loadLibrary("media_jni");
     }
 
-    private BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
-          @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
-                mBatteryScale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 0);
-                int newLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-                if (newLevel != mBatteryLevel) {
-                    mBatteryLevel = newLevel;
-                    if (mServer != null) {
-                        // send device property changed event
-                        mServer.sendDevicePropertyChanged(
-                                MtpConstants.DEVICE_PROPERTY_BATTERY_LEVEL);
-                    }
-                }
-            }
-        }
-    };
+    // private BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
+    //       @Override
+    //     public void onReceive(Context context, Intent intent) {
+    //         String action = intent.getAction();
+    //         if (action.equals(Intent.ACTION_BATTERY_CHANGED)) {
+    //             mBatteryScale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 0);
+    //             int newLevel = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+    //             if (newLevel != mBatteryLevel) {
+    //                 mBatteryLevel = newLevel;
+    //                 if (mServer != null) {
+    //                     // send device property changed event
+    //                     mServer.sendDevicePropertyChanged(
+    //                             MtpConstants.DEVICE_PROPERTY_BATTERY_LEVEL);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // };
 
     public MtpDatabase(Context context, String volumeName, String storagePath,
             String[] subDirectories) {
@@ -203,17 +203,17 @@ public class MtpDatabase implements AutoCloseable {
         mServer = server;
 
         // always unregister before registering
-        try {
-            mContext.unregisterReceiver(mBatteryReceiver);
-        } catch (IllegalArgumentException e) {
-            // wasn't previously registered, ignore
-        }
+        // try {
+        //     mContext.unregisterReceiver(mBatteryReceiver);
+        // } catch (IllegalArgumentException e) {
+        //     // wasn't previously registered, ignore
+        // }
 
         // register for battery notifications when we are connected
-        if (server != null) {
-            mContext.registerReceiver(mBatteryReceiver,
-                    new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
-        }
+        // if (server != null) {
+        //     mContext.registerReceiver(mBatteryReceiver,
+        //             new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        // }
     }
 
     @Override

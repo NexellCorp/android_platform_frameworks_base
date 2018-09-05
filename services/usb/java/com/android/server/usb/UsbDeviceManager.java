@@ -32,7 +32,7 @@ import android.hardware.usb.UsbAccessory;
 import android.hardware.usb.UsbManager;
 import android.hardware.usb.UsbPort;
 import android.hardware.usb.UsbPortStatus;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.FileUtils;
 import android.os.Handler;
 import android.os.Looper;
@@ -196,14 +196,14 @@ public class UsbDeviceManager {
         }
     };
 
-    private final BroadcastReceiver mChargingReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-             int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-             boolean usbCharging = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
-             mHandler.sendMessage(MSG_UPDATE_CHARGING_STATE, usbCharging);
-        }
-    };
+    // private final BroadcastReceiver mChargingReceiver = new BroadcastReceiver() {
+    //     @Override
+    //     public void onReceive(Context context, Intent intent) {
+    //          int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+    //          boolean usbCharging = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
+    //          mHandler.sendMessage(MSG_UPDATE_CHARGING_STATE, usbCharging);
+    //     }
+    // };
 
     public UsbDeviceManager(Context context, UsbAlsaManager alsaManager) {
         mContext = context;
@@ -229,8 +229,8 @@ public class UsbDeviceManager {
         }
         mContext.registerReceiver(mHostReceiver,
                 new IntentFilter(UsbManager.ACTION_USB_PORT_CHANGED));
-        mContext.registerReceiver(mChargingReceiver,
-                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        // mContext.registerReceiver(mChargingReceiver,
+        //         new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 
     private UsbSettingsManager getCurrentSettings() {

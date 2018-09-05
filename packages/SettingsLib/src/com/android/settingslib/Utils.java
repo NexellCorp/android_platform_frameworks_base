@@ -14,7 +14,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.UserManager;
 import android.print.PrintManager;
 import com.android.internal.util.UserIcons;
@@ -114,9 +114,10 @@ public class Utils {
     }
 
     public static int getBatteryLevel(Intent batteryChangedIntent) {
-        int level = batteryChangedIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
-        int scale = batteryChangedIntent.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
-        return (level * 100) / scale;
+        // int level = batteryChangedIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+        // int scale = batteryChangedIntent.getIntExtra(BatteryManager.EXTRA_SCALE, 100);
+        // return (level * 100) / scale;
+        return 100;
     }
 
     public static String getBatteryStatus(Resources res, Intent batteryChangedIntent) {
@@ -125,36 +126,39 @@ public class Utils {
 
     public static String getBatteryStatus(Resources res, Intent batteryChangedIntent,
             boolean shortString) {
-        int plugType = batteryChangedIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
-        int status = batteryChangedIntent.getIntExtra(BatteryManager.EXTRA_STATUS,
-                BatteryManager.BATTERY_STATUS_UNKNOWN);
-        String statusString;
-        if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
-            int resId;
-            if (plugType == BatteryManager.BATTERY_PLUGGED_AC) {
-                resId = shortString ? R.string.battery_info_status_charging_ac_short
-                        : R.string.battery_info_status_charging_ac;
-            } else if (plugType == BatteryManager.BATTERY_PLUGGED_USB) {
-                resId = shortString ? R.string.battery_info_status_charging_usb_short
-                        : R.string.battery_info_status_charging_usb;
-            } else if (plugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) {
-                resId = shortString ? R.string.battery_info_status_charging_wireless_short
-                        : R.string.battery_info_status_charging_wireless;
-            } else {
-                resId = R.string.battery_info_status_charging;
-            }
-            statusString = res.getString(resId);
-        } else if (status == BatteryManager.BATTERY_STATUS_DISCHARGING) {
-            statusString = res.getString(R.string.battery_info_status_discharging);
-        } else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
-            statusString = res.getString(R.string.battery_info_status_not_charging);
-        } else if (status == BatteryManager.BATTERY_STATUS_FULL) {
-            statusString = res.getString(R.string.battery_info_status_full);
-        } else {
-            statusString = res.getString(R.string.battery_info_status_unknown);
-        }
-
-        return statusString;
+        // int plugType = batteryChangedIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+        // int status = batteryChangedIntent.getIntExtra(BatteryManager.EXTRA_STATUS,
+        //         BatteryManager.BATTERY_STATUS_UNKNOWN);
+        // String statusString;
+        // if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
+        //     int resId;
+        //     if (plugType == BatteryManager.BATTERY_PLUGGED_AC) {
+        //         resId = shortString ? R.string.battery_info_status_charging_ac_short
+        //                 : R.string.battery_info_status_charging_ac;
+        //     } else if (plugType == BatteryManager.BATTERY_PLUGGED_USB) {
+        //         resId = shortString ? R.string.battery_info_status_charging_usb_short
+        //                 : R.string.battery_info_status_charging_usb;
+        //     } else if (plugType == BatteryManager.BATTERY_PLUGGED_WIRELESS) {
+        //         resId = shortString ? R.string.battery_info_status_charging_wireless_short
+        //                 : R.string.battery_info_status_charging_wireless;
+        //     } else {
+        //         resId = R.string.battery_info_status_charging;
+        //     }
+        //     statusString = res.getString(resId);
+        // } else if (status == BatteryManager.BATTERY_STATUS_DISCHARGING) {
+        //     statusString = res.getString(R.string.battery_info_status_discharging);
+        // } else if (status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
+        //     statusString = res.getString(R.string.battery_info_status_not_charging);
+        // } else if (status == BatteryManager.BATTERY_STATUS_FULL) {
+        //     statusString = res.getString(R.string.battery_info_status_full);
+        // } else {
+        //     statusString = res.getString(R.string.battery_info_status_unknown);
+        // }
+        //
+        // return statusString;
+        int resId = shortString ? R.string.battery_info_status_charging_ac_short
+            : R.string.battery_info_status_charging_ac;
+        return res.getString(resId);
     }
 
     @ColorInt

@@ -20,8 +20,8 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.BatteryManager;
-import android.os.BatteryManagerInternal;
+// import android.os.BatteryManager;
+// import android.os.BatteryManagerInternal;
 import android.os.SystemClock;
 import android.os.UserHandle;
 import android.util.Slog;
@@ -135,18 +135,20 @@ public class BatteryController extends StateController {
             IntentFilter filter = new IntentFilter();
 
             // Battery health.
-            filter.addAction(Intent.ACTION_BATTERY_LOW);
-            filter.addAction(Intent.ACTION_BATTERY_OKAY);
-            // Charging/not charging.
-            filter.addAction(BatteryManager.ACTION_CHARGING);
-            filter.addAction(BatteryManager.ACTION_DISCHARGING);
-            mContext.registerReceiver(this, filter);
+            // filter.addAction(Intent.ACTION_BATTERY_LOW);
+            // filter.addAction(Intent.ACTION_BATTERY_OKAY);
+            // // Charging/not charging.
+            // filter.addAction(BatteryManager.ACTION_CHARGING);
+            // filter.addAction(BatteryManager.ACTION_DISCHARGING);
+            // mContext.registerReceiver(this, filter);
 
             // Initialise tracker state.
-            BatteryManagerInternal batteryManagerInternal =
-                    LocalServices.getService(BatteryManagerInternal.class);
-            mBatteryHealthy = !batteryManagerInternal.getBatteryLevelLow();
-            mCharging = batteryManagerInternal.isPowered(BatteryManager.BATTERY_PLUGGED_ANY);
+            // BatteryManagerInternal batteryManagerInternal =
+            //         LocalServices.getService(BatteryManagerInternal.class);
+            // mBatteryHealthy = !batteryManagerInternal.getBatteryLevelLow();
+            // mCharging = batteryManagerInternal.isPowered(BatteryManager.BATTERY_PLUGGED_ANY);
+            mBatteryHealthy = true;
+            mCharging = true;
         }
 
         boolean isOnStablePower() {
@@ -160,37 +162,37 @@ public class BatteryController extends StateController {
 
         @VisibleForTesting
         public void onReceiveInternal(Intent intent) {
-            final String action = intent.getAction();
-            if (Intent.ACTION_BATTERY_LOW.equals(action)) {
-                if (DEBUG) {
-                    Slog.d(TAG, "Battery life too low to do work. @ "
-                            + SystemClock.elapsedRealtime());
-                }
-                // If we get this action, the battery is discharging => it isn't plugged in so
-                // there's no work to cancel. We track this variable for the case where it is
-                // charging, but hasn't been for long enough to be healthy.
-                mBatteryHealthy = false;
-            } else if (Intent.ACTION_BATTERY_OKAY.equals(action)) {
-                if (DEBUG) {
-                    Slog.d(TAG, "Battery life healthy enough to do work. @ "
-                            + SystemClock.elapsedRealtime());
-                }
-                mBatteryHealthy = true;
-                maybeReportNewChargingState();
-            } else if (BatteryManager.ACTION_CHARGING.equals(action)) {
-                if (DEBUG) {
-                    Slog.d(TAG, "Received charging intent, fired @ "
-                            + SystemClock.elapsedRealtime());
-                }
-                mCharging = true;
-                maybeReportNewChargingState();
-            } else if (BatteryManager.ACTION_DISCHARGING.equals(action)) {
-                if (DEBUG) {
-                    Slog.d(TAG, "Disconnected from power.");
-                }
-                mCharging = false;
-                maybeReportNewChargingState();
-            }
+            // final String action = intent.getAction();
+            // if (Intent.ACTION_BATTERY_LOW.equals(action)) {
+            //     if (DEBUG) {
+            //         Slog.d(TAG, "Battery life too low to do work. @ "
+            //                 + SystemClock.elapsedRealtime());
+            //     }
+            //     // If we get this action, the battery is discharging => it isn't plugged in so
+            //     // there's no work to cancel. We track this variable for the case where it is
+            //     // charging, but hasn't been for long enough to be healthy.
+            //     mBatteryHealthy = false;
+            // } else if (Intent.ACTION_BATTERY_OKAY.equals(action)) {
+            //     if (DEBUG) {
+            //         Slog.d(TAG, "Battery life healthy enough to do work. @ "
+            //                 + SystemClock.elapsedRealtime());
+            //     }
+            //     mBatteryHealthy = true;
+            //     maybeReportNewChargingState();
+            // } else if (BatteryManager.ACTION_CHARGING.equals(action)) {
+            //     if (DEBUG) {
+            //         Slog.d(TAG, "Received charging intent, fired @ "
+            //                 + SystemClock.elapsedRealtime());
+            //     }
+            //     mCharging = true;
+            //     maybeReportNewChargingState();
+            // } else if (BatteryManager.ACTION_DISCHARGING.equals(action)) {
+            //     if (DEBUG) {
+            //         Slog.d(TAG, "Disconnected from power.");
+            //     }
+            //     mCharging = false;
+            //     maybeReportNewChargingState();
+            // }
         }
     }
 

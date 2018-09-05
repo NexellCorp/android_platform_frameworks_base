@@ -33,7 +33,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -142,17 +142,17 @@ final class UiModeManagerService extends SystemService {
         }
     };
 
-    private final BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mCharging = (intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0);
-            synchronized (mLock) {
-                if (mSystemReady) {
-                    updateLocked(0, 0);
-                }
-            }
-        }
-    };
+    // private final BroadcastReceiver mBatteryReceiver = new BroadcastReceiver() {
+    //     @Override
+    //     public void onReceive(Context context, Intent intent) {
+    //         mCharging = (intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0);
+    //         synchronized (mLock) {
+    //             if (mSystemReady) {
+    //                 updateLocked(0, 0);
+    //             }
+    //         }
+    //     }
+    // };
 
     private final TwilightListener mTwilightListener = new TwilightListener() {
         @Override
@@ -176,8 +176,8 @@ final class UiModeManagerService extends SystemService {
 
         context.registerReceiver(mDockModeReceiver,
                 new IntentFilter(Intent.ACTION_DOCK_EVENT));
-        context.registerReceiver(mBatteryReceiver,
-                new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+        // context.registerReceiver(mBatteryReceiver,
+        //         new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
 
         mConfiguration.setToDefaults();
 

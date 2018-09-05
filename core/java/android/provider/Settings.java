@@ -43,7 +43,7 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.Bundle;
 // import android.os.DropBoxManager;
 import android.os.IBinder;

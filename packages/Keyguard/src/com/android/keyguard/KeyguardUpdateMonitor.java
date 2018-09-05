@@ -47,7 +47,7 @@ import android.hardware.fingerprint.FingerprintManager;
 import android.hardware.fingerprint.FingerprintManager.AuthenticationCallback;
 import android.hardware.fingerprint.FingerprintManager.AuthenticationResult;
 import android.media.AudioManager;
-import android.os.BatteryManager;
+// import android.os.BatteryManager;
 import android.os.CancellationSignal;
 import android.os.Handler;
 import android.os.IRemoteCallback;
@@ -879,9 +879,10 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
          * @return true if the device is plugged in.
          */
         public boolean isPluggedIn() {
-            return plugged == BatteryManager.BATTERY_PLUGGED_AC
-                    || plugged == BatteryManager.BATTERY_PLUGGED_USB
-                    || plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS;
+            // return plugged == BatteryManager.BATTERY_PLUGGED_AC
+            //         || plugged == BatteryManager.BATTERY_PLUGGED_USB
+            //         || plugged == BatteryManager.BATTERY_PLUGGED_WIRELESS;
+            return true;
         }
 
         /**

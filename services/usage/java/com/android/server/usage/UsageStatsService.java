@@ -45,8 +45,8 @@ import android.content.res.Configuration;
 import android.database.ContentObserver;
 import android.hardware.display.DisplayManager;
 import android.net.NetworkScoreManager;
-import android.os.BatteryManager;
-import android.os.BatteryStats;
+// import android.os.BatteryManager;
+// import android.os.BatteryStats;
 import android.os.Binder;
 import android.os.Environment;
 import android.os.Handler;
@@ -71,7 +71,7 @@ import android.util.TimeUtils;
 import android.view.Display;
 
 import com.android.internal.annotations.GuardedBy;
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.internal.os.BackgroundThread;
 import com.android.internal.os.SomeArgs;
 import com.android.internal.util.ArrayUtils;
@@ -131,7 +131,7 @@ public class UsageStatsService extends SystemService implements
     IDeviceIdleController mDeviceIdleController;
     private DisplayManager mDisplayManager;
     private PowerManager mPowerManager;
-    private IBatteryStats mBatteryStats;
+    // private IBatteryStats mBatteryStats;
 
     private final SparseArray<UserUsageStatsService> mUserState = new SparseArray<>();
     private File mUsageStatsDir;
@@ -192,7 +192,7 @@ public class UsageStatsService extends SystemService implements
                 com.android.internal.R.bool.config_enableAutoPowerModes);
         if (mAppIdleEnabled) {
             IntentFilter deviceStates = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
-            deviceStates.addAction(BatteryManager.ACTION_DISCHARGING);
+            // deviceStates.addAction(BatteryManager.ACTION_DISCHARGING);
             deviceStates.addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED);
             getContext().registerReceiver(new DeviceStateReceiver(), deviceStates);
         }
@@ -220,8 +220,8 @@ public class UsageStatsService extends SystemService implements
             mAppWidgetManager = getContext().getSystemService(AppWidgetManager.class);
             mDeviceIdleController = IDeviceIdleController.Stub.asInterface(
                     ServiceManager.getService(Context.DEVICE_IDLE_CONTROLLER));
-            mBatteryStats = IBatteryStats.Stub.asInterface(
-                    ServiceManager.getService(BatteryStats.SERVICE_NAME));
+            // mBatteryStats = IBatteryStats.Stub.asInterface(
+            //         ServiceManager.getService(BatteryStats.SERVICE_NAME));
             mDisplayManager = (DisplayManager) getContext().getSystemService(
                     Context.DISPLAY_SERVICE);
             mPowerManager = getContext().getSystemService(PowerManager.class);
@@ -236,8 +236,8 @@ public class UsageStatsService extends SystemService implements
             }
 
             mSystemServicesReady = true;
-        } else if (phase == PHASE_BOOT_COMPLETED) {
-            setChargingState(getContext().getSystemService(BatteryManager.class).isCharging());
+        // } else if (phase == PHASE_BOOT_COMPLETED) {
+            // setChargingState(getContext().getSystemService(BatteryManager.class).isCharging());
         }
     }
 
@@ -523,18 +523,18 @@ public class UsageStatsService extends SystemService implements
     }
 
     private void notifyBatteryStats(String packageName, int userId, boolean idle) {
-        try {
-            final int uid = mPackageManager.getPackageUidAsUser(packageName,
-                    PackageManager.MATCH_UNINSTALLED_PACKAGES, userId);
-            if (idle) {
-                mBatteryStats.noteEvent(BatteryStats.HistoryItem.EVENT_PACKAGE_INACTIVE,
-                        packageName, uid);
-            } else {
-                mBatteryStats.noteEvent(BatteryStats.HistoryItem.EVENT_PACKAGE_ACTIVE,
-                        packageName, uid);
-            }
-        } catch (NameNotFoundException | RemoteException e) {
-        }
+        // try {
+        //     final int uid = mPackageManager.getPackageUidAsUser(packageName,
+        //             PackageManager.MATCH_UNINSTALLED_PACKAGES, userId);
+        //     if (idle) {
+        //         mBatteryStats.noteEvent(BatteryStats.HistoryItem.EVENT_PACKAGE_INACTIVE,
+        //                 packageName, uid);
+        //     } else {
+        //         mBatteryStats.noteEvent(BatteryStats.HistoryItem.EVENT_PACKAGE_ACTIVE,
+        //                 packageName, uid);
+        //     }
+        // } catch (NameNotFoundException | RemoteException e) {
+        // }
     }
 
     void onDeviceIdleModeChanged() {
@@ -643,7 +643,7 @@ public class UsageStatsService extends SystemService implements
                 if (previouslyIdle) {
                     mHandler.sendMessage(mHandler.obtainMessage(MSG_INFORM_LISTENERS, userId,
                             /* idle = */ 0, event.mPackage));
-                    notifyBatteryStats(event.mPackage, userId, false);
+                    // notifyBatteryStats(event.mPackage, userId, false);
                 }
             }
         }
@@ -691,9 +691,9 @@ public class UsageStatsService extends SystemService implements
             if (previouslyIdle != stillIdle) {
                 mHandler.sendMessage(mHandler.obtainMessage(MSG_INFORM_LISTENERS, userId,
                         /* idle = */ stillIdle ? 1 : 0, packageName));
-                if (!stillIdle) {
-                    notifyBatteryStats(packageName, userId, idle);
-                }
+                // if (!stillIdle) {
+                //     notifyBatteryStats(packageName, userId, idle);
+                // }
             }
         }
     }
