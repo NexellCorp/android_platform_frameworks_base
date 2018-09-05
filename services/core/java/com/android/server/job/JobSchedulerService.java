@@ -74,7 +74,7 @@ import android.util.TimeUtils;
 import com.android.internal.app.IBatteryStats;
 import com.android.internal.app.procstats.ProcessStats;
 import com.android.internal.util.ArrayUtils;
-import com.android.server.DeviceIdleController;
+// import com.android.server.DeviceIdleController;
 import com.android.server.LocalServices;
 import com.android.server.job.JobStore.JobStatusFunctor;
 import com.android.server.job.controllers.AppIdleController;
@@ -146,7 +146,7 @@ public final class JobSchedulerService extends com.android.server.SystemService
 
     IBatteryStats mBatteryStats;
     PowerManager mPowerManager;
-    DeviceIdleController.LocalService mLocalDeviceIdleController;
+    // DeviceIdleController.LocalService mLocalDeviceIdleController;
 
     /**
      * Set to true once we are allowed to run third party apps.
@@ -733,14 +733,14 @@ public final class JobSchedulerService extends com.android.server.SystemService
                 }
             } else {
                 // When coming out of idle, allow thing to start back up.
-                if (mReadyToRock) {
-                    if (mLocalDeviceIdleController != null) {
-                        if (!mReportedActive) {
-                            mReportedActive = true;
-                            mLocalDeviceIdleController.setJobsActive(true);
-                        }
-                    }
-                }
+                // if (mReadyToRock) {
+                //     if (mLocalDeviceIdleController != null) {
+                //         if (!mReportedActive) {
+                //             mReportedActive = true;
+                //             mLocalDeviceIdleController.setJobsActive(true);
+                //         }
+                //     }
+                // }
                 mHandler.obtainMessage(MSG_CHECK_JOB).sendToTarget();
             }
         }
@@ -766,9 +766,9 @@ public final class JobSchedulerService extends com.android.server.SystemService
 
         if (mReportedActive != active) {
             mReportedActive = active;
-            if (mLocalDeviceIdleController != null) {
-                mLocalDeviceIdleController.setJobsActive(active);
-            }
+            // if (mLocalDeviceIdleController != null) {
+            //     mLocalDeviceIdleController.setJobsActive(active);
+            // }
         }
     }
 
@@ -835,8 +835,8 @@ public final class JobSchedulerService extends com.android.server.SystemService
                 mReadyToRock = true;
                 mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
                         BatteryStats.SERVICE_NAME));
-                mLocalDeviceIdleController
-                        = LocalServices.getService(DeviceIdleController.LocalService.class);
+                // mLocalDeviceIdleController
+                //         = LocalServices.getService(DeviceIdleController.LocalService.class);
                 // Create the "runners".
                 for (int i = 0; i < MAX_JOB_CONTEXTS_COUNT; i++) {
                     mActiveServices.add(

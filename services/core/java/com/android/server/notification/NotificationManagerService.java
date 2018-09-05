@@ -2597,8 +2597,9 @@ public class NotificationManagerService extends SystemService {
             if (intentCount > 0) {
                 final ActivityManagerInternal am = LocalServices
                         .getService(ActivityManagerInternal.class);
-                final long duration = LocalServices.getService(
-                        DeviceIdleController.LocalService.class).getNotificationWhitelistDuration();
+                // final long duration = LocalServices.getService(
+                //         DeviceIdleController.LocalService.class).getNotificationWhitelistDuration();
+                final long duration = 30 * 1000L;
                 for (int i = 0; i < intentCount; i++) {
                     PendingIntent pendingIntent = notification.allPendingIntents.valueAt(i);
                     if (pendingIntent != null) {

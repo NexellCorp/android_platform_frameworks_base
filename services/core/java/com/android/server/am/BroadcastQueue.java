@@ -49,7 +49,7 @@ import android.os.UserHandle;
 import android.util.EventLog;
 import android.util.Slog;
 import android.util.TimeUtils;
-import com.android.server.DeviceIdleController;
+// import com.android.server.DeviceIdleController;
 
 import static com.android.server.am.ActivityManagerDebugConfig.*;
 
@@ -177,11 +177,11 @@ public final class BroadcastQueue {
                     }
                 } break;
                 case SCHEDULE_TEMP_WHITELIST_MSG: {
-                    DeviceIdleController.LocalService dic = mService.mLocalDeviceIdleController;
-                    if (dic != null) {
-                        dic.addPowerSaveTempWhitelistAppDirect(UserHandle.getAppId(msg.arg1),
-                                msg.arg2, true, (String)msg.obj);
-                    }
+                    // DeviceIdleController.LocalService dic = mService.mLocalDeviceIdleController;
+                    // if (dic != null) {
+                    //     dic.addPowerSaveTempWhitelistAppDirect(UserHandle.getAppId(msg.arg1),
+                    //             msg.arg2, true, (String)msg.obj);
+                    // }
                 } break;
             }
         }

@@ -118,7 +118,7 @@ class AlarmManagerService extends SystemService {
     final LocalLog mLog = new LocalLog(TAG);
 
     AppOpsManager mAppOps;
-    DeviceIdleController.LocalService mLocalDeviceIdleController;
+    // DeviceIdleController.LocalService mLocalDeviceIdleController;
 
     final Object mLock = new Object();
 
@@ -952,8 +952,8 @@ class AlarmManagerService extends SystemService {
         if (phase == PHASE_SYSTEM_SERVICES_READY) {
             mConstants.start(getContext().getContentResolver());
             mAppOps = (AppOpsManager) getContext().getSystemService(Context.APP_OPS_SERVICE);
-            mLocalDeviceIdleController
-                    = LocalServices.getService(DeviceIdleController.LocalService.class);
+            // mLocalDeviceIdleController
+            //         = LocalServices.getService(DeviceIdleController.LocalService.class);
         }
     }
 
@@ -2643,9 +2643,9 @@ class AlarmManagerService extends SystemService {
                     break;
 
                 case REPORT_ALARMS_ACTIVE:
-                    if (mLocalDeviceIdleController != null) {
-                        mLocalDeviceIdleController.setAlarmsActive(msg.arg1 != 0);
-                    }
+                    // if (mLocalDeviceIdleController != null) {
+                    //     mLocalDeviceIdleController.setAlarmsActive(msg.arg1 != 0);
+                    // }
                     break;
 
                 default:

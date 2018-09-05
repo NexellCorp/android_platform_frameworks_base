@@ -132,7 +132,7 @@ import android.os.Binder;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.IDeviceIdleController;
+// import android.os.IDeviceIdleController;
 import android.os.INetworkManagementService;
 import android.os.Message;
 import android.os.MessageQueue.IdleHandler;
@@ -169,7 +169,7 @@ import com.android.internal.annotations.VisibleForTesting;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.FastXmlSerializer;
 import com.android.internal.util.IndentingPrintWriter;
-import com.android.server.DeviceIdleController;
+// import com.android.server.DeviceIdleController;
 import com.android.server.EventLogTags;
 import com.android.server.LocalServices;
 import com.android.server.SystemConfig;
@@ -303,7 +303,7 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     private IConnectivityManager mConnManager;
     private INotificationManager mNotifManager;
     private PowerManagerInternal mPowerManagerInternal;
-    private IDeviceIdleController mDeviceIdleController;
+    // private IDeviceIdleController mDeviceIdleController;
 
     // See main javadoc for instructions on how to use these locks.
     final Object mUidRulesFirstLock = new Object();
@@ -431,8 +431,8 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
         mActivityManager = checkNotNull(activityManager, "missing activityManager");
         mNetworkStats = checkNotNull(networkStats, "missing networkStats");
         mNetworkManager = checkNotNull(networkManagement, "missing networkManagement");
-        mDeviceIdleController = IDeviceIdleController.Stub.asInterface(ServiceManager.getService(
-                Context.DEVICE_IDLE_CONTROLLER));
+        // mDeviceIdleController = IDeviceIdleController.Stub.asInterface(ServiceManager.getService(
+        //         Context.DEVICE_IDLE_CONTROLLER));
         mTime = checkNotNull(time, "missing TrustedTime");
         mUserManager = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
         mIPm = AppGlobals.getPackageManager();
@@ -461,23 +461,23 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     }
 
     void updatePowerSaveWhitelistUL() {
-        try {
-            int[] whitelist = mDeviceIdleController.getAppIdWhitelistExceptIdle();
-            mPowerSaveWhitelistExceptIdleAppIds.clear();
-            if (whitelist != null) {
-                for (int uid : whitelist) {
-                    mPowerSaveWhitelistExceptIdleAppIds.put(uid, true);
-                }
-            }
-            whitelist = mDeviceIdleController.getAppIdWhitelist();
-            mPowerSaveWhitelistAppIds.clear();
-            if (whitelist != null) {
-                for (int uid : whitelist) {
-                    mPowerSaveWhitelistAppIds.put(uid, true);
-                }
-            }
-        } catch (RemoteException e) {
-        }
+        // try {
+        //     int[] whitelist = mDeviceIdleController.getAppIdWhitelistExceptIdle();
+        //     mPowerSaveWhitelistExceptIdleAppIds.clear();
+        //     if (whitelist != null) {
+        //         for (int uid : whitelist) {
+        //             mPowerSaveWhitelistExceptIdleAppIds.put(uid, true);
+        //         }
+        //     }
+        //     whitelist = mDeviceIdleController.getAppIdWhitelist();
+        //     mPowerSaveWhitelistAppIds.clear();
+        //     if (whitelist != null) {
+        //         for (int uid : whitelist) {
+        //             mPowerSaveWhitelistAppIds.put(uid, true);
+        //         }
+        //     }
+        // } catch (RemoteException e) {
+        // }
     }
 
     /**
@@ -539,21 +539,21 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
     }
 
     void updatePowerSaveTempWhitelistUL() {
-        try {
+        // try {
             // Clear the states of the current whitelist
             final int N = mPowerSaveTempWhitelistAppIds.size();
             for (int i = 0; i < N; i++) {
                 mPowerSaveTempWhitelistAppIds.setValueAt(i, false);
             }
             // Update the states with the new whitelist
-            final int[] whitelist = mDeviceIdleController.getAppIdTempWhitelist();
-            if (whitelist != null) {
-                for (int uid : whitelist) {
-                    mPowerSaveTempWhitelistAppIds.put(uid, true);
-                }
-            }
-        } catch (RemoteException e) {
-        }
+            // final int[] whitelist = mDeviceIdleController.getAppIdTempWhitelist();
+            // if (whitelist != null) {
+            //     for (int uid : whitelist) {
+            //         mPowerSaveTempWhitelistAppIds.put(uid, true);
+            //     }
+            // }
+        // } catch (RemoteException e) {
+        // }
     }
 
     /**
@@ -625,9 +625,9 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                     PowerManager.ACTION_POWER_SAVE_WHITELIST_CHANGED);
             mContext.registerReceiver(mPowerSaveWhitelistReceiver, whitelistFilter, null, mHandler);
 
-            DeviceIdleController.LocalService deviceIdleService
-                    = LocalServices.getService(DeviceIdleController.LocalService.class);
-            deviceIdleService.setNetworkPolicyTempWhitelistCallback(mTempPowerSaveChangedCallback);
+            // DeviceIdleController.LocalService deviceIdleService
+            //         = LocalServices.getService(DeviceIdleController.LocalService.class);
+            // deviceIdleService.setNetworkPolicyTempWhitelistCallback(mTempPowerSaveChangedCallback);
 
             // watch for network interfaces to be claimed
             final IntentFilter connFilter = new IntentFilter(CONNECTIVITY_ACTION);
@@ -2888,7 +2888,7 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
         //     }
         // }
         // return true;
-		return false;
+        return false;
     }
 
     /**

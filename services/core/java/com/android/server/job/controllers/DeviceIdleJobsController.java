@@ -25,7 +25,7 @@ import android.os.UserHandle;
 import android.util.Slog;
 
 import com.android.internal.util.ArrayUtils;
-import com.android.server.DeviceIdleController;
+// import com.android.server.DeviceIdleController;
 import com.android.server.LocalServices;
 import com.android.server.job.JobSchedulerService;
 import com.android.server.job.JobStore;
@@ -48,7 +48,7 @@ public class DeviceIdleJobsController extends StateController {
 
     private final JobSchedulerService mJobSchedulerService;
     private final PowerManager mPowerManager;
-    private final DeviceIdleController.LocalService mLocalDeviceIdleController;
+    // private final DeviceIdleController.LocalService mLocalDeviceIdleController;
 
     /**
      * True when in device idle mode, so we don't want to schedule any jobs.
@@ -99,8 +99,8 @@ public class DeviceIdleJobsController extends StateController {
         mJobSchedulerService = jobSchedulerService;
         // Register for device idle mode changes
         mPowerManager = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
-        mLocalDeviceIdleController =
-                LocalServices.getService(DeviceIdleController.LocalService.class);
+        // mLocalDeviceIdleController =
+        //         LocalServices.getService(DeviceIdleController.LocalService.class);
         final IntentFilter filter = new IntentFilter();
         filter.addAction(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED);
         filter.addAction(PowerManager.ACTION_LIGHT_DEVICE_IDLE_MODE_CHANGED);
@@ -133,15 +133,15 @@ public class DeviceIdleJobsController extends StateController {
      * Fetches the latest whitelist from the device idle controller.
      */
     void updateWhitelist() {
-        synchronized (mLock) {
-            if (mLocalDeviceIdleController != null) {
-                mDeviceIdleWhitelistAppIds =
-                        mLocalDeviceIdleController.getPowerSaveWhitelistUserAppIds();
-                if (LOG_DEBUG) {
-                    Slog.d(LOG_TAG, "Got whitelist " + Arrays.toString(mDeviceIdleWhitelistAppIds));
-                }
-            }
-        }
+        // synchronized (mLock) {
+        //     if (mLocalDeviceIdleController != null) {
+        //         mDeviceIdleWhitelistAppIds =
+        //                 mLocalDeviceIdleController.getPowerSaveWhitelistUserAppIds();
+        //         if (LOG_DEBUG) {
+        //             Slog.d(LOG_TAG, "Got whitelist " + Arrays.toString(mDeviceIdleWhitelistAppIds));
+        //         }
+        //     }
+        // }
     }
 
     /**

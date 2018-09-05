@@ -43,7 +43,7 @@ import com.android.internal.util.MemInfoReader;
 import com.android.internal.util.Preconditions;
 import com.android.server.AppOpsService;
 import com.android.server.AttributeCache;
-import com.android.server.DeviceIdleController;
+// import com.android.server.DeviceIdleController;
 import com.android.server.IntentResolver;
 import com.android.server.LocalServices;
 import com.android.server.LockGuard;
@@ -1128,7 +1128,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     /**
      * Access to DeviceIdleController service.
      */
-    DeviceIdleController.LocalService mLocalDeviceIdleController;
+    // DeviceIdleController.LocalService mLocalDeviceIdleController;
 
     /**
      * Information about and control over application operations
@@ -7305,12 +7305,12 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
 
         final long token = Binder.clearCallingIdentity();
-        try {
-            mLocalDeviceIdleController.addPowerSaveTempWhitelistAppDirect(targetUid, duration,
-                    true, "pe from uid:" + callerUid);
-        } finally {
+        // try {
+        //     mLocalDeviceIdleController.addPowerSaveTempWhitelistAppDirect(targetUid, duration,
+        //             true, "pe from uid:" + callerUid);
+        // } finally {
             Binder.restoreCallingIdentity(token);
-        }
+        // }
     }
 
     @Override
@@ -13309,8 +13309,8 @@ public final class ActivityManagerService extends ActivityManagerNative
                 return;
             }
 
-            mLocalDeviceIdleController
-                    = LocalServices.getService(DeviceIdleController.LocalService.class);
+            // mLocalDeviceIdleController
+            //         = LocalServices.getService(DeviceIdleController.LocalService.class);
 
             // Make sure we have the current profile info, since it is needed for security checks.
             mUserController.onSystemReady();
