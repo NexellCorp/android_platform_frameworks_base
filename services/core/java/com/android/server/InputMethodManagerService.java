@@ -812,9 +812,10 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             // Called on ActivityManager thread.
             // TODO: Dispatch this to a worker thread as needed.
             if (phase == SystemService.PHASE_ACTIVITY_MANAGER_READY) {
-                StatusBarManagerService statusBarService = (StatusBarManagerService) ServiceManager
-                        .getService(Context.STATUS_BAR_SERVICE);
-                mService.systemRunning(statusBarService);
+                // StatusBarManagerService statusBarService = (StatusBarManagerService) ServiceManager
+                //         .getService(Context.STATUS_BAR_SERVICE);
+                // mService.systemRunning(statusBarService);
+                mService.systemRunning(null);
             }
         }
 
@@ -1652,9 +1653,9 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             mEnabledSession = null;
             mCurMethod = null;
         }
-        if (mStatusBar != null) {
-            mStatusBar.setIconVisibility(mSlotIme, false);
-        }
+        // if (mStatusBar != null) {
+        //     mStatusBar.setIconVisibility(mSlotIme, false);
+        // }
     }
 
     @Override
@@ -1692,9 +1693,9 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                 }
                 if (iconId == 0) {
                     if (DEBUG) Slog.d(TAG, "hide the small icon for the input method");
-                    if (mStatusBar != null) {
-                        mStatusBar.setIconVisibility(mSlotIme, false);
-                    }
+                    // if (mStatusBar != null) {
+                    //     mStatusBar.setIconVisibility(mSlotIme, false);
+                    // }
                 } else if (packageName != null) {
                     if (DEBUG) Slog.d(TAG, "show a small icon for the input method");
                     CharSequence contentDescription = null;
@@ -1707,12 +1708,12 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                     } catch (RemoteException e) {
                         /* ignore */
                     }
-                    if (mStatusBar != null) {
-                        mStatusBar.setIcon(mSlotIme, packageName, iconId, 0,
-                                contentDescription  != null
-                                        ? contentDescription.toString() : null);
-                        mStatusBar.setIconVisibility(mSlotIme, true);
-                    }
+                    // if (mStatusBar != null) {
+                    //     mStatusBar.setIcon(mSlotIme, packageName, iconId, 0,
+                    //             contentDescription  != null
+                    //                     ? contentDescription.toString() : null);
+                    //     mStatusBar.setIconVisibility(mSlotIme, true);
+                    // }
                 }
             }
         } finally {
@@ -1826,10 +1827,10 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             }
             // mImeWindowVis should be updated before calling shouldShowImeSwitcherLocked().
             final boolean needsToShowImeSwitcher = shouldShowImeSwitcherLocked(vis);
-            if (mStatusBar != null) {
-                mStatusBar.setImeWindowStatus(token, vis, backDisposition,
-                        needsToShowImeSwitcher);
-            }
+            // if (mStatusBar != null) {
+            //     mStatusBar.setImeWindowStatus(token, vis, backDisposition,
+            //             needsToShowImeSwitcher);
+            // }
             final InputMethodInfo imi = mMethodMap.get(mCurMethodId);
             if (imi != null && needsToShowImeSwitcher) {
                 // Used to load label

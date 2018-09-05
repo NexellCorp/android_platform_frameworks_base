@@ -27,7 +27,7 @@ import android.accessibilityservice.IAccessibilityServiceConnection;
 import android.annotation.NonNull;
 import android.app.AlertDialog;
 import android.app.PendingIntent;
-import android.app.StatusBarManager;
+// import android.app.StatusBarManager;
 import android.app.UiAutomation;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -94,7 +94,7 @@ import com.android.internal.content.PackageMonitor;
 import com.android.internal.os.SomeArgs;
 import com.android.server.LocalServices;
 
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.FileDescriptor;
@@ -3375,37 +3375,37 @@ public class AccessibilityManagerService extends IAccessibilityManager.Stub {
         }
 
         private void expandNotifications() {
-            final long token = Binder.clearCallingIdentity();
+            // final long token = Binder.clearCallingIdentity();
 
-            StatusBarManager statusBarManager = (StatusBarManager) mContext.getSystemService(
-                    android.app.Service.STATUS_BAR_SERVICE);
-            statusBarManager.expandNotificationsPanel();
+            // StatusBarManager statusBarManager = (StatusBarManager) mContext.getSystemService(
+            //         android.app.Service.STATUS_BAR_SERVICE);
+            // statusBarManager.expandNotificationsPanel();
 
-            Binder.restoreCallingIdentity(token);
+            // Binder.restoreCallingIdentity(token);
         }
 
         private void expandQuickSettings() {
-            final long token = Binder.clearCallingIdentity();
-
-            StatusBarManager statusBarManager = (StatusBarManager) mContext.getSystemService(
-                    android.app.Service.STATUS_BAR_SERVICE);
-            statusBarManager.expandSettingsPanel();
-
-            Binder.restoreCallingIdentity(token);
+            // final long token = Binder.clearCallingIdentity();
+            //
+            // StatusBarManager statusBarManager = (StatusBarManager) mContext.getSystemService(
+            //         android.app.Service.STATUS_BAR_SERVICE);
+            // statusBarManager.expandSettingsPanel();
+            //
+            // Binder.restoreCallingIdentity(token);
         }
 
         private boolean openRecents() {
-            final long token = Binder.clearCallingIdentity();
-            try {
-                StatusBarManagerInternal statusBarService = LocalServices.getService(
-                        StatusBarManagerInternal.class);
-                if (statusBarService == null) {
-                    return false;
-                }
-                statusBarService.toggleRecentApps();
-            } finally {
-                Binder.restoreCallingIdentity(token);
-            }
+            // final long token = Binder.clearCallingIdentity();
+            // try {
+            //     StatusBarManagerInternal statusBarService = LocalServices.getService(
+            //             StatusBarManagerInternal.class);
+            //     if (statusBarService == null) {
+            //         return false;
+            //     }
+            //     statusBarService.toggleRecentApps();
+            // } finally {
+            //     Binder.restoreCallingIdentity(token);
+            // }
             return true;
         }
 
@@ -3414,7 +3414,7 @@ public class AccessibilityManagerService extends IAccessibilityManager.Stub {
         }
 
         private void toggleSplitScreen() {
-            LocalServices.getService(StatusBarManagerInternal.class).toggleSplitScreen();
+            // LocalServices.getService(StatusBarManagerInternal.class).toggleSplitScreen();
         }
 
         private IAccessibilityInteractionConnection getConnectionLocked(int windowId) {

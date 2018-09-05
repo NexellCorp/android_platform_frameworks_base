@@ -53,7 +53,7 @@ import com.android.internal.app.IVoiceInteractor;
 // import com.android.internal.logging.MetricsLogger;
 import com.android.internal.os.IResultReceiver;
 import com.android.server.LocalServices;
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -302,9 +302,9 @@ final class VoiceInteractionSessionConnection implements ServiceConnection {
             } else {
                 mScreenshot = null;
             }
-            if (needDisclosure && AssistUtils.shouldDisclose(mContext, mSessionComponentName)) {
-                mHandler.post(mShowAssistDisclosureRunnable);
-            }
+            // if (needDisclosure && AssistUtils.shouldDisclose(mContext, mSessionComponentName)) {
+            //     mHandler.post(mShowAssistDisclosureRunnable);
+            // }
             if (mSession != null) {
                 try {
                     mSession.show(mShowArgs, mShowFlags, showCallback);
@@ -590,14 +590,14 @@ final class VoiceInteractionSessionConnection implements ServiceConnection {
         }
     }
 
-    private Runnable mShowAssistDisclosureRunnable = new Runnable() {
-        @Override
-        public void run() {
-            StatusBarManagerInternal statusBarInternal = LocalServices.getService(
-                    StatusBarManagerInternal.class);
-            if (statusBarInternal != null) {
-                statusBarInternal.showAssistDisclosure();
-            }
-        }
-    };
+    // private Runnable mShowAssistDisclosureRunnable = new Runnable() {
+    //     @Override
+    //     public void run() {
+    //         StatusBarManagerInternal statusBarInternal = LocalServices.getService(
+    //                 StatusBarManagerInternal.class);
+    //         if (statusBarInternal != null) {
+    //             statusBarInternal.showAssistDisclosure();
+    //         }
+    //     }
+    // };
 };

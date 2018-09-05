@@ -24,7 +24,7 @@ import android.app.IUiModeManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.StatusBarManager;
+// import android.app.StatusBarManager;
 import android.app.UiModeManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -94,7 +94,7 @@ final class UiModeManagerService extends SystemService {
 
     private TwilightManager mTwilightManager;
     private NotificationManager mNotificationManager;
-    private StatusBarManager mStatusBarManager;
+    // private StatusBarManager mStatusBarManager;
 
     private PowerManager.WakeLock mWakeLock;
 
@@ -629,21 +629,21 @@ final class UiModeManagerService extends SystemService {
 
     private void adjustStatusBarCarModeLocked() {
         final Context context = getContext();
-        if (mStatusBarManager == null) {
-            mStatusBarManager = (StatusBarManager)
-                    context.getSystemService(Context.STATUS_BAR_SERVICE);
-        }
+        // if (mStatusBarManager == null) {
+        //     mStatusBarManager = (StatusBarManager)
+        //             context.getSystemService(Context.STATUS_BAR_SERVICE);
+        // }
 
         // Fear not: StatusBarManagerService manages a list of requests to disable
         // features of the status bar; these are ORed together to form the
         // active disabled list. So if (for example) the device is locked and
         // the status bar should be totally disabled, the calls below will
         // have no effect until the device is unlocked.
-        if (mStatusBarManager != null) {
-            mStatusBarManager.disable(mCarModeEnabled
-                ? StatusBarManager.DISABLE_NOTIFICATION_TICKER
-                : StatusBarManager.DISABLE_NONE);
-        }
+        // if (mStatusBarManager != null) {
+        //     mStatusBarManager.disable(mCarModeEnabled
+        //         ? StatusBarManager.DISABLE_NOTIFICATION_TICKER
+        //         : StatusBarManager.DISABLE_NONE);
+        // }
 
         if (mNotificationManager == null) {
             mNotificationManager = (NotificationManager)

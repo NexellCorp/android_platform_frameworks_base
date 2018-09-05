@@ -17,7 +17,7 @@
 package com.android.server;
 
 import android.app.ActivityManager;
-import android.app.StatusBarManager;
+// import android.app.StatusBarManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -41,7 +41,7 @@ import android.view.KeyEvent;
 
 // import com.android.internal.logging.MetricsLogger;
 // import com.android.internal.logging.MetricsProto.MetricsEvent;
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 
 /**
  * The service that listens for gestures detected in sensor firmware and starts the intent
@@ -270,7 +270,8 @@ public class GestureLauncherService extends SystemService {
             Slog.i(TAG, "Power button double tap gesture detected, launching camera. Interval="
                     + doubleTapInterval + "ms");
             launched = handleCameraLaunchGesture(false /* useWakelock */,
-                    StatusBarManager.CAMERA_LAUNCH_SOURCE_POWER_DOUBLE_TAP);
+                    // StatusBarManager.CAMERA_LAUNCH_SOURCE_POWER_DOUBLE_TAP);
+                    1);
             // if (launched) {
             //     MetricsLogger.action(mContext, MetricsEvent.ACTION_DOUBLE_TAP_POWER_CAMERA_GESTURE,
             //             (int) doubleTapInterval);
@@ -301,9 +302,9 @@ public class GestureLauncherService extends SystemService {
             // Make sure we don't sleep too early
             mWakeLock.acquire(500L);
         }
-        StatusBarManagerInternal service = LocalServices.getService(
-                StatusBarManagerInternal.class);
-        service.onCameraLaunchGestureDetected(source);
+        // StatusBarManagerInternal service = LocalServices.getService(
+        //         StatusBarManagerInternal.class);
+        // service.onCameraLaunchGestureDetected(source);
         return true;
     }
 
@@ -343,7 +344,8 @@ public class GestureLauncherService extends SystemService {
                             "values=[%.4f, %.4f, %.4f].", values[0], values[1], values[2]));
                 }
                 if (handleCameraLaunchGesture(true /* useWakelock */,
-                        StatusBarManager.CAMERA_LAUNCH_SOURCE_WIGGLE)) {
+                        // StatusBarManager.CAMERA_LAUNCH_SOURCE_WIGGLE)) {
+                        0)) {
                     // MetricsLogger.action(mContext, MetricsEvent.ACTION_WIGGLE_CAMERA_GESTURE);
                     trackCameraLaunchEvent(event);
                 }

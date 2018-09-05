@@ -151,7 +151,7 @@ import com.android.server.GestureLauncherService;
 import com.android.server.LocalServices;
 import com.android.server.policy.keyguard.KeyguardServiceDelegate;
 import com.android.server.policy.keyguard.KeyguardServiceDelegate.DrawnListener;
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 import com.android.server.vr.VrManagerInternal;
 
 import java.io.File;
@@ -329,7 +329,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     DreamManagerInternal mDreamManagerInternal;
     PowerManagerInternal mPowerManagerInternal;
     IStatusBarService mStatusBarService;
-    StatusBarManagerInternal mStatusBarManagerInternal;
+    // StatusBarManagerInternal mStatusBarManagerInternal;
     boolean mPreloadedRecentApps;
     final Object mServiceAquireLock = new Object();
     Vibrator mVibrator; // Vibrator for giving feedback of orientation changes
@@ -931,7 +931,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             View.NAVIGATION_BAR_TRANSIENT,
             View.NAVIGATION_BAR_UNHIDE,
             View.NAVIGATION_BAR_TRANSLUCENT,
-            StatusBarManager.WINDOW_NAVIGATION_BAR,
+            // StatusBarManager.WINDOW_NAVIGATION_BAR,
+            2,
             WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,
             View.NAVIGATION_BAR_TRANSPARENT);
 
@@ -949,15 +950,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    StatusBarManagerInternal getStatusBarManagerInternal() {
-        synchronized (mServiceAquireLock) {
-            if (mStatusBarManagerInternal == null) {
-                mStatusBarManagerInternal =
-                        LocalServices.getService(StatusBarManagerInternal.class);
-            }
-            return mStatusBarManagerInternal;
-        }
-    }
+    // StatusBarManagerInternal getStatusBarManagerInternal() {
+    //     synchronized (mServiceAquireLock) {
+    //         if (mStatusBarManagerInternal == null) {
+    //             mStatusBarManagerInternal =
+    //                     LocalServices.getService(StatusBarManagerInternal.class);
+    //         }
+    //         return mStatusBarManagerInternal;
+    //     }
+    // }
 
     /*
      * We always let the sensor be switched on by default except when
@@ -1613,10 +1614,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     private void showTvPictureInPictureMenuInternal() {
-        StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-        if (statusbar != null) {
-            statusbar.showTvPictureInPictureMenu();
-        }
+        // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+        // if (statusbar != null) {
+        //     statusbar.showTvPictureInPictureMenu();
+        // }
     }
 
     private final Runnable mHomeDoubleTapTimeoutRunnable = new Runnable() {
@@ -3751,10 +3752,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 }
                 args.putBoolean(hint, true);
             }
-            StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-            if (statusbar != null) {
-                statusbar.startAssist(args);
-            }
+            // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+            // if (statusbar != null) {
+            //     statusbar.startAssist(args);
+            // }
         }
     }
 
@@ -3775,28 +3776,28 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private void preloadRecentApps() {
         mPreloadedRecentApps = true;
-        StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-        if (statusbar != null) {
-            statusbar.preloadRecentApps();
-        }
+        // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+        // if (statusbar != null) {
+        //     statusbar.preloadRecentApps();
+        // }
     }
 
     private void cancelPreloadRecentApps() {
         if (mPreloadedRecentApps) {
             mPreloadedRecentApps = false;
-            StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-            if (statusbar != null) {
-                statusbar.cancelPreloadRecentApps();
-            }
+            // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+            // if (statusbar != null) {
+            //     statusbar.cancelPreloadRecentApps();
+            // }
         }
     }
 
     private void toggleRecentApps() {
         mPreloadedRecentApps = false; // preloading no longer needs to be canceled
-        StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-        if (statusbar != null) {
-            statusbar.toggleRecentApps();
-        }
+        // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+        // if (statusbar != null) {
+        //     statusbar.toggleRecentApps();
+        // }
     }
 
     @Override
@@ -3807,32 +3808,32 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private void showRecentApps(boolean triggeredFromAltTab, boolean fromHome) {
         mPreloadedRecentApps = false; // preloading no longer needs to be canceled
-        StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-        if (statusbar != null) {
-            statusbar.showRecentApps(triggeredFromAltTab, fromHome);
-        }
+        // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+        // if (statusbar != null) {
+        //     statusbar.showRecentApps(triggeredFromAltTab, fromHome);
+        // }
     }
 
     private void toggleKeyboardShortcutsMenu(int deviceId) {
-        StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-        if (statusbar != null) {
-            statusbar.toggleKeyboardShortcutsMenu(deviceId);
-        }
+        // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+        // if (statusbar != null) {
+        //     statusbar.toggleKeyboardShortcutsMenu(deviceId);
+        // }
     }
 
     private void dismissKeyboardShortcutsMenu() {
-        StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-        if (statusbar != null) {
-            statusbar.dismissKeyboardShortcutsMenu();
-        }
+        // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+        // if (statusbar != null) {
+        //     statusbar.dismissKeyboardShortcutsMenu();
+        // }
     }
 
     private void hideRecentApps(boolean triggeredFromAltTab, boolean triggeredFromHome) {
         mPreloadedRecentApps = false; // preloading no longer needs to be canceled
-        StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-        if (statusbar != null) {
-            statusbar.hideRecentApps(triggeredFromAltTab, triggeredFromHome);
-        }
+        // StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+        // if (statusbar != null) {
+        //     statusbar.hideRecentApps(triggeredFromAltTab, triggeredFromHome);
+        // }
     }
 
     void launchHomeFromHotKey() {
@@ -7626,18 +7627,18 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mFocusedApp = win.getAppToken();
         final Rect fullscreenStackBounds = new Rect(mNonDockedStackBounds);
         final Rect dockedStackBounds = new Rect(mDockedStackBounds);
-        mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
-                    if (statusbar != null) {
-                        statusbar.setSystemUiVisibility(visibility, fullscreenVisibility,
-                                dockedVisibility, 0xffffffff, fullscreenStackBounds,
-                                dockedStackBounds, win.toString());
-                        statusbar.topAppWindowChanged(needsMenu);
-                    }
-                }
-            });
+        // mHandler.post(new Runnable() {
+        //         @Override
+        //         public void run() {
+        //             StatusBarManagerInternal statusbar = getStatusBarManagerInternal();
+        //             if (statusbar != null) {
+        //                 statusbar.setSystemUiVisibility(visibility, fullscreenVisibility,
+        //                         dockedVisibility, 0xffffffff, fullscreenStackBounds,
+        //                         dockedStackBounds, win.toString());
+        //                 statusbar.topAppWindowChanged(needsMenu);
+        //             }
+        //         }
+        //     });
         return diff;
     }
 
@@ -7887,10 +7888,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         if (mKeyguardDelegate != null) {
             mKeyguardDelegate.setCurrentUser(newUserId);
         }
-        StatusBarManagerInternal statusBar = getStatusBarManagerInternal();
-        if (statusBar != null) {
-            statusBar.setCurrentUser(newUserId);
-        }
+        // StatusBarManagerInternal statusBar = getStatusBarManagerInternal();
+        // if (statusBar != null) {
+        //     statusBar.setCurrentUser(newUserId);
+        // }
         setLastInputMethodWindowLw(null, null);
     }
 

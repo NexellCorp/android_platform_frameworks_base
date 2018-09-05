@@ -455,7 +455,6 @@ android.app.SharedPreferencesImpl$EditorImpl
 android.app.SharedPreferencesImpl$EditorImpl$1
 android.app.SharedPreferencesImpl$EditorImpl$2
 android.app.SharedPreferencesImpl$MemoryCommitResult
-android.app.StatusBarManager
 android.app.SystemServiceRegistry
 android.app.SystemServiceRegistry$1
 android.app.SystemServiceRegistry$10

@@ -58,7 +58,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.NotificationManager.Policy;
 import android.app.PendingIntent;
-import android.app.StatusBarManager;
+// import android.app.StatusBarManager;
 import android.app.backup.BackupManager;
 import android.app.usage.UsageEvents;
 // import android.app.usage.UsageStatsManagerInternal;
@@ -139,7 +139,7 @@ import com.android.server.lights.Light;
 import com.android.server.lights.LightsManager;
 import com.android.server.notification.ManagedServices.ManagedServiceInfo;
 import com.android.server.policy.PhoneWindowManager;
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 import com.android.server.notification.ManagedServices.UserProfiles;
 
 import libcore.io.IoUtils;
@@ -171,6 +171,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+
+import android.view.View;
 
 /** {@hide} */
 public class NotificationManagerService extends SystemService {
@@ -229,7 +231,7 @@ public class NotificationManagerService extends SystemService {
     private IActivityManager mAm;
     AudioManager mAudioManager;
     AudioManagerInternal mAudioManagerInternal;
-    @Nullable StatusBarManagerInternal mStatusBar;
+    // @Nullable StatusBarManagerInternal mStatusBar;
     Vibrator mVibrator;
     private WindowManagerInternal mWindowManagerInternal;
 
@@ -489,7 +491,8 @@ public class NotificationManagerService extends SystemService {
         public void onSetDisabled(int status) {
             synchronized (mNotificationList) {
                 mDisableNotificationEffects =
-                        (status & StatusBarManager.DISABLE_NOTIFICATION_ALERTS) != 0;
+                        // (status & StatusBarManager.DISABLE_NOTIFICATION_ALERTS) != 0;
+                        (status & View.STATUS_BAR_DISABLE_NOTIFICATION_ALERTS) != 0;
                 if (disableNotificationEffects(null) != null) {
                     // cancel whatever's going on
                     long identity = Binder.clearCallingIdentity();
@@ -789,9 +792,9 @@ public class NotificationManagerService extends SystemService {
             } else if (action.equals(Intent.ACTION_USER_PRESENT)) {
                 // turn off LED when user passes through lock screen
                 mNotificationLight.turnOff();
-                if (mStatusBar != null) {
-                    mStatusBar.notificationLightOff();
-                }
+                // if (mStatusBar != null) {
+                //     mStatusBar.notificationLightOff();
+                // }
             } else if (action.equals(Intent.ACTION_USER_SWITCHED)) {
                 final int user = intent.getIntExtra(Intent.EXTRA_USER_HANDLE, UserHandle.USER_NULL);
                 // reload per-user settings
@@ -868,14 +871,14 @@ public class NotificationManagerService extends SystemService {
     private SettingsObserver mSettingsObserver;
     private ZenModeHelper mZenModeHelper;
 
-    private final Runnable mBuzzBeepBlinked = new Runnable() {
-        @Override
-        public void run() {
-            if (mStatusBar != null) {
-                mStatusBar.buzzBeepBlinked();
-            }
-        }
-    };
+    // private final Runnable mBuzzBeepBlinked = new Runnable() {
+    //     @Override
+    //     public void run() {
+    //         if (mStatusBar != null) {
+    //             mStatusBar.buzzBeepBlinked();
+    //         }
+    //     }
+    // };
 
     static long[] getLongArray(Resources r, int resid, int maxlen, long[] def) {
         int[] ar = r.getIntArray(resid);
@@ -988,10 +991,10 @@ public class NotificationManagerService extends SystemService {
         // Find the updatable ranker and register it.
         mRankerServices.registerRanker();
 
-        mStatusBar = getLocalService(StatusBarManagerInternal.class);
-        if (mStatusBar != null) {
-            mStatusBar.setNotificationDelegate(mNotificationDelegate);
-        }
+        // mStatusBar = getLocalService(StatusBarManagerInternal.class);
+        // if (mStatusBar != null) {
+        //     mStatusBar.setNotificationDelegate(mNotificationDelegate);
+        // }
 
         final LightsManager lights = getLocalService(LightsManager.class);
         mNotificationLight = lights.getLight(LightsManager.LIGHT_ID_NOTIFICATIONS);
@@ -2969,7 +2972,7 @@ public class NotificationManagerService extends SystemService {
             } else {
                 EventLogTags.writeNotificationAlert(key,
                         buzz ? 1 : 0, beep ? 1 : 0, blink ? 1 : 0);
-                mHandler.post(mBuzzBeepBlinked);
+                // mHandler.post(mBuzzBeepBlinked);
             }
         }
     }
@@ -3604,9 +3607,9 @@ public class NotificationManagerService extends SystemService {
         // Don't flash while we are in a call or screen is on
         if (ledNotification == null || mInCall || mScreenOn) {
             mNotificationLight.turnOff();
-            if (mStatusBar != null) {
-                mStatusBar.notificationLightOff();
-            }
+            // if (mStatusBar != null) {
+            //     mStatusBar.notificationLightOff();
+            // }
         } else {
             final Notification ledno = ledNotification.sbn.getNotification();
             int ledARGB = ledno.ledARGB;
@@ -3622,10 +3625,10 @@ public class NotificationManagerService extends SystemService {
                 mNotificationLight.setFlashing(ledARGB, Light.LIGHT_FLASH_TIMED,
                         ledOnMS, ledOffMS);
             }
-            if (mStatusBar != null) {
-                // let SystemUI make an independent decision
-                mStatusBar.notificationLightPulse(ledARGB, ledOnMS, ledOffMS);
-            }
+            // if (mStatusBar != null) {
+            //     // let SystemUI make an independent decision
+            //     mStatusBar.notificationLightPulse(ledARGB, ledOnMS, ledOffMS);
+            // }
         }
     }
 

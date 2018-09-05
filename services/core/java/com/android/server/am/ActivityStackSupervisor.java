@@ -32,7 +32,7 @@ import android.app.IActivityManager;
 import android.app.IActivityManager.WaitResult;
 import android.app.ProfilerInfo;
 import android.app.ResultInfo;
-import android.app.StatusBarManager;
+// import android.app.StatusBarManager;
 import android.app.admin.IDevicePolicyManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -87,7 +87,7 @@ import android.view.Surface;
 
 import com.android.internal.content.ReferrerIntent;
 import com.android.internal.os.TransferPipe;
-import com.android.internal.statusbar.IStatusBarService;
+// import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.server.LocalServices;
@@ -274,7 +274,7 @@ public final class ActivityStackSupervisor implements DisplayListener {
 
     /** Status Bar Service **/
     private IBinder mToken = new Binder();
-    private IStatusBarService mStatusBarService;
+    // private IStatusBarService mStatusBarService;
     private IDevicePolicyManager mDevicePolicyManager;
 
     // For debugging to make sure the caller when acquiring/releasing our
@@ -506,18 +506,18 @@ public final class ActivityStackSupervisor implements DisplayListener {
 
     // This function returns a IStatusBarService. The value is from ServiceManager.
     // getService and is cached.
-    private IStatusBarService getStatusBarService() {
-        synchronized (mService) {
-            if (mStatusBarService == null) {
-                mStatusBarService = IStatusBarService.Stub.asInterface(
-                    ServiceManager.checkService(Context.STATUS_BAR_SERVICE));
-                if (mStatusBarService == null) {
-                    Slog.w("StatusBarManager", "warning: no STATUS_BAR_SERVICE");
-                }
-            }
-            return mStatusBarService;
-        }
-    }
+    // private IStatusBarService getStatusBarService() {
+    //     synchronized (mService) {
+    //         if (mStatusBarService == null) {
+    //             mStatusBarService = IStatusBarService.Stub.asInterface(
+    //                 ServiceManager.checkService(Context.STATUS_BAR_SERVICE));
+    //             if (mStatusBarService == null) {
+    //                 Slog.w("StatusBarManager", "warning: no STATUS_BAR_SERVICE");
+    //             }
+    //         }
+    //         return mStatusBarService;
+    //     }
+    // }
 
     private IDevicePolicyManager getDevicePolicyManager() {
         synchronized (mService) {
@@ -3938,20 +3938,20 @@ public final class ActivityStackSupervisor implements DisplayListener {
                         }
                         mLockTaskNotify.show(true);
                         mLockTaskModeState = msg.arg2;
-                        if (getStatusBarService() != null) {
-                            int flags = 0;
-                            if (mLockTaskModeState == LOCK_TASK_MODE_LOCKED) {
-                                flags = StatusBarManager.DISABLE_MASK
-                                        & (~StatusBarManager.DISABLE_BACK);
-                            } else if (mLockTaskModeState == LOCK_TASK_MODE_PINNED) {
-                                flags = StatusBarManager.DISABLE_MASK
-                                        & (~StatusBarManager.DISABLE_BACK)
-                                        & (~StatusBarManager.DISABLE_HOME)
-                                        & (~StatusBarManager.DISABLE_RECENT);
-                            }
-                            getStatusBarService().disable(flags, mToken,
-                                    mService.mContext.getPackageName());
-                        }
+                        // if (getStatusBarService() != null) {
+                        //     int flags = 0;
+                        //     if (mLockTaskModeState == LOCK_TASK_MODE_LOCKED) {
+                        //         flags = StatusBarManager.DISABLE_MASK
+                        //                 & (~StatusBarManager.DISABLE_BACK);
+                        //     } else if (mLockTaskModeState == LOCK_TASK_MODE_PINNED) {
+                        //         flags = StatusBarManager.DISABLE_MASK
+                        //                 & (~StatusBarManager.DISABLE_BACK)
+                        //                 & (~StatusBarManager.DISABLE_HOME)
+                        //                 & (~StatusBarManager.DISABLE_RECENT);
+                        //     }
+                        //     getStatusBarService().disable(flags, mToken,
+                        //             mService.mContext.getPackageName());
+                        // }
                         mWindowManager.disableKeyguard(mToken, LOCK_TASK_TAG);
                         if (getDevicePolicyManager() != null) {
                             getDevicePolicyManager().notifyLockTaskModeChanged(true,
@@ -3964,10 +3964,10 @@ public final class ActivityStackSupervisor implements DisplayListener {
                 case LOCK_TASK_END_MSG: {
                     // When lock task ends, we enable the status bars.
                     try {
-                        if (getStatusBarService() != null) {
-                            getStatusBarService().disable(StatusBarManager.DISABLE_NONE, mToken,
-                                    mService.mContext.getPackageName());
-                        }
+                        // if (getStatusBarService() != null) {
+                        //     getStatusBarService().disable(StatusBarManager.DISABLE_NONE, mToken,
+                        //             mService.mContext.getPackageName());
+                        // }
                         mWindowManager.reenableKeyguard(mToken);
                         if (getDevicePolicyManager() != null) {
                             getDevicePolicyManager().notifyLockTaskModeChanged(false, null,

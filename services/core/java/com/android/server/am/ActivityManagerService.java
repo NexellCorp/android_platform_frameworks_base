@@ -54,7 +54,7 @@ import com.android.server.Watchdog;
 import com.android.server.am.ActivityStack.ActivityState;
 import com.android.server.firewall.IntentFirewall;
 import com.android.server.pm.Installer;
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 import com.android.server.vr.VrManagerInternal;
 import com.android.server.wm.WindowManagerService;
 
@@ -10224,11 +10224,11 @@ public final class ActivityManagerService extends ActivityManagerNative
                 if (task.mLockTaskAuth == LOCK_TASK_AUTH_PINNABLE) {
                     // startLockTask() called by app and task mode is lockTaskModeDefault.
                     if (DEBUG_LOCKTASK) Slog.w(TAG_LOCKTASK, "Mode default, asking user");
-                    StatusBarManagerInternal statusBarManager =
-                            LocalServices.getService(StatusBarManagerInternal.class);
-                    if (statusBarManager != null) {
-                        statusBarManager.showScreenPinningRequest(task.taskId);
-                    }
+                    // StatusBarManagerInternal statusBarManager =
+                    //         LocalServices.getService(StatusBarManagerInternal.class);
+                    // if (statusBarManager != null) {
+                    //     statusBarManager.showScreenPinningRequest(task.taskId);
+                    // }
                     return;
                 }
 

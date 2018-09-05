@@ -47,7 +47,7 @@ import com.android.internal.os.BackgroundThread;
 import com.android.internal.util.IndentingPrintWriter;
 import com.android.server.LocalServices;
 import com.android.server.SystemService;
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -265,11 +265,11 @@ public class SearchManagerService extends ISearchManager.Stub {
 
     @Override
     public void launchAssist(Bundle args) {
-        StatusBarManagerInternal statusBarManager =
-                LocalServices.getService(StatusBarManagerInternal.class);
-        if (statusBarManager != null) {
-            statusBarManager.startAssist(args);
-        }
+        // StatusBarManagerInternal statusBarManager =
+        //         LocalServices.getService(StatusBarManagerInternal.class);
+        // if (statusBarManager != null) {
+        //     statusBarManager.startAssist(args);
+        // }
     }
 
     private ComponentName getLegacyAssistComponent(int userHandle) {

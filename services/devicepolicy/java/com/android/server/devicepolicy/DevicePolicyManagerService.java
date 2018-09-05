@@ -46,7 +46,7 @@ import android.app.IActivityManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.StatusBarManager;
+// import android.app.StatusBarManager;
 import android.app.admin.DeviceAdminInfo;
 import android.app.admin.DeviceAdminReceiver;
 import android.app.admin.DevicePolicyManager;
@@ -138,7 +138,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.android.internal.R;
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.internal.statusbar.IStatusBarService;
+// import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.FastXmlSerializer;
 import com.android.internal.util.JournaledFile;
 import com.android.internal.util.ParcelableString;
@@ -178,6 +178,8 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import android.view.View;
 
 /**
  * Implementation of the device policy APIs.
@@ -241,14 +243,20 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
      */
     private static final String PROPERTY_DEVICE_OWNER_PRESENT = "ro.device_owner";
 
+    // private static final int STATUS_BAR_DISABLE_MASK =
+    //         StatusBarManager.DISABLE_EXPAND |
+    //         StatusBarManager.DISABLE_NOTIFICATION_ICONS |
+    //         StatusBarManager.DISABLE_NOTIFICATION_ALERTS |
+    //         StatusBarManager.DISABLE_SEARCH;
     private static final int STATUS_BAR_DISABLE_MASK =
-            StatusBarManager.DISABLE_EXPAND |
-            StatusBarManager.DISABLE_NOTIFICATION_ICONS |
-            StatusBarManager.DISABLE_NOTIFICATION_ALERTS |
-            StatusBarManager.DISABLE_SEARCH;
+            View.STATUS_BAR_DISABLE_EXPAND |
+            View.STATUS_BAR_DISABLE_NOTIFICATION_ICONS |
+            View.STATUS_BAR_DISABLE_NOTIFICATION_ALERTS |
+            View.STATUS_BAR_DISABLE_SEARCH;
 
-    private static final int STATUS_BAR_DISABLE2_MASK =
-            StatusBarManager.DISABLE2_QUICK_SETTINGS;
+    // private static final int STATUS_BAR_DISABLE2_MASK =
+    //         StatusBarManager.DISABLE2_QUICK_SETTINGS;
+    private static final int STATUS_BAR_DISABLE2_MASK = 0x00000001;
 
     private static final Set<String> SECURE_SETTINGS_WHITELIST;
     private static final Set<String> SECURE_SETTINGS_DEVICEOWNER_WHITELIST;
@@ -8289,23 +8297,24 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
     }
 
     private boolean setStatusBarDisabledInternal(boolean disabled, int userId) {
-        long ident = mInjector.binderClearCallingIdentity();
-        try {
-            IStatusBarService statusBarService = IStatusBarService.Stub.asInterface(
-                    ServiceManager.checkService(Context.STATUS_BAR_SERVICE));
-            if (statusBarService != null) {
-                int flags1 = disabled ? STATUS_BAR_DISABLE_MASK : StatusBarManager.DISABLE_NONE;
-                int flags2 = disabled ? STATUS_BAR_DISABLE2_MASK : StatusBarManager.DISABLE2_NONE;
-                statusBarService.disableForUser(flags1, mToken, mContext.getPackageName(), userId);
-                statusBarService.disable2ForUser(flags2, mToken, mContext.getPackageName(), userId);
-                return true;
-            }
-        } catch (RemoteException e) {
-            Slog.e(LOG_TAG, "Failed to disable the status bar", e);
-        } finally {
-            mInjector.binderRestoreCallingIdentity(ident);
-        }
-        return false;
+        // long ident = mInjector.binderClearCallingIdentity();
+        // try {
+        //     IStatusBarService statusBarService = IStatusBarService.Stub.asInterface(
+        //             ServiceManager.checkService(Context.STATUS_BAR_SERVICE));
+        //     if (statusBarService != null) {
+        //         int flags1 = disabled ? STATUS_BAR_DISABLE_MASK : StatusBarManager.DISABLE_NONE;
+        //         int flags2 = disabled ? STATUS_BAR_DISABLE2_MASK : StatusBarManager.DISABLE2_NONE;
+        //         statusBarService.disableForUser(flags1, mToken, mContext.getPackageName(), userId);
+        //         statusBarService.disable2ForUser(flags2, mToken, mContext.getPackageName(), userId);
+        //         return true;
+        //     }
+        // } catch (RemoteException e) {
+        //     Slog.e(LOG_TAG, "Failed to disable the status bar", e);
+        // } finally {
+        //     mInjector.binderRestoreCallingIdentity(ident);
+        // }
+        // return false;
+        return true;
     }
 
     /**

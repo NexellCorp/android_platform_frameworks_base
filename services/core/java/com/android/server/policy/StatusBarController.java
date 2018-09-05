@@ -20,7 +20,7 @@ import static android.view.WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
 import static android.view.WindowManager.LayoutParams.MATCH_PARENT;
 import static android.view.WindowManagerInternal.AppTransitionListener;
 
-import android.app.StatusBarManager;
+// import android.app.StatusBarManager;
 import android.os.IBinder;
 import android.os.SystemClock;
 import android.view.View;
@@ -30,7 +30,7 @@ import android.view.animation.Interpolator;
 import android.view.animation.TranslateAnimation;
 
 import com.android.server.LocalServices;
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 
 /**
  * Implements status bar specific behavior.
@@ -44,60 +44,60 @@ public class StatusBarController extends BarController {
 
         @Override
         public void onAppTransitionPendingLocked() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    StatusBarManagerInternal statusbar = getStatusBarInternal();
-                    if (statusbar != null) {
-                        statusbar.appTransitionPending();
-                    }
-                }
-            });
+            // mHandler.post(new Runnable() {
+            //     @Override
+            //     public void run() {
+            //         StatusBarManagerInternal statusbar = getStatusBarInternal();
+            //         if (statusbar != null) {
+            //             statusbar.appTransitionPending();
+            //         }
+            //     }
+            // });
         }
 
         @Override
         public void onAppTransitionStartingLocked(IBinder openToken, IBinder closeToken,
                 final Animation openAnimation, final Animation closeAnimation) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    StatusBarManagerInternal statusbar = getStatusBarInternal();
-                    if (statusbar != null) {
-                        long startTime = calculateStatusBarTransitionStartTime(openAnimation,
-                                closeAnimation);
-                        long duration = closeAnimation != null || openAnimation != null
-                                ? TRANSITION_DURATION : 0;
-                        statusbar.appTransitionStarting(startTime, duration);
-                    }
-                }
-            });
+            // mHandler.post(new Runnable() {
+            //     @Override
+            //     public void run() {
+            //         StatusBarManagerInternal statusbar = getStatusBarInternal();
+            //         if (statusbar != null) {
+            //             long startTime = calculateStatusBarTransitionStartTime(openAnimation,
+            //                     closeAnimation);
+            //             long duration = closeAnimation != null || openAnimation != null
+            //                     ? TRANSITION_DURATION : 0;
+            //             statusbar.appTransitionStarting(startTime, duration);
+            //         }
+            //     }
+            // });
         }
 
         @Override
         public void onAppTransitionCancelledLocked() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    StatusBarManagerInternal statusbar = getStatusBarInternal();
-                    if (statusbar != null) {
-                        statusbar.appTransitionCancelled();
-                    }
-                }
-            });
+            // mHandler.post(new Runnable() {
+            //     @Override
+            //     public void run() {
+            //         StatusBarManagerInternal statusbar = getStatusBarInternal();
+            //         if (statusbar != null) {
+            //             statusbar.appTransitionCancelled();
+            //         }
+            //     }
+            // });
         }
 
         @Override
         public void onAppTransitionFinishedLocked(IBinder token) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    StatusBarManagerInternal statusbar = LocalServices.getService(
-                            StatusBarManagerInternal.class);
-                    if (statusbar != null) {
-                        statusbar.appTransitionFinished();
-                    }
-                }
-            });
+            // mHandler.post(new Runnable() {
+            //     @Override
+            //     public void run() {
+            //         StatusBarManagerInternal statusbar = LocalServices.getService(
+            //                 StatusBarManagerInternal.class);
+            //         if (statusbar != null) {
+            //             statusbar.appTransitionFinished();
+            //         }
+            //     }
+            // });
         }
     };
 
@@ -106,7 +106,8 @@ public class StatusBarController extends BarController {
                 View.STATUS_BAR_TRANSIENT,
                 View.STATUS_BAR_UNHIDE,
                 View.STATUS_BAR_TRANSLUCENT,
-                StatusBarManager.WINDOW_STATUS_BAR,
+                // StatusBarManager.WINDOW_STATUS_BAR,
+                1,
                 FLAG_TRANSLUCENT_STATUS,
                 View.STATUS_BAR_TRANSPARENT);
     }

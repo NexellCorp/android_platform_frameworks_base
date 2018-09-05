@@ -16,7 +16,7 @@
 
 package com.android.server.policy;
 
-import android.app.StatusBarManager;
+// import android.app.StatusBarManager;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.util.Slog;
@@ -26,7 +26,7 @@ import android.view.WindowManager;
 import android.view.WindowManagerPolicy.WindowState;
 
 import com.android.server.LocalServices;
-import com.android.server.statusbar.StatusBarManagerInternal;
+// import com.android.server.statusbar.StatusBarManagerInternal;
 
 import java.io.PrintWriter;
 
@@ -52,10 +52,11 @@ public class BarController {
     private final int mTranslucentWmFlag;
     protected final Handler mHandler;
     private final Object mServiceAquireLock = new Object();
-    protected StatusBarManagerInternal mStatusBarInternal;
+    // protected StatusBarManagerInternal mStatusBarInternal;
 
     protected WindowState mWin;
-    private int mState = StatusBarManager.WINDOW_STATE_SHOWING;
+    // private int mState = StatusBarManager.WINDOW_STATE_SHOWING;
+    private int mState = 0;
     private int mTransientBarState;
     private boolean mPendingShow;
     private long mLastTranslucent;
@@ -164,15 +165,26 @@ public class BarController {
         if (win.isDrawnLw()) {
             final boolean vis = win.isVisibleLw();
             final boolean anim = win.isAnimatingLw();
-            if (mState == StatusBarManager.WINDOW_STATE_HIDING && !change && !vis) {
-                return StatusBarManager.WINDOW_STATE_HIDDEN;
-            } else if (mState == StatusBarManager.WINDOW_STATE_HIDDEN && vis) {
-                return StatusBarManager.WINDOW_STATE_SHOWING;
+            // if (mState == StatusBarManager.WINDOW_STATE_HIDING && !change && !vis) {
+            //     return StatusBarManager.WINDOW_STATE_HIDDEN;
+            // } else if (mState == StatusBarManager.WINDOW_STATE_HIDDEN && vis) {
+            //     return StatusBarManager.WINDOW_STATE_SHOWING;
+            // } else if (change) {
+            //     if (wasVis && vis && !wasAnim && anim) {
+            //         return StatusBarManager.WINDOW_STATE_HIDING;
+            //     } else {
+            //         return StatusBarManager.WINDOW_STATE_SHOWING;
+            //     }
+            // }
+            if (mState == 1 && !change && !vis) {
+                return 2;
+            } else if (mState == 2 && vis) {
+                return 0;
             } else if (change) {
                 if (wasVis && vis && !wasAnim && anim) {
-                    return StatusBarManager.WINDOW_STATE_HIDING;
+                    return 1;
                 } else {
-                    return StatusBarManager.WINDOW_STATE_SHOWING;
+                    return 0;
                 }
             }
         }
@@ -182,16 +194,16 @@ public class BarController {
     private boolean updateStateLw(final int state) {
         if (state != mState) {
             mState = state;
-            if (DEBUG) Slog.d(mTag, "mState: " + StatusBarManager.windowStateToString(state));
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    StatusBarManagerInternal statusbar = getStatusBarInternal();
-                    if (statusbar != null) {
-                        statusbar.setWindowState(mStatusBarManagerId, state);
-                    }
-                }
-            });
+            // if (DEBUG) Slog.d(mTag, "mState: " + StatusBarManager.windowStateToString(state));
+            // mHandler.post(new Runnable() {
+            //     @Override
+            //     public void run() {
+            //         StatusBarManagerInternal statusbar = getStatusBarInternal();
+            //         if (statusbar != null) {
+            //             statusbar.setWindowState(mStatusBarManagerId, state);
+            //         }
+            //     }
+            // });
             return true;
         }
         return false;
@@ -200,7 +212,8 @@ public class BarController {
     public boolean checkHiddenLw() {
         if (mWin != null && mWin.isDrawnLw()) {
             if (!mWin.isVisibleLw() && !mWin.isAnimatingLw()) {
-                updateStateLw(StatusBarManager.WINDOW_STATE_HIDDEN);
+                // updateStateLw(StatusBarManager.WINDOW_STATE_HIDDEN);
+                updateStateLw(2);
             }
             if (mTransientBarState == TRANSIENT_BAR_HIDING && !mWin.isVisibleLw()) {
                 // Finished animating out, clean up and reset style
@@ -274,14 +287,14 @@ public class BarController {
         }
     }
 
-    protected StatusBarManagerInternal getStatusBarInternal() {
-        synchronized (mServiceAquireLock) {
-            if (mStatusBarInternal == null) {
-                mStatusBarInternal = LocalServices.getService(StatusBarManagerInternal.class);
-            }
-            return mStatusBarInternal;
-        }
-    }
+    // protected StatusBarManagerInternal getStatusBarInternal() {
+    //     synchronized (mServiceAquireLock) {
+    //         if (mStatusBarInternal == null) {
+    //             mStatusBarInternal = LocalServices.getService(StatusBarManagerInternal.class);
+    //         }
+    //         return mStatusBarInternal;
+    //     }
+    // }
 
     private static String transientBarStateToString(int state) {
         if (state == TRANSIENT_BAR_HIDING) return "TRANSIENT_BAR_HIDING";
@@ -295,7 +308,7 @@ public class BarController {
         if (mWin != null) {
             pw.print(prefix); pw.println(mTag);
             pw.print(prefix); pw.print("  "); pw.print("mState"); pw.print('=');
-            pw.println(StatusBarManager.windowStateToString(mState));
+            // pw.println(StatusBarManager.windowStateToString(mState));
             pw.print(prefix); pw.print("  "); pw.print("mTransientBar"); pw.print('=');
             pw.println(transientBarStateToString(mTransientBarState));
         }

@@ -415,12 +415,12 @@ final class SystemServiceRegistry {
                   ctx.mMainThread.getHandler().getLooper());
             }});
 
-        registerService(Context.STATUS_BAR_SERVICE, StatusBarManager.class,
-                new CachedServiceFetcher<StatusBarManager>() {
-            @Override
-            public StatusBarManager createService(ContextImpl ctx) {
-                return new StatusBarManager(ctx.getOuterContext());
-            }});
+        // registerService(Context.STATUS_BAR_SERVICE, StatusBarManager.class,
+        //         new CachedServiceFetcher<StatusBarManager>() {
+        //     @Override
+        //     public StatusBarManager createService(ContextImpl ctx) {
+        //         return new StatusBarManager(ctx.getOuterContext());
+        //     }});
 
         registerService(Context.STORAGE_SERVICE, StorageManager.class,
                 new CachedServiceFetcher<StorageManager>() {
