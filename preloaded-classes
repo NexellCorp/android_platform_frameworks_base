@@ -581,7 +581,6 @@ android.content.BroadcastReceiver$PendingResult$1
 android.content.ClipData
 android.content.ClipData$Item
 android.content.ClipDescription
-android.content.ClipboardManager
 android.content.ComponentCallbacks
 android.content.ComponentCallbacks2
 android.content.ComponentName

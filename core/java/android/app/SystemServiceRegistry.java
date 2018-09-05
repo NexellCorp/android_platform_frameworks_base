@@ -32,7 +32,7 @@ import android.app.usage.NetworkStatsManager;
 // import android.app.usage.UsageStatsManager;
 import android.appwidget.AppWidgetManager;
 import android.bluetooth.BluetoothManager;
-import android.content.ClipboardManager;
+// import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.IRestrictionsManager;
 import android.content.RestrictionsManager;
@@ -217,18 +217,18 @@ final class SystemServiceRegistry {
                 return new HdmiControlManager(IHdmiControlService.Stub.asInterface(b));
             }});
 
-        registerService(Context.CLIPBOARD_SERVICE, ClipboardManager.class,
-                new CachedServiceFetcher<ClipboardManager>() {
-            @Override
-            public ClipboardManager createService(ContextImpl ctx) {
-                return new ClipboardManager(ctx.getOuterContext(),
-                        ctx.mMainThread.getHandler());
-            }});
+        // registerService(Context.CLIPBOARD_SERVICE, ClipboardManager.class,
+        //         new CachedServiceFetcher<ClipboardManager>() {
+        //     @Override
+        //     public ClipboardManager createService(ContextImpl ctx) {
+        //         return new ClipboardManager(ctx.getOuterContext(),
+        //                 ctx.mMainThread.getHandler());
+        //     }});
 
         // The clipboard service moved to a new package.  If someone asks for the old
         // interface by class then we want to redirect over to the new interface instead
         // (which extends it).
-        SYSTEM_SERVICE_NAMES.put(android.text.ClipboardManager.class, Context.CLIPBOARD_SERVICE);
+        // SYSTEM_SERVICE_NAMES.put(android.text.ClipboardManager.class, Context.CLIPBOARD_SERVICE);
 
         registerService(Context.CONNECTIVITY_SERVICE, ConnectivityManager.class,
                 new StaticApplicationContextServiceFetcher<ConnectivityManager>() {

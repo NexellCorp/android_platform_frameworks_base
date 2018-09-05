@@ -17,7 +17,7 @@
 package com.android.documentsui;
 
 import android.content.ClipData;
-import android.content.ClipboardManager;
+// import android.content.ClipboardManager;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -46,27 +46,27 @@ public final class DocumentClipper {
     private static final String TAG = "DocumentClipper";
 
     private Context mContext;
-    private ClipboardManager mClipboard;
+    // private ClipboardManager mClipboard;
 
     public DocumentClipper(Context context) {
         mContext = context;
-        mClipboard = context.getSystemService(ClipboardManager.class);
+        // mClipboard = context.getSystemService(ClipboardManager.class);
     }
 
     public boolean hasItemsToPaste() {
-        if (mClipboard.hasPrimaryClip()) {
-            ClipData clipData = mClipboard.getPrimaryClip();
-            int count = clipData.getItemCount();
-            if (count > 0) {
-                for (int i = 0; i < count; ++i) {
-                    ClipData.Item item = clipData.getItemAt(i);
-                    Uri uri = item.getUri();
-                    if (isDocumentUri(uri)) {
-                        return true;
-                    }
-                }
-            }
-        }
+        // if (mClipboard.hasPrimaryClip()) {
+        //     ClipData clipData = mClipboard.getPrimaryClip();
+        //     int count = clipData.getItemCount();
+        //     if (count > 0) {
+        //         for (int i = 0; i < count; ++i) {
+        //             ClipData.Item item = clipData.getItemAt(i);
+        //             Uri uri = item.getUri();
+        //             if (isDocumentUri(uri)) {
+        //                 return true;
+        //             }
+        //         }
+        //     }
+        // }
         return false;
     }
 
@@ -79,7 +79,8 @@ public final class DocumentClipper {
      * This should be run from inside an AsyncTask.
      */
     public List<DocumentInfo> getClippedDocuments() {
-        ClipData data = mClipboard.getPrimaryClip();
+        // ClipData data = mClipboard.getPrimaryClip();
+        ClipData data = null;
         return data == null ? Collections.EMPTY_LIST : getDocumentsFromClipData(data);
     }
 
@@ -162,6 +163,6 @@ public final class DocumentClipper {
 
     public void clipDocuments(List<DocumentInfo> docs) {
         ClipData data = getClipDataForDocuments(docs);
-        mClipboard.setPrimaryClip(data);
+        // mClipboard.setPrimaryClip(data);
     }
 }

@@ -31,7 +31,7 @@ import android.annotation.XmlRes;
 import android.app.Activity;
 import android.app.assist.AssistStructure;
 import android.content.ClipData;
-import android.content.ClipboardManager;
+// import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.UndoManager;
@@ -9611,12 +9611,13 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
     }
 
     boolean canPaste() {
-        return (mText instanceof Editable &&
-                mEditor != null && mEditor.mKeyListener != null &&
-                getSelectionStart() >= 0 &&
-                getSelectionEnd() >= 0 &&
-                ((ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE)).
-                hasPrimaryClip());
+        // return (mText instanceof Editable &&
+        //         mEditor != null && mEditor.mKeyListener != null &&
+        //         getSelectionStart() >= 0 &&
+        //         getSelectionEnd() >= 0 &&
+        //         ((ClipboardManager)getContext().getSystemService(Context.CLIPBOARD_SERVICE)).
+        //         hasPrimaryClip());
+        return false;
     }
 
     boolean canProcessText() {
@@ -9645,33 +9646,33 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
      * Paste clipboard content between min and max positions.
      */
     private void paste(int min, int max, boolean withFormatting) {
-        ClipboardManager clipboard =
-            (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData clip = clipboard.getPrimaryClip();
-        if (clip != null) {
-            boolean didFirst = false;
-            for (int i=0; i<clip.getItemCount(); i++) {
-                final CharSequence paste;
-                if (withFormatting) {
-                    paste = clip.getItemAt(i).coerceToStyledText(getContext());
-                } else {
-                    // Get an item as text and remove all spans by toString().
-                    final CharSequence text = clip.getItemAt(i).coerceToText(getContext());
-                    paste = (text instanceof Spanned) ? text.toString() : text;
-                }
-                if (paste != null) {
-                    if (!didFirst) {
-                        Selection.setSelection((Spannable) mText, max);
-                        ((Editable) mText).replace(min, max, paste);
-                        didFirst = true;
-                    } else {
-                        ((Editable) mText).insert(getSelectionEnd(), "\n");
-                        ((Editable) mText).insert(getSelectionEnd(), paste);
-                    }
-                }
-            }
-            sLastCutCopyOrTextChangedTime = 0;
-        }
+        // ClipboardManager clipboard =
+        //     (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+        // ClipData clip = clipboard.getPrimaryClip();
+        // if (clip != null) {
+        //     boolean didFirst = false;
+        //     for (int i=0; i<clip.getItemCount(); i++) {
+        //         final CharSequence paste;
+        //         if (withFormatting) {
+        //             paste = clip.getItemAt(i).coerceToStyledText(getContext());
+        //         } else {
+        //             // Get an item as text and remove all spans by toString().
+        //             final CharSequence text = clip.getItemAt(i).coerceToText(getContext());
+        //             paste = (text instanceof Spanned) ? text.toString() : text;
+        //         }
+        //         if (paste != null) {
+        //             if (!didFirst) {
+        //                 Selection.setSelection((Spannable) mText, max);
+        //                 ((Editable) mText).replace(min, max, paste);
+        //                 didFirst = true;
+        //             } else {
+        //                 ((Editable) mText).insert(getSelectionEnd(), "\n");
+        //                 ((Editable) mText).insert(getSelectionEnd(), paste);
+        //             }
+        //         }
+        //     }
+        //     sLastCutCopyOrTextChangedTime = 0;
+        // }
     }
 
     private void shareSelectedText() {
@@ -9687,10 +9688,10 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
     }
 
     private void setPrimaryClip(ClipData clip) {
-        ClipboardManager clipboard = (ClipboardManager) getContext().
-                getSystemService(Context.CLIPBOARD_SERVICE);
-        clipboard.setPrimaryClip(clip);
-        sLastCutCopyOrTextChangedTime = SystemClock.uptimeMillis();
+        // ClipboardManager clipboard = (ClipboardManager) getContext().
+        //         getSystemService(Context.CLIPBOARD_SERVICE);
+        // clipboard.setPrimaryClip(clip);
+        // sLastCutCopyOrTextChangedTime = SystemClock.uptimeMillis();
     }
 
     /**
