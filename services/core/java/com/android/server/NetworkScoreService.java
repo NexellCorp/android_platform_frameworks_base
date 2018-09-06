@@ -183,6 +183,7 @@ public class NetworkScoreService extends INetworkScoreService.Stub {
     void systemRunning() {
         if (DBG) Log.d(TAG, "systemRunning");
         bindToScoringServiceIfNeeded();
+        onUserUnlocked(0);
     }
 
     private void onUserUnlocked(int userId) {
