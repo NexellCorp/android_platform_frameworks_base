@@ -30,7 +30,7 @@ import android.os.RemoteException;
 import android.os.ServiceManager;
 import android.provider.Settings;
 import android.service.dreams.DreamService;
-import android.service.dreams.IDreamManager;
+// import android.service.dreams.IDreamManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Xml;
@@ -69,7 +69,7 @@ public class DreamBackend {
     }
 
     private final Context mContext;
-    private final IDreamManager mDreamManager;
+    // private final IDreamManager mDreamManager;
     private final DreamInfoComparator mComparator;
     private final boolean mDreamsEnabledByDefault;
     private final boolean mDreamsActivatedOnSleepByDefault;
@@ -77,8 +77,8 @@ public class DreamBackend {
 
     public DreamBackend(Context context) {
         mContext = context;
-        mDreamManager = IDreamManager.Stub.asInterface(
-                ServiceManager.getService(DreamService.DREAM_SERVICE));
+        // mDreamManager = IDreamManager.Stub.asInterface(
+        //         ServiceManager.getService(DreamService.DREAM_SERVICE));
         mComparator = new DreamInfoComparator(getDefaultDream());
         mDreamsEnabledByDefault = context.getResources()
                 .getBoolean(com.android.internal.R.bool.config_dreamsEnabledByDefault);
@@ -112,14 +112,15 @@ public class DreamBackend {
     }
 
     public ComponentName getDefaultDream() {
-        if (mDreamManager == null)
-            return null;
-        try {
-            return mDreamManager.getDefaultDreamComponent();
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to get default dream", e);
-            return null;
-        }
+        // if (mDreamManager == null)
+        //     return null;
+        // try {
+        //     return mDreamManager.getDefaultDreamComponent();
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to get default dream", e);
+        //     return null;
+        // }
+        return null;
     }
 
     public CharSequence getActiveDreamName() {
@@ -176,27 +177,28 @@ public class DreamBackend {
     }
 
     public void setActiveDream(ComponentName dream) {
-        logd("setActiveDream(%s)", dream);
-        if (mDreamManager == null)
-            return;
-        try {
-            ComponentName[] dreams = { dream };
-            mDreamManager.setDreamComponents(dream == null ? null : dreams);
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to set active dream to " + dream, e);
-        }
+        // logd("setActiveDream(%s)", dream);
+        // if (mDreamManager == null)
+        //     return;
+        // try {
+        //     ComponentName[] dreams = { dream };
+        //     mDreamManager.setDreamComponents(dream == null ? null : dreams);
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to set active dream to " + dream, e);
+        // }
     }
 
     public ComponentName getActiveDream() {
-        if (mDreamManager == null)
-            return null;
-        try {
-            ComponentName[] dreams = mDreamManager.getDreamComponents();
-            return dreams != null && dreams.length > 0 ? dreams[0] : null;
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to get active dream", e);
-            return null;
-        }
+        // if (mDreamManager == null)
+        //     return null;
+        // try {
+        //     ComponentName[] dreams = mDreamManager.getDreamComponents();
+        //     return dreams != null && dreams.length > 0 ? dreams[0] : null;
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to get active dream", e);
+        //     return null;
+        // }
+        return null;
     }
 
     public void launchSettings(DreamInfo dreamInfo) {
@@ -207,25 +209,25 @@ public class DreamBackend {
     }
 
     public void preview(DreamInfo dreamInfo) {
-        logd("preview(%s)", dreamInfo);
-        if (mDreamManager == null || dreamInfo == null || dreamInfo.componentName == null)
-            return;
-        try {
-            mDreamManager.testDream(dreamInfo.componentName);
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to preview " + dreamInfo, e);
-        }
+        // logd("preview(%s)", dreamInfo);
+        // if (mDreamManager == null || dreamInfo == null || dreamInfo.componentName == null)
+        //     return;
+        // try {
+        //     mDreamManager.testDream(dreamInfo.componentName);
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to preview " + dreamInfo, e);
+        // }
     }
 
     public void startDreaming() {
-        logd("startDreaming()");
-        if (mDreamManager == null)
-            return;
-        try {
-            mDreamManager.dream();
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to dream", e);
-        }
+        // logd("startDreaming()");
+        // if (mDreamManager == null)
+        //     return;
+        // try {
+        //     mDreamManager.dream();
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to dream", e);
+        // }
     }
 
     private static ComponentName getDreamComponentName(ResolveInfo resolveInfo) {

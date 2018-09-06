@@ -102,9 +102,9 @@ import android.os.UserHandle;
 import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.service.dreams.DreamManagerInternal;
-import android.service.dreams.DreamService;
-import android.service.dreams.IDreamManager;
+// import android.service.dreams.DreamManagerInternal;
+// import android.service.dreams.DreamService;
+// import android.service.dreams.IDreamManager;
 import android.speech.RecognizerIntent;
 import android.telecom.TelecomManager;
 import android.util.DisplayMetrics;
@@ -326,7 +326,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     PowerManager mPowerManager;
     ActivityManagerInternal mActivityManagerInternal;
     InputManagerInternal mInputManagerInternal;
-    DreamManagerInternal mDreamManagerInternal;
+    // DreamManagerInternal mDreamManagerInternal;
     PowerManagerInternal mPowerManagerInternal;
     IStatusBarService mStatusBarService;
     // StatusBarManagerInternal mStatusBarManagerInternal;
@@ -1529,10 +1529,10 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         // If there's a dream running then use home to escape the dream
         // but don't actually go home.
-        if (mDreamManagerInternal != null && mDreamManagerInternal.isDreaming()) {
-            mDreamManagerInternal.stopDream(false /*immediate*/);
-            return;
-        }
+        // if (mDreamManagerInternal != null && mDreamManagerInternal.isDreaming()) {
+        //     mDreamManagerInternal.stopDream(false #<{(|immediate|)}>#);
+        //     return;
+        // }
 
         // Go home!
         launchHomeFromHotKey();
@@ -1644,7 +1644,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mWindowManagerInternal = LocalServices.getService(WindowManagerInternal.class);
         mActivityManagerInternal = LocalServices.getService(ActivityManagerInternal.class);
         mInputManagerInternal = LocalServices.getService(InputManagerInternal.class);
-        mDreamManagerInternal = LocalServices.getService(DreamManagerInternal.class);
+        // mDreamManagerInternal = LocalServices.getService(DreamManagerInternal.class);
         mPowerManagerInternal = LocalServices.getService(PowerManagerInternal.class);
         mAppOpsManager = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
         mHasFeatureWatch = mContext.getPackageManager().hasSystemFeature(FEATURE_WATCH);
@@ -3109,20 +3109,20 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     private static void awakenDreams() {
-        IDreamManager dreamManager = getDreamManager();
-        if (dreamManager != null) {
-            try {
-                dreamManager.awaken();
-            } catch (RemoteException e) {
-                // fine, stay asleep then
-            }
-        }
+        // IDreamManager dreamManager = getDreamManager();
+        // if (dreamManager != null) {
+        //     try {
+        //         dreamManager.awaken();
+        //     } catch (RemoteException e) {
+        //         // fine, stay asleep then
+        //     }
+        // }
     }
 
-    static IDreamManager getDreamManager() {
-        return IDreamManager.Stub.asInterface(
-                ServiceManager.checkService(DreamService.DREAM_SERVICE));
-    }
+    // static IDreamManager getDreamManager() {
+    //     return IDreamManager.Stub.asInterface(
+    //             ServiceManager.checkService(DreamService.DREAM_SERVICE));
+    // }
 
     TelecomManager getTelecommService() {
         return (TelecomManager) mContext.getSystemService(Context.TELECOM_SERVICE);
@@ -6180,15 +6180,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
         // Send events to a dozing dream even if the screen is off since the dream
         // is in control of the state of the screen.
-        IDreamManager dreamManager = getDreamManager();
-
-        try {
-            if (dreamManager != null && dreamManager.isDreaming()) {
-                return true;
-            }
-        } catch (RemoteException e) {
-            Slog.e(TAG, "RemoteException when checking if dreaming", e);
-        }
+        // IDreamManager dreamManager = getDreamManager();
+        //
+        // try {
+        //     if (dreamManager != null && dreamManager.isDreaming()) {
+        //         return true;
+        //     }
+        // } catch (RemoteException e) {
+        //     Slog.e(TAG, "RemoteException when checking if dreaming", e);
+        // }
 
         // Otherwise, consume events since the user can't see what is being
         // interacted with.

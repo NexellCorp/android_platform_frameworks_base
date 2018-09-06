@@ -52,7 +52,7 @@ import android.os.WorkSource;
 import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.SettingNotFoundException;
-import android.service.dreams.DreamManagerInternal;
+// import android.service.dreams.DreamManagerInternal;
 import android.service.vr.IVrManager;
 import android.service.vr.IVrStateCallbacks;
 import android.util.EventLog;
@@ -196,7 +196,7 @@ public final class PowerManagerService extends SystemService
     private Notifier mNotifier;
     private WirelessChargerDetector mWirelessChargerDetector;
     private SettingsObserver mSettingsObserver;
-    private DreamManagerInternal mDreamManager;
+    // private DreamManagerInternal mDreamManager;
     private Light mAttentionLight;
 
     private final Object mLock = new Object();
@@ -1975,16 +1975,16 @@ public final class PowerManagerService extends SystemService
         // We only control the dream on the handler thread, so we don't need to worry about
         // concurrent attempts to start or stop the dream.
         final boolean isDreaming;
-        if (mDreamManager != null) {
-            // Restart the dream whenever the sandman is summoned.
-            if (startDreaming) {
-                mDreamManager.stopDream(false /*immediate*/);
-                mDreamManager.startDream(wakefulness == WAKEFULNESS_DOZING);
-            }
-            isDreaming = mDreamManager.isDreaming();
-        } else {
+        // if (mDreamManager != null) {
+        //     // Restart the dream whenever the sandman is summoned.
+        //     if (startDreaming) {
+        //         mDreamManager.stopDream(false #<{(|immediate|)}>#);
+        //         mDreamManager.startDream(wakefulness == WAKEFULNESS_DOZING);
+        //     }
+        //     isDreaming = mDreamManager.isDreaming();
+        // } else {
             isDreaming = false;
-        }
+        // }
 
         // Update dream state.
         synchronized (mLock) {
