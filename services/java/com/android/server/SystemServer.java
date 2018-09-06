@@ -623,6 +623,9 @@ public final class SystemServer {
         shortcutService.onUnlockUser(0);
         Slog.d(TAG, "++++++ End onUnlockUser");
 
+        Slog.d(TAG, "=====> set sys.qboot_completed to 1");
+        SystemProperties.set("sys.qboot_completed", "1");
+
         // Loop forever.
         Looper.loop();
         throw new RuntimeException("Main thread loop unexpectedly exited");
