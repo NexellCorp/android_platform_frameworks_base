@@ -186,7 +186,7 @@ import android.os.SystemClock;
 import android.os.SystemProperties;
 // import android.os.Trace;
 import android.os.TransactionTooLargeException;
-import android.os.UpdateLock;
+// import android.os.UpdateLock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.os.WorkSource;
@@ -1449,7 +1449,7 @@ public final class ActivityManagerService extends ActivityManagerNative
      * Used to retain an update lock when the foreground activity is in
      * immersive mode.
      */
-    final UpdateLock mUpdateLock = new UpdateLock("immersive");
+    // final UpdateLock mUpdateLock = new UpdateLock("immersive");
 
     /**
      * Set to true after the system has finished booting.
@@ -1983,17 +1983,17 @@ public final class ActivityManagerService extends ActivityManagerNative
                 break;
             }
             case IMMERSIVE_MODE_LOCK_MSG: {
-                final boolean nextState = (msg.arg1 != 0);
-                if (mUpdateLock.isHeld() != nextState) {
-                    if (DEBUG_IMMERSIVE) Slog.d(TAG_IMMERSIVE,
-                            "Applying new update lock state '" + nextState
-                            + "' for " + (ActivityRecord)msg.obj);
-                    if (nextState) {
-                        mUpdateLock.acquire();
-                    } else {
-                        mUpdateLock.release();
-                    }
-                }
+                // final boolean nextState = (msg.arg1 != 0);
+                // if (mUpdateLock.isHeld() != nextState) {
+                //     if (DEBUG_IMMERSIVE) Slog.d(TAG_IMMERSIVE,
+                //             "Applying new update lock state '" + nextState
+                //             + "' for " + (ActivityRecord)msg.obj);
+                //     if (nextState) {
+                //         mUpdateLock.acquire();
+                //     } else {
+                //         mUpdateLock.release();
+                //     }
+                // }
                 break;
             }
             case PERSIST_URI_GRANTS_MSG: {
