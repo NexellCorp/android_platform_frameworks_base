@@ -24,7 +24,7 @@ import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.app.backup.BackupManager;
 import android.app.trust.IStrongAuthTracker;
-import android.app.trust.TrustManager;
+// import android.app.trust.TrustManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -1463,11 +1463,11 @@ public class LockSettingsService extends ILockSettings.Stub {
                 " with token length " + response.getPayload().length);
             unlockUser(userId, response.getPayload(), secretFromCredential(credential));
 
-            if (isManagedProfileWithSeparatedLock(userId)) {
-                TrustManager trustManager =
-                        (TrustManager) mContext.getSystemService(Context.TRUST_SERVICE);
-                trustManager.setDeviceLockedForUser(userId, false);
-            }
+            // if (isManagedProfileWithSeparatedLock(userId)) {
+            //     TrustManager trustManager =
+            //             (TrustManager) mContext.getSystemService(Context.TRUST_SERVICE);
+            //     trustManager.setDeviceLockedForUser(userId, false);
+            // }
             if (shouldReEnroll) {
                 credentialUtil.setCredential(credential, credential, userId);
             }

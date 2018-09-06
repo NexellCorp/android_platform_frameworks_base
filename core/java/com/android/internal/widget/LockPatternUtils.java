@@ -20,7 +20,7 @@ import android.annotation.IntDef;
 import android.annotation.Nullable;
 import android.app.admin.DevicePolicyManager;
 import android.app.trust.IStrongAuthTracker;
-import android.app.trust.TrustManager;
+// import android.app.trust.TrustManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -219,14 +219,14 @@ public class LockPatternUtils {
         return mUserManager;
     }
 
-    private TrustManager getTrustManager() {
-        TrustManager trust = (TrustManager) mContext.getSystemService(Context.TRUST_SERVICE);
-        if (trust == null) {
-            Log.e(TAG, "Can't get TrustManagerService: is it running?",
-                    new IllegalStateException("Stack trace:"));
-        }
-        return trust;
-    }
+    // private TrustManager getTrustManager() {
+    //     TrustManager trust = (TrustManager) mContext.getSystemService(Context.TRUST_SERVICE);
+    //     if (trust == null) {
+    //         Log.e(TAG, "Can't get TrustManagerService: is it running?",
+    //                 new IllegalStateException("Stack trace:"));
+    //     }
+    //     return trust;
+    // }
 
     public LockPatternUtils(Context context) {
         mContext = context;
@@ -286,13 +286,13 @@ public class LockPatternUtils {
     }
 
     public void reportFailedPasswordAttempt(int userId) {
-        getDevicePolicyManager().reportFailedPasswordAttempt(userId);
-        getTrustManager().reportUnlockAttempt(false /* authenticated */, userId);
+        // getDevicePolicyManager().reportFailedPasswordAttempt(userId);
+        // getTrustManager().reportUnlockAttempt(false #<{(| authenticated |)}>#, userId);
     }
 
     public void reportSuccessfulPasswordAttempt(int userId) {
-        getDevicePolicyManager().reportSuccessfulPasswordAttempt(userId);
-        getTrustManager().reportUnlockAttempt(true /* authenticated */, userId);
+        // getDevicePolicyManager().reportSuccessfulPasswordAttempt(userId);
+        // getTrustManager().reportUnlockAttempt(true #<{(| authenticated |)}>#, userId);
     }
 
     public int getCurrentFailedPasswordAttempts(int userId) {
@@ -1339,7 +1339,7 @@ public class LockPatternUtils {
             sb.append(cn.flattenToShortString());
         }
         setString(ENABLED_TRUST_AGENTS, sb.toString(), userId);
-        getTrustManager().reportEnabledTrustAgentsChanged(userId);
+        // getTrustManager().reportEnabledTrustAgentsChanged(userId);
     }
 
     public List<ComponentName> getEnabledTrustAgents(int userId) {
@@ -1387,7 +1387,7 @@ public class LockPatternUtils {
     }
 
     private void onAfterChangingPassword(int userHandle) {
-        getTrustManager().reportEnabledTrustAgentsChanged(userHandle);
+        // getTrustManager().reportEnabledTrustAgentsChanged(userHandle);
     }
 
     public boolean isCredentialRequiredToDecrypt(boolean defaultValue) {

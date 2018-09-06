@@ -556,10 +556,6 @@ android.app.job.JobInfo
 android.app.job.JobInfo$Builder
 android.app.job.JobScheduler
 android.app.job.JobService
-android.app.trust.ITrustManager
-android.app.trust.ITrustManager$Stub
-android.app.trust.ITrustManager$Stub$Proxy
-android.app.trust.TrustManager
 android.app.usage.NetworkStatsManager
 android.appwidget.AppWidgetManager
 android.appwidget.AppWidgetProvider

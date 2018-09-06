@@ -26,7 +26,7 @@ import android.accounts.IAccountManager;
 import android.app.admin.DevicePolicyManager;
 import android.app.job.IJobScheduler;
 import android.app.job.JobScheduler;
-import android.app.trust.TrustManager;
+// import android.app.trust.TrustManager;
 // import android.app.usage.IUsageStatsManager;
 import android.app.usage.NetworkStatsManager;
 // import android.app.usage.UsageStatsManager;
@@ -627,13 +627,13 @@ final class SystemServiceRegistry {
                 return new MediaSessionManager(ctx);
             }});
 
-        registerService(Context.TRUST_SERVICE, TrustManager.class,
-                new StaticServiceFetcher<TrustManager>() {
-            @Override
-            public TrustManager createService() {
-                IBinder b = ServiceManager.getService(Context.TRUST_SERVICE);
-                return new TrustManager(b);
-            }});
+        // registerService(Context.TRUST_SERVICE, TrustManager.class,
+        //         new StaticServiceFetcher<TrustManager>() {
+        //     @Override
+        //     public TrustManager createService() {
+        //         IBinder b = ServiceManager.getService(Context.TRUST_SERVICE);
+        //         return new TrustManager(b);
+        //     }});
 
         registerService(Context.FINGERPRINT_SERVICE, FingerprintManager.class,
                 new CachedServiceFetcher<FingerprintManager>() {
