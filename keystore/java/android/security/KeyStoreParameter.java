@@ -17,7 +17,7 @@
 package android.security;
 
 import android.annotation.NonNull;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.content.Context;
 import android.security.keystore.KeyProtection;
 

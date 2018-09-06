@@ -17,7 +17,7 @@
 package com.android.server;
 
 import android.app.ActivityManagerNative;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -333,24 +333,24 @@ public class LockSettingsService extends ILockSettings.Stub {
     }
 
     private void showEncryptionNotificationForProfile(UserHandle user) {
-        Resources r = mContext.getResources();
-        CharSequence title = r.getText(
-                com.android.internal.R.string.user_encrypted_title);
-        CharSequence message = r.getText(
-                com.android.internal.R.string.profile_encrypted_message);
-        CharSequence detail = r.getText(
-                com.android.internal.R.string.profile_encrypted_detail);
-
-        final KeyguardManager km = (KeyguardManager) mContext.getSystemService(KEYGUARD_SERVICE);
-        final Intent unlockIntent = km.createConfirmDeviceCredentialIntent(null, null, user.getIdentifier());
-        if (unlockIntent == null) {
-            return;
-        }
-        unlockIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-        PendingIntent intent = PendingIntent.getActivity(mContext, 0, unlockIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
-
-        showEncryptionNotification(user, title, message, detail, intent);
+        // Resources r = mContext.getResources();
+        // CharSequence title = r.getText(
+        //         com.android.internal.R.string.user_encrypted_title);
+        // CharSequence message = r.getText(
+        //         com.android.internal.R.string.profile_encrypted_message);
+        // CharSequence detail = r.getText(
+        //         com.android.internal.R.string.profile_encrypted_detail);
+        //
+        // final KeyguardManager km = (KeyguardManager) mContext.getSystemService(KEYGUARD_SERVICE);
+        // final Intent unlockIntent = km.createConfirmDeviceCredentialIntent(null, null, user.getIdentifier());
+        // if (unlockIntent == null) {
+        //     return;
+        // }
+        // unlockIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        // PendingIntent intent = PendingIntent.getActivity(mContext, 0, unlockIntent,
+        //         PendingIntent.FLAG_UPDATE_CURRENT);
+        //
+        // showEncryptionNotification(user, title, message, detail, intent);
     }
 
     private void showEncryptionNotification(UserHandle user, CharSequence title, CharSequence message,

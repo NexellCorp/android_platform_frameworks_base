@@ -319,12 +319,12 @@ final class SystemServiceRegistry {
                 return TextServicesManager.getInstance();
             }});
 
-        registerService(Context.KEYGUARD_SERVICE, KeyguardManager.class,
-                new CachedServiceFetcher<KeyguardManager>() {
-            @Override
-            public KeyguardManager createService(ContextImpl ctx) {
-                return new KeyguardManager(ctx);
-            }});
+        // registerService(Context.KEYGUARD_SERVICE, KeyguardManager.class,
+        //         new CachedServiceFetcher<KeyguardManager>() {
+        //     @Override
+        //     public KeyguardManager createService(ContextImpl ctx) {
+        //         return new KeyguardManager(ctx);
+        //     }});
 
         registerService(Context.LAYOUT_INFLATER_SERVICE, LayoutInflater.class,
                 new CachedServiceFetcher<LayoutInflater>() {

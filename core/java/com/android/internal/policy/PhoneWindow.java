@@ -62,7 +62,7 @@ import com.android.internal.widget.DecorContentParent;
 import com.android.internal.widget.SwipeDismissLayout;
 
 import android.app.ActivityManager;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -249,7 +249,7 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
     private MediaController mMediaController;
 
     private AudioManager mAudioManager;
-    private KeyguardManager mKeyguardManager;
+    // private KeyguardManager mKeyguardManager;
 
     private int mUiOptions = 0;
 
@@ -1914,13 +1914,13 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
         return false;
     }
 
-    private KeyguardManager getKeyguardManager() {
-        if (mKeyguardManager == null) {
-            mKeyguardManager = (KeyguardManager) getContext().getSystemService(
-                    Context.KEYGUARD_SERVICE);
-        }
-        return mKeyguardManager;
-    }
+    // private KeyguardManager getKeyguardManager() {
+    //     if (mKeyguardManager == null) {
+    //         mKeyguardManager = (KeyguardManager) getContext().getSystemService(
+    //                 Context.KEYGUARD_SERVICE);
+    //     }
+    //     return mKeyguardManager;
+    // }
 
     AudioManager getAudioManager() {
         if (mAudioManager == null) {
@@ -2017,9 +2017,9 @@ public class PhoneWindow extends Window implements MenuBuilder.Callback {
                  * Do this in onKeyUp since the Search key is also used for
                  * chording quick launch shortcuts.
                  */
-                if (getKeyguardManager().inKeyguardRestrictedInputMode()) {
-                    break;
-                }
+                // if (getKeyguardManager().inKeyguardRestrictedInputMode()) {
+                //     break;
+                // }
                 if (event.isTracking() && !event.isCanceled()) {
                     launchDefaultSearch(event);
                 }

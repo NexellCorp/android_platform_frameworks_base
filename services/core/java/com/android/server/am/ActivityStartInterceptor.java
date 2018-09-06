@@ -31,7 +31,7 @@ import static android.content.pm.ApplicationInfo.FLAG_SUSPENDED;
 
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.app.admin.DevicePolicyManagerInternal;
 import android.content.IIntentSender;
 import android.content.Intent;
@@ -208,30 +208,31 @@ class ActivityStartInterceptor {
      */
     private Intent interceptWithConfirmCredentialsIfNeeded(Intent intent, String resolvedType,
             ActivityInfo aInfo, String callingPackage, int userId) {
-        if (!mService.mUserController.shouldConfirmCredentials(userId)) {
-            return null;
-        }
-        // Allow direct boot aware activity to be displayed before the user is unlocked.
-        if (aInfo.directBootAware && mService.mUserController.isUserRunningLocked(userId,
-                ActivityManager.FLAG_AND_LOCKED)) {
-            return null;
-        }
-        final IIntentSender target = mService.getIntentSenderLocked(
-                INTENT_SENDER_ACTIVITY, callingPackage,
-                Binder.getCallingUid(), userId, null, null, 0, new Intent[]{ intent },
-                new String[]{ resolvedType },
-                FLAG_CANCEL_CURRENT | FLAG_ONE_SHOT | FLAG_IMMUTABLE, null);
-        final KeyguardManager km = (KeyguardManager) mService.mContext
-                .getSystemService(KEYGUARD_SERVICE);
-        final Intent newIntent = km.createConfirmDeviceCredentialIntent(null, null, userId);
-        if (newIntent == null) {
-            return null;
-        }
-        newIntent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |
-                FLAG_ACTIVITY_TASK_ON_HOME);
-        newIntent.putExtra(EXTRA_PACKAGE_NAME, aInfo.packageName);
-        newIntent.putExtra(EXTRA_INTENT, new IntentSender(target));
-        return newIntent;
+        // if (!mService.mUserController.shouldConfirmCredentials(userId)) {
+        //     return null;
+        // }
+        // // Allow direct boot aware activity to be displayed before the user is unlocked.
+        // if (aInfo.directBootAware && mService.mUserController.isUserRunningLocked(userId,
+        //         ActivityManager.FLAG_AND_LOCKED)) {
+        //     return null;
+        // }
+        // final IIntentSender target = mService.getIntentSenderLocked(
+        //         INTENT_SENDER_ACTIVITY, callingPackage,
+        //         Binder.getCallingUid(), userId, null, null, 0, new Intent[]{ intent },
+        //         new String[]{ resolvedType },
+        //         FLAG_CANCEL_CURRENT | FLAG_ONE_SHOT | FLAG_IMMUTABLE, null);
+        // final KeyguardManager km = (KeyguardManager) mService.mContext
+        //         .getSystemService(KEYGUARD_SERVICE);
+        // final Intent newIntent = km.createConfirmDeviceCredentialIntent(null, null, userId);
+        // if (newIntent == null) {
+        //     return null;
+        // }
+        // newIntent.setFlags(FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS |
+        //         FLAG_ACTIVITY_TASK_ON_HOME);
+        // newIntent.putExtra(EXTRA_PACKAGE_NAME, aInfo.packageName);
+        // newIntent.putExtra(EXTRA_INTENT, new IntentSender(target));
+        // return newIntent;
+        return null;
     }
 
 }

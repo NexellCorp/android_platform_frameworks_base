@@ -24,7 +24,7 @@ import android.annotation.UserIdInt;
 import android.app.AlarmManager;
 import android.app.AppGlobals;
 import android.app.AppOpsManager;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManagerInternal;
 import android.app.admin.DevicePolicyManagerInternal.OnCrossProfileWidgetProvidersChangeListener;
@@ -212,7 +212,7 @@ class AppWidgetServiceImpl extends IAppWidgetService.Stub implements WidgetBacku
     private final AlarmManager mAlarmManager;
     private final UserManager mUserManager;
     private final AppOpsManager mAppOpsManager;
-    private final KeyguardManager mKeyguardManager;
+    // private final KeyguardManager mKeyguardManager;
     private final DevicePolicyManagerInternal mDevicePolicyManagerInternal;
 
     private final SecurityPolicy mSecurityPolicy;
@@ -235,7 +235,7 @@ class AppWidgetServiceImpl extends IAppWidgetService.Stub implements WidgetBacku
         mAlarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
         mUserManager = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
         mAppOpsManager = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
-        mKeyguardManager = (KeyguardManager) mContext.getSystemService(KEYGUARD_SERVICE);
+        // mKeyguardManager = (KeyguardManager) mContext.getSystemService(KEYGUARD_SERVICE);
         mDevicePolicyManagerInternal = LocalServices.getService(DevicePolicyManagerInternal.class);
         mSaveStateHandler = BackgroundThread.getHandler();
         mCallbackHandler = new CallbackHandler(mContext.getMainLooper());
@@ -601,12 +601,13 @@ class AppWidgetServiceImpl extends IAppWidgetService.Stub implements WidgetBacku
                         providerUserId);
             } else /* provider.maskedByLockedProfile */ {
                 showBadge = true;
-                onClickIntent = mKeyguardManager.createConfirmDeviceCredentialIntent(null, null,
-                        providerUserId);
-                if (onClickIntent != null) {
-                    onClickIntent.setFlags(FLAG_ACTIVITY_NEW_TASK
-                            | FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-                }
+                // onClickIntent = mKeyguardManager.createConfirmDeviceCredentialIntent(null, null,
+                //         providerUserId);
+                // if (onClickIntent != null) {
+                //     onClickIntent.setFlags(FLAG_ACTIVITY_NEW_TASK
+                //             | FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+                // }
+				onClickIntent = null;
             }
             for (int j = 0; j < widgetCount; j++) {
                 Widget widget = provider.widgets.get(j);

@@ -18,7 +18,7 @@ package android.security;
 
 import android.app.ActivityThread;
 import android.app.Application;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.content.Context;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Binder;

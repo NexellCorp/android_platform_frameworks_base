@@ -409,7 +409,6 @@ android.app.IntentReceiverLeaked
 android.app.IntentService
 android.app.IntentService$ServiceHandler
 android.app.JobSchedulerImpl
-android.app.KeyguardManager
 android.app.ListActivity
 android.app.LoadedApk
 android.app.LoadedApk$ReceiverDispatcher

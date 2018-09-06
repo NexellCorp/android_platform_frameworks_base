@@ -16,7 +16,7 @@
 
 package com.android.internal.policy;
 
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.app.SearchManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -45,7 +45,7 @@ public class PhoneFallbackEventHandler implements FallbackEventHandler {
     View mView;
 
     AudioManager mAudioManager;
-    KeyguardManager mKeyguardManager;
+    // KeyguardManager mKeyguardManager;
     SearchManager mSearchManager;
     TelephonyManager mTelephonyManager;
 
@@ -111,9 +111,9 @@ public class PhoneFallbackEventHandler implements FallbackEventHandler {
             }
 
             case KeyEvent.KEYCODE_CALL: {
-                if (getKeyguardManager().inKeyguardRestrictedInputMode() || dispatcher == null) {
-                    break;
-                }
+                // if (getKeyguardManager().inKeyguardRestrictedInputMode() || dispatcher == null) {
+                //     break;
+                // }
                 if (event.getRepeatCount() == 0) {
                     dispatcher.startTracking(event, this);
                 } else if (event.isLongPress() && dispatcher.isTracking(event)) {
@@ -138,9 +138,9 @@ public class PhoneFallbackEventHandler implements FallbackEventHandler {
             }
 
             case KeyEvent.KEYCODE_CAMERA: {
-                if (getKeyguardManager().inKeyguardRestrictedInputMode() || dispatcher == null) {
-                    break;
-                }
+                // if (getKeyguardManager().inKeyguardRestrictedInputMode() || dispatcher == null) {
+                //     break;
+                // }
                 if (event.getRepeatCount() == 0) {
                     dispatcher.startTracking(event, this);
                 } else if (event.isLongPress() && dispatcher.isTracking(event)) {
@@ -163,9 +163,9 @@ public class PhoneFallbackEventHandler implements FallbackEventHandler {
             }
 
             case KeyEvent.KEYCODE_SEARCH: {
-                if (getKeyguardManager().inKeyguardRestrictedInputMode() || dispatcher == null) {
-                    break;
-                }
+                // if (getKeyguardManager().inKeyguardRestrictedInputMode() || dispatcher == null) {
+                //     break;
+                // }
                 if (event.getRepeatCount() == 0) {
                     dispatcher.startTracking(event, this);
                 } else if (event.isLongPress() && dispatcher.isTracking(event)) {
@@ -237,9 +237,9 @@ public class PhoneFallbackEventHandler implements FallbackEventHandler {
             }
 
             case KeyEvent.KEYCODE_CAMERA: {
-                if (getKeyguardManager().inKeyguardRestrictedInputMode()) {
-                    break;
-                }
+                // if (getKeyguardManager().inKeyguardRestrictedInputMode()) {
+                //     break;
+                // }
                 if (event.isTracking() && !event.isCanceled()) {
                     // Add short press behavior here if desired
                 }
@@ -247,9 +247,9 @@ public class PhoneFallbackEventHandler implements FallbackEventHandler {
             }
 
             case KeyEvent.KEYCODE_CALL: {
-                if (getKeyguardManager().inKeyguardRestrictedInputMode()) {
-                    break;
-                }
+                // if (getKeyguardManager().inKeyguardRestrictedInputMode()) {
+                //     break;
+                // }
                 if (event.isTracking() && !event.isCanceled()) {
                     if (isUserSetupComplete()) {
                         startCallActivity();
@@ -290,12 +290,12 @@ public class PhoneFallbackEventHandler implements FallbackEventHandler {
         return mTelephonyManager;
     }
 
-    KeyguardManager getKeyguardManager() {
-        if (mKeyguardManager == null) {
-            mKeyguardManager = (KeyguardManager)mContext.getSystemService(Context.KEYGUARD_SERVICE);
-        }
-        return mKeyguardManager;
-    }
+    // KeyguardManager getKeyguardManager() {
+    //     if (mKeyguardManager == null) {
+    //         mKeyguardManager = (KeyguardManager)mContext.getSystemService(Context.KEYGUARD_SERVICE);
+    //     }
+    //     return mKeyguardManager;
+    // }
 
     AudioManager getAudioManager() {
         if (mAudioManager == null) {

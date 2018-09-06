@@ -19,7 +19,7 @@ package android.security.keystore;
 import android.annotation.IntRange;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.hardware.fingerprint.FingerprintManager;
 
 import java.security.Key;

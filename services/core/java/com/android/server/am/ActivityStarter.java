@@ -83,7 +83,7 @@ import android.app.AppGlobals;
 import android.app.IActivityContainer;
 import android.app.IActivityManager;
 import android.app.IApplicationThread;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.ProfilerInfo;
 import android.content.ComponentName;
@@ -656,51 +656,51 @@ class ActivityStarter {
 
     void showConfirmDeviceCredential(int userId) {
         // First, retrieve the stack that we want to resume after credential is confirmed.
-        ActivityStack targetStack;
-        ActivityStack fullscreenStack =
-                mSupervisor.getStack(FULLSCREEN_WORKSPACE_STACK_ID);
-        ActivityStack freeformStack =
-                mSupervisor.getStack(FREEFORM_WORKSPACE_STACK_ID);
-        if (fullscreenStack != null &&
-                fullscreenStack.getStackVisibilityLocked(null) != ActivityStack.STACK_INVISIBLE) {
-            // Single window case and the case that the docked stack is shown with fullscreen stack.
-            targetStack = fullscreenStack;
-        } else if (freeformStack != null &&
-                freeformStack.getStackVisibilityLocked(null) != ActivityStack.STACK_INVISIBLE) {
-            targetStack = freeformStack;
-        } else {
-            // The case that the docked stack is shown with recent.
-            targetStack = mSupervisor.getStack(HOME_STACK_ID);
-        }
-        if (targetStack == null) {
-            return;
-        }
-        final KeyguardManager km = (KeyguardManager) mService.mContext
-                .getSystemService(Context.KEYGUARD_SERVICE);
-        final Intent credential =
-                km.createConfirmDeviceCredentialIntent(null, null, userId);
-        // For safety, check null here in case users changed the setting after the checking.
-        if (credential == null) {
-            return;
-        }
-        final ActivityRecord activityRecord = targetStack.topRunningActivityLocked();
-        if (activityRecord != null) {
-            final IIntentSender target = mService.getIntentSenderLocked(
-                    ActivityManager.INTENT_SENDER_ACTIVITY,
-                    activityRecord.launchedFromPackage,
-                    activityRecord.launchedFromUid,
-                    activityRecord.userId,
-                    null, null, 0,
-                    new Intent[] { activityRecord.intent },
-                    new String[] { activityRecord.resolvedType },
-                    PendingIntent.FLAG_CANCEL_CURRENT |
-                            PendingIntent.FLAG_ONE_SHOT |
-                            PendingIntent.FLAG_IMMUTABLE,
-                    null);
-            credential.putExtra(Intent.EXTRA_INTENT, new IntentSender(target));
-            // Show confirm credentials activity.
-            startConfirmCredentialIntent(credential);
-        }
+        // ActivityStack targetStack;
+        // ActivityStack fullscreenStack =
+        //         mSupervisor.getStack(FULLSCREEN_WORKSPACE_STACK_ID);
+        // ActivityStack freeformStack =
+        //         mSupervisor.getStack(FREEFORM_WORKSPACE_STACK_ID);
+        // if (fullscreenStack != null &&
+        //         fullscreenStack.getStackVisibilityLocked(null) != ActivityStack.STACK_INVISIBLE) {
+        //     // Single window case and the case that the docked stack is shown with fullscreen stack.
+        //     targetStack = fullscreenStack;
+        // } else if (freeformStack != null &&
+        //         freeformStack.getStackVisibilityLocked(null) != ActivityStack.STACK_INVISIBLE) {
+        //     targetStack = freeformStack;
+        // } else {
+        //     // The case that the docked stack is shown with recent.
+        //     targetStack = mSupervisor.getStack(HOME_STACK_ID);
+        // }
+        // if (targetStack == null) {
+        //     return;
+        // }
+        // final KeyguardManager km = (KeyguardManager) mService.mContext
+        //         .getSystemService(Context.KEYGUARD_SERVICE);
+        // final Intent credential =
+        //         km.createConfirmDeviceCredentialIntent(null, null, userId);
+        // // For safety, check null here in case users changed the setting after the checking.
+        // if (credential == null) {
+        //     return;
+        // }
+        // final ActivityRecord activityRecord = targetStack.topRunningActivityLocked();
+        // if (activityRecord != null) {
+        //     final IIntentSender target = mService.getIntentSenderLocked(
+        //             ActivityManager.INTENT_SENDER_ACTIVITY,
+        //             activityRecord.launchedFromPackage,
+        //             activityRecord.launchedFromUid,
+        //             activityRecord.userId,
+        //             null, null, 0,
+        //             new Intent[] { activityRecord.intent },
+        //             new String[] { activityRecord.resolvedType },
+        //             PendingIntent.FLAG_CANCEL_CURRENT |
+        //                     PendingIntent.FLAG_ONE_SHOT |
+        //                     PendingIntent.FLAG_IMMUTABLE,
+        //             null);
+        //     credential.putExtra(Intent.EXTRA_INTENT, new IntentSender(target));
+        //     // Show confirm credentials activity.
+        //     startConfirmCredentialIntent(credential);
+        // }
     }
 
     void startConfirmCredentialIntent(Intent intent) {

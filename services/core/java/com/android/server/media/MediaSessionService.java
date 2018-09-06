@@ -19,7 +19,7 @@ package com.android.server.media;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ActivityManager;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 import android.content.ActivityNotFoundException;
@@ -96,7 +96,7 @@ public class MediaSessionService extends SystemService implements Monitor {
     private final MessageHandler mHandler = new MessageHandler();
     private final PowerManager.WakeLock mMediaEventWakeLock;
 
-    private KeyguardManager mKeyguardManager;
+    // private KeyguardManager mKeyguardManager;
     private IAudioService mAudioService;
     private AudioManagerInternal mAudioManagerInternal;
     private ContentResolver mContentResolver;
@@ -122,8 +122,8 @@ public class MediaSessionService extends SystemService implements Monitor {
     public void onStart() {
         publishBinderService(Context.MEDIA_SESSION_SERVICE, mSessionManagerImpl);
         Watchdog.getInstance().addMonitor(this);
-        mKeyguardManager =
-                (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
+        // mKeyguardManager =
+        //         (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
         mAudioService = getAudioService();
         mAudioManagerInternal = LocalServices.getService(AudioManagerInternal.class);
         mContentResolver = getContext().getContentResolver();
@@ -1032,15 +1032,16 @@ public class MediaSessionService extends SystemService implements Monitor {
             // ACTION_VOICE_SEARCH_HANDS_FREE
             // with EXTRA_SECURE set to true if the device is securely locked
             PowerManager pm = (PowerManager) getContext().getSystemService(Context.POWER_SERVICE);
-            boolean isLocked = mKeyguardManager != null && mKeyguardManager.isKeyguardLocked();
+            // boolean isLocked = mKeyguardManager != null && mKeyguardManager.isKeyguardLocked();
+            boolean isLocked = false;
             if (!isLocked && pm.isScreenOn()) {
                 voiceIntent = new Intent(android.speech.RecognizerIntent.ACTION_WEB_SEARCH);
                 Log.i(TAG, "voice-based interactions: about to use ACTION_WEB_SEARCH");
-            } else {
-                voiceIntent = new Intent(RecognizerIntent.ACTION_VOICE_SEARCH_HANDS_FREE);
-                voiceIntent.putExtra(RecognizerIntent.EXTRA_SECURE,
-                        isLocked && mKeyguardManager.isKeyguardSecure());
-                Log.i(TAG, "voice-based interactions: about to use ACTION_VOICE_SEARCH_HANDS_FREE");
+            // } else {
+            //     voiceIntent = new Intent(RecognizerIntent.ACTION_VOICE_SEARCH_HANDS_FREE);
+            //     voiceIntent.putExtra(RecognizerIntent.EXTRA_SECURE,
+            //             isLocked && mKeyguardManager.isKeyguardSecure());
+            //     Log.i(TAG, "voice-based interactions: about to use ACTION_VOICE_SEARCH_HANDS_FREE");
             }
             // start the search activity
             if (needWakeLock) {

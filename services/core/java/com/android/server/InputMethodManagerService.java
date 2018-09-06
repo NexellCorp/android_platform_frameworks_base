@@ -48,7 +48,7 @@ import android.app.ActivityManagerNative;
 import android.app.AlertDialog;
 import android.app.AppGlobals;
 import android.app.AppOpsManager;
-import android.app.KeyguardManager;
+// import android.app.KeyguardManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -229,7 +229,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
 
     // Ongoing notification
     private NotificationManager mNotificationManager;
-    private KeyguardManager mKeyguardManager;
+    // private KeyguardManager mKeyguardManager;
     private @Nullable StatusBarManagerService mStatusBar;
     private Notification.Builder mImeSwitcherNotification;
     private PendingIntent mImeSwitchPendingIntent;
@@ -1782,7 +1782,8 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
     }
 
     private boolean isKeyguardLocked() {
-        return mKeyguardManager != null && mKeyguardManager.isKeyguardLocked();
+        // return mKeyguardManager != null && mKeyguardManager.isKeyguardLocked();
+        return false;
     }
 
     @SuppressWarnings("deprecation")
@@ -3160,8 +3161,9 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
     }
 
     private boolean isScreenLocked() {
-        return mKeyguardManager != null
-                && mKeyguardManager.isKeyguardLocked() && mKeyguardManager.isKeyguardSecure();
+        // return mKeyguardManager != null
+        //         && mKeyguardManager.isKeyguardLocked() && mKeyguardManager.isKeyguardSecure();
+        return false;
     }
 
     private void showInputMethodMenu(boolean showAuxSubtypes) {
