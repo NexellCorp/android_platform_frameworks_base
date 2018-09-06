@@ -59,6 +59,20 @@ import com.android.server.pm.PackageManagerService;
 import com.android.server.pm.UserManagerService;
 import com.android.server.power.PowerManagerService;
 import com.android.server.wm.WindowManagerService;
+import com.android.server.webkit.WebViewUpdateService;
+import com.android.server.telecom.TelecomLoaderService;
+import com.android.server.connectivity.IpConnectivityMetrics;
+import com.android.server.accessibility.AccessibilityManagerService;
+import com.android.server.devicepolicy.DevicePolicyManagerService;
+import com.android.server.net.NetworkStatsService;
+import com.android.server.net.NetworkPolicyManagerService;
+import com.android.server.notification.NotificationManagerService;
+import com.android.server.audio.AudioService;
+import com.android.server.twilight.TwilightService;
+import com.android.server.restrictions.RestrictionsManagerService;
+import com.android.server.media.MediaSessionService;
+import com.android.server.media.MediaRouterService;
+import com.android.server.pm.ShortcutService;
 
 import dalvik.system.VMRuntime;
 
@@ -83,6 +97,16 @@ public final class SystemServer {
             "com.android.server.accounts.AccountManagerService$Lifecycle";
     private static final String CONTENT_SERVICE_CLASS =
             "com.android.server.content.ContentService$Lifecycle";
+    private static final String WIFI_P2P_SERVICE_CLASS =
+            "com.android.server.wifi.p2p.WifiP2pService";
+    private static final String WIFI_SERVICE_CLASS =
+            "com.android.server.wifi.WifiService";
+    private static final String SEARCH_MANAGER_SERVICE_CLASS =
+            "com.android.server.search.SearchManagerService$Lifecycle";
+    private static final String USB_SERVICE_CLASS =
+            "com.android.server.usb.UsbService$Lifecycle";
+    private static final String APPWIDGET_SERVICE_CLASS =
+            "com.android.server.appwidget.AppWidgetService";
 
     // maximum number of binder threads used for system_server
     // will be higher than the system default
@@ -106,6 +130,7 @@ public final class SystemServer {
     private PackageManagerService mPackageManagerService;
     private PackageManager mPackageManager;
     private ContentResolver mContentResolver;
+    private WebViewUpdateService mWebViewUpdateService;
 
     private boolean mFirstBoot;
 
@@ -233,23 +258,21 @@ public final class SystemServer {
         // We need the default display before we can initialize the package manager.
         mSystemServiceManager.startBootPhase(SystemService.PHASE_WAIT_FOR_DEFAULT_DISPLAY);
 
-        Slog.d(TAG, "++++++ 236");
+        Slog.i(TAG, "[BootProf]call PackageManagerService.main");
         mPackageManagerService = PackageManagerService.main(mSystemContext, installer, false, false);
-        Slog.d(TAG, "++++++ 238");
         mFirstBoot = mPackageManagerService.isFirstBoot();
-        Slog.d(TAG, "++++++ 240");
         mPackageManager = mSystemContext.getPackageManager();
 
+        Slog.i(TAG, "[BootProf]start UserManagerService");
         mSystemServiceManager.startService(UserManagerService.LifeCycle.class);
-        Slog.d(TAG, "++++++ 244");
 
         // Initialize attribute cache used to cache resources from packages.
+        Slog.i(TAG, "[BootProf]start AttributeCache");
         AttributeCache.init(mSystemContext);
-        Slog.d(TAG, "++++++ 248");
 
         // Set up the Application instance for the system process and get started.
+        Slog.i(TAG, "[BootProf]ActivityManagerService setSystemProcess");
         mActivityManagerService.setSystemProcess();
-        Slog.d(TAG, "++++++ 252");
     }
 
     /**
@@ -276,81 +299,70 @@ public final class SystemServer {
         Slog.i(TAG, "[BootProf]Reading configuration...");
         SystemConfig.getInstance();
 
+        Slog.i(TAG, "[BootProf]start SchedulingPolicyService");
         ServiceManager.addService("scheduling_policy", new SchedulingPolicyService());
-        Slog.d(TAG, "++++++ 280");
 
+        Slog.i(TAG, "[BootProf]start getContentResolver");
         mContentResolver = context.getContentResolver();
-        Slog.d(TAG, "++++++ 283");
 
         // The AccountManager must come before the ContentService
+        Slog.i(TAG, "[BootProf]start AccountService");
         mSystemServiceManager.startService(ACCOUNT_SERVICE_CLASS);
-        Slog.d(TAG, "++++++ 287");
 
+        Slog.i(TAG, "[BootProf]start ContentService");
         mSystemServiceManager.startService(CONTENT_SERVICE_CLASS);
-        Slog.d(TAG, "++++++ 290");
 
+        Slog.i(TAG, "[BootProf]ActivityManager installSystemProviders");
         mActivityManagerService.installSystemProviders();
-        Slog.d(TAG, "++++++ 293");
 
+        Slog.i(TAG, "[BootProf]start MountService");
         mSystemServiceManager.startService(MOUNT_SERVICE_CLASS);
-        Slog.d(TAG, "++++++ 296");
         mountService = IMountService.Stub.asInterface(ServiceManager.getService("mount"));
-        Slog.d(TAG, "++++++ 298");
 
+        Slog.i(TAG, "[BootProf]start InputManagerService");
         inputManager = new InputManagerService(context);
-        Slog.d(TAG, "++++++ 301");
 
+        Slog.i(TAG, "[BootProf]start WindowManagerService");
         wm = WindowManagerService.main(context, inputManager, true, false, false);
-        Slog.d(TAG, "++++++ 304");
         ServiceManager.addService(Context.WINDOW_SERVICE, wm);
-        Slog.d(TAG, "++++++ 306");
         ServiceManager.addService(Context.INPUT_SERVICE, inputManager);
-        Slog.d(TAG, "++++++ 308");
 
         mActivityManagerService.setWindowManager(wm);
-        Slog.d(TAG, "++++++ 311");
 
         inputManager.setWindowManagerCallbacks(wm.getInputMonitor());
         inputManager.start();
-        Slog.d(TAG, "++++++ 315");
 
         mDisplayManagerService.windowManagerAndInputReady();
-        Slog.d(TAG, "++++++ 318");
 
+        Slog.i(TAG, "[BootProf]start InputMethodManagerService");
         mSystemServiceManager.startService(InputMethodManagerService.Lifecycle.class);
-        Slog.d(TAG, "++++++ 320");
 
+        Slog.i(TAG, "[BootProf]wm.displayReady");
         wm.displayReady();
-        Slog.d(TAG, "++++++ 324");
-
-        // mSystemServiceManager.startService(MOUNT_SERVICE_CLASS);
-        // Slog.d(TAG, "++++++ 320");
-        // mountService = IMountService.Stub.asInterface(ServiceManager.getService("mount"));
-        // Slog.d(TAG, "++++++ 324");
 
         // We start this here so that we update our configuration to set watch or television
         // as appropriate.
+        Slog.i(TAG, "[BootProf]start UiModeManagerService");
         mSystemServiceManager.startService(UiModeManagerService.class);
-        Slog.d(TAG, "++++++ 334");
 
+        Slog.i(TAG, "[BootProf]pm updatePackagesIfNeeded");
         mPackageManagerService.updatePackagesIfNeeded();
-        Slog.d(TAG, "++++++ 337");
+        Slog.i(TAG, "[BootProf]pm performFstrimIfNeeded");
         mPackageManagerService.performFstrimIfNeeded();
-        Slog.d(TAG, "++++++ 339");
 
         /*
          * MountService has a few dependencies: Notification Manager and
          * AppWidget Provider. Make sure MountService is completely started
          * first before continuing.
          */
+        Slog.i(TAG, "[BootProf]mount waitForAsecScan");
         try {
             mountService.waitForAsecScan();
         } catch (RemoteException ignored) {
         }
-        Slog.d(TAG, "++++++ 350");
 
+        Slog.i(TAG, "[BootProf]start JobSchedulerService");
         mSystemServiceManager.startService(JobSchedulerService.class);
-        Slog.d(TAG, "++++++ 353");
 
         // atlas = new AssetAtlasService(context);
         // ServiceManager.addService(AssetAtlasService.ASSET_ATLAS_SERVICE, atlas);
@@ -359,40 +371,39 @@ public final class SystemServer {
             BackgroundDexOptService.schedule(context);
 
         // Enable the JIT for the system_server process
+        Slog.i(TAG, "[BootProf] startJitCompilation");
         VMRuntime.getRuntime().startJitCompilation();
         Slog.d(TAG, "++++++ 363");
 
-        // Skip PHASE_LOCK_SETTINGS_READY
+        Slog.i(TAG, "[BootProf] PHASE_SYSTEM_SERVICES_READY");
         mSystemServiceManager.startBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
-        Slog.d(TAG, "++++++ 367");
 
+        Slog.i(TAG, "[BootProf] wm.systemReady");
         wm.systemReady();
-        Slog.d(TAG, "++++++ 370");
 
         // Update the configuration for this context by hand, because we're going
         // to start using it before the config change done in wm.systemReady() will
         // propagate to it.
+        Slog.i(TAG, "[BootProf] wm.computeNewConfiguration");
         Configuration config = wm.computeNewConfiguration();
-        Slog.d(TAG, "++++++ 371");
         DisplayMetrics metrics = new DisplayMetrics();
         WindowManager w = (WindowManager)context.getSystemService(Context.WINDOW_SERVICE);
         w.getDefaultDisplay().getMetrics(metrics);
+        Slog.i(TAG, "[BootProf] updateConfiguration");
         context.getResources().updateConfiguration(config, metrics);
-        Slog.d(TAG, "++++++ 376");
 
         // The system context's theme may be configuration-dependent.
         final Theme systemTheme = context.getTheme();
         if (systemTheme.getChangingConfigurations() != 0) {
             systemTheme.rebase();
         }
-        Slog.d(TAG, "++++++ 383");
 
+        Slog.i(TAG, "[BootProf] power systemReady");
         mPowerManagerService.systemReady(mActivityManagerService.getAppOpsService());
-        Slog.d(TAG, "++++++ 386");
+        Slog.i(TAG, "[BootProf] pm systemReady");
         mPackageManagerService.systemReady();
-        Slog.d(TAG, "++++++ 388");
+        Slog.i(TAG, "[BootProf] disp systemReady");
         mDisplayManagerService.systemReady(false, false);
-        Slog.d(TAG, "++++++ 390");
 
         // final AssetAtlasService atlasF = atlas;
         final InputManagerService inputManagerF = inputManager;
@@ -406,22 +417,212 @@ public final class SystemServer {
             mActivityManagerService.systemReady(new Runnable() {
                 @Override
                 public void run() {
-                    Slog.i(TAG, "[BootProf]Making services ready");
+                    Slog.i(TAG, "[BootProf] PHASE_ACTIVITY_MANAGER_READY");
                     mSystemServiceManager.startBootPhase(SystemService.PHASE_ACTIVITY_MANAGER_READY);
-                    Slog.d(TAG, "++++++ 406");
+                    Slog.i(TAG, "[BootProf] PHASE_THIRD_PARTY_APPS_CAN_START");
                     mSystemServiceManager.startBootPhase(SystemService.PHASE_THIRD_PARTY_APPS_CAN_START);
-                    Slog.d(TAG, "++++++ 408");
 
                     // atlasF.systemRunning();
+                    Slog.i(TAG, "[BootProf] inputManager systemRunning");
                     inputManagerF.systemRunning();
-                    Slog.d(TAG, "++++++ 412");
                 }
             });
         } catch (Throwable e) {
             reportWtf("Failed to ActivityManager.systemReady()", e);
         }
 
-        Slog.d(TAG, "++++++ 419");
+        Slog.i(TAG, "[BootProf] start WebViewUpdateService");
+        mWebViewUpdateService = mSystemServiceManager.startService(WebViewUpdateService.class);
+        mWebViewUpdateService.prepareWebViewInSystemServer();
+
+        Slog.i(TAG, "[BootProf] start TelecomLoaderService");
+        final TelecomLoaderService telecomLoaderService = mSystemServiceManager.startService(TelecomLoaderService.class);
+        telecomLoaderService.onBootPhase(SystemService.PHASE_ACTIVITY_MANAGER_READY);
+
+        Slog.i(TAG, "[BootProf] start TelephonyRegistry");
+        final TelephonyRegistry telephonyRegistry = new TelephonyRegistry(context);
+        ServiceManager.addService("telephony.registry", telephonyRegistry);
+
+        Slog.i(TAG, "[BootProf] start AlarmManagerService");
+        final AlarmManagerService alarmManager = mSystemServiceManager.startService(AlarmManagerService.class);
+
+        Slog.i(TAG, "[BootProf] start BluetoothService");
+        final BluetoothService btService = mSystemServiceManager.startService(BluetoothService.class);
+
+        Slog.i(TAG, "[BootProf] start IpConnectivityMetrics");
+        final IpConnectivityMetrics ipConnectivityMetrics = mSystemServiceManager.startService(IpConnectivityMetrics.class);
+
+        Slog.i(TAG, "[BootProf] start AccessibilityManagerService");
+        ServiceManager.addService(Context.ACCESSIBILITY_SERVICE, new AccessibilityManagerService(context));
+
+        Slog.i(TAG, "[BootProf] start DevicePolicyManagerService");
+        final SystemService devicePolicyManager = mSystemServiceManager.startService(DevicePolicyManagerService.Lifecycle.class);
+
+        // final NetworkManagementService networkManagement;
+        Slog.i(TAG, "[BootProf] start NetworkManagementService");
+        NetworkManagementService networkManagement = null;
+        try {
+            networkManagement= NetworkManagementService.create(context);
+            ServiceManager.addService(Context.NETWORKMANAGEMENT_SERVICE, networkManagement);
+        } catch (Throwable e) {
+            reportWtf("starting NetworkManagement Service", e);
+        }
+
+        Slog.i(TAG, "[BootProf] start NetworkScoreService");
+        final NetworkScoreService networkScore = new NetworkScoreService(context);
+        ServiceManager.addService(Context.NETWORK_SCORE_SERVICE, networkScore);
+
+        Slog.i(TAG, "[BootProf] start NetworkStatsService");
+        final NetworkStatsService networkStats = NetworkStatsService.create(context, networkManagement);
+        ServiceManager.addService(Context.NETWORK_STATS_SERVICE, networkStats);
+
+        Slog.i(TAG, "[BootProf] start NetworkPolicyManagerService");
+        final NetworkPolicyManagerService networkPolicy = new NetworkPolicyManagerService(context,
+                mActivityManagerService, networkStats, networkManagement);
+        ServiceManager.addService(Context.NETWORK_POLICY_SERVICE, networkPolicy);
+
+        Slog.i(TAG, "[BootProf] start WifiP2pService");
+        final SystemService wifiP2pService = mSystemServiceManager.startService(WIFI_P2P_SERVICE_CLASS);
+
+        Slog.i(TAG, "[BootProf] start WifiService");
+        final SystemService wifiService = mSystemServiceManager.startService(WIFI_SERVICE_CLASS);
+
+        Slog.i(TAG, "[BootProf] start WifiScanningService");
+        final SystemService wifiScanningService = mSystemServiceManager.startService("com.android.server.wifi.scanner.WifiScanningService");
+
+        Slog.i(TAG, "[BootProf] start ConnectivityService");
+        final ConnectivityService connectivity = new ConnectivityService(
+                context, networkManagement, networkStats, networkPolicy);
+        ServiceManager.addService(Context.CONNECTIVITY_SERVICE, connectivity);
+        networkStats.bindConnectivityManager(connectivity);
+        networkPolicy.bindConnectivityManager(connectivity);
+
+        Slog.i(TAG, "[BootProf] start RecoverySystemService");
+        mSystemServiceManager.startService(RecoverySystemService.class);
+
+        Slog.i(TAG, "[BootProf] start NotificationManagerService");
+        final SystemService notificationService = mSystemServiceManager.startService(NotificationManagerService.class);
+        INotificationManager notification = INotificationManager.Stub.asInterface(
+                ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+        networkPolicy.bindNotificationManager(notification);
+
+        Slog.i(TAG, "[BootProf] start LocationManagerService");
+        LocationManagerService location = new LocationManagerService(context);
+        ServiceManager.addService(Context.LOCATION_SERVICE, location);
+
+        Slog.i(TAG, "[BootProf] start CountryDetectorService");
+        final CountryDetectorService countryDetector = new CountryDetectorService(context);
+        ServiceManager.addService(Context.COUNTRY_DETECTOR, countryDetector);
+
+        Slog.i(TAG, "[BootProf] start SearchManagerService");
+        final SystemService searchManager = mSystemServiceManager.startService(SEARCH_MANAGER_SERVICE_CLASS);
+
+        Slog.i(TAG, "[BootProf] start AudioService");
+        final SystemService audioService = mSystemServiceManager.startService(AudioService.Lifecycle.class);
+
+        Slog.i(TAG, "[BootProf] start UsbService");
+        final SystemService usbService = mSystemServiceManager.startService(USB_SERVICE_CLASS);
+
+        Slog.i(TAG, "[BootProf] start TwilightService");
+        final SystemService twilightService = mSystemServiceManager.startService(TwilightService.class);
+
+        Slog.i(TAG, "[BootProf] start AppWidgetService");
+        final SystemService appWidgetService = mSystemServiceManager.startService(APPWIDGET_SERVICE_CLASS);
+
+        Slog.i(TAG, "[BootProf] start NetworkTimeUpdateService");
+        final NetworkTimeUpdateService networkTimeUpdater = new NetworkTimeUpdateService(context);
+        ServiceManager.addService("network_time_update_service", networkTimeUpdater);
+
+        Slog.i(TAG, "[BootProf] start CommonTimeManagementService");
+        final CommonTimeManagementService commonTimeMgmtService = new CommonTimeManagementService(context);
+        ServiceManager.addService("commontime_management", commonTimeMgmtService);
+
+        Slog.i(TAG, "[BootProf] start RestrictionsManagerService");
+        mSystemServiceManager.startService(RestrictionsManagerService.class);
+
+        Slog.i(TAG, "[BootProf] start MediaSessionService");
+        mSystemServiceManager.startService(MediaSessionService.class);
+
+        Slog.i(TAG, "[BootProf] start MediaRouterService");
+        final MediaRouterService mediaRouter = new MediaRouterService(context);
+        ServiceManager.addService(Context.MEDIA_ROUTER_SERVICE, mediaRouter);
+
+        Slog.i(TAG, "[BootProf] start ShortcutService");
+        final SystemService shortcutService = mSystemServiceManager.startService(ShortcutService.Lifecycle.class);
+
+        Slog.i(TAG, "[BootProf] start LauncherAppsService");
+        mSystemServiceManager.startService(LauncherAppsService.class);
+
+        // PHASE_LOCK_SETTINGS_READY
+        Slog.d(TAG, "++++++ late PHASE_LOCK_SETTINGS_READY");
+        devicePolicyManager.onBootPhase(SystemService.PHASE_LOCK_SETTINGS_READY);
+        shortcutService.onBootPhase(SystemService.PHASE_LOCK_SETTINGS_READY);
+        Slog.d(TAG, "++++++ End late PHASE_LOCK_SETTINGS_READY");
+
+        // PHASE_SYSTEM_SERVICES_READY
+        Slog.d(TAG, "++++++ late PHASE_SYSTEM_SERVICE_READY");
+        alarmManager.onBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
+        wifiP2pService.onBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
+        wifiService.onBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
+        wifiScanningService.onBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
+        ipConnectivityMetrics.onBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
+        notificationService.onBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
+        btService.onBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
+        Slog.d(TAG, "++++++ End late PHASE_SYSTEM_SERVICE_READY");
+
+        // PHASE_ACTIVITY_MANAGER_READY
+        Slog.d(TAG, "++++++ late PHASE_ACTIVITY_MANAGER_READY");
+        btService.onBootPhase(SystemService.PHASE_ACTIVITY_MANAGER_READY);
+        audioService.onBootPhase(SystemService.PHASE_ACTIVITY_MANAGER_READY);
+        usbService.onBootPhase(SystemService.PHASE_ACTIVITY_MANAGER_READY);
+        Slog.d(TAG, "++++++ End late PHASE_ACTIVITY_MANAGER_READY");
+
+        // systemReady
+        Slog.d(TAG, "++++++ late systemReady()");
+        networkScore.systemReady();
+        networkManagement.systemReady();
+        networkStats.systemReady();
+        networkPolicy.systemReady();
+        connectivity.systemReady();
+        Slog.d(TAG, "++++++ End late systemReady()");
+        
+        // PHASE_THIRD_PARTY_APPS_CAN_START
+        Slog.d(TAG, "++++++ late PHASE_THIRD_PARTY_APPS_CAN_START");
+        notificationService.onBootPhase(SystemService.PHASE_THIRD_PARTY_APPS_CAN_START);
+        appWidgetService.onBootPhase(SystemService.PHASE_THIRD_PARTY_APPS_CAN_START);
+        Slog.d(TAG, "++++++ End late PHASE_THIRD_PARTY_APPS_CAN_START");
+
+        // systeRunning
+        Slog.d(TAG, "++++++ late systemRunning()");
+        location.systemRunning();
+        countryDetector.systemRunning();
+        networkTimeUpdater.systemRunning();
+        commonTimeMgmtService.systemRunning();
+        telephonyRegistry.systemRunning();
+        mediaRouter.systemRunning();
+        networkScore.systemRunning();
+        Slog.d(TAG, "++++++ End late systemRunning()");
+
+        // PHASE_BOOT_COMPLETED
+        Slog.d(TAG, "++++++ late PHASE_BOOT_COMPLETED");
+        devicePolicyManager.onBootPhase(SystemService.PHASE_BOOT_COMPLETED);
+        usbService.onBootPhase(SystemService.PHASE_BOOT_COMPLETED);
+        twilightService.onBootPhase(SystemService.PHASE_BOOT_COMPLETED);
+        Slog.d(TAG, "++++++ End late PHASE_BOOT_COMPLETED");
+
+        // onStartUser
+        Slog.d(TAG, "++++++ Start onStartUser");
+        devicePolicyManager.onStartUser(0);
+        Slog.d(TAG, "++++++ End onStartUser");
+
+        // onUnlockUser
+        Slog.d(TAG, "++++++ Start onUnlockUser");
+        btService.onUnlockUser(0);
+        searchManager.onUnlockUser(0);
+        appWidgetService.onUnlockUser(0);
+        shortcutService.onUnlockUser(0);
+        Slog.d(TAG, "++++++ End onUnlockUser");
+
         // Loop forever.
         Looper.loop();
         throw new RuntimeException("Main thread loop unexpectedly exited");
