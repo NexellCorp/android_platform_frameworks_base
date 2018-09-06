@@ -19,7 +19,7 @@ package com.android.server.content;
 import android.accounts.Account;
 import android.accounts.AccountAndUser;
 import android.accounts.AccountManager;
-import android.app.backup.BackupManager;
+// import android.app.backup.BackupManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -2231,6 +2231,6 @@ public class SyncStorageEngine extends Handler {
      * {@link com.android.server.backup.SystemBackupAgent} to run.
      */
     public void queueBackup() {
-        BackupManager.dataChanged("android");
+        // BackupManager.dataChanged("android");
     }
 }

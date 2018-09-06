@@ -19,7 +19,7 @@ package com.android.providers.settings;
 import android.Manifest;
 import android.app.ActivityManager;
 import android.app.AppGlobals;
-import android.app.backup.BackupManager;
+// import android.app.backup.BackupManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentProvider;
@@ -1653,12 +1653,12 @@ public class SettingsProvider extends ContentProvider {
 
         private final Handler mHandler;
 
-        private final BackupManager mBackupManager;
+        // private final BackupManager mBackupManager;
 
         public SettingsRegistry() {
             mHandler = new MyHandler(getContext().getMainLooper());
             mGenerationRegistry = new GenerationRegistry(mLock);
-            mBackupManager = new BackupManager(getContext());
+            // mBackupManager = new BackupManager(getContext());
             migrateAllLegacySettingsIfNeeded();
         }
 
@@ -2095,7 +2095,7 @@ public class SettingsProvider extends ContentProvider {
                     } break;
 
                     case MSG_NOTIFY_DATA_CHANGED: {
-                        mBackupManager.dataChanged();
+                        // mBackupManager.dataChanged();
                     } break;
                 }
             }

@@ -124,11 +124,26 @@ public class BackupDataOutput {
         }
     }
 
-    private native static long ctor(FileDescriptor fd);
-    private native static void dtor(long mBackupWriter);
+    // private native static long ctor(FileDescriptor fd);
+    // private native static void dtor(long mBackupWriter);
+    private static long ctor(FileDescriptor fd) {
+        return 0;
+    }
+    private static void dtor(long mBackupWriter) {
+        return;
+    }
 
-    private native static int writeEntityHeader_native(long mBackupWriter, String key, int dataSize);
-    private native static int writeEntityData_native(long mBackupWriter, byte[] data, int size);
-    private native static void setKeyPrefix_native(long mBackupWriter, String keyPrefix);
+    // private native static int writeEntityHeader_native(long mBackupWriter, String key, int dataSize);
+    // private native static int writeEntityData_native(long mBackupWriter, byte[] data, int size);
+    // private native static void setKeyPrefix_native(long mBackupWriter, String keyPrefix);
+    private static int writeEntityHeader_native(long mBackupWriter, String key, int dataSize) {
+        return 0;
+    }
+    private static int writeEntityData_native(long mBackupWriter, byte[] data, int size) {
+        return 0;
+    }
+    private static void setKeyPrefix_native(long mBackupWriter, String keyPrefix) {
+        return;
+    }
 }
 

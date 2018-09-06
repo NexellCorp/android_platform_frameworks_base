@@ -22,7 +22,7 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
-import android.app.backup.BackupManager;
+// import android.app.backup.BackupManager;
 import android.app.trust.IStrongAuthTracker;
 // import android.app.trust.TrustManager;
 import android.content.BroadcastReceiver;
@@ -689,9 +689,9 @@ public class LockSettingsService extends ILockSettings.Stub {
 
     private void setStringUnchecked(String key, int userId, String value) {
         mStorage.writeKeyValue(key, value, userId);
-        if (ArrayUtils.contains(SETTINGS_TO_BACKUP, key)) {
-            BackupManager.dataChanged("com.android.providers.settings");
-        }
+        // if (ArrayUtils.contains(SETTINGS_TO_BACKUP, key)) {
+        //     BackupManager.dataChanged("com.android.providers.settings");
+        // }
     }
 
     @Override

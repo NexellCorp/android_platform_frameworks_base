@@ -139,10 +139,22 @@ public class BackupHelperDispatcher {
         }
     }
 
-    private static native int readHeader_native(Header h, FileDescriptor fd);
-    private static native int skipChunk_native(FileDescriptor fd, int bytesToSkip);
+    // private static native int readHeader_native(Header h, FileDescriptor fd);
+    // private static native int skipChunk_native(FileDescriptor fd, int bytesToSkip);
+    private static int readHeader_native(Header h, FileDescriptor fd) {
+        return 0;
+    }
+    private static int skipChunk_native(FileDescriptor fd, int bytesToSkip) {
+        return 0;
+    }
 
-    private static native int allocateHeader_native(Header h, FileDescriptor fd);
-    private static native int writeHeader_native(Header h, FileDescriptor fd, int pos);
+    // private static native int allocateHeader_native(Header h, FileDescriptor fd);
+    // private static native int writeHeader_native(Header h, FileDescriptor fd, int pos);
+    private static int allocateHeader_native(Header h, FileDescriptor fd) {
+        return 0;
+    }
+    private static int writeHeader_native(Header h, FileDescriptor fd, int pos) {
+        return 0;
+    }
 }
 

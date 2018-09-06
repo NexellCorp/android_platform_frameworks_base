@@ -21,7 +21,7 @@ import com.android.internal.R;
 import android.app.ActivityManagerNative;
 import android.app.IActivityManager;
 import android.app.ListFragment;
-import android.app.backup.BackupManager;
+// import android.app.backup.BackupManager;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -277,7 +277,7 @@ public class LocalePicker extends ListFragment {
 
             am.updatePersistentConfiguration(config);
             // Trigger the dirty bit for the Settings Provider.
-            BackupManager.dataChanged("com.android.providers.settings");
+            // BackupManager.dataChanged("com.android.providers.settings");
         } catch (RemoteException e) {
             // Intentionally left blank
         }

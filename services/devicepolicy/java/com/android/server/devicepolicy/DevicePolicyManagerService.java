@@ -56,7 +56,7 @@ import android.app.admin.NetworkEvent;
 import android.app.admin.SecurityLog;
 import android.app.admin.SecurityLog.SecurityEvent;
 import android.app.admin.SystemUpdatePolicy;
-import android.app.backup.IBackupManager;
+// import android.app.backup.IBackupManager;
 // import android.app.trust.TrustManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -1494,10 +1494,10 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
             return AppGlobals.getPackageManager();
         }
 
-        IBackupManager getIBackupManager() {
-            return IBackupManager.Stub.asInterface(
-                    ServiceManager.getService(Context.BACKUP_SERVICE));
-        }
+        // IBackupManager getIBackupManager() {
+        //     return IBackupManager.Stub.asInterface(
+        //             ServiceManager.getService(Context.BACKUP_SERVICE));
+        // }
 
         IAudioService getIAudioService() {
             return IAudioService.Stub.asInterface(ServiceManager.getService(Context.AUDIO_SERVICE));
@@ -5965,16 +5965,16 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
 
             // Shutting down backup manager service permanently.
             long ident = mInjector.binderClearCallingIdentity();
-            try {
-                if (mInjector.getIBackupManager() != null) {
-                    mInjector.getIBackupManager()
-                            .setBackupServiceActive(UserHandle.USER_SYSTEM, false);
-                }
-            } catch (RemoteException e) {
-                throw new IllegalStateException("Failed deactivating backup service.", e);
-            } finally {
+            // try {
+            //     if (mInjector.getIBackupManager() != null) {
+            //         mInjector.getIBackupManager()
+            //                 .setBackupServiceActive(UserHandle.USER_SYSTEM, false);
+            //     }
+            // } catch (RemoteException e) {
+            //     throw new IllegalStateException("Failed deactivating backup service.", e);
+            // } finally {
                 mInjector.binderRestoreCallingIdentity(ident);
-            }
+            // }
 
             mOwners.setDeviceOwner(admin, ownerName, userId);
             mOwners.writeDeviceOwner();
@@ -6128,14 +6128,14 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
         mOwners.writeDeviceOwner();
         updateDeviceOwnerLocked();
         disableDeviceOwnerManagedSingleUserFeaturesIfNeeded();
-        try {
-            if (mInjector.getIBackupManager() != null) {
-                // Reactivate backup service.
-                mInjector.getIBackupManager().setBackupServiceActive(UserHandle.USER_SYSTEM, true);
-            }
-        } catch (RemoteException e) {
-            throw new IllegalStateException("Failed reactivating backup service.", e);
-        }
+        // try {
+        //     if (mInjector.getIBackupManager() != null) {
+        //         // Reactivate backup service.
+        //         mInjector.getIBackupManager().setBackupServiceActive(UserHandle.USER_SYSTEM, true);
+        //     }
+        // } catch (RemoteException e) {
+        //     throw new IllegalStateException("Failed reactivating backup service.", e);
+        // }
     }
 
     @Override
@@ -9532,18 +9532,18 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
     }
 
     private synchronized void setBackupServiceEnabledInternal(boolean enabled) {
-        long ident = mInjector.binderClearCallingIdentity();
-        try {
-            IBackupManager ibm = mInjector.getIBackupManager();
-            if (ibm != null) {
-                ibm.setBackupServiceActive(UserHandle.USER_SYSTEM, enabled);
-            }
-        } catch (RemoteException e) {
-            throw new IllegalStateException(
-                "Failed " + (enabled ? "" : "de") + "activating backup service.", e);
-        } finally {
-            mInjector.binderRestoreCallingIdentity(ident);
-        }
+        // long ident = mInjector.binderClearCallingIdentity();
+        // try {
+        //     IBackupManager ibm = mInjector.getIBackupManager();
+        //     if (ibm != null) {
+        //         ibm.setBackupServiceActive(UserHandle.USER_SYSTEM, enabled);
+        //     }
+        // } catch (RemoteException e) {
+        //     throw new IllegalStateException(
+        //         "Failed " + (enabled ? "" : "de") + "activating backup service.", e);
+        // } finally {
+        //     mInjector.binderRestoreCallingIdentity(ident);
+        // }
     }
 
     @Override
@@ -9552,15 +9552,16 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
         if (!mHasFeature) {
             return true;
         }
-        synchronized (this) {
-            getActiveAdminForCallerLocked(admin, DeviceAdminInfo.USES_POLICY_DEVICE_OWNER);
-            try {
-                IBackupManager ibm = mInjector.getIBackupManager();
-                return ibm != null && ibm.isBackupServiceActive(UserHandle.USER_SYSTEM);
-            } catch (RemoteException e) {
-                throw new IllegalStateException("Failed requesting backup service state.", e);
-            }
-        }
+        // synchronized (this) {
+        //     getActiveAdminForCallerLocked(admin, DeviceAdminInfo.USES_POLICY_DEVICE_OWNER);
+        //     try {
+        //         IBackupManager ibm = mInjector.getIBackupManager();
+        //         return ibm != null && ibm.isBackupServiceActive(UserHandle.USER_SYSTEM);
+        //     } catch (RemoteException e) {
+        //         throw new IllegalStateException("Failed requesting backup service state.", e);
+        //     }
+        // }
+        return false;
     }
 
     @Override

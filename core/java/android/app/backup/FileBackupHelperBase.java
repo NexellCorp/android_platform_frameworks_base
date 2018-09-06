@@ -115,13 +115,28 @@ class FileBackupHelperBase {
         return false;
     }
 
-    private static native long ctor();
-    private static native void dtor(long ptr);
+    // private static native long ctor();
+    // private static native void dtor(long ptr);
+    private static long ctor() {
+        return 0;
+    }
+    private static void dtor(long ptr) {
+    }
 
-    native private static int performBackup_native(FileDescriptor oldState,
-            long data, FileDescriptor newState, String[] files, String[] keys);
-    private static native int writeFile_native(long ptr, String filename, long backupReader);
-    private static native int writeSnapshot_native(long ptr, FileDescriptor fd);
+    // native private static int performBackup_native(FileDescriptor oldState,
+    //         long data, FileDescriptor newState, String[] files, String[] keys);
+    // private static native int writeFile_native(long ptr, String filename, long backupReader);
+    // private static native int writeSnapshot_native(long ptr, FileDescriptor fd);
+    private static int performBackup_native(FileDescriptor oldState,
+            long data, FileDescriptor newState, String[] files, String[] keys) {
+        return 0;
+    }
+    private static int writeFile_native(long ptr, String filename, long backupReader) {
+        return 0;
+    }
+    private static int writeSnapshot_native(long ptr, FileDescriptor fd) {
+        return 0;
+    }
 }
 
 

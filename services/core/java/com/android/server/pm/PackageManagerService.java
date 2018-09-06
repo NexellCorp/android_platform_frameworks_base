@@ -106,7 +106,7 @@ import android.app.IActivityManager;
 import android.app.ResourcesManager;
 import android.app.admin.IDevicePolicyManager;
 import android.app.admin.SecurityLog;
-import android.app.backup.IBackupManager;
+// import android.app.backup.IBackupManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -12477,29 +12477,29 @@ public class PackageManagerService extends IPackageManager.Stub {
                     // restore if appropriate, then pass responsibility back to the
                     // Package Manager to run the post-install observer callbacks
                     // and broadcasts.
-                    IBackupManager bm = IBackupManager.Stub.asInterface(
-                            ServiceManager.getService(Context.BACKUP_SERVICE));
-                    if (bm != null) {
-                        if (DEBUG_INSTALL) Log.v(TAG, "token " + token
-                                + " to BM for possible restore");
-                        // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "restore", token);
-                        try {
-                            // TODO: http://b/22388012
-                            if (bm.isBackupServiceActive(UserHandle.USER_SYSTEM)) {
-                                bm.restoreAtInstall(res.pkg.applicationInfo.packageName, token);
-                            } else {
-                                doRestore = false;
-                            }
-                        } catch (RemoteException e) {
-                            // can't happen; the backup manager is local
-                        } catch (Exception e) {
-                            Slog.e(TAG, "Exception trying to enqueue restore", e);
-                            doRestore = false;
-                        }
-                    } else {
+                    // IBackupManager bm = IBackupManager.Stub.asInterface(
+                    //         ServiceManager.getService(Context.BACKUP_SERVICE));
+                    // if (bm != null) {
+                    //     if (DEBUG_INSTALL) Log.v(TAG, "token " + token
+                    //             + " to BM for possible restore");
+                    //     // Trace.asyncTraceBegin(TRACE_TAG_PACKAGE_MANAGER, "restore", token);
+                    //     try {
+                    //         // TODO: http://b/22388012
+                    //         if (bm.isBackupServiceActive(UserHandle.USER_SYSTEM)) {
+                    //             bm.restoreAtInstall(res.pkg.applicationInfo.packageName, token);
+                    //         } else {
+                    //             doRestore = false;
+                    //         }
+                    //     } catch (RemoteException e) {
+                    //         // can't happen; the backup manager is local
+                    //     } catch (Exception e) {
+                    //         Slog.e(TAG, "Exception trying to enqueue restore", e);
+                    //         doRestore = false;
+                    //     }
+                    // } else {
                         Slog.e(TAG, "Backup Manager not found!");
                         doRestore = false;
-                    }
+                    // }
                 }
 
                 if (!doRestore) {

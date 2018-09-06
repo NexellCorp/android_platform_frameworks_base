@@ -59,7 +59,7 @@ import android.app.NotificationManager;
 import android.app.NotificationManager.Policy;
 import android.app.PendingIntent;
 // import android.app.StatusBarManager;
-import android.app.backup.BackupManager;
+// import android.app.backup.BackupManager;
 import android.app.usage.UsageEvents;
 // import android.app.usage.UsageStatsManagerInternal;
 import android.content.BroadcastReceiver;
@@ -414,7 +414,7 @@ public class NotificationManagerService extends SystemService {
                 mPolicyFile.failWrite(stream);
             }
         }
-        BackupManager.dataChanged(getContext().getPackageName());
+        // BackupManager.dataChanged(getContext().getPackageName());
     }
 
     private void writePolicyXml(OutputStream stream, boolean forBackup) throws IOException {

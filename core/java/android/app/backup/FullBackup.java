@@ -84,8 +84,12 @@ public class FullBackup {
     /**
      * @hide
      */
-    static public native int backupToTar(String packageName, String domain,
-            String linkdomain, String rootpath, String path, FullBackupDataOutput output);
+    // static public native int backupToTar(String packageName, String domain,
+    //         String linkdomain, String rootpath, String path, FullBackupDataOutput output);
+    static public int backupToTar(String packageName, String domain,
+            String linkdomain, String rootpath, String path, FullBackupDataOutput output) {
+        return 0;
+    }
 
     private static final Map<String, BackupScheme> kPackageBackupSchemeMap =
             new ArrayMap<String, BackupScheme>();

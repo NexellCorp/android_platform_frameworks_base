@@ -106,7 +106,7 @@ import android.app.ProfilerInfo;
 import android.app.admin.DevicePolicyManager;
 import android.app.assist.AssistContent;
 import android.app.assist.AssistStructure;
-import android.app.backup.IBackupManager;
+// import android.app.backup.IBackupManager;
 import android.app.usage.UsageEvents;
 import android.app.usage.UsageStatsManagerInternal;
 import android.appwidget.AppWidgetManager;
@@ -6431,16 +6431,16 @@ public final class ActivityManagerService extends ActivityManagerNative
             mServices.processStartTimedOutLocked(app);
             app.kill("start timeout", true);
             removeLruProcessLocked(app);
-            if (mBackupTarget != null && mBackupTarget.app.pid == pid) {
-                Slog.w(TAG, "Unattached app died before backup, skipping");
-                try {
-                    IBackupManager bm = IBackupManager.Stub.asInterface(
-                            ServiceManager.getService(Context.BACKUP_SERVICE));
-                    bm.agentDisconnected(app.info.packageName);
-                } catch (RemoteException e) {
-                    // Can't happen; the backup manager is local
-                }
-            }
+            // if (mBackupTarget != null && mBackupTarget.app.pid == pid) {
+            //     Slog.w(TAG, "Unattached app died before backup, skipping");
+            //     try {
+            //         IBackupManager bm = IBackupManager.Stub.asInterface(
+            //                 ServiceManager.getService(Context.BACKUP_SERVICE));
+            //         bm.agentDisconnected(app.info.packageName);
+            //     } catch (RemoteException e) {
+            //         // Can't happen; the backup manager is local
+            //     }
+            // }
             if (isPendingBroadcastProcessLocked(pid)) {
                 Slog.w(TAG, "Unattached app died before broadcast acknowledged, skipping");
                 skipPendingBroadcastLocked(pid);
@@ -17049,17 +17049,17 @@ public final class ActivityManagerService extends ActivityManagerNative
         app.receivers.clear();
 
         // If the app is undergoing backup, tell the backup manager about it
-        if (mBackupTarget != null && app.pid == mBackupTarget.app.pid) {
-            if (DEBUG_BACKUP || DEBUG_CLEANUP) Slog.d(TAG_CLEANUP, "App "
-                    + mBackupTarget.appInfo + " died during backup");
-            try {
-                IBackupManager bm = IBackupManager.Stub.asInterface(
-                        ServiceManager.getService(Context.BACKUP_SERVICE));
-                bm.agentDisconnected(app.info.packageName);
-            } catch (RemoteException e) {
-                // can't happen; backup manager is local
-            }
-        }
+        // if (mBackupTarget != null && app.pid == mBackupTarget.app.pid) {
+        //     if (DEBUG_BACKUP || DEBUG_CLEANUP) Slog.d(TAG_CLEANUP, "App "
+        //             + mBackupTarget.appInfo + " died during backup");
+        //     try {
+        //         IBackupManager bm = IBackupManager.Stub.asInterface(
+        //                 ServiceManager.getService(Context.BACKUP_SERVICE));
+        //         bm.agentDisconnected(app.info.packageName);
+        //     } catch (RemoteException e) {
+        //         // can't happen; backup manager is local
+        //     }
+        // }
 
         for (int i = mPendingProcessChanges.size() - 1; i >= 0; i--) {
             ProcessChangeItem item = mPendingProcessChanges.get(i);
@@ -17488,29 +17488,29 @@ public final class ActivityManagerService extends ActivityManagerNative
 
     // A backup agent has just come up
     public void backupAgentCreated(String agentPackageName, IBinder agent) {
-        if (DEBUG_BACKUP) Slog.v(TAG_BACKUP, "backupAgentCreated: " + agentPackageName
-                + " = " + agent);
-
-        synchronized(this) {
-            if (!agentPackageName.equals(mBackupAppName)) {
-                Slog.e(TAG, "Backup agent created for " + agentPackageName + " but not requested!");
-                return;
-            }
-        }
-
-        long oldIdent = Binder.clearCallingIdentity();
-        try {
-            IBackupManager bm = IBackupManager.Stub.asInterface(
-                    ServiceManager.getService(Context.BACKUP_SERVICE));
-            bm.agentConnected(agentPackageName, agent);
-        } catch (RemoteException e) {
-            // can't happen; the backup manager service is local
-        } catch (Exception e) {
-            Slog.w(TAG, "Exception trying to deliver BackupAgent binding: ");
-            e.printStackTrace();
-        } finally {
-            Binder.restoreCallingIdentity(oldIdent);
-        }
+        // if (DEBUG_BACKUP) Slog.v(TAG_BACKUP, "backupAgentCreated: " + agentPackageName
+        //         + " = " + agent);
+        //
+        // synchronized(this) {
+        //     if (!agentPackageName.equals(mBackupAppName)) {
+        //         Slog.e(TAG, "Backup agent created for " + agentPackageName + " but not requested!");
+        //         return;
+        //     }
+        // }
+        //
+        // long oldIdent = Binder.clearCallingIdentity();
+        // try {
+        //     IBackupManager bm = IBackupManager.Stub.asInterface(
+        //             ServiceManager.getService(Context.BACKUP_SERVICE));
+        //     bm.agentConnected(agentPackageName, agent);
+        // } catch (RemoteException e) {
+        //     // can't happen; the backup manager service is local
+        // } catch (Exception e) {
+        //     Slog.w(TAG, "Exception trying to deliver BackupAgent binding: ");
+        //     e.printStackTrace();
+        // } finally {
+        //     Binder.restoreCallingIdentity(oldIdent);
+        // }
     }
 
     // done with this agent

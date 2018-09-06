@@ -167,10 +167,10 @@ public class DevicePolicyManagerServiceTestable extends DevicePolicyManagerServi
             return context.ipackageManager;
         }
 
-        @Override
-        IBackupManager getIBackupManager() {
-            return context.ibackupManager;
-        }
+        // @Override
+        // IBackupManager getIBackupManager() {
+        //     return context.ibackupManager;
+        // }
 
         @Override
         IAudioService getIAudioService() {

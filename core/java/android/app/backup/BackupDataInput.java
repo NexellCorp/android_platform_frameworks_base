@@ -189,10 +189,26 @@ public class BackupDataInput {
         }
     }
 
-    private native static long ctor(FileDescriptor fd);
-    private native static void dtor(long mBackupReader);
+    // private native static long ctor(FileDescriptor fd);
+    // private native static void dtor(long mBackupReader);
+    //
+    // private native int readNextHeader_native(long mBackupReader, EntityHeader entity);
+    // private native int readEntityData_native(long mBackupReader, byte[] data, int offset, int size);
+    // private native int skipEntityData_native(long mBackupReader);
 
-    private native int readNextHeader_native(long mBackupReader, EntityHeader entity);
-    private native int readEntityData_native(long mBackupReader, byte[] data, int offset, int size);
-    private native int skipEntityData_native(long mBackupReader);
+    private static long ctor(FileDescriptor fd) {
+        return 0;
+    }
+    private static void dtor(long mBackupReader) {
+    }
+
+    private int readNextHeader_native(long mBackupReader, EntityHeader entity) {
+        return 0;
+    }
+    private int readEntityData_native(long mBackupReader, byte[] data, int offset, int size) {
+        return 0;
+    }
+    private int skipEntityData_native(long mBackupReader) {
+        return 0;
+    }
 }

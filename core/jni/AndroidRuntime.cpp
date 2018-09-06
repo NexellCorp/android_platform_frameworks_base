@@ -174,11 +174,11 @@ extern int register_android_text_AndroidBidi(JNIEnv *env);
 extern int register_android_opengl_classes(JNIEnv *env);
 extern int register_android_ddm_DdmHandleNativeHeap(JNIEnv *env);
 extern int register_android_server_NetworkManagementSocketTagger(JNIEnv* env);
-extern int register_android_backup_BackupDataInput(JNIEnv *env);
-extern int register_android_backup_BackupDataOutput(JNIEnv *env);
-extern int register_android_backup_FileBackupHelperBase(JNIEnv *env);
-extern int register_android_backup_BackupHelperDispatcher(JNIEnv *env);
-extern int register_android_app_backup_FullBackup(JNIEnv *env);
+// extern int register_android_backup_BackupDataInput(JNIEnv *env);
+// extern int register_android_backup_BackupDataOutput(JNIEnv *env);
+// extern int register_android_backup_FileBackupHelperBase(JNIEnv *env);
+// extern int register_android_backup_BackupHelperDispatcher(JNIEnv *env);
+// extern int register_android_app_backup_FullBackup(JNIEnv *env);
 extern int register_android_app_Activity(JNIEnv *env);
 extern int register_android_app_ActivityThread(JNIEnv *env);
 extern int register_android_app_ApplicationLoaders(JNIEnv *env);
@@ -1383,11 +1383,11 @@ static const RegJNIRec gRegJNI[] = {
     REG_JNI(register_android_opengl_classes),
     REG_JNI(register_android_server_NetworkManagementSocketTagger),
     REG_JNI(register_android_ddm_DdmHandleNativeHeap),
-    REG_JNI(register_android_backup_BackupDataInput),
-    REG_JNI(register_android_backup_BackupDataOutput),
-    REG_JNI(register_android_backup_FileBackupHelperBase),
-    REG_JNI(register_android_backup_BackupHelperDispatcher),
-    REG_JNI(register_android_app_backup_FullBackup),
+    // REG_JNI(register_android_backup_BackupDataInput),
+    // REG_JNI(register_android_backup_BackupDataOutput),
+    // REG_JNI(register_android_backup_FileBackupHelperBase),
+    // REG_JNI(register_android_backup_BackupHelperDispatcher),
+    // REG_JNI(register_android_app_backup_FullBackup),
     REG_JNI(register_android_app_Activity),
     REG_JNI(register_android_app_ActivityThread),
     REG_JNI(register_android_app_ApplicationLoaders),
