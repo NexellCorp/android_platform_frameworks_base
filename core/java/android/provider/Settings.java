@@ -63,7 +63,7 @@ import android.util.MemoryIntArray;
 
 import com.android.internal.annotations.GuardedBy;
 import com.android.internal.util.ArrayUtils;
-import com.android.internal.widget.ILockSettings;
+// import com.android.internal.widget.ILockSettings;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -4113,7 +4113,7 @@ public final class Settings {
                 CALL_METHOD_GET_SECURE,
                 CALL_METHOD_PUT_SECURE);
 
-        private static ILockSettings sLockSettings = null;
+        // private static ILockSettings sLockSettings = null;
 
         private static boolean sIsSystemProcess;
         private static final HashSet<String> MOVED_TO_LOCK_SETTINGS;
@@ -4263,36 +4263,36 @@ public final class Settings {
                 return Global.getStringForUser(resolver, name, userHandle);
             }
 
-            if (MOVED_TO_LOCK_SETTINGS.contains(name)) {
-                synchronized (Secure.class) {
-                    if (sLockSettings == null) {
-                        sLockSettings = ILockSettings.Stub.asInterface(
-                                (IBinder) ServiceManager.getService("lock_settings"));
-                        sIsSystemProcess = Process.myUid() == Process.SYSTEM_UID;
-                    }
-                }
-                if (sLockSettings != null && !sIsSystemProcess) {
-                    // No context; use the ActivityThread's context as an approximation for
-                    // determining the target API level.
-                    Application application = ActivityThread.currentApplication();
-
-                    boolean isPreMnc = application != null
-                            && application.getApplicationInfo() != null
-                            && application.getApplicationInfo().targetSdkVersion
-                            <= VERSION_CODES.LOLLIPOP_MR1;
-                    if (isPreMnc) {
-                        try {
-                            return sLockSettings.getString(name, "0", userHandle);
-                        } catch (RemoteException re) {
-                            // Fall through
-                        }
-                    } else {
-                        throw new SecurityException("Settings.Secure." + name
-                                + " is deprecated and no longer accessible."
-                                + " See API documentation for potential replacements.");
-                    }
-                }
-            }
+            // if (MOVED_TO_LOCK_SETTINGS.contains(name)) {
+            //     synchronized (Secure.class) {
+            //         if (sLockSettings == null) {
+            //             sLockSettings = ILockSettings.Stub.asInterface(
+            //                     (IBinder) ServiceManager.getService("lock_settings"));
+            //             sIsSystemProcess = Process.myUid() == Process.SYSTEM_UID;
+            //         }
+            //     }
+            //     if (sLockSettings != null && !sIsSystemProcess) {
+            //         // No context; use the ActivityThread's context as an approximation for
+            //         // determining the target API level.
+            //         Application application = ActivityThread.currentApplication();
+            //
+            //         boolean isPreMnc = application != null
+            //                 && application.getApplicationInfo() != null
+            //                 && application.getApplicationInfo().targetSdkVersion
+            //                 <= VERSION_CODES.LOLLIPOP_MR1;
+            //         if (isPreMnc) {
+            //             try {
+            //                 return sLockSettings.getString(name, "0", userHandle);
+            //             } catch (RemoteException re) {
+            //                 // Fall through
+            //             }
+            //         } else {
+            //             throw new SecurityException("Settings.Secure." + name
+            //                     + " is deprecated and no longer accessible."
+            //                     + " See API documentation for potential replacements.");
+            //         }
+            //     }
+            // }
 
             return sNameValueCache.getStringForUser(resolver, name, userHandle);
         }
