@@ -76,8 +76,8 @@ import android.net.IEthernetManager;
 import android.net.INetworkPolicyManager;
 import android.net.NetworkPolicyManager;
 import android.net.NetworkScoreManager;
-import android.net.nsd.INsdManager;
-import android.net.nsd.NsdManager;
+// import android.net.nsd.INsdManager;
+// import android.net.nsd.NsdManager;
 import android.net.wifi.IRttManager;
 import android.net.wifi.IWifiManager;
 import android.net.wifi.IWifiScanner;
@@ -365,14 +365,14 @@ final class SystemServiceRegistry {
                     ctx.mMainThread.getHandler());
             }});
 
-        registerService(Context.NSD_SERVICE, NsdManager.class,
-                new CachedServiceFetcher<NsdManager>() {
-            @Override
-            public NsdManager createService(ContextImpl ctx) {
-                IBinder b = ServiceManager.getService(Context.NSD_SERVICE);
-                INsdManager service = INsdManager.Stub.asInterface(b);
-                return new NsdManager(ctx.getOuterContext(), service);
-            }});
+        // registerService(Context.NSD_SERVICE, NsdManager.class,
+        //         new CachedServiceFetcher<NsdManager>() {
+        //     @Override
+        //     public NsdManager createService(ContextImpl ctx) {
+        //         IBinder b = ServiceManager.getService(Context.NSD_SERVICE);
+        //         INsdManager service = INsdManager.Stub.asInterface(b);
+        //         return new NsdManager(ctx.getOuterContext(), service);
+        //     }});
 
         registerService(Context.POWER_SERVICE, PowerManager.class,
                 new CachedServiceFetcher<PowerManager>() {

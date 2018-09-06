@@ -1535,7 +1535,6 @@ android.net.Uri$PathPart
 android.net.Uri$PathSegments
 android.net.Uri$PathSegmentsBuilder
 android.net.Uri$StringUri
-android.net.nsd.NsdManager
 android.net.wifi.IWifiManager
 android.net.wifi.IWifiManager$Stub
 android.net.wifi.IWifiManager$Stub$Proxy
