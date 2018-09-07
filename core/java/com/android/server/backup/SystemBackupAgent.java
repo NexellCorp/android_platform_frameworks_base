@@ -16,7 +16,7 @@
 
 package com.android.server.backup;
 
-import android.app.IWallpaperManager;
+// import android.app.IWallpaperManager;
 import android.app.backup.BackupAgentHelper;
 import android.app.backup.BackupDataInput;
 import android.app.backup.BackupDataOutput;
@@ -118,15 +118,15 @@ public class SystemBackupAgent extends BackupAgentHelper {
         try {
             super.onRestore(data, appVersionCode, newState);
 
-            IWallpaperManager wallpaper = (IWallpaperManager) ServiceManager.getService(
-                    Context.WALLPAPER_SERVICE);
-            if (wallpaper != null) {
-                try {
-                    wallpaper.settingsRestored();
-                } catch (RemoteException re) {
-                    Slog.e(TAG, "Couldn't restore settings\n" + re);
-                }
-            }
+            // IWallpaperManager wallpaper = (IWallpaperManager) ServiceManager.getService(
+            //         Context.WALLPAPER_SERVICE);
+            // if (wallpaper != null) {
+            //     try {
+            //         wallpaper.settingsRestored();
+            //     } catch (RemoteException re) {
+            //         Slog.e(TAG, "Couldn't restore settings\n" + re);
+            //     }
+            // }
         } catch (IOException ex) {
             // If there was a failure, delete everything for the wallpaper, this is too aggressive,
             // but this is hopefully a rare failure.
@@ -163,18 +163,18 @@ public class SystemBackupAgent extends BackupAgentHelper {
             }
             FullBackup.restoreFile(data, size, type, mode, mtime, outFile);
 
-            if (restoredWallpaper) {
-                IWallpaperManager wallpaper =
-                        (IWallpaperManager)ServiceManager.getService(
-                                Context.WALLPAPER_SERVICE);
-                if (wallpaper != null) {
-                    try {
-                        wallpaper.settingsRestored();
-                    } catch (RemoteException re) {
-                        Slog.e(TAG, "Couldn't restore settings\n" + re);
-                    }
-                }
-            }
+            // if (restoredWallpaper) {
+            //     IWallpaperManager wallpaper =
+            //             (IWallpaperManager)ServiceManager.getService(
+            //                     Context.WALLPAPER_SERVICE);
+            //     if (wallpaper != null) {
+            //         try {
+            //             wallpaper.settingsRestored();
+            //         } catch (RemoteException re) {
+            //             Slog.e(TAG, "Couldn't restore settings\n" + re);
+            //         }
+            //     }
+            // }
         } catch (IOException e) {
             if (restoredWallpaper) {
                 // Make sure we wind up in a good state

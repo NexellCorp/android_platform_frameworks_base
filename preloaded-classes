@@ -534,7 +534,6 @@ android.app.SystemServiceRegistry$ServiceFetcher
 android.app.SystemServiceRegistry$StaticApplicationContextServiceFetcher
 android.app.SystemServiceRegistry$StaticServiceFetcher
 android.app.UiModeManager
-android.app.WallpaperManager
 android.app.admin.DevicePolicyManager
 android.app.admin.IDevicePolicyManager
 android.app.admin.IDevicePolicyManager$Stub

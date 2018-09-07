@@ -16,7 +16,7 @@
 
 package android.app.backup;
 
-import android.app.WallpaperManager;
+// import android.app.WallpaperManager;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
@@ -102,16 +102,16 @@ public class WallpaperBackupHelper extends FileBackupHelperBase implements Backu
 
         final WindowManager wm =
                 (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        final WallpaperManager wpm =
-                (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
+        // final WallpaperManager wpm =
+        //         (WallpaperManager) context.getSystemService(Context.WALLPAPER_SERVICE);
         final Display d = wm.getDefaultDisplay();
         final Point size = new Point();
         d.getSize(size);
         mDesiredMinWidth = Math.min(size.x, size.y);
-        mDesiredMinHeight = (double) wpm.getDesiredMinimumHeight();
-        if (mDesiredMinHeight <= 0) {
+        // mDesiredMinHeight = (double) wpm.getDesiredMinimumHeight();
+        // if (mDesiredMinHeight <= 0) {
             mDesiredMinHeight = size.y;
-        }
+        // }
 
         if (DEBUG) {
             Slog.d(TAG, "dmW=" + mDesiredMinWidth + " dmH=" + mDesiredMinHeight);

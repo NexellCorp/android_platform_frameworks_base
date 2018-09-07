@@ -487,13 +487,13 @@ final class SystemServiceRegistry {
                 return new SystemVibrator(ctx);
             }});
 
-        registerService(Context.WALLPAPER_SERVICE, WallpaperManager.class,
-                new CachedServiceFetcher<WallpaperManager>() {
-            @Override
-            public WallpaperManager createService(ContextImpl ctx) {
-                return new WallpaperManager(ctx.getOuterContext(),
-                        ctx.mMainThread.getHandler());
-            }});
+        // registerService(Context.WALLPAPER_SERVICE, WallpaperManager.class,
+        //         new CachedServiceFetcher<WallpaperManager>() {
+        //     @Override
+        //     public WallpaperManager createService(ContextImpl ctx) {
+        //         return new WallpaperManager(ctx.getOuterContext(),
+        //                 ctx.mMainThread.getHandler());
+        //     }});
 
         registerService(Context.WIFI_SERVICE, WifiManager.class,
                 new CachedServiceFetcher<WifiManager>() {

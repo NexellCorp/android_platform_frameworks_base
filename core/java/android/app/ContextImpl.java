@@ -719,48 +719,52 @@ class ContextImpl extends Context {
     @Override
     @Deprecated
     public Drawable getWallpaper() {
-        return getWallpaperManager().getDrawable();
+        // return getWallpaperManager().getDrawable();
+        return null;
     }
 
     @Override
     @Deprecated
     public Drawable peekWallpaper() {
-        return getWallpaperManager().peekDrawable();
+        // return getWallpaperManager().peekDrawable();
+        return null;
     }
 
     @Override
     @Deprecated
     public int getWallpaperDesiredMinimumWidth() {
-        return getWallpaperManager().getDesiredMinimumWidth();
+        // return getWallpaperManager().getDesiredMinimumWidth();
+        return 0;
     }
 
     @Override
     @Deprecated
     public int getWallpaperDesiredMinimumHeight() {
-        return getWallpaperManager().getDesiredMinimumHeight();
+        // return getWallpaperManager().getDesiredMinimumHeight();
+        return 0;
     }
 
     @Override
     @Deprecated
     public void setWallpaper(Bitmap bitmap) throws IOException {
-        getWallpaperManager().setBitmap(bitmap);
+        // getWallpaperManager().setBitmap(bitmap);
     }
 
     @Override
     @Deprecated
     public void setWallpaper(InputStream data) throws IOException {
-        getWallpaperManager().setStream(data);
+        // getWallpaperManager().setStream(data);
     }
 
     @Override
     @Deprecated
     public void clearWallpaper() throws IOException {
-        getWallpaperManager().clear();
+        // getWallpaperManager().clear();
     }
 
-    private WallpaperManager getWallpaperManager() {
-        return getSystemService(WallpaperManager.class);
-    }
+    // private WallpaperManager getWallpaperManager() {
+    //     return getSystemService(WallpaperManager.class);
+    // }
 
     @Override
     public void startActivity(Intent intent) {

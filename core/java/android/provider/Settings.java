@@ -25,7 +25,7 @@ import android.app.ActivityThread;
 import android.app.AppOpsManager;
 import android.app.Application;
 import android.app.SearchManager;
-import android.app.WallpaperManager;
+// import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.ContentValues;
