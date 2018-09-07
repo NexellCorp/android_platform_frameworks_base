@@ -48,8 +48,8 @@ import android.hardware.SerialManager;
 // import android.hardware.SystemSensorManager;
 import android.hardware.camera2.CameraManager;
 import android.hardware.display.DisplayManager;
-import android.hardware.hdmi.HdmiControlManager;
-import android.hardware.hdmi.IHdmiControlService;
+// import android.hardware.hdmi.HdmiControlManager;
+// import android.hardware.hdmi.IHdmiControlService;
 import android.hardware.input.InputManager;
 import android.hardware.location.ContextHubManager;
 import android.hardware.usb.IUsbManager;
@@ -126,7 +126,7 @@ import android.view.WindowManagerImpl;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.CaptioningManager;
 import android.view.inputmethod.InputMethodManager;
-import android.view.textservice.TextServicesManager;
+// import android.view.textservice.TextServicesManager;
 
 import java.util.HashMap;
 
@@ -209,13 +209,13 @@ final class SystemServiceRegistry {
                 return new BluetoothManager(ctx);
             }});
 
-        registerService(Context.HDMI_CONTROL_SERVICE, HdmiControlManager.class,
-                new StaticServiceFetcher<HdmiControlManager>() {
-            @Override
-            public HdmiControlManager createService() {
-                IBinder b = ServiceManager.getService(Context.HDMI_CONTROL_SERVICE);
-                return new HdmiControlManager(IHdmiControlService.Stub.asInterface(b));
-            }});
+        // registerService(Context.HDMI_CONTROL_SERVICE, HdmiControlManager.class,
+        //         new StaticServiceFetcher<HdmiControlManager>() {
+        //     @Override
+        //     public HdmiControlManager createService() {
+        //         IBinder b = ServiceManager.getService(Context.HDMI_CONTROL_SERVICE);
+        //         return new HdmiControlManager(IHdmiControlService.Stub.asInterface(b));
+        //     }});
 
         // registerService(Context.CLIPBOARD_SERVICE, ClipboardManager.class,
         //         new CachedServiceFetcher<ClipboardManager>() {
@@ -312,12 +312,12 @@ final class SystemServiceRegistry {
                 return InputMethodManager.getInstance();
             }});
 
-        registerService(Context.TEXT_SERVICES_MANAGER_SERVICE, TextServicesManager.class,
-                new StaticServiceFetcher<TextServicesManager>() {
-            @Override
-            public TextServicesManager createService() {
-                return TextServicesManager.getInstance();
-            }});
+        // registerService(Context.TEXT_SERVICES_MANAGER_SERVICE, TextServicesManager.class,
+        //         new StaticServiceFetcher<TextServicesManager>() {
+        //     @Override
+        //     public TextServicesManager createService() {
+        //         return TextServicesManager.getInstance();
+        //     }});
 
         // registerService(Context.KEYGUARD_SERVICE, KeyguardManager.class,
         //         new CachedServiceFetcher<KeyguardManager>() {

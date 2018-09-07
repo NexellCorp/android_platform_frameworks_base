@@ -31,7 +31,7 @@ import android.view.textservice.SpellCheckerSession;
 import android.view.textservice.SpellCheckerSession.SpellCheckerSessionListener;
 import android.view.textservice.SuggestionsInfo;
 import android.view.textservice.TextInfo;
-import android.view.textservice.TextServicesManager;
+// import android.view.textservice.TextServicesManager;
 
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.GrowingArrayUtils;
@@ -93,7 +93,7 @@ public class SpellChecker implements SpellCheckerSessionListener {
     // concurrently due to the asynchronous nature of onGetSuggestions.
     private WordIterator mWordIterator;
 
-    private TextServicesManager mTextServicesManager;
+    // private TextServicesManager mTextServicesManager;
 
     private Runnable mSpellRunnable;
 
@@ -117,19 +117,19 @@ public class SpellChecker implements SpellCheckerSessionListener {
     private void resetSession() {
         closeSession();
 
-        mTextServicesManager = (TextServicesManager) mTextView.getContext().
-                getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE);
-        if (!mTextServicesManager.isSpellCheckerEnabled()
-                || mCurrentLocale == null
-                || mTextServicesManager.getCurrentSpellCheckerSubtype(true) == null) {
+        // mTextServicesManager = (TextServicesManager) mTextView.getContext().
+        //         getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE);
+        // if (!mTextServicesManager.isSpellCheckerEnabled()
+        //         || mCurrentLocale == null
+        //         || mTextServicesManager.getCurrentSpellCheckerSubtype(true) == null) {
             mSpellCheckerSession = null;
-        } else {
-            mSpellCheckerSession = mTextServicesManager.newSpellCheckerSession(
-                    null /* Bundle not currently used by the textServicesManager */,
-                    mCurrentLocale, this,
-                    false /* means any available languages from current spell checker */);
-            mIsSentenceSpellCheckSupported = true;
-        }
+        // } else {
+        //     mSpellCheckerSession = mTextServicesManager.newSpellCheckerSession(
+        //             null #<{(| Bundle not currently used by the textServicesManager |)}>#,
+        //             mCurrentLocale, this,
+        //             false #<{(| means any available languages from current spell checker |)}>#);
+        //     mIsSentenceSpellCheckSupported = true;
+        // }
 
         // Restore SpellCheckSpans in pool
         for (int i = 0; i < mLength; i++) {
@@ -225,7 +225,8 @@ public class SpellChecker implements SpellCheckerSessionListener {
             start = 0;
             end = mTextView.getText().length();
         } else {
-            final boolean spellCheckerActivated = mTextServicesManager.isSpellCheckerEnabled();
+            // final boolean spellCheckerActivated = mTextServicesManager.isSpellCheckerEnabled();
+            final boolean spellCheckerActivated = false;
             if (isSessionActive != spellCheckerActivated) {
                 // Spell checker has been turned of or off since last spellCheck
                 resetSession();

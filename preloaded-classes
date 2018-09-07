@@ -965,7 +965,6 @@ android.hardware.display.IDisplayManager$Stub$Proxy
 android.hardware.display.IDisplayManagerCallback
 android.hardware.display.IDisplayManagerCallback$Stub
 android.hardware.fingerprint.FingerprintManager
-android.hardware.hdmi.HdmiControlManager
 android.hardware.input.IInputDevicesChangedListener
 android.hardware.input.IInputDevicesChangedListener$Stub
 android.hardware.input.IInputManager
@@ -2274,7 +2273,6 @@ android.view.inputmethod.InputMethodManager$ImeInputEventSender
 android.view.inputmethod.InputMethodManager$PendingEvent
 android.view.textservice.SpellCheckerSubtype
 android.view.textservice.SpellCheckerSubtype$1
-android.view.textservice.TextServicesManager
 android.webkit.IWebViewUpdateService
 android.webkit.IWebViewUpdateService$Stub
 android.webkit.IWebViewUpdateService$Stub$Proxy
@@ -2517,9 +2515,6 @@ com.android.internal.telephony.ITelephonyRegistry
 com.android.internal.telephony.ITelephonyRegistry$Stub
 com.android.internal.telephony.ITelephonyRegistry$Stub$Proxy
 com.android.internal.telephony.PhoneConstants$State
-com.android.internal.textservice.ITextServicesManager
-com.android.internal.textservice.ITextServicesManager$Stub
-com.android.internal.textservice.ITextServicesManager$Stub$Proxy
 com.android.internal.util.ArrayUtils
 com.android.internal.util.FastPrintWriter
 com.android.internal.util.FastPrintWriter$DummyWriter

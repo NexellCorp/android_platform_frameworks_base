@@ -39,7 +39,7 @@ import android.util.Slog;
 import android.view.inputmethod.InputMethodInfo;
 import android.view.inputmethod.InputMethodSubtype;
 import android.view.textservice.SpellCheckerInfo;
-import android.view.textservice.TextServicesManager;
+// import android.view.textservice.TextServicesManager;
 
 import com.android.internal.annotations.GuardedBy;
 import com.android.internal.annotations.VisibleForTesting;
@@ -710,8 +710,9 @@ public class InputMethodUtils {
             return;
         }
         // Only the current spell checker should be treated as an enabled one.
-        final SpellCheckerInfo currentSpellChecker =
-                TextServicesManager.getInstance().getCurrentSpellChecker();
+        // final SpellCheckerInfo currentSpellChecker =
+        //         TextServicesManager.getInstance().getCurrentSpellChecker();
+        final SpellCheckerInfo currentSpellChecker = null;
         for (final String packageName : systemImesDisabledUntilUsed) {
             if (DEBUG) {
                 Slog.d(TAG, "check " + packageName);

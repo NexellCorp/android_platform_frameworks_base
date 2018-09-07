@@ -624,16 +624,48 @@ final class HdmiCecController {
         }
     }
 
-    private static native long nativeInit(HdmiCecController handler, MessageQueue messageQueue);
-    private static native int nativeSendCecCommand(long controllerPtr, int srcAddress,
-            int dstAddress, byte[] body);
-    private static native int nativeAddLogicalAddress(long controllerPtr, int logicalAddress);
-    private static native void nativeClearLogicalAddress(long controllerPtr);
-    private static native int nativeGetPhysicalAddress(long controllerPtr);
-    private static native int nativeGetVersion(long controllerPtr);
-    private static native int nativeGetVendorId(long controllerPtr);
-    private static native HdmiPortInfo[] nativeGetPortInfos(long controllerPtr);
-    private static native void nativeSetOption(long controllerPtr, int flag, int value);
-    private static native void nativeSetAudioReturnChannel(long controllerPtr, int port, boolean flag);
-    private static native boolean nativeIsConnected(long controllerPtr, int port);
+    // private static native long nativeInit(HdmiCecController handler, MessageQueue messageQueue);
+    // private static native int nativeSendCecCommand(long controllerPtr, int srcAddress,
+    //         int dstAddress, byte[] body);
+    // private static native int nativeAddLogicalAddress(long controllerPtr, int logicalAddress);
+    // private static native void nativeClearLogicalAddress(long controllerPtr);
+    // private static native int nativeGetPhysicalAddress(long controllerPtr);
+    // private static native int nativeGetVersion(long controllerPtr);
+    // private static native int nativeGetVendorId(long controllerPtr);
+    // private static native HdmiPortInfo[] nativeGetPortInfos(long controllerPtr);
+    // private static native void nativeSetOption(long controllerPtr, int flag, int value);
+    // private static native void nativeSetAudioReturnChannel(long controllerPtr, int port, boolean flag);
+    // private static native boolean nativeIsConnected(long controllerPtr, int port);
+
+    private static long nativeInit(HdmiCecController handler, MessageQueue messageQueue) {
+        return 0;
+    }
+    private static int nativeSendCecCommand(long controllerPtr, int srcAddress,
+            int dstAddress, byte[] body) {
+        return 0;
+    }
+    private static int nativeAddLogicalAddress(long controllerPtr, int logicalAddress) {
+        return 0;
+    }
+    private static void nativeClearLogicalAddress(long controllerPtr) {
+    }
+    private static int nativeGetPhysicalAddress(long controllerPtr) {
+        return 0;
+    }
+    private static int nativeGetVersion(long controllerPtr) {
+        return 0;
+    }
+    private static int nativeGetVendorId(long controllerPtr) {
+        return 0;
+    }
+    private static HdmiPortInfo[] nativeGetPortInfos(long controllerPtr) {
+        return new HdmiPortInfo[1];
+    }
+    private static void nativeSetOption(long controllerPtr, int flag, int value) {
+    }
+    private static void nativeSetAudioReturnChannel(long controllerPtr, int port, boolean flag) {
+    }
+    private static boolean nativeIsConnected(long controllerPtr, int port) {
+        return false;
+    }
 }

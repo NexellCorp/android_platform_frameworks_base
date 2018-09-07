@@ -143,7 +143,7 @@ import android.view.inputmethod.ExtractedTextRequest;
 import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.view.textservice.SpellCheckerSubtype;
-import android.view.textservice.TextServicesManager;
+// import android.view.textservice.TextServicesManager;
 import android.widget.RemoteViews.RemoteView;
 
 import com.android.internal.annotations.VisibleForTesting;
@@ -8881,9 +8881,10 @@ public class TextView extends View implements ViewTreeObserver.OnPreDrawListener
     }
 
     private void updateTextServicesLocaleLocked() {
-        final TextServicesManager textServicesManager = (TextServicesManager)
-                mContext.getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE);
-        final SpellCheckerSubtype subtype = textServicesManager.getCurrentSpellCheckerSubtype(true);
+        // final TextServicesManager textServicesManager = (TextServicesManager)
+        //         mContext.getSystemService(Context.TEXT_SERVICES_MANAGER_SERVICE);
+        // final SpellCheckerSubtype subtype = textServicesManager.getCurrentSpellCheckerSubtype(true);
+        final SpellCheckerSubtype subtype = null;
         final Locale locale;
         if (subtype != null) {
             locale = subtype.getLocaleObject();

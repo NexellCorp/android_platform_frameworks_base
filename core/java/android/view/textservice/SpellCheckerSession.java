@@ -93,7 +93,7 @@ public class SpellCheckerSession {
     private static final int MSG_ON_GET_SUGGESTION_MULTIPLE_FOR_SENTENCE = 2;
 
     private final InternalListener mInternalListener;
-    private final ITextServicesManager mTextServicesManager;
+    // private final ITextServicesManager mTextServicesManager;
     private final SpellCheckerInfo mSpellCheckerInfo;
     private final SpellCheckerSessionListener mSpellCheckerSessionListener;
     private final SpellCheckerSessionListenerImpl mSpellCheckerSessionListenerImpl;
@@ -129,7 +129,7 @@ public class SpellCheckerSession {
         mSpellCheckerInfo = info;
         mSpellCheckerSessionListenerImpl = new SpellCheckerSessionListenerImpl(mHandler);
         mInternalListener = new InternalListener(mSpellCheckerSessionListenerImpl);
-        mTextServicesManager = tsm;
+        // mTextServicesManager = tsm;
         mIsUsed = true;
         mSpellCheckerSessionListener = listener;
         mSubtype = subtype;
@@ -164,12 +164,12 @@ public class SpellCheckerSession {
      */
     public void close() {
         mIsUsed = false;
-        try {
+        // try {
             mSpellCheckerSessionListenerImpl.close();
-            mTextServicesManager.finishSpellCheckerService(mSpellCheckerSessionListenerImpl);
-        } catch (RemoteException e) {
-            // do nothing
-        }
+            // mTextServicesManager.finishSpellCheckerService(mSpellCheckerSessionListenerImpl);
+        // } catch (RemoteException e) {
+        //     // do nothing
+        // }
     }
 
     /**

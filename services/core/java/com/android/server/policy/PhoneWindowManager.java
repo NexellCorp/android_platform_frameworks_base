@@ -68,9 +68,9 @@ import android.content.res.TypedArray;
 import android.database.ContentObserver;
 import android.graphics.PixelFormat;
 import android.graphics.Rect;
-import android.hardware.hdmi.HdmiControlManager;
-import android.hardware.hdmi.HdmiPlaybackClient;
-import android.hardware.hdmi.HdmiPlaybackClient.OneTouchPlayCallback;
+// import android.hardware.hdmi.HdmiControlManager;
+// import android.hardware.hdmi.HdmiPlaybackClient;
+// import android.hardware.hdmi.HdmiPlaybackClient.OneTouchPlayCallback;
 import android.hardware.input.InputManagerInternal;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
@@ -439,7 +439,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     boolean mSystemBooted;
     private boolean mDeferBindKeyguard;
     boolean mHdmiPlugged;
-    HdmiControl mHdmiControl;
+    // HdmiControl mHdmiControl;
     IUiModeManager mUiModeManager;
     int mUiMode;
     int mDockMode = Intent.EXTRA_DOCK_STATE_UNDOCKED;
@@ -829,12 +829,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    private UEventObserver mHDMIObserver = new UEventObserver() {
-        @Override
-        public void onUEvent(UEventObserver.UEvent event) {
-            setHdmiPlugged("1".equals(event.get("SWITCH_STATE")));
-        }
-    };
+    // private UEventObserver mHDMIObserver = new UEventObserver() {
+    //     @Override
+    //     public void onUEvent(UEventObserver.UEvent event) {
+    //         setHdmiPlugged("1".equals(event.get("SWITCH_STATE")));
+    //     }
+    // };
 
     class SettingsObserver extends ContentObserver {
         SettingsObserver(Handler handler) {
@@ -1525,7 +1525,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     private void handleShortPressOnHome() {
         // Turn on the connected TV and switch HDMI input if we're a HDMI playback device.
-        getHdmiControl().turnOnTv();
+        // getHdmiControl().turnOnTv();
 
         // If there's a dream running then use home to escape the dream
         // but don't actually go home.
@@ -1543,40 +1543,40 @@ public class PhoneWindowManager implements WindowManagerPolicy {
      * turning on TV (optional) and switching input to us. If HDMI control service
      * is not available or we're not a HDMI playback device, the operation is no-op.
      */
-    private HdmiControl getHdmiControl() {
-        if (null == mHdmiControl) {
-            HdmiControlManager manager = (HdmiControlManager) mContext.getSystemService(
-                        Context.HDMI_CONTROL_SERVICE);
-            HdmiPlaybackClient client = null;
-            if (manager != null) {
-                client = manager.getPlaybackClient();
-            }
-            mHdmiControl = new HdmiControl(client);
-        }
-        return mHdmiControl;
-    }
+    // private HdmiControl getHdmiControl() {
+    //     if (null == mHdmiControl) {
+    //         HdmiControlManager manager = (HdmiControlManager) mContext.getSystemService(
+    //                     Context.HDMI_CONTROL_SERVICE);
+    //         HdmiPlaybackClient client = null;
+    //         if (manager != null) {
+    //             client = manager.getPlaybackClient();
+    //         }
+    //         mHdmiControl = new HdmiControl(client);
+    //     }
+    //     return mHdmiControl;
+    // }
 
-    private static class HdmiControl {
-        private final HdmiPlaybackClient mClient;
-
-        private HdmiControl(HdmiPlaybackClient client) {
-            mClient = client;
-        }
-
-        public void turnOnTv() {
-            if (mClient == null) {
-                return;
-            }
-            mClient.oneTouchPlay(new OneTouchPlayCallback() {
-                @Override
-                public void onComplete(int result) {
-                    if (result != HdmiControlManager.RESULT_SUCCESS) {
-                        Log.w(TAG, "One touch play failed: " + result);
-                    }
-                }
-            });
-        }
-    }
+    // private static class HdmiControl {
+    //     private final HdmiPlaybackClient mClient;
+    //
+    //     private HdmiControl(HdmiPlaybackClient client) {
+    //         mClient = client;
+    //     }
+    //
+    //     public void turnOnTv() {
+    //         if (mClient == null) {
+    //             return;
+    //         }
+    //         mClient.oneTouchPlay(new OneTouchPlayCallback() {
+    //             @Override
+    //             public void onComplete(int result) {
+    //                 if (result != HdmiControlManager.RESULT_SUCCESS) {
+    //                     Log.w(TAG, "One touch play failed: " + result);
+    //                 }
+    //             }
+    //         });
+    //     }
+    // }
 
     private void handleLongPressOnHome(int deviceId) {
         if (mLongPressOnHomeBehavior == LONG_PRESS_HOME_NOTHING) {
@@ -1902,7 +1902,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         mGlobalKeyManager = new GlobalKeyManager(mContext);
 
         // Controls rotation and the like.
-        initializeHdmiState();
+        // initializeHdmiState();
 
         // Match current screen state.
         if (!mPowerManager.isInteractive()) {
@@ -5579,39 +5579,39 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    void initializeHdmiState() {
-        boolean plugged = false;
-        // watch for HDMI plug messages if the hdmi switch exists
-        if (new File("/sys/devices/virtual/switch/hdmi/state").exists()) {
-            mHDMIObserver.startObserving("DEVPATH=/devices/virtual/switch/hdmi");
-
-            final String filename = "/sys/class/switch/hdmi/state";
-            FileReader reader = null;
-            try {
-                reader = new FileReader(filename);
-                char[] buf = new char[15];
-                int n = reader.read(buf);
-                if (n > 1) {
-                    plugged = 0 != Integer.parseInt(new String(buf, 0, n-1));
-                }
-            } catch (IOException ex) {
-                Slog.w(TAG, "Couldn't read hdmi state from " + filename + ": " + ex);
-            } catch (NumberFormatException ex) {
-                Slog.w(TAG, "Couldn't read hdmi state from " + filename + ": " + ex);
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException ex) {
-                    }
-                }
-            }
-        }
-        // This dance forces the code in setHdmiPlugged to run.
-        // Always do this so the sticky intent is stuck (to false) if there is no hdmi.
-        mHdmiPlugged = !plugged;
-        setHdmiPlugged(!mHdmiPlugged);
-    }
+    // void initializeHdmiState() {
+    //     boolean plugged = false;
+    //     // watch for HDMI plug messages if the hdmi switch exists
+    //     if (new File("/sys/devices/virtual/switch/hdmi/state").exists()) {
+    //         // mHDMIObserver.startObserving("DEVPATH=/devices/virtual/switch/hdmi");
+    //
+    //         final String filename = "/sys/class/switch/hdmi/state";
+    //         FileReader reader = null;
+    //         try {
+    //             reader = new FileReader(filename);
+    //             char[] buf = new char[15];
+    //             int n = reader.read(buf);
+    //             if (n > 1) {
+    //                 plugged = 0 != Integer.parseInt(new String(buf, 0, n-1));
+    //             }
+    //         } catch (IOException ex) {
+    //             Slog.w(TAG, "Couldn't read hdmi state from " + filename + ": " + ex);
+    //         } catch (NumberFormatException ex) {
+    //             Slog.w(TAG, "Couldn't read hdmi state from " + filename + ": " + ex);
+    //         } finally {
+    //             if (reader != null) {
+    //                 try {
+    //                     reader.close();
+    //                 } catch (IOException ex) {
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     // This dance forces the code in setHdmiPlugged to run.
+    //     // Always do this so the sticky intent is stuck (to false) if there is no hdmi.
+    //     mHdmiPlugged = !plugged;
+    //     setHdmiPlugged(!mHdmiPlugged);
+    // }
 
     final Object mScreenshotLock = new Object();
     ServiceConnection mScreenshotConnection = null;
