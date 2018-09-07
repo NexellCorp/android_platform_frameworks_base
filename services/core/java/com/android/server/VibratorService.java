@@ -88,10 +88,20 @@ public class VibratorService extends IVibratorService.Stub
     private boolean mLowPowerMode;
     private SettingsObserver mSettingObserver;
 
-    native static boolean vibratorExists();
-    native static void vibratorInit();
-    native static void vibratorOn(long milliseconds);
-    native static void vibratorOff();
+    // native static boolean vibratorExists();
+    // native static void vibratorInit();
+    // native static void vibratorOn(long milliseconds);
+    // native static void vibratorOff();
+
+    static boolean vibratorExists() {
+        return false;
+    }
+    static void vibratorInit() {
+    }
+    static void vibratorOn(long milliseconds) {
+    }
+    static void vibratorOff() {
+    }
 
     private class Vibration implements IBinder.DeathRecipient {
         private final IBinder mToken;

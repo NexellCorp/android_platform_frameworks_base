@@ -42,8 +42,8 @@ import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.os.UserHandle;
 import android.os.UserManager;
-import android.os.Vibrator;
-import android.os.SystemVibrator;
+// import android.os.Vibrator;
+// import android.os.SystemVibrator;
 import android.os.storage.IMountService;
 import android.os.storage.IMountShutdownObserver;
 import android.system.ErrnoException;
@@ -648,13 +648,13 @@ public final class ShutdownThread extends Thread {
             reason = null;
         } else if (SHUTDOWN_VIBRATE_MS > 0 && context != null) {
             // vibrate before shutting down
-            Vibrator vibrator = new SystemVibrator(context);
-            try {
-                vibrator.vibrate(SHUTDOWN_VIBRATE_MS, VIBRATION_ATTRIBUTES);
-            } catch (Exception e) {
-                // Failure to vibrate shouldn't interrupt shutdown.  Just log it.
-                Log.w(TAG, "Failed to vibrate during shutdown.", e);
-            }
+            // Vibrator vibrator = new SystemVibrator(context);
+            // try {
+            //     vibrator.vibrate(SHUTDOWN_VIBRATE_MS, VIBRATION_ATTRIBUTES);
+            // } catch (Exception e) {
+            //     // Failure to vibrate shouldn't interrupt shutdown.  Just log it.
+            //     Log.w(TAG, "Failed to vibrate during shutdown.", e);
+            // }
 
             // vibrator is asynchronous so we need to wait to avoid shutting down too soon.
             try {

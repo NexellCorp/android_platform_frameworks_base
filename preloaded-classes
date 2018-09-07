@@ -1600,9 +1600,6 @@ android.os.IServiceManager
 android.os.IUserManager
 android.os.IUserManager$Stub
 android.os.IUserManager$Stub$Proxy
-android.os.IVibratorService
-android.os.IVibratorService$Stub
-android.os.IVibratorService$Stub$Proxy
 android.os.LocaleList
 android.os.LocaleList$1
 android.os.Looper
@@ -1669,7 +1666,6 @@ android.os.StrictMode$VmPolicy
 android.os.StrictMode$VmPolicy$Builder
 android.os.SystemClock
 android.os.SystemProperties
-android.os.SystemVibrator
 android.os.UEventObserver
 android.os.UserHandle
 android.os.UserHandle$1

@@ -101,10 +101,10 @@ import android.os.PowerManager;
 import android.os.Process;
 import android.os.RecoverySystem;
 import android.os.ServiceManager;
-import android.os.SystemVibrator;
+// import android.os.SystemVibrator;
 import android.os.UserHandle;
 import android.os.UserManager;
-import android.os.Vibrator;
+// import android.os.Vibrator;
 import android.os.health.SystemHealthManager;
 import android.os.storage.StorageManager;
 import android.print.IPrintManager;
@@ -480,12 +480,12 @@ final class SystemServiceRegistry {
                 return new SerialManager(ctx, ISerialManager.Stub.asInterface(b));
             }});
 
-        registerService(Context.VIBRATOR_SERVICE, Vibrator.class,
-                new CachedServiceFetcher<Vibrator>() {
-            @Override
-            public Vibrator createService(ContextImpl ctx) {
-                return new SystemVibrator(ctx);
-            }});
+        // registerService(Context.VIBRATOR_SERVICE, Vibrator.class,
+        //         new CachedServiceFetcher<Vibrator>() {
+        //     @Override
+        //     public Vibrator createService(ContextImpl ctx) {
+        //         return new SystemVibrator(ctx);
+        //     }});
 
         // registerService(Context.WALLPAPER_SERVICE, WallpaperManager.class,
         //         new CachedServiceFetcher<WallpaperManager>() {
