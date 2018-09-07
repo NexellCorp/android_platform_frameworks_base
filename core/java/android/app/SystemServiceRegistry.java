@@ -88,7 +88,7 @@ import android.net.wifi.nan.IWifiNanManager;
 import android.net.wifi.nan.WifiNanManager;
 import android.net.wifi.p2p.IWifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.nfc.NfcManager;
+// import android.nfc.NfcManager;
 // import android.os.BatteryManager;
 // import android.os.DropBoxManager;
 import android.os.HardwarePropertiesManager;
@@ -268,12 +268,12 @@ final class SystemServiceRegistry {
         //         return new BatteryManager();
         //     }});
 
-        registerService(Context.NFC_SERVICE, NfcManager.class,
-                new CachedServiceFetcher<NfcManager>() {
-            @Override
-            public NfcManager createService(ContextImpl ctx) {
-                return new NfcManager(ctx);
-            }});
+        // registerService(Context.NFC_SERVICE, NfcManager.class,
+        //         new CachedServiceFetcher<NfcManager>() {
+        //     @Override
+        //     public NfcManager createService(ContextImpl ctx) {
+        //         return new NfcManager(ctx);
+        //     }});
 
         // registerService(Context.DROPBOX_SERVICE, DropBoxManager.class,
         //         new CachedServiceFetcher<DropBoxManager>() {
