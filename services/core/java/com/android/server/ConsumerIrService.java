@@ -29,9 +29,19 @@ public class ConsumerIrService extends IConsumerIrService.Stub {
 
     private static final int MAX_XMIT_TIME = 2000000; /* in microseconds */
 
-    private static native long halOpen();
-    private static native int halTransmit(long halObject, int carrierFrequency, int[] pattern);
-    private static native int[] halGetCarrierFrequencies(long halObject);
+    // private static native long halOpen();
+    // private static native int halTransmit(long halObject, int carrierFrequency, int[] pattern);
+    // private static native int[] halGetCarrierFrequencies(long halObject);
+
+    private static long halOpen() {
+        return 0;
+    }
+    private static int halTransmit(long halObject, int carrierFrequency, int[] pattern) {
+        return 0;
+    }
+    private static int[] halGetCarrierFrequencies(long halObject) {
+        return new int[1];
+    }
 
     private final Context mContext;
     private final PowerManager.WakeLock mWakeLock;

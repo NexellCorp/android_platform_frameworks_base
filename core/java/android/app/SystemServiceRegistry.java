@@ -41,7 +41,7 @@ import android.content.pm.IShortcutService;
 import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
-import android.hardware.ConsumerIrManager;
+// import android.hardware.ConsumerIrManager;
 import android.hardware.ISerialManager;
 // import android.hardware.SensorManager;
 import android.hardware.SerialManager;
@@ -613,12 +613,12 @@ final class SystemServiceRegistry {
                         UserHandle.getAppId(Process.myUid()));
             }});
 
-        registerService(Context.CONSUMER_IR_SERVICE, ConsumerIrManager.class,
-                new CachedServiceFetcher<ConsumerIrManager>() {
-            @Override
-            public ConsumerIrManager createService(ContextImpl ctx) {
-                return new ConsumerIrManager(ctx);
-            }});
+        // registerService(Context.CONSUMER_IR_SERVICE, ConsumerIrManager.class,
+        //         new CachedServiceFetcher<ConsumerIrManager>() {
+        //     @Override
+        //     public ConsumerIrManager createService(ContextImpl ctx) {
+        //         return new ConsumerIrManager(ctx);
+        //     }});
 
         registerService(Context.MEDIA_SESSION_SERVICE, MediaSessionManager.class,
                 new CachedServiceFetcher<MediaSessionManager>() {
