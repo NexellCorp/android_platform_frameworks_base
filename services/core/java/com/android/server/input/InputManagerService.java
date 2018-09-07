@@ -29,7 +29,7 @@ import com.android.internal.util.Preconditions;
 import com.android.internal.util.XmlUtils;
 import com.android.server.DisplayThread;
 import com.android.server.LocalServices;
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 
 import org.xmlpull.v1.XmlPullParser;
 
@@ -123,7 +123,8 @@ import libcore.util.Objects;
  * Wraps the C++ InputManager and provides its callbacks.
  */
 public class InputManagerService extends IInputManager.Stub
-        implements Watchdog.Monitor {
+        // implements Watchdog.Monitor {
+        {
     static final String TAG = "InputManager";
     static final boolean DEBUG = false;
 
@@ -331,7 +332,7 @@ public class InputManagerService extends IInputManager.Stub
         nativeStart(mPtr);
 
         // Add ourself to the Watchdog monitors.
-        Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addMonitor(this);
 
         registerPointerSpeedSettingObserver();
         registerShowTouchesSettingObserver();
@@ -1785,11 +1786,11 @@ public class InputManagerService extends IInputManager.Stub
     }
 
     // Called by the heartbeat to ensure locks are not held indefinitely (for deadlock detection).
-    @Override
-    public void monitor() {
-        synchronized (mInputFilterLock) { }
-        nativeMonitor(mPtr);
-    }
+    // @Override
+    // public void monitor() {
+    //     synchronized (mInputFilterLock) { }
+    //     nativeMonitor(mPtr);
+    // }
 
     // Native callback.
     private void notifyConfigurationChanged(long whenNanos) {

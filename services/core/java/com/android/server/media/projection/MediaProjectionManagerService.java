@@ -16,7 +16,7 @@
 
 package com.android.server.media.projection;
 
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 
 import android.Manifest;
 import android.app.AppOpsManager;
@@ -54,7 +54,8 @@ import java.util.Map;
  * IMediaProjectionService#isValidMediaProjection}.
  */
 public final class MediaProjectionManagerService extends SystemService
-        implements Watchdog.Monitor {
+        // implements Watchdog.Monitor {
+        {
     private static final String TAG = "MediaProjectionManagerService";
 
     private final Object mLock = new Object(); // Protects the list of media projections
@@ -79,7 +80,7 @@ public final class MediaProjectionManagerService extends SystemService
         mAppOps = (AppOpsManager) mContext.getSystemService(Context.APP_OPS_SERVICE);
         mMediaRouter = (MediaRouter) mContext.getSystemService(Context.MEDIA_ROUTER_SERVICE);
         mMediaRouterCallback = new MediaRouterCallback();
-        Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addMonitor(this);
     }
 
     @Override
@@ -100,10 +101,10 @@ public final class MediaProjectionManagerService extends SystemService
         }
     }
 
-    @Override
-    public void monitor() {
-        synchronized (mLock) { /* check for deadlock */ }
-    }
+    // @Override
+    // public void monitor() {
+    //     synchronized (mLock) { #<{(| check for deadlock |)}># }
+    // }
 
     private void startProjectionLocked(final MediaProjection projection) {
         if (mProjectionGrant != null) {

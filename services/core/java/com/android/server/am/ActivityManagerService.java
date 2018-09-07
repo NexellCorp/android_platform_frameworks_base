@@ -50,7 +50,7 @@ import com.android.server.LockGuard;
 import com.android.server.ServiceThread;
 import com.android.server.SystemService;
 import com.android.server.SystemServiceManager;
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 import com.android.server.am.ActivityStack.ActivityState;
 import com.android.server.firewall.IntentFirewall;
 import com.android.server.pm.Installer;
@@ -372,7 +372,8 @@ import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
 
 public final class ActivityManagerService extends ActivityManagerNative
-        implements Watchdog.Monitor, BatteryStatsImpl.BatteryCallback {
+        // implements Watchdog.Monitor, BatteryStatsImpl.BatteryCallback {
+        implements BatteryStatsImpl.BatteryCallback {
 
     private static final String TAG = TAG_WITH_CLASS_NAME ? "ActivityManagerService" : TAG_AM;
     private static final String TAG_BACKUP = TAG + POSTFIX_BACKUP;
@@ -2739,8 +2740,8 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
         };
 
-        Watchdog.getInstance().addMonitor(this);
-        Watchdog.getInstance().addThread(mHandler);
+        // Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addThread(mHandler);
     }
 
     public void setSystemServiceManager(SystemServiceManager mgr) {
@@ -3827,9 +3828,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                 // Ignore
             }
 
-            if (app.persistent) {
-                Watchdog.getInstance().processStarted(app.processName, startResult.pid);
-            }
+            // if (app.persistent) {
+            //     Watchdog.getInstance().processStarted(app.processName, startResult.pid);
+            // }
 
             checkTime(startTime, "startProcess: building log message");
             StringBuilder buf = mStringBuilder;
@@ -4875,7 +4876,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                         resumeOK = mController.activityResuming(next.packageName);
                     } catch (RemoteException e) {
                         mController = null;
-                        Watchdog.getInstance().setActivityController(null);
+                        // Watchdog.getInstance().setActivityController(null);
                     }
 
                     if (!resumeOK) {
@@ -12141,7 +12142,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         synchronized (this) {
             mController = controller;
             mControllerIsAMonkey = imAMonkey;
-            Watchdog.getInstance().setActivityController(controller);
+            // Watchdog.getInstance().setActivityController(controller);
         }
     }
 
@@ -13077,7 +13078,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
 
         synchronized (this) {
-            Watchdog.getInstance().setAllowRestart(allowRestart);
+            // Watchdog.getInstance().setAllowRestart(allowRestart);
             Slog.i(TAG, "Hanging system process at request of pid " + Binder.getCallingPid());
             synchronized (death) {
                 while (who.isBinderAlive()) {
@@ -13087,7 +13088,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                     }
                 }
             }
-            Watchdog.getInstance().setAllowRestart(true);
+            // Watchdog.getInstance().setAllowRestart(true);
         }
     }
 
@@ -21694,9 +21695,9 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     /** In this method we try to acquire our lock to make sure that we have not deadlocked */
-    public void monitor() {
-        synchronized (this) { }
-    }
+    // public void monitor() {
+    //     synchronized (this) { }
+    // }
 
     void onCoreSettingsChange(Bundle settings) {
         for (int i = mLruProcesses.size() - 1; i >= 0; i--) {

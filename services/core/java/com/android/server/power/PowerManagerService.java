@@ -70,7 +70,7 @@ import com.android.internal.util.ArrayUtils;
 import com.android.server.EventLogTags;
 import com.android.server.ServiceThread;
 import com.android.server.SystemService;
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 // import com.android.server.am.BatteryStatsService;
 import com.android.server.lights.Light;
 import com.android.server.lights.LightsManager;
@@ -95,7 +95,8 @@ import static android.os.PowerManagerInternal.WAKEFULNESS_DREAMING;
  * functions on the device.
  */
 public final class PowerManagerService extends SystemService
-        implements Watchdog.Monitor {
+        // implements Watchdog.Monitor {
+        {
     private static final String TAG = "PowerManagerService";
 
     private static final boolean DEBUG = false;
@@ -546,8 +547,8 @@ public final class PowerManagerService extends SystemService
         publishBinderService(Context.POWER_SERVICE, new BinderService());
         publishLocalService(PowerManagerInternal.class, new LocalService());
 
-        Watchdog.getInstance().addMonitor(this);
-        Watchdog.getInstance().addThread(mHandler);
+        // Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addThread(mHandler);
     }
 
     @Override
@@ -2853,12 +2854,12 @@ public final class PowerManagerService extends SystemService
         Slog.wtf(TAG, "Unexpected return from lowLevelReboot!");
     }
 
-    @Override // Watchdog.Monitor implementation
-    public void monitor() {
-        // Grab and release lock for watchdog monitor to detect deadlocks.
-        synchronized (mLock) {
-        }
-    }
+    // @Override // Watchdog.Monitor implementation
+    // public void monitor() {
+    //     // Grab and release lock for watchdog monitor to detect deadlocks.
+    //     synchronized (mLock) {
+    //     }
+    // }
 
     private void dumpInternal(PrintWriter pw) {
         pw.println("POWER MANAGER (dumpsys power)\n");

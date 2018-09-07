@@ -141,7 +141,7 @@ import com.android.server.EventLogTags;
 import com.android.server.FgThread;
 import com.android.server.LocalServices;
 import com.android.server.UiThread;
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 import com.android.server.input.InputManagerService;
 import com.android.server.policy.PhoneWindowManager;
 import com.android.server.power.ShutdownThread;
@@ -256,7 +256,8 @@ import static com.android.server.wm.WindowStateAnimator.STACK_CLIP_NONE;
 
 /** {@hide} */
 public class WindowManagerService extends IWindowManager.Stub
-        implements Watchdog.Monitor, WindowManagerPolicy.WindowManagerFuncs {
+        // implements Watchdog.Monitor, WindowManagerPolicy.WindowManagerFuncs {
+        implements WindowManagerPolicy.WindowManagerFuncs {
     private static final String TAG = TAG_WITH_CLASS_NAME ? "WindowManagerService" : TAG_WM;
 
     static final int LAYOUT_REPEAT_THRESHOLD = 4;
@@ -1059,7 +1060,7 @@ public class WindowManagerService extends IWindowManager.Stub
         initPolicy();
 
         // Add ourself to the Watchdog monitors.
-        Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addMonitor(this);
 
         SurfaceControl.openTransaction();
         try {
@@ -11044,10 +11045,10 @@ public class WindowManagerService extends IWindowManager.Stub
     }
 
     // Called by the heartbeat to ensure locks are not held indefnitely (for deadlock detection).
-    @Override
-    public void monitor() {
-        synchronized (mWindowMap) { }
-    }
+    // @Override
+    // public void monitor() {
+    //     synchronized (mWindowMap) { }
+    // }
 
     private DisplayContent newDisplayContentLocked(final Display display) {
         DisplayContent displayContent = new DisplayContent(display, this);

@@ -149,7 +149,8 @@ import javax.crypto.spec.PBEKeySpec;
  * storage. Also decides how storage should be presented to users on the device.
  */
 class MountService extends IMountService.Stub
-        implements INativeDaemonConnectorCallbacks, Watchdog.Monitor {
+        // implements INativeDaemonConnectorCallbacks, Watchdog.Monitor {
+        implements INativeDaemonConnectorCallbacks {
 
     // Static direct instance pointer for the tightly-coupled idle service to use
     static MountService sSelf = null;
@@ -197,7 +198,7 @@ class MountService extends IMountService.Stub
     private static final boolean DEBUG_OBB = false;
 
     // Disable this since it messes up long-running cryptfs operations.
-    private static final boolean WATCHDOG_ENABLE = false;
+    // private static final boolean WATCHDOG_ENABLE = false;
 
     private static final String TAG = "MountService";
 
@@ -1545,9 +1546,9 @@ class MountService extends IMountService.Stub
         }
 
         // Add ourself to the Watchdog monitors if enabled.
-        if (WATCHDOG_ENABLE) {
-            Watchdog.getInstance().addMonitor(this);
-        }
+        // if (WATCHDOG_ENABLE) {
+        //     Watchdog.getInstance().addMonitor(this);
+        // }
     }
 
     private void start() {
@@ -3793,15 +3794,15 @@ class MountService extends IMountService.Stub
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void monitor() {
-        if (mConnector != null) {
-            mConnector.monitor();
-        }
-        if (mCryptConnector != null) {
-            mCryptConnector.monitor();
-        }
-    }
+    // @Override
+    // public void monitor() {
+    //     if (mConnector != null) {
+    //         mConnector.monitor();
+    //     }
+    //     if (mCryptConnector != null) {
+    //         mCryptConnector.monitor();
+    //     }
+    // }
 
     private final class MountServiceInternalImpl extends MountServiceInternal {
         // Not guarded by a lock.

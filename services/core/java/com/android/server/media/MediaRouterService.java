@@ -16,7 +16,7 @@
 
 package com.android.server.media;
 
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -62,7 +62,8 @@ import java.util.Objects;
  * </p>
  */
 public final class MediaRouterService extends IMediaRouterService.Stub
-        implements Watchdog.Monitor {
+        // implements Watchdog.Monitor {
+        {
     private static final String TAG = "MediaRouterService";
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
 
@@ -91,7 +92,7 @@ public final class MediaRouterService extends IMediaRouterService.Stub
 
     public MediaRouterService(Context context) {
         mContext = context;
-        Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addMonitor(this);
     }
 
     public void systemRunning() {
@@ -108,10 +109,10 @@ public final class MediaRouterService extends IMediaRouterService.Stub
         switchUser();
     }
 
-    @Override
-    public void monitor() {
-        synchronized (mLock) { /* check for deadlock */ }
-    }
+    // @Override
+    // public void monitor() {
+    //     synchronized (mLock) { #<{(| check for deadlock |)}># }
+    // }
 
     // Binder call
     @Override

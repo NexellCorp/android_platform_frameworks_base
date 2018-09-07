@@ -125,7 +125,7 @@ import android.view.Display;
 import com.android.internal.app.IVoiceInteractor;
 import com.android.internal.content.ReferrerIntent;
 import com.android.internal.os.BatteryStatsImpl;
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 import com.android.server.am.ActivityManagerService.ItemMatcher;
 import com.android.server.am.ActivityStackSupervisor.ActivityContainer;
 import com.android.server.wm.TaskGroup;
@@ -3709,7 +3709,7 @@ final class ActivityStack {
                     resumeOK = controller.activityResuming(next.packageName);
                 } catch (RemoteException e) {
                     mService.mController = null;
-                    Watchdog.getInstance().setActivityController(null);
+                    // Watchdog.getInstance().setActivityController(null);
                 }
 
                 if (!resumeOK) {
@@ -4388,7 +4388,7 @@ final class ActivityStack {
                     moveOK = mService.mController.activityResuming(next.packageName);
                 } catch (RemoteException e) {
                     mService.mController = null;
-                    Watchdog.getInstance().setActivityController(null);
+                    // Watchdog.getInstance().setActivityController(null);
                 }
                 if (!moveOK) {
                     return false;

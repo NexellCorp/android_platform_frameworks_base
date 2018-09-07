@@ -63,8 +63,8 @@ import android.view.KeyEvent;
 
 import com.android.server.LocalServices;
 import com.android.server.SystemService;
-import com.android.server.Watchdog;
-import com.android.server.Watchdog.Monitor;
+// import com.android.server.Watchdog;
+// import com.android.server.Watchdog.Monitor;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -75,7 +75,8 @@ import java.util.List;
 /**
  * System implementation of MediaSessionManager
  */
-public class MediaSessionService extends SystemService implements Monitor {
+// public class MediaSessionService extends SystemService implements Monitor {
+public class MediaSessionService extends SystemService {
     private static final String TAG = "MediaSessionService";
     private static final boolean DEBUG = Log.isLoggable(TAG, Log.DEBUG);
     // Leave log for media key event always.
@@ -121,7 +122,7 @@ public class MediaSessionService extends SystemService implements Monitor {
     @Override
     public void onStart() {
         publishBinderService(Context.MEDIA_SESSION_SERVICE, mSessionManagerImpl);
-        Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addMonitor(this);
         // mKeyguardManager =
         //         (KeyguardManager) getContext().getSystemService(Context.KEYGUARD_SERVICE);
         mAudioService = getAudioService();
@@ -211,12 +212,12 @@ public class MediaSessionService extends SystemService implements Monitor {
         }
     }
 
-    @Override
-    public void monitor() {
-        synchronized (mLock) {
-            // Check for deadlock
-        }
-    }
+    // @Override
+    // public void monitor() {
+    //     synchronized (mLock) {
+    //         // Check for deadlock
+    //     }
+    // }
 
     protected void enforcePhoneStatePermission(int pid, int uid) {
         if (getContext().checkPermission(android.Manifest.permission.MODIFY_PHONE_STATE, pid, uid)

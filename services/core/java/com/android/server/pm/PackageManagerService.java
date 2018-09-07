@@ -248,7 +248,7 @@ import com.android.server.IntentResolver;
 import com.android.server.LocalServices;
 import com.android.server.ServiceThread;
 import com.android.server.SystemConfig;
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 import com.android.server.net.NetworkPolicyManagerInternal;
 import com.android.server.pm.PermissionsState.PermissionState;
 import com.android.server.pm.Settings.DatabaseVersion;
@@ -2135,7 +2135,7 @@ public class PackageManagerService extends IPackageManager.Stub {
             mHandlerThread.start();
             mHandler = new PackageHandler(mHandlerThread.getLooper());
             mProcessLoggingHandler = new ProcessLoggingHandler();
-            Watchdog.getInstance().addThread(mHandler, WATCHDOG_TIMEOUT);
+            // Watchdog.getInstance().addThread(mHandler, WATCHDOG_TIMEOUT);
 
             mDefaultPermissionPolicy = new DefaultPermissionGrantPolicy(this);
 

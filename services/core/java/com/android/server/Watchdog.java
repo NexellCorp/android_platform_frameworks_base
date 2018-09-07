@@ -522,5 +522,8 @@ public class Watchdog extends Thread {
         return new File(tracesPath);
     }
 
-    private native void native_dumpKernelStacks(String tracesPath);
+    // private native void native_dumpKernelStacks(String tracesPath);
+    private void native_dumpKernelStacks(String tracesPath) {
+        return;
+    }
 }

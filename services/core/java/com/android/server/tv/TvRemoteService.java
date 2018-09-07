@@ -25,7 +25,7 @@ import android.util.ArrayMap;
 import android.util.Slog;
 
 import com.android.server.SystemService;
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,7 +38,8 @@ import java.util.Map;
  * <p/>
  * This service is intended for use only by white-listed packages.
  */
-public class TvRemoteService extends SystemService implements Watchdog.Monitor {
+// public class TvRemoteService extends SystemService implements Watchdog.Monitor {
+public class TvRemoteService extends SystemService {
     private static final String TAG = "TvRemoteService";
     private static final boolean DEBUG = false;
     private static final boolean DEBUG_KEYS = false;
@@ -64,7 +65,7 @@ public class TvRemoteService extends SystemService implements Watchdog.Monitor {
     public TvRemoteService(Context context) {
         super(context);
         mHandler = new UserHandler(new UserProvider(TvRemoteService.this), context);
-        Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addMonitor(this);
     }
 
     @Override
@@ -72,10 +73,10 @@ public class TvRemoteService extends SystemService implements Watchdog.Monitor {
         if (DEBUG) Slog.d(TAG, "onStart()");
     }
 
-    @Override
-    public void monitor() {
-        synchronized (mLock) { /* check for deadlock */ }
-    }
+    // @Override
+    // public void monitor() {
+    //     synchronized (mLock) { #<{(| check for deadlock |)}># }
+    // }
 
     @Override
     public void onBootPhase(int phase) {

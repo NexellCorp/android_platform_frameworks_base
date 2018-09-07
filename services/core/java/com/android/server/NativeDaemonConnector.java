@@ -49,7 +49,8 @@ import java.util.LinkedList;
  * Generic connector class for interfacing with a native daemon which uses the
  * {@code libsysutils} FrameworkListener protocol.
  */
-final class NativeDaemonConnector implements Runnable, Handler.Callback, Watchdog.Monitor {
+// final class NativeDaemonConnector implements Runnable, Handler.Callback, Watchdog.Monitor {
+final class NativeDaemonConnector implements Runnable, Handler.Callback {
     private final static boolean VDBG = false;
 
     private final String TAG;
@@ -576,9 +577,9 @@ final class NativeDaemonConnector implements Runnable, Handler.Callback, Watchdo
     }
 
     /** {@inheritDoc} */
-    public void monitor() {
-        synchronized (mDaemonLock) { }
-    }
+    // public void monitor() {
+    //     synchronized (mDaemonLock) { }
+    // }
 
     public void dump(FileDescriptor fd, PrintWriter pw, String[] args) {
         mLocalLog.dump(fd, pw, args);

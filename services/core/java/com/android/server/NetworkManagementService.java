@@ -122,7 +122,8 @@ import java.util.concurrent.CountDownLatch;
  * @hide
  */
 public class NetworkManagementService extends INetworkManagementService.Stub
-        implements Watchdog.Monitor {
+        // implements Watchdog.Monitor {
+        {
     private static final String TAG = "NetworkManagement";
     private static final boolean DBG = Log.isLoggable(TAG, Log.DEBUG);
     private static final String NETD_TAG = "NetdConnector";
@@ -318,7 +319,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         mDaemonHandler = new Handler(FgThread.get().getLooper());
 
         // Add ourself to the Watchdog monitors.
-        Watchdog.getInstance().addMonitor(this);
+        // Watchdog.getInstance().addMonitor(this);
     }
 
     static NetworkManagementService create(Context context, String socket)
@@ -2474,12 +2475,12 @@ public class NetworkManagementService extends INetworkManagementService.Stub
     }
 
     /** {@inheritDoc} */
-    @Override
-    public void monitor() {
-        if (mConnector != null) {
-            mConnector.monitor();
-        }
-    }
+    // @Override
+    // public void monitor() {
+    //     if (mConnector != null) {
+    //         mConnector.monitor();
+    //     }
+    // }
 
     @Override
     protected void dump(FileDescriptor fd, PrintWriter pw, String[] args) {

@@ -20,7 +20,7 @@ import com.android.internal.app.ProcessMap;
 // import com.android.internal.logging.MetricsLogger;
 // import com.android.internal.logging.MetricsProto;
 import com.android.internal.os.ProcessCpuTracker;
-import com.android.server.Watchdog;
+// import com.android.server.Watchdog;
 
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -462,7 +462,7 @@ class AppErrors {
             }
         } catch (RemoteException e) {
             mService.mController = null;
-            Watchdog.getInstance().setActivityController(null);
+            // Watchdog.getInstance().setActivityController(null);
         }
         return false;
     }
@@ -742,7 +742,7 @@ class AppErrors {
                 }
             } catch (RemoteException e) {
                 mService.mController = null;
-                Watchdog.getInstance().setActivityController(null);
+                // Watchdog.getInstance().setActivityController(null);
             }
         }
 
@@ -877,7 +877,7 @@ class AppErrors {
                 }
             } catch (RemoteException e) {
                 mService.mController = null;
-                Watchdog.getInstance().setActivityController(null);
+                // Watchdog.getInstance().setActivityController(null);
             }
         }
 
