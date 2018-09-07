@@ -50,12 +50,27 @@ public class SystemSensorManager extends SensorManager {
     //TODO: disable extra logging before release
     private static boolean DEBUG_DYNAMIC_SENSOR = true;
 
-    private static native void nativeClassInit();
-    private static native long nativeCreate(String opPackageName);
-    private static native boolean nativeGetSensorAtIndex(long nativeInstance,
-            Sensor sensor, int index);
-    private static native void nativeGetDynamicSensors(long nativeInstance, List<Sensor> list);
-    private static native boolean nativeIsDataInjectionEnabled(long nativeInstance);
+    // private static native void nativeClassInit();
+    // private static native long nativeCreate(String opPackageName);
+    // private static native boolean nativeGetSensorAtIndex(long nativeInstance,
+    //         Sensor sensor, int index);
+    // private static native void nativeGetDynamicSensors(long nativeInstance, List<Sensor> list);
+    // private static native boolean nativeIsDataInjectionEnabled(long nativeInstance);
+
+    private static void nativeClassInit() {
+    }
+    private static long nativeCreate(String opPackageName) {
+        return 0;
+    }
+    private static boolean nativeGetSensorAtIndex(long nativeInstance,
+            Sensor sensor, int index) {
+        return true;
+    }
+    private static void nativeGetDynamicSensors(long nativeInstance, List<Sensor> list) {
+    }
+    private static boolean nativeIsDataInjectionEnabled(long nativeInstance) {
+        return true;
+    }
 
     private static final Object sLock = new Object();
     @GuardedBy("sLock")

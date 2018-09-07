@@ -20,7 +20,7 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.util.Log;
 
 /**
@@ -32,7 +32,7 @@ public abstract class OrientationEventListener {
     private static final boolean DEBUG = false;
     private static final boolean localLOGV = false;
     private int mOrientation = ORIENTATION_UNKNOWN;
-    private SensorManager mSensorManager;
+    // private SensorManager mSensorManager;
     private boolean mEnabled = false;
     private int mRate;
     private Sensor mSensor;
@@ -53,7 +53,8 @@ public abstract class OrientationEventListener {
      * @param context for the OrientationEventListener.
      */
     public OrientationEventListener(Context context) {
-        this(context, SensorManager.SENSOR_DELAY_NORMAL);
+        // this(context, SensorManager.SENSOR_DELAY_NORMAL);
+        this(context, 3);
     }
     
     /**
@@ -66,9 +67,9 @@ public abstract class OrientationEventListener {
      * SENSOR_DELAY_NORMAL} for simple screen orientation change detection.
      */
     public OrientationEventListener(Context context, int rate) {
-        mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
+        // mSensorManager = (SensorManager)context.getSystemService(Context.SENSOR_SERVICE);
         mRate = rate;
-        mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        // mSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (mSensor != null) {
             // Create listener only if sensors do exist
             mSensorEventListener = new SensorEventListenerImpl();
@@ -90,7 +91,7 @@ public abstract class OrientationEventListener {
         }
         if (mEnabled == false) {
             if (localLOGV) Log.d(TAG, "OrientationEventListener enabled");
-            mSensorManager.registerListener(mSensorEventListener, mSensor, mRate);
+            // mSensorManager.registerListener(mSensorEventListener, mSensor, mRate);
             mEnabled = true;
         }
     }
@@ -105,7 +106,7 @@ public abstract class OrientationEventListener {
         }
         if (mEnabled == true) {
             if (localLOGV) Log.d(TAG, "OrientationEventListener disabled");
-            mSensorManager.unregisterListener(mSensorEventListener);
+            // mSensorManager.unregisterListener(mSensorEventListener);
             mEnabled = false;
         }
     }

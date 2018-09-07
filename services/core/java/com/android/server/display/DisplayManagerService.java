@@ -1569,7 +1569,8 @@ public final class DisplayManagerService extends SystemService {
     private final class LocalService extends DisplayManagerInternal {
         @Override
         public void initPowerManagement(final DisplayPowerCallbacks callbacks, Handler handler,
-                SensorManager sensorManager) {
+                // SensorManager sensorManager) {
+                String sensorManager) {
             synchronized (mSyncRoot) {
                 DisplayBlanker blanker = new DisplayBlanker() {
                     @Override

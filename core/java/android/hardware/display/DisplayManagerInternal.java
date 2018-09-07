@@ -16,7 +16,7 @@
 
 package android.hardware.display;
 
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.view.Display;
@@ -32,7 +32,8 @@ public abstract class DisplayManagerInternal {
      * Called by the power manager to initialize power management facilities.
      */
     public abstract void initPowerManagement(DisplayPowerCallbacks callbacks,
-            Handler handler, SensorManager sensorManager);
+            // Handler handler, SensorManager sensorManager);
+            Handler handler, String sensorManager);
 
     /**
      * Called by the power manager to request a new power state.

@@ -43,9 +43,9 @@ import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 import android.hardware.ConsumerIrManager;
 import android.hardware.ISerialManager;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.hardware.SerialManager;
-import android.hardware.SystemSensorManager;
+// import android.hardware.SystemSensorManager;
 import android.hardware.camera2.CameraManager;
 import android.hardware.display.DisplayManager;
 import android.hardware.hdmi.HdmiControlManager;
@@ -407,13 +407,13 @@ final class SystemServiceRegistry {
                         ctx.mMainThread.getHandler());
             }});
 
-        registerService(Context.SENSOR_SERVICE, SensorManager.class,
-                new CachedServiceFetcher<SensorManager>() {
-            @Override
-            public SensorManager createService(ContextImpl ctx) {
-                return new SystemSensorManager(ctx.getOuterContext(),
-                  ctx.mMainThread.getHandler().getLooper());
-            }});
+        // registerService(Context.SENSOR_SERVICE, SensorManager.class,
+        //         new CachedServiceFetcher<SensorManager>() {
+        //     @Override
+        //     public SensorManager createService(ContextImpl ctx) {
+        //         return new SystemSensorManager(ctx.getOuterContext(),
+        //           ctx.mMainThread.getHandler().getLooper());
+        //     }});
 
         // registerService(Context.STATUS_BAR_SERVICE, StatusBarManager.class,
         //         new CachedServiceFetcher<StatusBarManager>() {

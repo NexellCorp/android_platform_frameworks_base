@@ -23,7 +23,7 @@ import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
 import android.os.UserHandle;
@@ -36,8 +36,8 @@ public class SensorNotificationService extends SystemService implements SensorEv
     private static final String TAG = "SensorNotificationService";
     private Context mContext;
 
-    private SensorManager mSensorManager;
-    private Sensor mMetaSensor;
+    // private SensorManager mSensorManager;
+    // private Sensor mMetaSensor;
 
     public SensorNotificationService(Context context) {
         super(context);
@@ -48,19 +48,19 @@ public class SensorNotificationService extends SystemService implements SensorEv
         LocalServices.addService(SensorNotificationService.class, this);
     }
 
-    public void onBootPhase(int phase) {
-        if (phase == PHASE_THIRD_PARTY_APPS_CAN_START) {
-            // start
-            mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
-            mMetaSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_DYNAMIC_SENSOR_META);
-            if (mMetaSensor == null) {
-                if (DBG) Slog.d(TAG, "Cannot obtain dynamic meta sensor, not supported.");
-            } else {
-                mSensorManager.registerListener(this, mMetaSensor,
-                        SensorManager.SENSOR_DELAY_FASTEST);
-            }
-        }
-    }
+    // public void onBootPhase(int phase) {
+    //     if (phase == PHASE_THIRD_PARTY_APPS_CAN_START) {
+    //         // start
+    //         mSensorManager = (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE);
+    //         mMetaSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_DYNAMIC_SENSOR_META);
+    //         if (mMetaSensor == null) {
+    //             if (DBG) Slog.d(TAG, "Cannot obtain dynamic meta sensor, not supported.");
+    //         } else {
+    //             mSensorManager.registerListener(this, mMetaSensor,
+    //                     SensorManager.SENSOR_DELAY_FASTEST);
+    //         }
+    //     }
+    // }
 
     private void broadcastDynamicSensorChanged() {
         Intent i = new Intent(Intent.ACTION_DYNAMIC_SENSOR_CHANGED);
@@ -71,9 +71,9 @@ public class SensorNotificationService extends SystemService implements SensorEv
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        if (event.sensor == mMetaSensor) {
-            broadcastDynamicSensorChanged();
-        }
+        // if (event.sensor == mMetaSensor) {
+        //     broadcastDynamicSensorChanged();
+        // }
     }
 
     @Override

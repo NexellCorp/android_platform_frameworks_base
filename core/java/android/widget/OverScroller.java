@@ -17,7 +17,7 @@
 package android.widget;
 
 import android.content.Context;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
@@ -639,7 +639,8 @@ public class OverScroller {
         SplineOverScroller(Context context) {
             mFinished = true;
             final float ppi = context.getResources().getDisplayMetrics().density * 160.0f;
-            mPhysicalCoeff = SensorManager.GRAVITY_EARTH // g (m/s^2)
+            // mPhysicalCoeff = SensorManager.GRAVITY_EARTH // g (m/s^2)
+            mPhysicalCoeff = 9.80665f // g (m/s^2)
                     * 39.37f // inch/meter
                     * ppi
                     * 0.84f; // look and feel tuning

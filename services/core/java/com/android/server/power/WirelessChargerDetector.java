@@ -19,7 +19,7 @@ package com.android.server.power;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 // import android.os.BatteryManager;
 import android.os.Handler;
 import android.os.Message;
@@ -93,12 +93,14 @@ final class WirelessChargerDetector {
     private static final double MOVEMENT_ANGLE_COS_THRESHOLD = Math.cos(5 * Math.PI / 180);
 
     // Sanity thresholds for the gravity vector.
-    private static final double MIN_GRAVITY = SensorManager.GRAVITY_EARTH - 1.0f;
-    private static final double MAX_GRAVITY = SensorManager.GRAVITY_EARTH + 1.0f;
+    // private static final double MIN_GRAVITY = SensorManager.GRAVITY_EARTH - 1.0f;
+    // private static final double MAX_GRAVITY = SensorManager.GRAVITY_EARTH + 1.0f;
+    private static final double MIN_GRAVITY = 9.80665f - 1.0f;
+    private static final double MAX_GRAVITY = 9.80665f + 1.0f;
 
     private final Object mLock = new Object();
 
-    private final SensorManager mSensorManager;
+    // private final SensorManager mSensorManager;
     private final SuspendBlocker mSuspendBlocker;
     private final Handler mHandler;
 
@@ -140,13 +142,14 @@ final class WirelessChargerDetector {
     // The value of the last sample that was collected.
     private float mLastSampleX, mLastSampleY, mLastSampleZ;
 
-    public WirelessChargerDetector(SensorManager sensorManager,
+    // public WirelessChargerDetector(SensorManager sensorManager,
+    public WirelessChargerDetector(String sensorManager,
             SuspendBlocker suspendBlocker, Handler handler) {
-        mSensorManager = sensorManager;
+        // mSensorManager = sensorManager;
         mSuspendBlocker = suspendBlocker;
         mHandler = handler;
 
-        mGravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+        // mGravitySensor = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
     }
 
     public void dump(PrintWriter pw) {
@@ -223,54 +226,54 @@ final class WirelessChargerDetector {
     }
 
     private void startDetectionLocked() {
-        if (!mDetectionInProgress && mGravitySensor != null) {
-            if (mSensorManager.registerListener(mListener, mGravitySensor,
-                    SAMPLING_INTERVAL_MILLIS * 1000)) {
-                mSuspendBlocker.acquire();
-                mDetectionInProgress = true;
-                mDetectionStartTime = SystemClock.uptimeMillis();
-                mTotalSamples = 0;
-                mMovingSamples = 0;
-
-                Message msg = Message.obtain(mHandler, mSensorTimeout);
-                msg.setAsynchronous(true);
-                mHandler.sendMessageDelayed(msg, SETTLE_TIME_MILLIS);
-            }
-        }
+        // if (!mDetectionInProgress && mGravitySensor != null) {
+        //     if (mSensorManager.registerListener(mListener, mGravitySensor,
+        //             SAMPLING_INTERVAL_MILLIS * 1000)) {
+        //         mSuspendBlocker.acquire();
+        //         mDetectionInProgress = true;
+        //         mDetectionStartTime = SystemClock.uptimeMillis();
+        //         mTotalSamples = 0;
+        //         mMovingSamples = 0;
+        //
+        //         Message msg = Message.obtain(mHandler, mSensorTimeout);
+        //         msg.setAsynchronous(true);
+        //         mHandler.sendMessageDelayed(msg, SETTLE_TIME_MILLIS);
+        //     }
+        // }
     }
 
     private void finishDetectionLocked() {
-        if (mDetectionInProgress) {
-            mSensorManager.unregisterListener(mListener);
-            mHandler.removeCallbacks(mSensorTimeout);
-
-            if (mMustUpdateRestPosition) {
-                clearAtRestLocked();
-                if (mTotalSamples < MIN_SAMPLES) {
-                    Slog.w(TAG, "Wireless charger detector is broken.  Only received "
-                            + mTotalSamples + " samples from the gravity sensor but we "
-                            + "need at least " + MIN_SAMPLES + " and we expect to see "
-                            + "about " + SETTLE_TIME_MILLIS / SAMPLING_INTERVAL_MILLIS
-                            + " on average.");
-                } else if (mMovingSamples == 0) {
-                    mAtRest = true;
-                    mRestX = mLastSampleX;
-                    mRestY = mLastSampleY;
-                    mRestZ = mLastSampleZ;
-                }
-                mMustUpdateRestPosition = false;
-            }
-
-            if (DEBUG) {
-                Slog.d(TAG, "New state: mAtRest=" + mAtRest
-                        + ", mRestX=" + mRestX + ", mRestY=" + mRestY + ", mRestZ=" + mRestZ
-                        + ", mTotalSamples=" + mTotalSamples
-                        + ", mMovingSamples=" + mMovingSamples);
-            }
-
-            mDetectionInProgress = false;
-            mSuspendBlocker.release();
-        }
+        // if (mDetectionInProgress) {
+        //     mSensorManager.unregisterListener(mListener);
+        //     mHandler.removeCallbacks(mSensorTimeout);
+        //
+        //     if (mMustUpdateRestPosition) {
+        //         clearAtRestLocked();
+        //         if (mTotalSamples < MIN_SAMPLES) {
+        //             Slog.w(TAG, "Wireless charger detector is broken.  Only received "
+        //                     + mTotalSamples + " samples from the gravity sensor but we "
+        //                     + "need at least " + MIN_SAMPLES + " and we expect to see "
+        //                     + "about " + SETTLE_TIME_MILLIS / SAMPLING_INTERVAL_MILLIS
+        //                     + " on average.");
+        //         } else if (mMovingSamples == 0) {
+        //             mAtRest = true;
+        //             mRestX = mLastSampleX;
+        //             mRestY = mLastSampleY;
+        //             mRestZ = mLastSampleZ;
+        //         }
+        //         mMustUpdateRestPosition = false;
+        //     }
+        //
+        //     if (DEBUG) {
+        //         Slog.d(TAG, "New state: mAtRest=" + mAtRest
+        //                 + ", mRestX=" + mRestX + ", mRestY=" + mRestY + ", mRestZ=" + mRestZ
+        //                 + ", mTotalSamples=" + mTotalSamples
+        //                 + ", mMovingSamples=" + mMovingSamples);
+        //     }
+        //
+        //     mDetectionInProgress = false;
+        //     mSuspendBlocker.release();
+        // }
     }
 
     private void processSampleLocked(float x, float y, float z) {

@@ -88,7 +88,7 @@ extern int register_android_hardware_camera2_legacy_LegacyCameraDevice(JNIEnv *e
 extern int register_android_hardware_camera2_legacy_PerfMeasurement(JNIEnv *env);
 extern int register_android_hardware_camera2_DngCreator(JNIEnv *env);
 extern int register_android_hardware_Radio(JNIEnv *env);
-extern int register_android_hardware_SensorManager(JNIEnv *env);
+// extern int register_android_hardware_SensorManager(JNIEnv *env);
 extern int register_android_hardware_SerialPort(JNIEnv *env);
 extern int register_android_hardware_SoundTrigger(JNIEnv *env);
 extern int register_android_hardware_UsbDevice(JNIEnv *env);
@@ -1365,7 +1365,7 @@ static const RegJNIRec gRegJNI[] = {
     REG_JNI(register_android_hardware_camera2_legacy_PerfMeasurement),
     REG_JNI(register_android_hardware_camera2_DngCreator),
     REG_JNI(register_android_hardware_Radio),
-    REG_JNI(register_android_hardware_SensorManager),
+    // REG_JNI(register_android_hardware_SensorManager),
     REG_JNI(register_android_hardware_SerialPort),
     REG_JNI(register_android_hardware_SoundTrigger),
     REG_JNI(register_android_hardware_UsbDevice),

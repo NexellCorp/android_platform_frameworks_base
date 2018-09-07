@@ -19,7 +19,7 @@ package com.android.internal.os;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.net.ConnectivityManager;
 import android.os.BatteryStats;
 import android.os.BatteryStats.Uid;
@@ -122,7 +122,7 @@ public final class BatteryStatsHelper {
     MobileRadioPowerCalculator mMobileRadioPowerCalculator;
     PowerCalculator mWifiPowerCalculator;
     PowerCalculator mBluetoothPowerCalculator;
-    PowerCalculator mSensorPowerCalculator;
+    // PowerCalculator mSensorPowerCalculator;
     PowerCalculator mCameraPowerCalculator;
     PowerCalculator mFlashlightPowerCalculator;
 
@@ -372,11 +372,11 @@ public final class BatteryStatsHelper {
         }
         mBluetoothPowerCalculator.reset();
 
-        if (mSensorPowerCalculator == null) {
-            mSensorPowerCalculator = new SensorPowerCalculator(mPowerProfile,
-                    (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE));
-        }
-        mSensorPowerCalculator.reset();
+        // if (mSensorPowerCalculator == null) {
+        //     mSensorPowerCalculator = new SensorPowerCalculator(mPowerProfile,
+        //             (SensorManager) mContext.getSystemService(Context.SENSOR_SERVICE));
+        // }
+        // mSensorPowerCalculator.reset();
 
         if (mCameraPowerCalculator == null) {
             mCameraPowerCalculator = new CameraPowerCalculator(mPowerProfile);
@@ -503,7 +503,7 @@ public final class BatteryStatsHelper {
             mMobileRadioPowerCalculator.calculateApp(app, u, mRawRealtimeUs, mRawUptimeUs, mStatsType);
             mWifiPowerCalculator.calculateApp(app, u, mRawRealtimeUs, mRawUptimeUs, mStatsType);
             mBluetoothPowerCalculator.calculateApp(app, u, mRawRealtimeUs, mRawUptimeUs, mStatsType);
-            mSensorPowerCalculator.calculateApp(app, u, mRawRealtimeUs, mRawUptimeUs, mStatsType);
+            // mSensorPowerCalculator.calculateApp(app, u, mRawRealtimeUs, mRawUptimeUs, mStatsType);
             mCameraPowerCalculator.calculateApp(app, u, mRawRealtimeUs, mRawUptimeUs, mStatsType);
             mFlashlightPowerCalculator.calculateApp(app, u, mRawRealtimeUs, mRawUptimeUs, mStatsType);
 

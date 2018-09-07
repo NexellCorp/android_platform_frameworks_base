@@ -27,7 +27,7 @@ import android.database.ContentObserver;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
@@ -171,9 +171,9 @@ public class GestureLauncherService extends SystemService {
             mCameraGestureSensor2LastOnTimeMs = 0;
             mCameraLaunchLastEventExtra = 0;
 
-            SensorManager sensorManager = (SensorManager) mContext.getSystemService(
-                    Context.SENSOR_SERVICE);
-            sensorManager.unregisterListener(mGestureListener);
+            // SensorManager sensorManager = (SensorManager) mContext.getSystemService(
+            //         Context.SENSOR_SERVICE);
+            // sensorManager.unregisterListener(mGestureListener);
         }
     }
 
@@ -186,36 +186,36 @@ public class GestureLauncherService extends SystemService {
         }
         mCameraGestureOnTimeMs = SystemClock.elapsedRealtime();
         mCameraGestureLastEventTime = mCameraGestureOnTimeMs;
-        SensorManager sensorManager = (SensorManager) mContext.getSystemService(
-                Context.SENSOR_SERVICE);
-        int cameraLaunchGestureId = resources.getInteger(
-                com.android.internal.R.integer.config_cameraLaunchGestureSensorType);
-        if (cameraLaunchGestureId != -1) {
-            mRegistered = false;
-            String sensorName = resources.getString(
-                com.android.internal.R.string.config_cameraLaunchGestureSensorStringType);
-            mCameraLaunchSensor = sensorManager.getDefaultSensor(
-                    cameraLaunchGestureId,
-                    true /*wakeUp*/);
-
-            // Compare the camera gesture string type to that in the resource file to make
-            // sure we are registering the correct sensor. This is redundant check, it
-            // makes the code more robust.
-            if (mCameraLaunchSensor != null) {
-                if (sensorName.equals(mCameraLaunchSensor.getStringType())) {
-                    mRegistered = sensorManager.registerListener(mGestureListener,
-                            mCameraLaunchSensor, 0);
-                } else {
-                    String message = String.format("Wrong configuration. Sensor type and sensor "
-                            + "string type don't match: %s in resources, %s in the sensor.",
-                            sensorName, mCameraLaunchSensor.getStringType());
-                    throw new RuntimeException(message);
-                }
-            }
-            if (DBG) Slog.d(TAG, "Camera launch sensor registered: " + mRegistered);
-        } else {
-            if (DBG) Slog.d(TAG, "Camera launch sensor is not specified.");
-        }
+        // SensorManager sensorManager = (SensorManager) mContext.getSystemService(
+        //         Context.SENSOR_SERVICE);
+        // int cameraLaunchGestureId = resources.getInteger(
+        //         com.android.internal.R.integer.config_cameraLaunchGestureSensorType);
+        // if (cameraLaunchGestureId != -1) {
+        //     mRegistered = false;
+        //     String sensorName = resources.getString(
+        //         com.android.internal.R.string.config_cameraLaunchGestureSensorStringType);
+        //     mCameraLaunchSensor = sensorManager.getDefaultSensor(
+        //             cameraLaunchGestureId,
+        //             true #<{(|wakeUp|)}>#);
+        //
+        //     // Compare the camera gesture string type to that in the resource file to make
+        //     // sure we are registering the correct sensor. This is redundant check, it
+        //     // makes the code more robust.
+        //     if (mCameraLaunchSensor != null) {
+        //         if (sensorName.equals(mCameraLaunchSensor.getStringType())) {
+        //             mRegistered = sensorManager.registerListener(mGestureListener,
+        //                     mCameraLaunchSensor, 0);
+        //         } else {
+        //             String message = String.format("Wrong configuration. Sensor type and sensor "
+        //                     + "string type don't match: %s in resources, %s in the sensor.",
+        //                     sensorName, mCameraLaunchSensor.getStringType());
+        //             throw new RuntimeException(message);
+        //         }
+        //     }
+        //     if (DBG) Slog.d(TAG, "Camera launch sensor registered: " + mRegistered);
+        // } else {
+        //     if (DBG) Slog.d(TAG, "Camera launch sensor is not specified.");
+        // }
     }
 
     public static boolean isCameraLaunchSettingEnabled(Context context, int userId) {

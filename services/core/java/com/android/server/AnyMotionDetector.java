@@ -19,7 +19,7 @@ package com.android.server;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Message;
 import android.os.PowerManager;
@@ -85,7 +85,7 @@ public class AnyMotionDetector {
     private final Handler mHandler;
     private final Object mLock = new Object();
     private Sensor mAccelSensor;
-    private SensorManager mSensorManager;
+    // private SensorManager mSensorManager;
     private PowerManager.WakeLock mWakeLock;
 
     /** Threshold angle in degrees beyond which the device is considered moving. */
@@ -117,15 +117,16 @@ public class AnyMotionDetector {
 
     private DeviceIdleCallback mCallback = null;
 
-    public AnyMotionDetector(PowerManager pm, Handler handler, SensorManager sm,
+    // public AnyMotionDetector(PowerManager pm, Handler handler, SensorManager sm,
+    public AnyMotionDetector(PowerManager pm, Handler handler, String sm,
             DeviceIdleCallback callback, float thresholdAngle) {
         if (DEBUG) Slog.d(TAG, "AnyMotionDetector instantiated.");
         synchronized (mLock) {
             mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, TAG);
             mWakeLock.setReferenceCounted(false);
             mHandler = handler;
-            mSensorManager = sm;
-            mAccelSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+            // mSensorManager = sm;
+            // mAccelSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             mMeasurementInProgress = false;
             mMeasurementTimeoutIsActive = false;
             mWakelockTimeoutIsActive = false;
@@ -176,7 +177,7 @@ public class AnyMotionDetector {
             mSensorRestartIsActive = false;
             if (mMeasurementInProgress) {
                 mMeasurementInProgress = false;
-                mSensorManager.unregisterListener(mListener);
+                // mSensorManager.unregisterListener(mListener);
             }
             mCurrentGravityVector = null;
             mPreviousGravityVector = null;
@@ -192,11 +193,11 @@ public class AnyMotionDetector {
         if (DEBUG) Slog.d(TAG, "startOrientationMeasurementLocked: mMeasurementInProgress=" +
             mMeasurementInProgress + ", (mAccelSensor != null)=" + (mAccelSensor != null));
         if (!mMeasurementInProgress && mAccelSensor != null) {
-            if (mSensorManager.registerListener(mListener, mAccelSensor,
-                    SAMPLING_INTERVAL_MILLIS * 1000)) {
-                mMeasurementInProgress = true;
-                mRunningStats.reset();
-            }
+            // if (mSensorManager.registerListener(mListener, mAccelSensor,
+            //         SAMPLING_INTERVAL_MILLIS * 1000)) {
+            //     mMeasurementInProgress = true;
+            //     mRunningStats.reset();
+            // }
             Message measurementTimeoutMsg = Message.obtain(mHandler, mMeasurementTimeout);
             mHandler.sendMessageDelayed(measurementTimeoutMsg, ACCELEROMETER_DATA_TIMEOUT_MILLIS);
             mMeasurementTimeoutIsActive = true;
@@ -210,7 +211,7 @@ public class AnyMotionDetector {
         if (mMeasurementInProgress) {
             mHandler.removeCallbacks(mMeasurementTimeout);
             mMeasurementTimeoutIsActive = false;
-            mSensorManager.unregisterListener(mListener);
+            // mSensorManager.unregisterListener(mListener);
             mMeasurementInProgress = false;
             mPreviousGravityVector = mCurrentGravityVector;
             mCurrentGravityVector = mRunningStats.getRunningAverage();

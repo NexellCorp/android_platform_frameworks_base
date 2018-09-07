@@ -17,7 +17,7 @@
 package android.widget;
 
 import android.content.Context;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.os.Build;
 import android.view.ViewConfiguration;
 import android.view.animation.AnimationUtils;
@@ -193,7 +193,8 @@ public class Scroller  {
     }
     
     private float computeDeceleration(float friction) {
-        return SensorManager.GRAVITY_EARTH   // g (m/s^2)
+        // return SensorManager.GRAVITY_EARTH   // g (m/s^2)
+        return 9.80665f   // g (m/s^2)
                       * 39.37f               // inch/meter
                       * mPpi                 // pixels per inch
                       * friction;

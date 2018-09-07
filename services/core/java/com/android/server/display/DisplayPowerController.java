@@ -27,7 +27,7 @@ import android.content.res.Resources;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.hardware.display.DisplayManagerInternal.DisplayPowerCallbacks;
 import android.hardware.display.DisplayManagerInternal.DisplayPowerRequest;
 import android.os.Handler;
@@ -260,7 +260,8 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
      */
     public DisplayPowerController(Context context,
             DisplayPowerCallbacks callbacks, Handler handler,
-            SensorManager sensorManager, DisplayBlanker blanker) {
+            // SensorManager sensorManager, DisplayBlanker blanker) {
+            String sensorManager, DisplayBlanker blanker) {
         mHandler = new DisplayControllerHandler(handler.getLooper());
         mCallbacks = callbacks;
 
@@ -385,7 +386,8 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
                     screenBrightnessRangeMinimum = bottom;
                 }
                 mAutomaticBrightnessController = new AutomaticBrightnessController(this,
-                        handler.getLooper(), sensorManager, screenAutoBrightnessSpline,
+                        // handler.getLooper(), sensorManager, screenAutoBrightnessSpline,
+                        handler.getLooper(), null, screenAutoBrightnessSpline,
                         lightSensorWarmUpTimeConfig, screenBrightnessRangeMinimum,
                         mScreenBrightnessRangeMaximum, dozeScaleFactor, lightSensorRate,
                         initialLightSensorRate, brighteningLightDebounce, darkeningLightDebounce,

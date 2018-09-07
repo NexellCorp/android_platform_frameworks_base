@@ -29,7 +29,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.database.ContentObserver;
 import android.hardware.Sensor;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.TriggerEvent;
@@ -120,14 +120,14 @@ public class DeviceIdleController extends SystemService
     private AlarmManagerService.LocalService mLocalAlarmManager;
     private INetworkPolicyManager mNetworkPolicyManager;
     private DisplayManager mDisplayManager;
-    private SensorManager mSensorManager;
+    // private SensorManager mSensorManager;
     private Sensor mMotionSensor;
     private LocationManager mLocationManager;
     private LocationRequest mLocationRequest;
     private Intent mIdleIntent;
     private Intent mLightIdleIntent;
     private Display mCurDisplay;
-    private AnyMotionDetector mAnyMotionDetector;
+    // private AnyMotionDetector mAnyMotionDetector;
     private boolean mLightEnabled;
     private boolean mDeepEnabled;
     private boolean mForceIdle;
@@ -428,7 +428,7 @@ public class DeviceIdleController extends SystemService
         @Override
         public void onSensorChanged(SensorEvent event) {
             synchronized (DeviceIdleController.this) {
-                mSensorManager.unregisterListener(this, mMotionSensor);
+                // mSensorManager.unregisterListener(this, mMotionSensor);
                 active = false;
                 motionLocked();
             }
@@ -438,27 +438,29 @@ public class DeviceIdleController extends SystemService
         public void onAccuracyChanged(Sensor sensor, int accuracy) {}
 
         public boolean registerLocked() {
-            boolean success;
-            if (mMotionSensor.getReportingMode() == Sensor.REPORTING_MODE_ONE_SHOT) {
-                success = mSensorManager.requestTriggerSensor(mMotionListener, mMotionSensor);
-            } else {
-                success = mSensorManager.registerListener(
-                        mMotionListener, mMotionSensor, SensorManager.SENSOR_DELAY_NORMAL);
-            }
-            if (success) {
-                active = true;
-            } else {
-                Slog.e(TAG, "Unable to register for " + mMotionSensor);
-            }
-            return success;
+            // boolean success;
+            // if (mMotionSensor.getReportingMode() == Sensor.REPORTING_MODE_ONE_SHOT) {
+            //     success = mSensorManager.requestTriggerSensor(mMotionListener, mMotionSensor);
+            // } else {
+            //     success = mSensorManager.registerListener(
+            //             mMotionListener, mMotionSensor, SensorManager.SENSOR_DELAY_NORMAL);
+            // }
+            // if (success) {
+            //     active = true;
+            // } else {
+            //     Slog.e(TAG, "Unable to register for " + mMotionSensor);
+            // }
+            // return success;
+            active = true;
+            return true;
         }
 
         public void unregisterLocked() {
-            if (mMotionSensor.getReportingMode() == Sensor.REPORTING_MODE_ONE_SHOT) {
-                mSensorManager.cancelTriggerSensor(mMotionListener, mMotionSensor);
-            } else {
-                mSensorManager.unregisterListener(mMotionListener);
-            }
+            // if (mMotionSensor.getReportingMode() == Sensor.REPORTING_MODE_ONE_SHOT) {
+            //     mSensorManager.cancelTriggerSensor(mMotionListener, mMotionSensor);
+            // } else {
+            //     mSensorManager.unregisterListener(mMotionListener);
+            // }
             active = false;
         }
     }
@@ -1377,22 +1379,22 @@ public class DeviceIdleController extends SystemService
                         ServiceManager.getService(Context.NETWORK_POLICY_SERVICE));
                 mDisplayManager = (DisplayManager) getContext().getSystemService(
                         Context.DISPLAY_SERVICE);
-                mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
+                // mSensorManager = (SensorManager) getContext().getSystemService(Context.SENSOR_SERVICE);
                 int sigMotionSensorId = getContext().getResources().getInteger(
                         com.android.internal.R.integer.config_autoPowerModeAnyMotionSensor);
-                if (sigMotionSensorId > 0) {
-                    mMotionSensor = mSensorManager.getDefaultSensor(sigMotionSensorId, true);
-                }
-                if (mMotionSensor == null && getContext().getResources().getBoolean(
-                        com.android.internal.R.bool.config_autoPowerModePreferWristTilt)) {
-                    mMotionSensor = mSensorManager.getDefaultSensor(
-                            Sensor.TYPE_WRIST_TILT_GESTURE, true);
-                }
-                if (mMotionSensor == null) {
-                    // As a last ditch, fall back to SMD.
-                    mMotionSensor = mSensorManager.getDefaultSensor(
-                            Sensor.TYPE_SIGNIFICANT_MOTION, true);
-                }
+                // if (sigMotionSensorId > 0) {
+                //     mMotionSensor = mSensorManager.getDefaultSensor(sigMotionSensorId, true);
+                // }
+                // if (mMotionSensor == null && getContext().getResources().getBoolean(
+                //         com.android.internal.R.bool.config_autoPowerModePreferWristTilt)) {
+                //     mMotionSensor = mSensorManager.getDefaultSensor(
+                //             Sensor.TYPE_WRIST_TILT_GESTURE, true);
+                // }
+                // if (mMotionSensor == null) {
+                //     // As a last ditch, fall back to SMD.
+                //     mMotionSensor = mSensorManager.getDefaultSensor(
+                //             Sensor.TYPE_SIGNIFICANT_MOTION, true);
+                // }
 
                 if (getContext().getResources().getBoolean(
                         com.android.internal.R.bool.config_autoPowerModePrefetchLocation)) {
@@ -1407,9 +1409,9 @@ public class DeviceIdleController extends SystemService
 
                 float angleThreshold = getContext().getResources().getInteger(
                         com.android.internal.R.integer.config_autoPowerModeThresholdAngle) / 100f;
-                mAnyMotionDetector = new AnyMotionDetector(
-                        (PowerManager) getContext().getSystemService(Context.POWER_SERVICE),
-                        mHandler, mSensorManager, this, angleThreshold);
+                // mAnyMotionDetector = new AnyMotionDetector(
+                //         (PowerManager) getContext().getSystemService(Context.POWER_SERVICE),
+                //         mHandler, mSensorManager, this, angleThreshold);
 
                 mIdleIntent = new Intent(PowerManager.ACTION_DEVICE_IDLE_MODE_CHANGED);
                 mIdleIntent.addFlags(Intent.FLAG_RECEIVER_REGISTERED_ONLY
@@ -1848,7 +1850,7 @@ public class DeviceIdleController extends SystemService
         cancelSensingTimeoutAlarmLocked();
         cancelLocatingLocked();
         stopMonitoringMotionLocked();
-        mAnyMotionDetector.stop();
+        // mAnyMotionDetector.stop();
     }
 
     void resetLightIdleManagementLocked() {
@@ -1984,7 +1986,7 @@ public class DeviceIdleController extends SystemService
                 mLocated = false;
                 mLastGenericLocation = null;
                 mLastGpsLocation = null;
-                mAnyMotionDetector.checkForAnyMotion();
+                // mAnyMotionDetector.checkForAnyMotion();
                 break;
             case STATE_SENSING:
                 cancelSensingTimeoutAlarmLocked();
@@ -2019,7 +2021,7 @@ public class DeviceIdleController extends SystemService
             case STATE_LOCATING:
                 cancelAlarmLocked();
                 cancelLocatingLocked();
-                mAnyMotionDetector.stop();
+                // mAnyMotionDetector.stop();
 
             case STATE_IDLE_MAINTENANCE:
                 scheduleAlarmLocked(mNextIdleDelay, true);

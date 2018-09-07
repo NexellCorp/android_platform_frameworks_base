@@ -20,7 +20,7 @@ import android.content.Context;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+// import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.os.SystemProperties;
@@ -69,7 +69,8 @@ public abstract class WindowOrientationListener {
      * @param handler Provides the Looper for receiving sensor updates.
      */
     public WindowOrientationListener(Context context, Handler handler) {
-        this(context, handler, SensorManager.SENSOR_DELAY_UI);
+        // this(context, handler, SensorManager.SENSOR_DELAY_UI);
+        this(context, handler, 2);
     }
 
     /**
@@ -427,9 +428,11 @@ public abstract class WindowOrientationListener {
         private static final float NEAR_ZERO_MAGNITUDE = 1; // m/s^2
         private static final float ACCELERATION_TOLERANCE = 4; // m/s^2
         private static final float MIN_ACCELERATION_MAGNITUDE =
-                SensorManager.STANDARD_GRAVITY - ACCELERATION_TOLERANCE;
+                // SensorManager.STANDARD_GRAVITY - ACCELERATION_TOLERANCE;
+                9.80665f - ACCELERATION_TOLERANCE;
         private static final float MAX_ACCELERATION_MAGNITUDE =
-            SensorManager.STANDARD_GRAVITY + ACCELERATION_TOLERANCE;
+            // SensorManager.STANDARD_GRAVITY + ACCELERATION_TOLERANCE;
+            9.80665f + ACCELERATION_TOLERANCE;
 
         // Maximum absolute tilt angle at which to consider orientation data.  Beyond this (i.e.
         // when screen is facing the sky or ground), we completely ignore orientation data

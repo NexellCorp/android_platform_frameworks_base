@@ -945,15 +945,8 @@ android.hardware.Camera
 android.hardware.Camera$CameraInfo
 android.hardware.Camera$Face
 android.hardware.ConsumerIrManager
-android.hardware.Sensor
-android.hardware.SensorEvent
-android.hardware.SensorEventListener
-android.hardware.SensorManager
 android.hardware.SerialManager
 android.hardware.SerialPort
-android.hardware.SystemSensorManager
-android.hardware.SystemSensorManager$BaseEventQueue
-android.hardware.SystemSensorManager$SensorEventQueue
 android.hardware.camera2.CameraCharacteristics$Key
 android.hardware.camera2.CameraManager
 android.hardware.camera2.CaptureRequest$Key
