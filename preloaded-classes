@@ -1584,7 +1584,6 @@ android.os.Handler
 android.os.Handler$Callback
 android.os.Handler$MessengerImpl
 android.os.HandlerThread
-android.os.HardwarePropertiesManager
 android.os.IBinder
 android.os.IBinder$DeathRecipient
 android.os.ICancellationSignal

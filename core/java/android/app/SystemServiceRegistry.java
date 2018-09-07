@@ -91,9 +91,9 @@ import android.net.wifi.p2p.WifiP2pManager;
 // import android.nfc.NfcManager;
 // import android.os.BatteryManager;
 // import android.os.DropBoxManager;
-import android.os.HardwarePropertiesManager;
+// import android.os.HardwarePropertiesManager;
 import android.os.IBinder;
-import android.os.IHardwarePropertiesManager;
+// import android.os.IHardwarePropertiesManager;
 import android.os.IPowerManager;
 import android.os.IRecoverySystem;
 import android.os.IUserManager;
@@ -732,19 +732,19 @@ final class SystemServiceRegistry {
                 return new RadioManager(ctx);
             }});
 
-        registerService(Context.HARDWARE_PROPERTIES_SERVICE, HardwarePropertiesManager.class,
-                new CachedServiceFetcher<HardwarePropertiesManager>() {
-            @Override
-            public HardwarePropertiesManager createService(ContextImpl ctx) {
-                    IBinder b = ServiceManager.getService(Context.HARDWARE_PROPERTIES_SERVICE);
-                    IHardwarePropertiesManager service =
-                            IHardwarePropertiesManager.Stub.asInterface(b);
-                    if (service == null) {
-                        Log.wtf(TAG, "Failed to get hardwareproperties service.");
-                        return null;
-                    }
-                    return new HardwarePropertiesManager(ctx, service);
-            }});
+        // registerService(Context.HARDWARE_PROPERTIES_SERVICE, HardwarePropertiesManager.class,
+        //         new CachedServiceFetcher<HardwarePropertiesManager>() {
+        //     @Override
+        //     public HardwarePropertiesManager createService(ContextImpl ctx) {
+        //             IBinder b = ServiceManager.getService(Context.HARDWARE_PROPERTIES_SERVICE);
+        //             IHardwarePropertiesManager service =
+        //                     IHardwarePropertiesManager.Stub.asInterface(b);
+        //             if (service == null) {
+        //                 Log.wtf(TAG, "Failed to get hardwareproperties service.");
+        //                 return null;
+        //             }
+        //             return new HardwarePropertiesManager(ctx, service);
+        //     }});
 
         registerService(Context.SOUND_TRIGGER_SERVICE, SoundTriggerManager.class,
                 new CachedServiceFetcher<SoundTriggerManager>() {

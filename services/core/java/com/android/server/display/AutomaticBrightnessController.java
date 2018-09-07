@@ -21,9 +21,9 @@ import com.android.server.LocalServices;
 
 import android.annotation.Nullable;
 import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
+// import android.hardware.SensorEvent;
+// import android.hardware.SensorEventListener;
+// import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -63,10 +63,10 @@ class AutomaticBrightnessController {
     private final Callbacks mCallbacks;
 
     // The sensor manager.
-    private final SensorManager mSensorManager;
+    // private final SensorManager mSensorManager;
 
     // The light sensor, or null if not available or needed.
-    private final Sensor mLightSensor;
+    // private final Sensor mLightSensor;
 
     // The auto-brightness spline adjustment.
     // The brightness values have been scaled to a range of 0..1.
@@ -186,7 +186,8 @@ class AutomaticBrightnessController {
     private float mBrightnessAdjustmentSampleOldGamma;
 
     public AutomaticBrightnessController(Callbacks callbacks, Looper looper,
-            SensorManager sensorManager, Spline autoBrightnessSpline, int lightSensorWarmUpTime,
+            // SensorManager sensorManager, Spline autoBrightnessSpline, int lightSensorWarmUpTime,
+            String sensorManager, Spline autoBrightnessSpline, int lightSensorWarmUpTime,
             int brightnessMin, int brightnessMax, float dozeScaleFactor,
             int lightSensorRate, int initialLightSensorRate, long brighteningLightDebounceConfig,
             long darkeningLightDebounceConfig, boolean resetAmbientLuxAfterWarmUpConfig,
@@ -194,7 +195,7 @@ class AutomaticBrightnessController {
             boolean activeDozeLightSensor, boolean useNewSensorSamplesForDoze,
             LuxLevels luxLevels) {
         mCallbacks = callbacks;
-        mSensorManager = sensorManager;
+        // mSensorManager = sensorManager;
         mScreenAutoBrightnessSpline = autoBrightnessSpline;
         mScreenBrightnessRangeMinimum = brightnessMin;
         mScreenBrightnessRangeMaximum = brightnessMax;
@@ -219,9 +220,9 @@ class AutomaticBrightnessController {
         mInitialHorizonAmbientLightRingBuffer =
             new AmbientLightRingBuffer(mNormalLightSensorRate, mAmbientLightHorizon);
 
-        if (!DEBUG_PRETEND_LIGHT_SENSOR_ABSENT) {
-            mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
-        }
+        // if (!DEBUG_PRETEND_LIGHT_SENSOR_ABSENT) {
+        //     mLightSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        // }
     }
 
     public int getAutomaticScreenBrightness() {
@@ -273,7 +274,7 @@ class AutomaticBrightnessController {
 
         pw.println();
         pw.println("Automatic Brightness Controller State:");
-        pw.println("  mLightSensor=" + mLightSensor);
+        // pw.println("  mLightSensor=" + mLightSensor);
         pw.println("  mLightSensorEnabled=" + mLightSensorEnabled);
         pw.println("  mLightSensorEnableTime=" + TimeUtils.formatUptime(mLightSensorEnableTime));
         pw.println("  mAmbientLux=" + mAmbientLux);
@@ -305,8 +306,8 @@ class AutomaticBrightnessController {
                 mAmbientLuxValid = !mResetAmbientLuxAfterWarmUpConfig;
                 mLightSensorEnableTime = SystemClock.uptimeMillis();
                 mCurrentLightSensorRate = mInitialLightSensorRate;
-                mSensorManager.registerListener(mLightSensorListener, mLightSensor,
-                        mCurrentLightSensorRate * 1000, mHandler);
+                // mSensorManager.registerListener(mLightSensorListener, mLightSensor,
+                //         mCurrentLightSensorRate * 1000, mHandler);
                 return true;
             }
         } else {
@@ -318,7 +319,7 @@ class AutomaticBrightnessController {
                 mRecentLightSamples = 0;
                 mCurrentLightSensorRate = -1;
                 mHandler.removeMessages(MSG_UPDATE_AMBIENT_LUX);
-                mSensorManager.unregisterListener(mLightSensorListener);
+                // mSensorManager.unregisterListener(mLightSensorListener);
             }
         }
         return false;
@@ -366,9 +367,9 @@ class AutomaticBrightnessController {
                     + ", currentRate=" + lightSensorRate);
             }
             mCurrentLightSensorRate = lightSensorRate;
-            mSensorManager.unregisterListener(mLightSensorListener);
-            mSensorManager.registerListener(mLightSensorListener, mLightSensor,
-                    lightSensorRate * 1000, mHandler);
+            // mSensorManager.unregisterListener(mLightSensorListener);
+            // mSensorManager.registerListener(mLightSensorListener, mLightSensor,
+            //         lightSensorRate * 1000, mHandler);
         }
     }
 
@@ -637,21 +638,21 @@ class AutomaticBrightnessController {
         }
     }
 
-    private final SensorEventListener mLightSensorListener = new SensorEventListener() {
-        @Override
-        public void onSensorChanged(SensorEvent event) {
-            if (mLightSensorEnabled) {
-                final long time = SystemClock.uptimeMillis();
-                final float lux = event.values[0];
-                handleLightSensorEvent(time, lux);
-            }
-        }
-
-        @Override
-        public void onAccuracyChanged(Sensor sensor, int accuracy) {
-            // Not used.
-        }
-    };
+    // private final SensorEventListener mLightSensorListener = new SensorEventListener() {
+    //     @Override
+    //     public void onSensorChanged(SensorEvent event) {
+    //         if (mLightSensorEnabled) {
+    //             final long time = SystemClock.uptimeMillis();
+    //             final float lux = event.values[0];
+    //             handleLightSensorEvent(time, lux);
+    //         }
+    //     }
+    //
+    //     @Override
+    //     public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    //         // Not used.
+    //     }
+    // };
 
     /** Callbacks to request updates to the display's power state. */
     interface Callbacks {

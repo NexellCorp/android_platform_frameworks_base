@@ -35,11 +35,24 @@ import java.util.Arrays;
  */
 public class HardwarePropertiesManagerService extends IHardwarePropertiesManager.Stub {
 
-    private static native void nativeInit();
+    // private static native void nativeInit();
+    //
+    // private static native float[] nativeGetFanSpeeds();
+    // private static native float[] nativeGetDeviceTemperatures(int type, int source);
+    // private static native CpuUsageInfo[] nativeGetCpuUsages();
 
-    private static native float[] nativeGetFanSpeeds();
-    private static native float[] nativeGetDeviceTemperatures(int type, int source);
-    private static native CpuUsageInfo[] nativeGetCpuUsages();
+    private static void nativeInit() {
+    }
+
+    private static float[] nativeGetFanSpeeds() {
+        return new float[1];
+    }
+    private static float[] nativeGetDeviceTemperatures(int type, int source) {
+        return new float[1];
+    }
+    private static CpuUsageInfo[] nativeGetCpuUsages() {
+        return new CpuUsageInfo[1];
+    }
 
     private final Context mContext;
     private final Object mLock = new Object();
