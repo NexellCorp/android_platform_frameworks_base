@@ -18,7 +18,7 @@ package com.android.server.pm;
 
 import android.Manifest;
 import android.annotation.NonNull;
-import android.app.DownloadManager;
+// import android.app.DownloadManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -332,13 +332,13 @@ final class DefaultPermissionGrantPolicy {
             }
 
             // Downloads UI
-            Intent downloadsUiIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
-            PackageParser.Package downloadsUiPackage = getDefaultSystemHandlerActivityPackageLPr(
-                    downloadsUiIntent, userId);
-            if (downloadsUiPackage != null
-                    && doesPackageSupportRuntimePermissions(downloadsUiPackage)) {
-                grantRuntimePermissionsLPw(downloadsUiPackage, STORAGE_PERMISSIONS, true, userId);
-            }
+            // Intent downloadsUiIntent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
+            // PackageParser.Package downloadsUiPackage = getDefaultSystemHandlerActivityPackageLPr(
+            //         downloadsUiIntent, userId);
+            // if (downloadsUiPackage != null
+            //         && doesPackageSupportRuntimePermissions(downloadsUiPackage)) {
+            //     grantRuntimePermissionsLPw(downloadsUiPackage, STORAGE_PERMISSIONS, true, userId);
+            // }
 
             // Storage provider
             PackageParser.Package storagePackage = getDefaultProviderAuthorityPackageLPr(

@@ -254,12 +254,12 @@ final class SystemServiceRegistry {
                 return DevicePolicyManager.create(ctx);
             }});
 
-        registerService(Context.DOWNLOAD_SERVICE, DownloadManager.class,
-                new CachedServiceFetcher<DownloadManager>() {
-            @Override
-            public DownloadManager createService(ContextImpl ctx) {
-                return new DownloadManager(ctx);
-            }});
+        // registerService(Context.DOWNLOAD_SERVICE, DownloadManager.class,
+        //         new CachedServiceFetcher<DownloadManager>() {
+        //     @Override
+        //     public DownloadManager createService(ContextImpl ctx) {
+        //         return new DownloadManager(ctx);
+        //     }});
 
         // registerService(Context.BATTERY_SERVICE, BatteryManager.class,
         //         new StaticServiceFetcher<BatteryManager>() {

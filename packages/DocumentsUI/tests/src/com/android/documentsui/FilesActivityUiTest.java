@@ -19,8 +19,8 @@ package com.android.documentsui;
 import static com.android.documentsui.StubProvider.ROOT_0_ID;
 import static com.android.documentsui.StubProvider.ROOT_1_ID;
 
-import android.app.DownloadManager;
-import android.app.DownloadManager.Request;
+// import android.app.DownloadManager;
+// import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -191,11 +191,11 @@ public class FilesActivityUiTest extends ActivityTest<FilesActivity> {
     // since downloads is (almost) just another provider.
     @Suppress
     public void testDownload_Queued() throws Exception {
-        DownloadManager dm = (DownloadManager) context.getSystemService(
-                Context.DOWNLOAD_SERVICE);
-        // This downloads ends up being queued (because DNS can't be resolved).
-        // We'll still see an entry in the downloads UI with a "Queued" label.
-        dm.enqueue(new Request(Uri.parse("http://hammychamp.toodles")));
+        // DownloadManager dm = (DownloadManager) context.getSystemService(
+        //         Context.DOWNLOAD_SERVICE);
+        // // This downloads ends up being queued (because DNS can't be resolved).
+        // // We'll still see an entry in the downloads UI with a "Queued" label.
+        // dm.enqueue(new Request(Uri.parse("http://hammychamp.toodles")));
 
         bots.roots.openRoot("Downloads");
         bots.directory.assertDocumentsPresent("Queued");
@@ -203,10 +203,10 @@ public class FilesActivityUiTest extends ActivityTest<FilesActivity> {
 
     @Suppress
     public void testDownload_RetryUnsuccessful() throws Exception {
-        DownloadManager dm = (DownloadManager) context.getSystemService(
-                Context.DOWNLOAD_SERVICE);
-        // This downloads fails! But it'll still show up.
-        dm.enqueue(new Request(Uri.parse("http://www.google.com/hamfancy")));
+        // DownloadManager dm = (DownloadManager) context.getSystemService(
+        //         Context.DOWNLOAD_SERVICE);
+        // // This downloads fails! But it'll still show up.
+        // dm.enqueue(new Request(Uri.parse("http://www.google.com/hamfancy")));
 
         bots.roots.openRoot("Downloads");
         UiObject doc = bots.directory.findDocument("Unsuccessful");

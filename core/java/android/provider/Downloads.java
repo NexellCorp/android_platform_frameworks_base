@@ -16,7 +16,7 @@
 
 package android.provider;
 
-import android.app.DownloadManager;
+// import android.app.DownloadManager;
 import android.content.Context;
 import android.net.NetworkPolicyManager;
 import android.net.Uri;
@@ -556,8 +556,10 @@ public final class Downloads {
          * @return true if the notification should be displayed. false otherwise.
          */
         public static boolean isNotificationToBeDisplayed(int visibility) {
-            return visibility == DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED ||
-                    visibility == DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION;
+            // return visibility == DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED ||
+            //         visibility == DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_ONLY_COMPLETION;
+            return visibility == 1 ||
+                    visibility == 3;
         }
 
         /**
@@ -762,19 +764,22 @@ public final class Downloads {
          * This download is visible but only shows in the notifications
          * while it's in progress.
          */
-        public static final int VISIBILITY_VISIBLE = DownloadManager.Request.VISIBILITY_VISIBLE;
+        // public static final int VISIBILITY_VISIBLE = DownloadManager.Request.VISIBILITY_VISIBLE;
+        public static final int VISIBILITY_VISIBLE = 0;
 
         /**
          * This download is visible and shows in the notifications while
          * in progress and after completion.
          */
         public static final int VISIBILITY_VISIBLE_NOTIFY_COMPLETED =
-                DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+                // DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED;
+                1;
 
         /**
          * This download doesn't show in the UI or in the notifications.
          */
-        public static final int VISIBILITY_HIDDEN = DownloadManager.Request.VISIBILITY_HIDDEN;
+        // public static final int VISIBILITY_HIDDEN = DownloadManager.Request.VISIBILITY_HIDDEN;
+        public static final int VISIBILITY_HIDDEN = 2;
 
         /**
          * Constants related to HTTP request headers associated with each download.

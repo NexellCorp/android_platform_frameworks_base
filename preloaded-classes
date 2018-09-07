@@ -374,7 +374,6 @@ android.app.Dialog
 android.app.Dialog$-void__init__android_content_Context_context_int_themeResId_boolean_createContextThemeWrapper_LambdaImpl0
 android.app.Dialog$ListenersHandler
 android.app.DialogFragment
-android.app.DownloadManager
 android.app.Fragment
 android.app.Fragment$1
 android.app.FragmentContainer
