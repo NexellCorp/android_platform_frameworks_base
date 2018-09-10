@@ -147,7 +147,7 @@ import com.android.internal.policy.IShortcutService;
 import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.ScreenShapeHelper;
 import com.android.internal.widget.PointerLocationView;
-import com.android.server.GestureLauncherService;
+// import com.android.server.GestureLauncherService;
 import com.android.server.LocalServices;
 import com.android.server.policy.keyguard.KeyguardServiceDelegate;
 import com.android.server.policy.keyguard.KeyguardServiceDelegate.DrawnListener;
@@ -1156,16 +1156,16 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
 
-        GestureLauncherService gestureService = LocalServices.getService(
-                GestureLauncherService.class);
+        // GestureLauncherService gestureService = LocalServices.getService(
+        //         GestureLauncherService.class);
         boolean gesturedServiceIntercepted = false;
-        if (gestureService != null) {
-            gesturedServiceIntercepted = gestureService.interceptPowerKeyDown(event, interactive,
-                    mTmpBoolean);
-            if (mTmpBoolean.value && mGoingToSleep) {
-                mCameraGestureTriggeredDuringGoingToSleep = true;
-            }
-        }
+        // if (gestureService != null) {
+        //     gesturedServiceIntercepted = gestureService.interceptPowerKeyDown(event, interactive,
+        //             mTmpBoolean);
+        //     if (mTmpBoolean.value && mGoingToSleep) {
+        //         mCameraGestureTriggeredDuringGoingToSleep = true;
+        //     }
+        // }
 
         // If the power key has still not yet been handled, then detect short
         // press, long press, or multi press and decide what to do.
