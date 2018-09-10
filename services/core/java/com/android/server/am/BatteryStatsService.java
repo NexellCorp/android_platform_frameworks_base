@@ -177,7 +177,10 @@ public final class BatteryStatsService extends IBatteryStats.Stub
         }
     }
 
-    private native int getPlatformLowPowerStats(ByteBuffer outBuffer);
+    // private native int getPlatformLowPowerStats(ByteBuffer outBuffer);
+    private int getPlatformLowPowerStats(ByteBuffer outBuffer) {
+		return 0;
+	}
     private CharsetDecoder mDecoderStat = StandardCharsets.UTF_8
                     .newDecoder()
                     .onMalformedInput(CodingErrorAction.REPLACE)
@@ -1100,7 +1103,10 @@ public final class BatteryStatsService extends IBatteryStats.Stub
         }
     }
 
-    private static native int nativeWaitWakeup(ByteBuffer outBuffer);
+    // private static native int nativeWaitWakeup(ByteBuffer outBuffer);
+    private static int nativeWaitWakeup(ByteBuffer outBuffer) {
+		return 0;
+	}
 
     private void dumpHelp(PrintWriter pw) {
         pw.println("Battery stats (batterystats) dump options:");

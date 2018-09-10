@@ -340,9 +340,9 @@ class AppErrors {
             }
 
             // Log crash in battery stats.
-            if (r != null) {
-                mService.mBatteryStatsService.noteProcessCrash(r.processName, r.uid);
-            }
+            // if (r != null) {
+            //     mService.mBatteryStatsService.noteProcessCrash(r.processName, r.uid);
+            // }
 
             AppErrorDialog.Data data = new AppErrorDialog.Data();
             data.result = result;
@@ -882,7 +882,7 @@ class AppErrors {
         }
 
         synchronized (mService) {
-            mService.mBatteryStatsService.noteProcessAnr(app.processName, app.uid);
+            // mService.mBatteryStatsService.noteProcessAnr(app.processName, app.uid);
 
             if (isSilentANR) {
                 app.kill("bg anr", true);

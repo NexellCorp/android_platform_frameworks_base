@@ -17,7 +17,7 @@
 package com.android.server.am;
 
 import com.android.internal.app.procstats.ServiceState;
-import com.android.internal.os.BatteryStatsImpl;
+// import com.android.internal.os.BatteryStatsImpl;
 import com.android.server.LocalServices;
 import com.android.server.notification.NotificationManagerInternal;
 
@@ -63,7 +63,7 @@ final class ServiceRecord extends Binder {
     static final int MAX_DONE_EXECUTING_COUNT = 6;
 
     final ActivityManagerService ams;
-    final BatteryStatsImpl.Uid.Pkg.Serv stats;
+    // final BatteryStatsImpl.Uid.Pkg.Serv stats;
     final ComponentName name; // service component.
     final String shortName; // name.flattenToShortString().
     final Intent.FilterComparison intent;
@@ -309,11 +309,12 @@ final class ServiceRecord extends Binder {
     }
 
     ServiceRecord(ActivityManagerService ams,
-            BatteryStatsImpl.Uid.Pkg.Serv servStats, ComponentName name,
+            // BatteryStatsImpl.Uid.Pkg.Serv servStats, ComponentName name,
+            String servStats, ComponentName name,
             Intent.FilterComparison intent, ServiceInfo sInfo, boolean callerIsFg,
             Runnable restarter) {
         this.ams = ams;
-        this.stats = servStats;
+        // this.stats = servStats;
         this.name = name;
         shortName = name.flattenToShortString();
         this.intent = intent;

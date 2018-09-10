@@ -58,7 +58,7 @@ import android.content.Intent;
 import android.content.pm.IPackageManager;
 import android.content.pm.PackageManager;
 import android.content.pm.UserInfo;
-import android.os.BatteryStats;
+// import android.os.BatteryStats;
 import android.os.Binder;
 import android.os.Build;
 import android.os.Bundle;
@@ -593,9 +593,9 @@ final class UserController {
         }
         getUserManagerInternal().setUserState(userId, uss.state);
 
-        mService.mBatteryStatsService.noteEvent(
-                BatteryStats.HistoryItem.EVENT_USER_RUNNING_FINISH,
-                Integer.toString(userId), userId);
+        // mService.mBatteryStatsService.noteEvent(
+        //         BatteryStats.HistoryItem.EVENT_USER_RUNNING_FINISH,
+        //         Integer.toString(userId), userId);
         mService.mSystemServiceManager.stopUser(userId);
 
         synchronized (mService) {

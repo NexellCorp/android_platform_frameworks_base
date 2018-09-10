@@ -44,7 +44,7 @@ import android.util.ArrayMap;
 import android.util.ArraySet;
 
 import com.android.internal.app.procstats.ServiceState;
-import com.android.internal.os.BatteryStatsImpl;
+// import com.android.internal.os.BatteryStatsImpl;
 import com.android.internal.os.TransferPipe;
 import com.android.internal.util.FastPrintWriter;
 import com.android.server.am.ActivityManagerService.ItemMatcher;
@@ -503,9 +503,9 @@ public final class ActiveServices {
             stracker.setStarted(true, mAm.mProcessStats.getMemFactorLocked(), r.lastActivity);
         }
         r.callStart = false;
-        synchronized (r.stats.getBatteryStats()) {
-            r.stats.startRunningLocked();
-        }
+        // synchronized (r.stats.getBatteryStats()) {
+        //     r.stats.startRunningLocked();
+        // }
         String error = bringUpServiceLocked(r, service.getFlags(), callerFg, false, false);
         if (error != null) {
             return new ComponentName("!!", error);
@@ -541,9 +541,9 @@ public final class ActiveServices {
             service.delayedStop = true;
             return;
         }
-        synchronized (service.stats.getBatteryStats()) {
-            service.stats.stopRunningLocked();
-        }
+        // synchronized (service.stats.getBatteryStats()) {
+        //     service.stats.stopRunningLocked();
+        // }
         service.startRequested = false;
         if (service.tracker != null) {
             service.tracker.setStarted(false, mAm.mProcessStats.getMemFactorLocked(),
@@ -670,9 +670,9 @@ public final class ActiveServices {
                 }
             }
 
-            synchronized (r.stats.getBatteryStats()) {
-                r.stats.stopRunningLocked();
-            }
+            // synchronized (r.stats.getBatteryStats()) {
+            //     r.stats.stopRunningLocked();
+            // }
             r.startRequested = false;
             if (r.tracker != null) {
                 r.tracker.setStarted(false, mAm.mProcessStats.getMemFactorLocked(),
@@ -1349,14 +1349,15 @@ public final class ActiveServices {
                     Intent.FilterComparison filter
                             = new Intent.FilterComparison(service.cloneFilter());
                     ServiceRestarter res = new ServiceRestarter();
-                    BatteryStatsImpl.Uid.Pkg.Serv ss = null;
-                    BatteryStatsImpl stats = mAm.mBatteryStatsService.getActiveStatistics();
-                    synchronized (stats) {
-                        ss = stats.getServiceStatsLocked(
-                                sInfo.applicationInfo.uid, sInfo.packageName,
-                                sInfo.name);
-                    }
-                    r = new ServiceRecord(mAm, ss, name, filter, sInfo, callingFromFg, res);
+                    // BatteryStatsImpl.Uid.Pkg.Serv ss = null;
+                    // BatteryStatsImpl stats = mAm.mBatteryStatsService.getActiveStatistics();
+                    // synchronized (stats) {
+                    //     ss = stats.getServiceStatsLocked(
+                    //             sInfo.applicationInfo.uid, sInfo.packageName,
+                    //             sInfo.name);
+                    // }
+                    // r = new ServiceRecord(mAm, ss, name, filter, sInfo, callingFromFg, res);
+                    r = new ServiceRecord(mAm, null, name, filter, sInfo, callingFromFg, res);
                     res.setService(r);
                     smap.mServicesByName.put(name, r);
                     smap.mServicesByIntent.put(filter, r);
@@ -1808,9 +1809,9 @@ public final class ActiveServices {
                 EventLogTags.writeAmCreateService(
                         r.userId, System.identityHashCode(r), nameTerm, r.app.uid, r.app.pid);
             }
-            synchronized (r.stats.getBatteryStats()) {
-                r.stats.startLaunchedLocked();
-            }
+            // synchronized (r.stats.getBatteryStats()) {
+            //     r.stats.startLaunchedLocked();
+            // }
             mAm.notifyPackageUse(r.serviceInfo.packageName,
                                  PackageManager.NOTIFY_PACKAGE_USE_SERVICE);
             app.forceProcessStateUpTo(ActivityManager.PROCESS_STATE_SERVICE);
@@ -2053,9 +2054,9 @@ public final class ActiveServices {
         r.pendingStarts.clear();
 
         if (r.app != null) {
-            synchronized (r.stats.getBatteryStats()) {
-                r.stats.stopLaunchedLocked();
-            }
+            // synchronized (r.stats.getBatteryStats()) {
+            //     r.stats.stopLaunchedLocked();
+            // }
             r.app.services.remove(r);
             if (r.whitelistManager) {
                 updateWhitelistManagerLocked(r.app);
@@ -2558,9 +2559,9 @@ public final class ActiveServices {
         // Clear app state from services.
         for (int i = app.services.size() - 1; i >= 0; i--) {
             ServiceRecord sr = app.services.valueAt(i);
-            synchronized (sr.stats.getBatteryStats()) {
-                sr.stats.stopLaunchedLocked();
-            }
+            // synchronized (sr.stats.getBatteryStats()) {
+            //     sr.stats.stopLaunchedLocked();
+            // }
             if (sr.app != app && sr.app != null && !sr.app.persistent) {
                 sr.app.services.remove(sr);
             }

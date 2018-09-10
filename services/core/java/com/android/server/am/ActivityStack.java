@@ -124,7 +124,7 @@ import android.view.Display;
 
 import com.android.internal.app.IVoiceInteractor;
 import com.android.internal.content.ReferrerIntent;
-import com.android.internal.os.BatteryStatsImpl;
+// import com.android.internal.os.BatteryStatsImpl;
 // import com.android.server.Watchdog;
 import com.android.server.am.ActivityManagerService.ItemMatcher;
 import com.android.server.am.ActivityStackSupervisor.ActivityContainer;
@@ -1346,22 +1346,22 @@ final class ActivityStack {
         if (prev != null) {
             prev.resumeKeyDispatchingLocked();
 
-            if (prev.app != null && prev.cpuTimeAtResume > 0
-                    && mService.mBatteryStatsService.isOnBattery()) {
-                long diff = mService.mProcessCpuTracker.getCpuTimeForPid(prev.app.pid)
-                        - prev.cpuTimeAtResume;
-                if (diff > 0) {
-                    BatteryStatsImpl bsi = mService.mBatteryStatsService.getActiveStatistics();
-                    synchronized (bsi) {
-                        BatteryStatsImpl.Uid.Proc ps =
-                                bsi.getProcessStatsLocked(prev.info.applicationInfo.uid,
-                                        prev.info.packageName);
-                        if (ps != null) {
-                            ps.addForegroundTimeLocked(diff);
-                        }
-                    }
-                }
-            }
+            // if (prev.app != null && prev.cpuTimeAtResume > 0
+            //         && mService.mBatteryStatsService.isOnBattery()) {
+            //     long diff = mService.mProcessCpuTracker.getCpuTimeForPid(prev.app.pid)
+            //             - prev.cpuTimeAtResume;
+            //     if (diff > 0) {
+            //         BatteryStatsImpl bsi = mService.mBatteryStatsService.getActiveStatistics();
+            //         synchronized (bsi) {
+            //             BatteryStatsImpl.Uid.Proc ps =
+            //                     bsi.getProcessStatsLocked(prev.info.applicationInfo.uid,
+            //                             prev.info.packageName);
+            //             if (ps != null) {
+            //                 ps.addForegroundTimeLocked(diff);
+            //             }
+            //         }
+            //     }
+            // }
             prev.cpuTimeAtResume = 0; // reset it
         }
 

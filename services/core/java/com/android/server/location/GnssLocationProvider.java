@@ -17,7 +17,7 @@
 package com.android.server.location;
 
 import com.android.internal.app.IAppOpsService;
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.internal.location.GpsNetInitiatedHandler;
 import com.android.internal.location.GpsNetInitiatedHandler.GpsNiNotification;
 import com.android.internal.location.ProviderProperties;
@@ -55,7 +55,7 @@ import android.net.NetworkInfo;
 import android.net.NetworkRequest;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.BatteryStats;
+// import android.os.BatteryStats;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -408,7 +408,7 @@ public class GnssLocationProvider implements LocationProviderInterface {
     private final PendingIntent mTimeoutIntent;
 
     private final IAppOpsService mAppOpsService;
-    private final IBatteryStats mBatteryStats;
+    // private final IBatteryStats mBatteryStats;
 
     // only modified on handler thread
     private WorkSource mClientSource = new WorkSource();
@@ -736,8 +736,8 @@ public class GnssLocationProvider implements LocationProviderInterface {
                 Context.APP_OPS_SERVICE));
 
         // Battery statistics service to be notified when GPS turns on or off
-        mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
-                BatteryStats.SERVICE_NAME));
+        // mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
+        //         BatteryStats.SERVICE_NAME));
 
         // Construct internal handler
         mHandler = new ProviderHandler(looper);
@@ -1306,7 +1306,7 @@ public class GnssLocationProvider implements LocationProviderInterface {
                             AppOpsManager.OP_GPS, uid, newWork.getName(i));
                     if (uid != lastuid) {
                         lastuid = uid;
-                        mBatteryStats.noteStartGps(uid);
+                        // mBatteryStats.noteStartGps(uid);
                     }
                 } catch (RemoteException e) {
                     Log.w(TAG, "RemoteException", e);
@@ -1324,7 +1324,7 @@ public class GnssLocationProvider implements LocationProviderInterface {
                             AppOpsManager.OP_GPS, uid, goneWork.getName(i));
                     if (uid != lastuid) {
                         lastuid = uid;
-                        mBatteryStats.noteStopGps(uid);
+                        // mBatteryStats.noteStopGps(uid);
                     }
                 } catch (RemoteException e) {
                     Log.w(TAG, "RemoteException", e);

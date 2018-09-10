@@ -32,7 +32,7 @@ import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
-import android.os.BatteryStats;
+// import android.os.BatteryStats;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.ParcelUuid;
@@ -1424,14 +1424,14 @@ public final class BluetoothAdapter {
     public BluetoothActivityEnergyInfo getControllerActivityEnergyInfo(int updateType) {
         SynchronousResultReceiver receiver = new SynchronousResultReceiver();
         requestControllerActivityEnergyInfo(receiver);
-        try {
-            SynchronousResultReceiver.Result result = receiver.awaitResult(1000);
-            if (result.bundle != null) {
-                return result.bundle.getParcelable(BatteryStats.RESULT_RECEIVER_CONTROLLER_KEY);
-            }
-        } catch (TimeoutException e) {
-            Log.e(TAG, "getControllerActivityEnergyInfo timed out");
-        }
+        // try {
+        //     SynchronousResultReceiver.Result result = receiver.awaitResult(1000);
+        //     if (result.bundle != null) {
+        //         return result.bundle.getParcelable(BatteryStats.RESULT_RECEIVER_CONTROLLER_KEY);
+        //     }
+        // } catch (TimeoutException e) {
+        //     Log.e(TAG, "getControllerActivityEnergyInfo timed out");
+        // }
         return null;
     }
 

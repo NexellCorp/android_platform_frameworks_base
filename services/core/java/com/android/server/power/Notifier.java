@@ -156,9 +156,9 @@ final class Notifier {
                 com.android.internal.R.bool.config_suspendWhenScreenOffDueToProximity);
 
         // Initialize interactive state for battery stats.
-        try {
-            mBatteryStats.noteInteractive(true);
-        } catch (RemoteException ex) { }
+        // try {
+        //     mBatteryStats.noteInteractive(true);
+        // } catch (RemoteException ex) { }
     }
 
     /**
@@ -179,11 +179,11 @@ final class Notifier {
                 final boolean unimportantForLogging = ownerUid == Process.SYSTEM_UID
                         && (flags & PowerManager.UNIMPORTANT_FOR_LOGGING) != 0;
                 if (workSource != null) {
-                    mBatteryStats.noteStartWakelockFromSource(workSource, ownerPid, tag,
-                            historyTag, monitorType, unimportantForLogging);
+                    // mBatteryStats.noteStartWakelockFromSource(workSource, ownerPid, tag,
+                    //         historyTag, monitorType, unimportantForLogging);
                 } else {
-                    mBatteryStats.noteStartWakelock(ownerUid, ownerPid, tag, historyTag,
-                            monitorType, unimportantForLogging);
+                    // mBatteryStats.noteStartWakelock(ownerUid, ownerPid, tag, historyTag,
+                    //         monitorType, unimportantForLogging);
                     // XXX need to deal with disabled operations.
                     mAppOps.startOperation(AppOpsManager.getToken(mAppOps),
                             AppOpsManager.OP_WAKE_LOCK, ownerUid, packageName);
@@ -196,44 +196,44 @@ final class Notifier {
 
     public void onLongPartialWakeLockStart(String tag, int ownerUid, WorkSource workSource,
             String historyTag) {
-        if (DEBUG) {
-            Slog.d(TAG, "onLongPartialWakeLockStart: ownerUid=" + ownerUid
-                    + ", workSource=" + workSource);
-        }
-
-        try {
-            if (workSource != null) {
-                final int N = workSource.size();
-                for (int i=0; i<N; i++) {
-                    mBatteryStats.noteLongPartialWakelockStart(tag, historyTag, workSource.get(i));
-                }
-            } else {
-                mBatteryStats.noteLongPartialWakelockStart(tag, historyTag, ownerUid);
-            }
-        } catch (RemoteException ex) {
-            // Ignore
-        }
+        // if (DEBUG) {
+        //     Slog.d(TAG, "onLongPartialWakeLockStart: ownerUid=" + ownerUid
+        //             + ", workSource=" + workSource);
+        // }
+        //
+        // try {
+        //     if (workSource != null) {
+        //         final int N = workSource.size();
+        //         for (int i=0; i<N; i++) {
+        //             mBatteryStats.noteLongPartialWakelockStart(tag, historyTag, workSource.get(i));
+        //         }
+        //     } else {
+        //         mBatteryStats.noteLongPartialWakelockStart(tag, historyTag, ownerUid);
+        //     }
+        // } catch (RemoteException ex) {
+        //     // Ignore
+        // }
     }
 
     public void onLongPartialWakeLockFinish(String tag, int ownerUid, WorkSource workSource,
             String historyTag) {
-        if (DEBUG) {
-            Slog.d(TAG, "onLongPartialWakeLockFinish: ownerUid=" + ownerUid
-                    + ", workSource=" + workSource);
-        }
-
-        try {
-            if (workSource != null) {
-                final int N = workSource.size();
-                for (int i=0; i<N; i++) {
-                    mBatteryStats.noteLongPartialWakelockFinish(tag, historyTag, workSource.get(i));
-                }
-            } else {
-                mBatteryStats.noteLongPartialWakelockFinish(tag, historyTag, ownerUid);
-            }
-        } catch (RemoteException ex) {
-            // Ignore
-        }
+        // if (DEBUG) {
+        //     Slog.d(TAG, "onLongPartialWakeLockFinish: ownerUid=" + ownerUid
+        //             + ", workSource=" + workSource);
+        // }
+        //
+        // try {
+        //     if (workSource != null) {
+        //         final int N = workSource.size();
+        //         for (int i=0; i<N; i++) {
+        //             mBatteryStats.noteLongPartialWakelockFinish(tag, historyTag, workSource.get(i));
+        //         }
+        //     } else {
+        //         mBatteryStats.noteLongPartialWakelockFinish(tag, historyTag, ownerUid);
+        //     }
+        // } catch (RemoteException ex) {
+        //     // Ignore
+        // }
     }
 
     /**
@@ -257,13 +257,13 @@ final class Notifier {
 
             final boolean unimportantForLogging = newOwnerUid == Process.SYSTEM_UID
                     && (newFlags & PowerManager.UNIMPORTANT_FOR_LOGGING) != 0;
-            try {
-                mBatteryStats.noteChangeWakelockFromSource(workSource, ownerPid, tag, historyTag,
-                        monitorType, newWorkSource, newOwnerPid, newTag, newHistoryTag,
-                        newMonitorType, unimportantForLogging);
-            } catch (RemoteException ex) {
-                // Ignore
-            }
+            // try {
+            //     mBatteryStats.noteChangeWakelockFromSource(workSource, ownerPid, tag, historyTag,
+            //             monitorType, newWorkSource, newOwnerPid, newTag, newHistoryTag,
+            //             newMonitorType, unimportantForLogging);
+            // } catch (RemoteException ex) {
+            //     // Ignore
+            // }
         } else {
             onWakeLockReleased(flags, tag, packageName, ownerUid, ownerPid, workSource, historyTag);
             onWakeLockAcquired(newFlags, newTag, newPackageName, newOwnerUid, newOwnerPid,
@@ -284,21 +284,21 @@ final class Notifier {
         }
 
         final int monitorType = getBatteryStatsWakeLockMonitorType(flags);
-        if (monitorType >= 0) {
-            try {
-                if (workSource != null) {
-                    mBatteryStats.noteStopWakelockFromSource(workSource, ownerPid, tag,
-                            historyTag, monitorType);
-                } else {
-                    mBatteryStats.noteStopWakelock(ownerUid, ownerPid, tag,
-                            historyTag, monitorType);
-                    mAppOps.finishOperation(AppOpsManager.getToken(mAppOps),
-                            AppOpsManager.OP_WAKE_LOCK, ownerUid, packageName);
-                }
-            } catch (RemoteException ex) {
-                // Ignore
-            }
-        }
+        // if (monitorType >= 0) {
+        //     try {
+        //         if (workSource != null) {
+        //             mBatteryStats.noteStopWakelockFromSource(workSource, ownerPid, tag,
+        //                     historyTag, monitorType);
+        //         } else {
+        //             mBatteryStats.noteStopWakelock(ownerUid, ownerPid, tag,
+        //                     historyTag, monitorType);
+        //             mAppOps.finishOperation(AppOpsManager.getToken(mAppOps),
+        //                     AppOpsManager.OP_WAKE_LOCK, ownerUid, packageName);
+        //         }
+        //     } catch (RemoteException ex) {
+        //         // Ignore
+        //     }
+        // }
     }
 
     private int getBatteryStatsWakeLockMonitorType(int flags) {
@@ -365,9 +365,9 @@ final class Notifier {
             mInputMethodManagerInternal.setInteractive(interactive);
 
             // Notify battery stats.
-            try {
-                mBatteryStats.noteInteractive(interactive);
-            } catch (RemoteException ex) { }
+            // try {
+            //     mBatteryStats.noteInteractive(interactive);
+            // } catch (RemoteException ex) { }
 
             // Handle early behaviors.
             mInteractive = interactive;
@@ -504,11 +504,11 @@ final class Notifier {
             Slog.d(TAG, "onUserActivity: event=" + event + ", uid=" + uid);
         }
 
-        try {
-            mBatteryStats.noteUserActivity(uid, event);
-        } catch (RemoteException ex) {
-            // Ignore
-        }
+        // try {
+        //     mBatteryStats.noteUserActivity(uid, event);
+        // } catch (RemoteException ex) {
+        //     // Ignore
+        // }
 
         synchronized (mLock) {
             if (!mUserActivityPending) {
@@ -530,7 +530,7 @@ final class Notifier {
         }
 
         try {
-            mBatteryStats.noteWakeUp(reason, reasonUid);
+            // mBatteryStats.noteWakeUp(reason, reasonUid);
             if (opPackageName != null) {
                 mAppOps.noteOperation(AppOpsManager.OP_TURN_SCREEN_ON, opUid, opPackageName);
             }

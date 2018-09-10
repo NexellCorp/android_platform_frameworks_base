@@ -43,7 +43,7 @@ import android.net.ConnectivityManager;
 import android.net.INetworkPolicyManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.BatteryStats;
+// import android.os.BatteryStats;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -77,12 +77,12 @@ import android.util.TimeUtils;
 import android.util.Xml;
 import android.view.Display;
 
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.internal.os.AtomicFile;
 import com.android.internal.os.BackgroundThread;
 import com.android.internal.util.FastXmlSerializer;
 import com.android.internal.util.XmlUtils;
-import com.android.server.am.BatteryStatsService;
+// import com.android.server.am.BatteryStatsService;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -113,7 +113,7 @@ public class DeviceIdleController extends SystemService
     private static final int EVENT_BUFFER_SIZE = 100;
 
     private AlarmManager mAlarmManager;
-    private IBatteryStats mBatteryStats;
+    // private IBatteryStats mBatteryStats;
     private PowerManagerInternal mLocalPowerManager;
     private PowerManager mPowerManager;
     private ConnectivityService mConnectivityService;
@@ -1039,9 +1039,9 @@ public class DeviceIdleController extends SystemService
                     }
                     try {
                         mNetworkPolicyManager.setDeviceIdleMode(true);
-                        mBatteryStats.noteDeviceIdleMode(msg.what == MSG_REPORT_IDLE_ON
-                                ? BatteryStats.DEVICE_IDLE_MODE_DEEP
-                                : BatteryStats.DEVICE_IDLE_MODE_LIGHT, null, Process.myUid());
+                        // mBatteryStats.noteDeviceIdleMode(msg.what == MSG_REPORT_IDLE_ON
+                        //         ? BatteryStats.DEVICE_IDLE_MODE_DEEP
+                        //         : BatteryStats.DEVICE_IDLE_MODE_LIGHT, null, Process.myUid());
                     } catch (RemoteException e) {
                     }
                     if (deepChanged) {
@@ -1060,8 +1060,8 @@ public class DeviceIdleController extends SystemService
                     final boolean lightChanged = mLocalPowerManager.setLightDeviceIdleMode(false);
                     try {
                         mNetworkPolicyManager.setDeviceIdleMode(false);
-                        mBatteryStats.noteDeviceIdleMode(BatteryStats.DEVICE_IDLE_MODE_OFF,
-                                null, Process.myUid());
+                        // mBatteryStats.noteDeviceIdleMode(BatteryStats.DEVICE_IDLE_MODE_OFF,
+                        //         null, Process.myUid());
                     } catch (RemoteException e) {
                     }
                     if (deepChanged) {
@@ -1089,8 +1089,8 @@ public class DeviceIdleController extends SystemService
                     final boolean lightChanged = mLocalPowerManager.setLightDeviceIdleMode(false);
                     try {
                         mNetworkPolicyManager.setDeviceIdleMode(false);
-                        mBatteryStats.noteDeviceIdleMode(BatteryStats.DEVICE_IDLE_MODE_OFF,
-                                activeReason, activeUid);
+                        // mBatteryStats.noteDeviceIdleMode(BatteryStats.DEVICE_IDLE_MODE_OFF,
+                        //         activeReason, activeUid);
                     } catch (RemoteException e) {
                     }
                     if (deepChanged) {
@@ -1363,7 +1363,7 @@ public class DeviceIdleController extends SystemService
         if (phase == PHASE_SYSTEM_SERVICES_READY) {
             synchronized (this) {
                 mAlarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE);
-                mBatteryStats = BatteryStatsService.getService();
+                // mBatteryStats = BatteryStatsService.getService();
                 mLocalPowerManager = getLocalService(PowerManagerInternal.class);
                 mPowerManager = getContext().getSystemService(PowerManager.class);
                 mActiveIdleWakeLock = mPowerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK,
@@ -1648,11 +1648,11 @@ public class DeviceIdleController extends SystemService
             }
             if (newEntry) {
                 // No pending timeout for the app id, post a delayed message
-                try {
-                    mBatteryStats.noteEvent(BatteryStats.HistoryItem.EVENT_TEMP_WHITELIST_START,
-                            reason, appId);
-                } catch (RemoteException e) {
-                }
+                // try {
+                //     mBatteryStats.noteEvent(BatteryStats.HistoryItem.EVENT_TEMP_WHITELIST_START,
+                //             reason, appId);
+                // } catch (RemoteException e) {
+                // }
                 postTempActiveTimeoutMessage(appId, duration);
                 updateTempWhitelistAppIdsLocked();
                 if (mNetworkPolicyTempWhitelistCallback != null) {
@@ -1705,11 +1705,11 @@ public class DeviceIdleController extends SystemService
                     mHandler.post(mNetworkPolicyTempWhitelistCallback);
                 }
                 reportTempWhitelistChangedLocked();
-                try {
-                    mBatteryStats.noteEvent(BatteryStats.HistoryItem.EVENT_TEMP_WHITELIST_FINISH,
-                            entry.second, uid);
-                } catch (RemoteException e) {
-                }
+                // try {
+                //     mBatteryStats.noteEvent(BatteryStats.HistoryItem.EVENT_TEMP_WHITELIST_FINISH,
+                //             entry.second, uid);
+                // } catch (RemoteException e) {
+                // }
             } else {
                 // Need more time
                 if (DEBUG) {

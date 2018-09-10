@@ -16,9 +16,9 @@
 
 package com.android.server.display;
 
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.server.LocalServices;
-import com.android.server.am.BatteryStatsService;
+// import com.android.server.am.BatteryStatsService;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
@@ -118,7 +118,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
     private final DisplayPowerCallbacks mCallbacks;
 
     // Battery stats.
-    private final IBatteryStats mBatteryStats;
+    // private final IBatteryStats mBatteryStats;
 
     // The sensor manager.
     // private final SensorManager mSensorManager;
@@ -265,7 +265,7 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
         mHandler = new DisplayControllerHandler(handler.getLooper());
         mCallbacks = callbacks;
 
-        mBatteryStats = BatteryStatsService.getService();
+        // mBatteryStats = BatteryStatsService.getService();
         // mSensorManager = sensorManager;
         mWindowManagerPolicy = LocalServices.getService(WindowManagerPolicy.class);
         mBlanker = blanker;
@@ -506,12 +506,12 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
         mScreenBrightnessRampAnimator.setListener(mRampAnimatorListener);
 
         // Initialize screen state for battery stats.
-        try {
-            mBatteryStats.noteScreenState(mPowerState.getScreenState());
-            mBatteryStats.noteScreenBrightness(mPowerState.getScreenBrightness());
-        } catch (RemoteException ex) {
-            // same process
-        }
+        // try {
+        //     mBatteryStats.noteScreenState(mPowerState.getScreenState());
+        //     mBatteryStats.noteScreenBrightness(mPowerState.getScreenBrightness());
+        // } catch (RemoteException ex) {
+        //     // same process
+        // }
     }
 
     private final Animator.AnimatorListener mAnimatorListener = new Animator.AnimatorListener() {
@@ -836,11 +836,11 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
             mPowerState.setScreenState(state);
 
             // Tell battery stats about the transition.
-            try {
-                mBatteryStats.noteScreenState(state);
-            } catch (RemoteException ex) {
-                // same process
-            }
+            // try {
+            //     mBatteryStats.noteScreenState(state);
+            // } catch (RemoteException ex) {
+            //     // same process
+            // }
         }
 
         // Tell the window manager policy when the screen is turned off or on unless it's due
@@ -879,11 +879,11 @@ final class DisplayPowerController implements AutomaticBrightnessController.Call
             Slog.d(TAG, "Animating brightness: target=" + target +", rate=" + rate);
         }
         if (mScreenBrightnessRampAnimator.animateTo(target, rate)) {
-            try {
-                mBatteryStats.noteScreenBrightness(target);
-            } catch (RemoteException ex) {
-                // same process
-            }
+            // try {
+            //     mBatteryStats.noteScreenBrightness(target);
+            // } catch (RemoteException ex) {
+            //     // same process
+            // }
         }
     }
 

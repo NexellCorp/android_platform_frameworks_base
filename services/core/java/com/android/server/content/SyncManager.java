@@ -58,7 +58,7 @@ import android.database.ContentObserver;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.TrafficStats;
-import android.os.BatteryStats;
+// import android.os.BatteryStats;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -89,7 +89,7 @@ import com.google.android.collect.Lists;
 import com.google.android.collect.Maps;
 
 import com.android.internal.R;
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.internal.os.BackgroundThread;
 import com.android.internal.util.IndentingPrintWriter;
 import com.android.server.accounts.AccountManagerService;
@@ -220,7 +220,7 @@ public class SyncManager {
     volatile private boolean mReportedSyncActive = false;
 
     private final NotificationManager mNotificationMgr;
-    private final IBatteryStats mBatteryStats;
+    // private final IBatteryStats mBatteryStats;
     private JobScheduler mJobScheduler;
     private JobSchedulerInternal mJobSchedulerInternal;
     private SyncJobService mSyncJobService;
@@ -589,8 +589,8 @@ public class SyncManager {
             }
         });
 
-        mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
-                BatteryStats.SERVICE_NAME));
+        // mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
+        //         BatteryStats.SERVICE_NAME));
 
         // This WakeLock is used to ensure that we stay awake between the time that we receive
         // a sync alarm notification and when we finish processing it. We need to do this
@@ -1713,11 +1713,11 @@ public class SyncManager {
             if (!bindResult) {
                 mBound = false;
             } else {
-                try {
+                // try {
                     mEventName = mSyncOperation.wakeLockName();
-                    mBatteryStats.noteSyncStart(mEventName, mSyncAdapterUid);
-                } catch (RemoteException e) {
-                }
+                    // mBatteryStats.noteSyncStart(mEventName, mSyncAdapterUid);
+                // } catch (RemoteException e) {
+                // }
             }
             return bindResult;
         }
@@ -1733,10 +1733,10 @@ public class SyncManager {
             if (mBound) {
                 mBound = false;
                 mContext.unbindService(this);
-                try {
-                    mBatteryStats.noteSyncFinish(mEventName, mSyncAdapterUid);
-                } catch (RemoteException e) {
-                }
+                // try {
+                //     mBatteryStats.noteSyncFinish(mEventName, mSyncAdapterUid);
+                // } catch (RemoteException e) {
+                // }
             }
             mSyncWakeLock.release();
             mSyncWakeLock.setWorkSource(null);

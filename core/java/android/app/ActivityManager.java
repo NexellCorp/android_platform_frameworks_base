@@ -27,7 +27,7 @@ import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Point;
-import android.os.BatteryStats;
+// import android.os.BatteryStats;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 
@@ -3549,7 +3549,7 @@ public class ActivityManager {
         pw.println();
         dumpService(pw, fd, "usagestats", new String[] { "--packages", packageName });
         pw.println();
-        dumpService(pw, fd, BatteryStats.SERVICE_NAME, new String[] { packageName });
+        // dumpService(pw, fd, BatteryStats.SERVICE_NAME, new String[] { packageName });
         pw.flush();
     }
 

@@ -63,7 +63,7 @@ import android.net.RouteInfo;
 import android.net.UidRange;
 import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiConfiguration.KeyMgmt;
-import android.os.BatteryStats;
+// import android.os.BatteryStats;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.INetworkActivityListener;
@@ -88,7 +88,7 @@ import android.util.SparseBooleanArray;
 import android.util.SparseIntArray;
 
 import com.android.internal.annotations.GuardedBy;
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.internal.net.NetworkStatsFactory;
 import com.android.internal.util.HexDump;
 import com.android.internal.util.Preconditions;
@@ -211,7 +211,7 @@ public class NetworkManagementService extends INetworkManagementService.Stub
 
     private INetd mNetdService;
 
-    private IBatteryStats mBatteryStats;
+    // private IBatteryStats mBatteryStats;
 
     private final Thread mThread;
     private CountDownLatch mConnectedSignal = new CountDownLatch(1);
@@ -351,16 +351,16 @@ public class NetworkManagementService extends INetworkManagementService.Stub
         }
     }
 
-    private IBatteryStats getBatteryStats() {
-        synchronized (this) {
-            if (mBatteryStats != null) {
-                return mBatteryStats;
-            }
-            mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
-                    BatteryStats.SERVICE_NAME));
-            return mBatteryStats;
-        }
-    }
+    // private IBatteryStats getBatteryStats() {
+    //     synchronized (this) {
+    //         if (mBatteryStats != null) {
+    //             return mBatteryStats;
+    //         }
+    //         mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
+    //                 BatteryStats.SERVICE_NAME));
+    //         return mBatteryStats;
+    //     }
+    // }
 
     @Override
     public void registerObserver(INetworkManagementEventObserver observer) {
@@ -484,20 +484,20 @@ public class NetworkManagementService extends INetworkManagementService.Stub
             }
             if (mLastPowerStateFromRadio != powerState) {
                 mLastPowerStateFromRadio = powerState;
-                try {
-                    getBatteryStats().noteMobileRadioPowerState(powerState, tsNanos, uid);
-                } catch (RemoteException e) {
-                }
+                // try {
+                //     getBatteryStats().noteMobileRadioPowerState(powerState, tsNanos, uid);
+                // } catch (RemoteException e) {
+                // }
             }
         }
 
         if (ConnectivityManager.isNetworkTypeWifi(type)) {
             if (mLastPowerStateFromWifi != powerState) {
                 mLastPowerStateFromWifi = powerState;
-                try {
-                    getBatteryStats().noteWifiRadioPowerState(powerState, tsNanos, uid);
-                } catch (RemoteException e) {
-                }
+                // try {
+                //     getBatteryStats().noteWifiRadioPowerState(powerState, tsNanos, uid);
+                // } catch (RemoteException e) {
+                // }
             }
         }
 
@@ -597,12 +597,12 @@ public class NetworkManagementService extends INetworkManagementService.Stub
 
         SystemProperties.set(PROP_QTAGUID_ENABLED, mBandwidthControlEnabled ? "1" : "0");
 
-        if (mBandwidthControlEnabled) {
-            try {
-                getBatteryStats().noteNetworkStatsEnabled();
-            } catch (RemoteException e) {
-            }
-        }
+        // if (mBandwidthControlEnabled) {
+        //     try {
+        //         getBatteryStats().noteNetworkStatsEnabled();
+        //     } catch (RemoteException e) {
+        //     }
+        // }
 
         try {
             mConnector.execute("strict", "enable");

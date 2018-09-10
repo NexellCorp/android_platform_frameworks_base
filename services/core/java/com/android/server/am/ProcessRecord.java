@@ -26,7 +26,7 @@ import android.util.EventLog;
 import android.util.Slog;
 import com.android.internal.app.procstats.ProcessStats;
 import com.android.internal.app.procstats.ProcessState;
-import com.android.internal.os.BatteryStatsImpl;
+// import com.android.internal.os.BatteryStatsImpl;
 
 import android.app.ActivityManager;
 import android.app.Dialog;
@@ -59,7 +59,7 @@ import java.util.ArrayList;
 final class ProcessRecord {
     private static final String TAG = TAG_WITH_CLASS_NAME ? "ProcessRecord" : TAG_AM;
 
-    private final BatteryStatsImpl mBatteryStats; // where to collect runtime statistics
+    // private final BatteryStatsImpl mBatteryStats; // where to collect runtime statistics
     final ApplicationInfo info; // all about the first app in the process
     final boolean isolated;     // true if this is a special isolated process
     final int uid;              // uid of process; may be different from 'info' if isolated
@@ -73,7 +73,7 @@ final class ProcessRecord {
                                 // 'persistent' is true (in which case we
                                 // are in the process of launching the app)
     ProcessState baseProcessTracker;
-    BatteryStatsImpl.Uid.Proc curProcBatteryStats;
+    // BatteryStatsImpl.Uid.Proc curProcBatteryStats;
     int pid;                    // The process of this application; 0 if none
     String procStatFile;        // path to /proc/<pid>/stat
     int[] gids;                 // The gids this process was launched with
@@ -348,14 +348,14 @@ final class ProcessRecord {
             pw.print(prefix); pw.print("hasStartedServices="); pw.println(hasStartedServices);
         }
         if (setProcState >= ActivityManager.PROCESS_STATE_SERVICE) {
-            long wtime;
-            synchronized (mBatteryStats) {
-                wtime = mBatteryStats.getProcessWakeTime(info.uid,
-                        pid, SystemClock.elapsedRealtime());
-            }
-            pw.print(prefix); pw.print("lastWakeTime="); pw.print(lastWakeTime);
-                    pw.print(" timeUsed=");
-                    TimeUtils.formatDuration(wtime-lastWakeTime, pw); pw.println("");
+            // long wtime;
+            // synchronized (mBatteryStats) {
+            //     wtime = mBatteryStats.getProcessWakeTime(info.uid,
+            //             pid, SystemClock.elapsedRealtime());
+            // }
+            // pw.print(prefix); pw.print("lastWakeTime="); pw.print(lastWakeTime);
+            //         pw.print(" timeUsed=");
+            //         TimeUtils.formatDuration(wtime-lastWakeTime, pw); pw.println("");
             pw.print(prefix); pw.print("lastCpuTime="); pw.print(lastCpuTime);
                     pw.print(" timeUsed=");
                     TimeUtils.formatDuration(curCpuTime-lastCpuTime, pw); pw.println("");
@@ -441,9 +441,10 @@ final class ProcessRecord {
         }
     }
 
-    ProcessRecord(BatteryStatsImpl _batteryStats, ApplicationInfo _info,
+    // ProcessRecord(BatteryStatsImpl _batteryStats, ApplicationInfo _info,
+    ProcessRecord(String _batteryStats, ApplicationInfo _info,
             String _processName, int _uid) {
-        mBatteryStats = _batteryStats;
+        // mBatteryStats = _batteryStats;
         info = _info;
         isolated = _info.uid != _uid;
         uid = _uid;

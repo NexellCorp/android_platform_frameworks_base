@@ -28,17 +28,17 @@ import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.internal.telephony.IccCardConstants;
 import com.android.internal.telephony.TelephonyIntents;
-import com.android.server.am.BatteryStatsService;
+// import com.android.server.am.BatteryStatsService;
 
 public class DataConnectionStats extends BroadcastReceiver {
     private static final String TAG = "DataConnectionStats";
     private static final boolean DEBUG = false;
 
     private final Context mContext;
-    private final IBatteryStats mBatteryStats;
+    // private final IBatteryStats mBatteryStats;
 
     private IccCardConstants.State mSimState = IccCardConstants.State.READY;
     private SignalStrength mSignalStrength;
@@ -47,7 +47,7 @@ public class DataConnectionStats extends BroadcastReceiver {
 
     public DataConnectionStats(Context context) {
         mContext = context;
-        mBatteryStats = BatteryStatsService.getService();
+        // mBatteryStats = BatteryStatsService.getService();
     }
 
     public void startMonitoring() {
@@ -90,11 +90,11 @@ public class DataConnectionStats extends BroadcastReceiver {
         int networkType = mServiceState.getDataNetworkType();
         if (DEBUG) Log.d(TAG, String.format("Noting data connection for network type %s: %svisible",
                 networkType, visible ? "" : "not "));
-        try {
-            mBatteryStats.notePhoneDataConnectionState(networkType, visible);
-        } catch (RemoteException e) {
-            Log.w(TAG, "Error noting data connection state", e);
-        }
+        // try {
+        //     mBatteryStats.notePhoneDataConnectionState(networkType, visible);
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Error noting data connection state", e);
+        // }
     }
 
     private final void updateSimState(Intent intent) {

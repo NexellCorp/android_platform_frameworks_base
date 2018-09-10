@@ -118,7 +118,7 @@ import android.util.Xml;
 import com.android.internal.R;
 import com.android.internal.annotations.GuardedBy;
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.internal.app.IBatteryStats;
+// import com.android.internal.app.IBatteryStats;
 import com.android.internal.net.LegacyVpnInfo;
 import com.android.internal.net.NetworkStatsFactory;
 import com.android.internal.net.VpnConfig;
@@ -129,7 +129,7 @@ import com.android.internal.util.IndentingPrintWriter;
 import com.android.internal.util.MessageUtils;
 import com.android.internal.util.WakeupMessage;
 import com.android.internal.util.XmlUtils;
-import com.android.server.am.BatteryStatsService;
+// import com.android.server.am.BatteryStatsService;
 import com.android.server.connectivity.DataConnectionStats;
 import com.android.server.connectivity.KeepaliveTracker;
 import com.android.server.connectivity.Nat464Xlat;
@@ -1707,13 +1707,13 @@ public class ConnectivityService extends IConnectivityManager.Stub
                     opts.setMaxManifestReceiverApiLevel(Build.VERSION_CODES.M);
                     options = opts.toBundle();
                 }
-                final IBatteryStats bs = BatteryStatsService.getService();
-                try {
-                    bs.noteConnectivityChanged(intent.getIntExtra(
-                            ConnectivityManager.EXTRA_NETWORK_TYPE, ConnectivityManager.TYPE_NONE),
-                            ni != null ? ni.getState().toString() : "?");
-                } catch (RemoteException e) {
-                }
+                // final IBatteryStats bs = BatteryStatsService.getService();
+                // try {
+                //     bs.noteConnectivityChanged(intent.getIntExtra(
+                //             ConnectivityManager.EXTRA_NETWORK_TYPE, ConnectivityManager.TYPE_NONE),
+                //             ni != null ? ni.getState().toString() : "?");
+                // } catch (RemoteException e) {
+                // }
             }
             try {
                 mContext.sendStickyBroadcastAsUser(intent, UserHandle.ALL, options);
@@ -5064,19 +5064,19 @@ public class ConnectivityService extends IConnectivityManager.Stub
             // Notify battery stats service about this network, both the normal
             // interface and any stacked links.
             // TODO: Avoid redoing this; this must only be done once when a network comes online.
-            try {
-                final IBatteryStats bs = BatteryStatsService.getService();
+            // try {
+                // final IBatteryStats bs = BatteryStatsService.getService();
                 final int type = newNetwork.networkInfo.getType();
 
                 final String baseIface = newNetwork.linkProperties.getInterfaceName();
-                bs.noteNetworkInterfaceType(baseIface, type);
+                // bs.noteNetworkInterfaceType(baseIface, type);
                 for (LinkProperties stacked : newNetwork.linkProperties.getStackedLinks()) {
                     final String stackedIface = stacked.getInterfaceName();
-                    bs.noteNetworkInterfaceType(stackedIface, type);
+                    // bs.noteNetworkInterfaceType(stackedIface, type);
                     NetworkStatsFactory.noteStackedIface(stackedIface, baseIface);
                 }
-            } catch (RemoteException ignored) {
-            }
+            // } catch (RemoteException ignored) {
+            // }
 
             // This has to happen after the notifyNetworkCallbacks as that tickles each
             // ConnectivityManager instance so that legacy requests correctly bind dns
