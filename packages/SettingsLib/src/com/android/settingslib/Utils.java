@@ -16,7 +16,7 @@ import android.graphics.drawable.Drawable;
 import android.net.ConnectivityManager;
 // import android.os.BatteryManager;
 import android.os.UserManager;
-import android.print.PrintManager;
+// import android.print.PrintManager;
 import com.android.internal.util.UserIcons;
 import com.android.settingslib.drawable.UserIconDrawable;
 
@@ -191,7 +191,7 @@ public class Utils {
                 || pkg.packageName.equals(sPermissionControllerPackageName)
                 || pkg.packageName.equals(sServicesSystemSharedLibPackageName)
                 || pkg.packageName.equals(sSharedSystemSharedLibPackageName)
-                || pkg.packageName.equals(PrintManager.PRINT_SPOOLER_PACKAGE_NAME)
+                // || pkg.packageName.equals(PrintManager.PRINT_SPOOLER_PACKAGE_NAME)
                 || isDeviceProvisioningPackage(resources, pkg.packageName);
     }
 

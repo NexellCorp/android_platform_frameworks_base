@@ -107,8 +107,8 @@ import android.os.UserManager;
 // import android.os.Vibrator;
 import android.os.health.SystemHealthManager;
 import android.os.storage.StorageManager;
-import android.print.IPrintManager;
-import android.print.PrintManager;
+// import android.print.IPrintManager;
+// import android.print.PrintManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.hardware.fingerprint.IFingerprintService;
 import android.service.persistentdata.IPersistentDataBlockService;
@@ -603,15 +603,15 @@ final class SystemServiceRegistry {
                 return new RestrictionsManager(ctx, service);
             }});
 
-        registerService(Context.PRINT_SERVICE, PrintManager.class,
-                new CachedServiceFetcher<PrintManager>() {
-            @Override
-            public PrintManager createService(ContextImpl ctx) {
-                IBinder iBinder = ServiceManager.getService(Context.PRINT_SERVICE);
-                IPrintManager service = IPrintManager.Stub.asInterface(iBinder);
-                return new PrintManager(ctx.getOuterContext(), service, UserHandle.myUserId(),
-                        UserHandle.getAppId(Process.myUid()));
-            }});
+        // registerService(Context.PRINT_SERVICE, PrintManager.class,
+        //         new CachedServiceFetcher<PrintManager>() {
+        //     @Override
+        //     public PrintManager createService(ContextImpl ctx) {
+        //         IBinder iBinder = ServiceManager.getService(Context.PRINT_SERVICE);
+        //         IPrintManager service = IPrintManager.Stub.asInterface(iBinder);
+        //         return new PrintManager(ctx.getOuterContext(), service, UserHandle.myUserId(),
+        //                 UserHandle.getAppId(Process.myUid()));
+        //     }});
 
         // registerService(Context.CONSUMER_IR_SERVICE, ConsumerIrManager.class,
         //         new CachedServiceFetcher<ConsumerIrManager>() {

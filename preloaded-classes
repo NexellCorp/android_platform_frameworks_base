@@ -1678,7 +1678,6 @@ android.preference.PreferenceActivity
 android.preference.PreferenceFragment$OnPreferenceStartFragmentCallback
 android.preference.PreferenceManager
 android.preference.PreferenceManager$OnPreferenceTreeClickListener
-android.print.PrintManager
 android.provider.BaseColumns
 android.provider.ContactsContract
 android.provider.ContactsContract$CommonDataKinds$BaseTypes
