@@ -68,8 +68,8 @@ public final class UsbAlsaManager {
     private final HashMap<UsbDevice,UsbAudioDevice>
         mAudioDevices = new HashMap<UsbDevice,UsbAudioDevice>();
 
-    private final HashMap<UsbDevice,UsbMidiDevice>
-        mMidiDevices = new HashMap<UsbDevice,UsbMidiDevice>();
+    // private final HashMap<UsbDevice,UsbMidiDevice>
+    //     mMidiDevices = new HashMap<UsbDevice,UsbMidiDevice>();
 
     private final HashMap<String,AlsaDevice>
         mAlsaDevices = new HashMap<String,AlsaDevice>();
@@ -77,7 +77,7 @@ public final class UsbAlsaManager {
     private UsbAudioDevice mAccessoryAudioDevice = null;
 
     // UsbMidiDevice for USB peripheral mode (gadget) device
-    private UsbMidiDevice mPeripheralMidiDevice = null;
+    // private UsbMidiDevice mPeripheralMidiDevice = null;
 
     private final class AlsaDevice {
         public static final int TYPE_UNKNOWN = 0;
@@ -421,11 +421,11 @@ public final class UsbAlsaManager {
                     properties.putInt(MidiDeviceInfo.PROPERTY_ALSA_DEVICE, alsaDevice.mDevice);
                     properties.putParcelable(MidiDeviceInfo.PROPERTY_USB_DEVICE, usbDevice);
 
-                    UsbMidiDevice usbMidiDevice = UsbMidiDevice.create(mContext, properties,
-                            alsaDevice.mCard, alsaDevice.mDevice);
-                    if (usbMidiDevice != null) {
-                        mMidiDevices.put(usbDevice, usbMidiDevice);
-                    }
+                    // UsbMidiDevice usbMidiDevice = UsbMidiDevice.create(mContext, properties,
+                    //         alsaDevice.mCard, alsaDevice.mDevice);
+                    // if (usbMidiDevice != null) {
+                    //     mMidiDevices.put(usbDevice, usbMidiDevice);
+                    // }
                 }
             }
         }
@@ -451,10 +451,10 @@ public final class UsbAlsaManager {
                 selectDefaultDevice();
             }
         }
-        UsbMidiDevice usbMidiDevice = mMidiDevices.remove(usbDevice);
-        if (usbMidiDevice != null) {
-            IoUtils.closeQuietly(usbMidiDevice);
-        }
+        // UsbMidiDevice usbMidiDevice = mMidiDevices.remove(usbDevice);
+        // if (usbMidiDevice != null) {
+        //     IoUtils.closeQuietly(usbMidiDevice);
+        // }
     }
 
    /* package */ void setAccessoryAudioState(boolean enabled, int card, int device) {
@@ -476,22 +476,22 @@ public final class UsbAlsaManager {
             return;
         }
 
-        if (enabled && mPeripheralMidiDevice == null) {
-            Bundle properties = new Bundle();
-            Resources r = mContext.getResources();
-            properties.putString(MidiDeviceInfo.PROPERTY_NAME, r.getString(
-                    com.android.internal.R.string.usb_midi_peripheral_name));
-            properties.putString(MidiDeviceInfo.PROPERTY_MANUFACTURER, r.getString(
-                    com.android.internal.R.string.usb_midi_peripheral_manufacturer_name));
-            properties.putString(MidiDeviceInfo.PROPERTY_PRODUCT, r.getString(
-                    com.android.internal.R.string.usb_midi_peripheral_product_name));
-            properties.putInt(MidiDeviceInfo.PROPERTY_ALSA_CARD, card);
-            properties.putInt(MidiDeviceInfo.PROPERTY_ALSA_DEVICE, device);
-            mPeripheralMidiDevice = UsbMidiDevice.create(mContext, properties, card, device);
-        } else if (!enabled && mPeripheralMidiDevice != null) {
-            IoUtils.closeQuietly(mPeripheralMidiDevice);
-            mPeripheralMidiDevice = null;
-        }
+        // if (enabled && mPeripheralMidiDevice == null) {
+        //     Bundle properties = new Bundle();
+        //     Resources r = mContext.getResources();
+        //     properties.putString(MidiDeviceInfo.PROPERTY_NAME, r.getString(
+        //             com.android.internal.R.string.usb_midi_peripheral_name));
+        //     properties.putString(MidiDeviceInfo.PROPERTY_MANUFACTURER, r.getString(
+        //             com.android.internal.R.string.usb_midi_peripheral_manufacturer_name));
+        //     properties.putString(MidiDeviceInfo.PROPERTY_PRODUCT, r.getString(
+        //             com.android.internal.R.string.usb_midi_peripheral_product_name));
+        //     properties.putInt(MidiDeviceInfo.PROPERTY_ALSA_CARD, card);
+        //     properties.putInt(MidiDeviceInfo.PROPERTY_ALSA_DEVICE, device);
+        //     mPeripheralMidiDevice = UsbMidiDevice.create(mContext, properties, card, device);
+        // } else if (!enabled && mPeripheralMidiDevice != null) {
+        //     IoUtils.closeQuietly(mPeripheralMidiDevice);
+        //     mPeripheralMidiDevice = null;
+        // }
    }
 
     //
@@ -513,10 +513,10 @@ public final class UsbAlsaManager {
         for (UsbDevice device : mAudioDevices.keySet()) {
             pw.println("  " + device.getDeviceName() + ": " + mAudioDevices.get(device));
         }
-        pw.println("USB MIDI Devices:");
-        for (UsbDevice device : mMidiDevices.keySet()) {
-            pw.println("  " + device.getDeviceName() + ": " + mMidiDevices.get(device));
-        }
+        // pw.println("USB MIDI Devices:");
+        // for (UsbDevice device : mMidiDevices.keySet()) {
+        //     pw.println("  " + device.getDeviceName() + ": " + mMidiDevices.get(device));
+        // }
     }
 
     public void logDevicesList(String title) {

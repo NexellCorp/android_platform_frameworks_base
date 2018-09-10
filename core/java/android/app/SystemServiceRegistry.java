@@ -61,8 +61,8 @@ import android.location.ILocationManager;
 import android.location.LocationManager;
 import android.media.AudioManager;
 import android.media.MediaRouter;
-import android.media.midi.IMidiManager;
-import android.media.midi.MidiManager;
+// import android.media.midi.IMidiManager;
+// import android.media.midi.MidiManager;
 import android.media.projection.MediaProjectionManager;
 import android.media.session.MediaSessionManager;
 import android.media.soundtrigger.SoundTriggerManager;
@@ -714,16 +714,16 @@ final class SystemServiceRegistry {
                 return new AppWidgetManager(ctx, IAppWidgetService.Stub.asInterface(b));
             }});
 
-        registerService(Context.MIDI_SERVICE, MidiManager.class,
-                new CachedServiceFetcher<MidiManager>() {
-            @Override
-            public MidiManager createService(ContextImpl ctx) {
-                IBinder b = ServiceManager.getService(Context.MIDI_SERVICE);
-                if (b == null) {
-                    return null;
-                }
-                return new MidiManager(IMidiManager.Stub.asInterface(b));
-            }});
+        // registerService(Context.MIDI_SERVICE, MidiManager.class,
+        //         new CachedServiceFetcher<MidiManager>() {
+        //     @Override
+        //     public MidiManager createService(ContextImpl ctx) {
+        //         IBinder b = ServiceManager.getService(Context.MIDI_SERVICE);
+        //         if (b == null) {
+        //             return null;
+        //         }
+        //         return new MidiManager(IMidiManager.Stub.asInterface(b));
+        //     }});
 
         registerService(Context.RADIO_SERVICE, RadioManager.class,
                 new CachedServiceFetcher<RadioManager>() {

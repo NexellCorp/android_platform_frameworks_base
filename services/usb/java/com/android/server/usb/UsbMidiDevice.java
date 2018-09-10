@@ -338,7 +338,15 @@ public final class UsbMidiDevice implements Closeable {
         mIsOpen = false;
     }
 
-    private static native int nativeGetSubdeviceCount(int card, int device);
-    private native FileDescriptor[] nativeOpen(int card, int device, int subdeviceCount);
-    private native void nativeClose(FileDescriptor[] fileDescriptors);
+    // private static native int nativeGetSubdeviceCount(int card, int device);
+    // private native FileDescriptor[] nativeOpen(int card, int device, int subdeviceCount);
+    // private native void nativeClose(FileDescriptor[] fileDescriptors);
+    private static int nativeGetSubdeviceCount(int card, int device) {
+        return 0;
+    }
+    private FileDescriptor[] nativeOpen(int card, int device, int subdeviceCount) {
+        return new FileDescriptor[1];
+    }
+    private void nativeClose(FileDescriptor[] fileDescriptors) {
+    }
 }
