@@ -70,9 +70,9 @@ import android.media.tv.ITvInputManager;
 import android.media.tv.TvInputManager;
 import android.net.ConnectivityManager;
 import android.net.ConnectivityThread;
-import android.net.EthernetManager;
+// import android.net.EthernetManager;
 import android.net.IConnectivityManager;
-import android.net.IEthernetManager;
+// import android.net.IEthernetManager;
 import android.net.INetworkPolicyManager;
 import android.net.NetworkPolicyManager;
 import android.net.NetworkScoreManager;
@@ -546,14 +546,14 @@ final class SystemServiceRegistry {
         //                 ConnectivityThread.getInstanceLooper());
         //     }});
 
-        registerService(Context.ETHERNET_SERVICE, EthernetManager.class,
-                new CachedServiceFetcher<EthernetManager>() {
-            @Override
-            public EthernetManager createService(ContextImpl ctx) {
-                IBinder b = ServiceManager.getService(Context.ETHERNET_SERVICE);
-                IEthernetManager service = IEthernetManager.Stub.asInterface(b);
-                return new EthernetManager(ctx.getOuterContext(), service);
-            }});
+        // registerService(Context.ETHERNET_SERVICE, EthernetManager.class,
+        //         new CachedServiceFetcher<EthernetManager>() {
+        //     @Override
+        //     public EthernetManager createService(ContextImpl ctx) {
+        //         IBinder b = ServiceManager.getService(Context.ETHERNET_SERVICE);
+        //         IEthernetManager service = IEthernetManager.Stub.asInterface(b);
+        //         return new EthernetManager(ctx.getOuterContext(), service);
+        //     }});
 
         registerService(Context.WINDOW_SERVICE, WindowManager.class,
                 new CachedServiceFetcher<WindowManager>() {
