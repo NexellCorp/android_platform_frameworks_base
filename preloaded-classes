@@ -1524,7 +1524,6 @@ android.net.wifi.WifiManager$WifiLock
 android.net.wifi.WifiScanner
 android.net.wifi.WifiSsid
 android.net.wifi.WifiSsid$1
-android.net.wifi.nan.WifiNanManager
 android.net.wifi.p2p.WifiP2pManager
 android.opengl.EGL14
 android.opengl.EGLConfig
