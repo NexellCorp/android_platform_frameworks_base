@@ -30,7 +30,7 @@ int register_android_server_InputWindowHandle(JNIEnv* env);
 int register_android_server_InputManager(JNIEnv* env);
 int register_android_server_LightsService(JNIEnv* env);
 int register_android_server_PowerManagerService(JNIEnv* env);
-int register_android_server_SerialService(JNIEnv* env);
+// int register_android_server_SerialService(JNIEnv* env);
 // int register_android_server_SystemServer(JNIEnv* env);
 int register_android_server_UsbDeviceManager(JNIEnv* env);
 // int register_android_server_UsbMidiDevice(JNIEnv* env);
@@ -63,7 +63,7 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* /* reserved */)
 
     register_android_server_ActivityManagerService(env);
     register_android_server_PowerManagerService(env);
-    register_android_server_SerialService(env);
+    // register_android_server_SerialService(env);
     register_android_server_InputApplicationHandle(env);
     register_android_server_InputWindowHandle(env);
     register_android_server_InputManager(env);

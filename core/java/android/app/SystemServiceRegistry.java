@@ -42,9 +42,9 @@ import android.content.pm.LauncherApps;
 import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 // import android.hardware.ConsumerIrManager;
-import android.hardware.ISerialManager;
+// import android.hardware.ISerialManager;
 // import android.hardware.SensorManager;
-import android.hardware.SerialManager;
+// import android.hardware.SerialManager;
 // import android.hardware.SystemSensorManager;
 import android.hardware.camera2.CameraManager;
 import android.hardware.display.DisplayManager;
@@ -472,13 +472,13 @@ final class SystemServiceRegistry {
                 return new UsbManager(ctx, IUsbManager.Stub.asInterface(b));
             }});
 
-        registerService(Context.SERIAL_SERVICE, SerialManager.class,
-                new CachedServiceFetcher<SerialManager>() {
-            @Override
-            public SerialManager createService(ContextImpl ctx) {
-                IBinder b = ServiceManager.getService(Context.SERIAL_SERVICE);
-                return new SerialManager(ctx, ISerialManager.Stub.asInterface(b));
-            }});
+        // registerService(Context.SERIAL_SERVICE, SerialManager.class,
+        //         new CachedServiceFetcher<SerialManager>() {
+        //     @Override
+        //     public SerialManager createService(ContextImpl ctx) {
+        //         IBinder b = ServiceManager.getService(Context.SERIAL_SERVICE);
+        //         return new SerialManager(ctx, ISerialManager.Stub.asInterface(b));
+        //     }});
 
         // registerService(Context.VIBRATOR_SERVICE, Vibrator.class,
         //         new CachedServiceFetcher<Vibrator>() {

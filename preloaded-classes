@@ -943,8 +943,6 @@ android.graphics.pdf.PdfRenderer
 android.hardware.Camera
 android.hardware.Camera$CameraInfo
 android.hardware.Camera$Face
-android.hardware.SerialManager
-android.hardware.SerialPort
 android.hardware.camera2.CameraCharacteristics$Key
 android.hardware.camera2.CameraManager
 android.hardware.camera2.CaptureRequest$Key

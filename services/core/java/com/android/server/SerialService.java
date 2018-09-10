@@ -59,5 +59,8 @@ public class SerialService extends ISerialManager.Stub {
         throw new IllegalArgumentException("Invalid serial port " + path);
     }
 
-    private native ParcelFileDescriptor native_open(String path);
+    // private native ParcelFileDescriptor native_open(String path);
+    private ParcelFileDescriptor native_open(String path) {
+        return null;
+    }
 }
