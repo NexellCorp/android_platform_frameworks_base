@@ -80,8 +80,14 @@ public class ContextHubService extends IContextHubService.Stub {
     private final RemoteCallbackList<IContextHubCallback> mCallbacksList =
             new RemoteCallbackList<>();
 
-    private native int nativeSendMessage(int[] header, byte[] data);
-    private native ContextHubInfo[] nativeInitialize();
+    // private native int nativeSendMessage(int[] header, byte[] data);
+    // private native ContextHubInfo[] nativeInitialize();
+    private int nativeSendMessage(int[] header, byte[] data) {
+        return 0;
+    }
+    private ContextHubInfo[] nativeInitialize() {
+        return new ContextHubInfo[1];
+    }
 
     // private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
     //     @Override
