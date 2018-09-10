@@ -34,8 +34,8 @@ import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.provider.Settings;
-import android.service.vr.IVrManager;
-import android.service.vr.IVrStateCallbacks;
+// import android.service.vr.IVrManager;
+// import android.service.vr.IVrStateCallbacks;
 import android.util.DisplayMetrics;
 import android.util.Slog;
 import android.view.Gravity;
@@ -51,7 +51,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 
 import com.android.internal.R;
-import com.android.server.vr.VrManagerService;
+// import com.android.server.vr.VrManagerService;
 
 /**
  *  Helper to manage showing/hiding a confirmation prompt when the navigation bar is hidden
@@ -124,15 +124,15 @@ public class ImmersiveModeConfirmation {
     }
 
     void systemReady() {
-        IVrManager vrManager = IVrManager.Stub.asInterface(
-                ServiceManager.getService(VrManagerService.VR_MANAGER_BINDER_SERVICE));
-        if (vrManager != null) {
-            try {
-                vrManager.registerListener(mVrStateCallbacks);
-                mVrModeEnabled = vrManager.getVrModeState();
-            } catch (RemoteException re) {
-            }
-        }
+        // IVrManager vrManager = IVrManager.Stub.asInterface(
+        //         ServiceManager.getService(VrManagerService.VR_MANAGER_BINDER_SERVICE));
+        // if (vrManager != null) {
+        //     try {
+        //         vrManager.registerListener(mVrStateCallbacks);
+        //         mVrModeEnabled = vrManager.getVrModeState();
+        //     } catch (RemoteException re) {
+        //     }
+        // }
     }
 
     public void immersiveModeChangedLw(String pkg, boolean isImmersiveMode,
@@ -389,14 +389,14 @@ public class ImmersiveModeConfirmation {
         }
     }
 
-    private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
-        @Override
-        public void onVrStateChanged(boolean enabled) throws RemoteException {
-            mVrModeEnabled = enabled;
-            if (mVrModeEnabled) {
-                mHandler.removeMessages(H.SHOW);
-                mHandler.sendEmptyMessage(H.HIDE);
-            }
-        }
-    };
+    // private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
+    //     @Override
+    //     public void onVrStateChanged(boolean enabled) throws RemoteException {
+    //         mVrModeEnabled = enabled;
+    //         if (mVrModeEnabled) {
+    //             mHandler.removeMessages(H.SHOW);
+    //             mHandler.sendEmptyMessage(H.HIDE);
+    //         }
+    //     }
+    // };
 }

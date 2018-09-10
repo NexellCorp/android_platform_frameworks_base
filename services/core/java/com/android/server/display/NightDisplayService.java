@@ -36,8 +36,8 @@ import android.os.Looper;
 import android.os.RemoteException;
 import android.os.UserHandle;
 import android.provider.Settings.Secure;
-import android.service.vr.IVrManager;
-import android.service.vr.IVrStateCallbacks;
+// import android.service.vr.IVrManager;
+// import android.service.vr.IVrStateCallbacks;
 import android.util.MathUtils;
 import android.util.Slog;
 import android.view.animation.AnimationUtils;
@@ -47,7 +47,7 @@ import com.android.server.SystemService;
 import com.android.server.twilight.TwilightListener;
 import com.android.server.twilight.TwilightManager;
 import com.android.server.twilight.TwilightState;
-import com.android.server.vr.VrManagerService;
+// import com.android.server.vr.VrManagerService;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.Calendar;
@@ -89,30 +89,30 @@ public final class NightDisplayService extends SystemService
 
     private final Handler mHandler;
     private final AtomicBoolean mIgnoreAllColorMatrixChanges = new AtomicBoolean();
-    private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
-        @Override
-        public void onVrStateChanged(final boolean enabled) {
-            // Turn off all night mode display stuff while device is in VR mode.
-            mIgnoreAllColorMatrixChanges.set(enabled);
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    // Cancel in-progress animations
-                    if (mColorMatrixAnimator != null) {
-                        mColorMatrixAnimator.cancel();
-                    }
-
-                    final DisplayTransformManager dtm =
-                            getLocalService(DisplayTransformManager.class);
-                    if (enabled) {
-                        dtm.setColorMatrix(LEVEL_COLOR_MATRIX_NIGHT_DISPLAY, MATRIX_IDENTITY);
-                    } else if (mController.isActivated()) {
-                        dtm.setColorMatrix(LEVEL_COLOR_MATRIX_NIGHT_DISPLAY, MATRIX_NIGHT);
-                    }
-                }
-            });
-        }
-    };
+    // private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
+    //     @Override
+    //     public void onVrStateChanged(final boolean enabled) {
+    //         // Turn off all night mode display stuff while device is in VR mode.
+    //         mIgnoreAllColorMatrixChanges.set(enabled);
+    //         mHandler.post(new Runnable() {
+    //             @Override
+    //             public void run() {
+    //                 // Cancel in-progress animations
+    //                 if (mColorMatrixAnimator != null) {
+    //                     mColorMatrixAnimator.cancel();
+    //                 }
+    //
+    //                 final DisplayTransformManager dtm =
+    //                         getLocalService(DisplayTransformManager.class);
+    //                 if (enabled) {
+    //                     dtm.setColorMatrix(LEVEL_COLOR_MATRIX_NIGHT_DISPLAY, MATRIX_IDENTITY);
+    //                 } else if (mController.isActivated()) {
+    //                     dtm.setColorMatrix(LEVEL_COLOR_MATRIX_NIGHT_DISPLAY, MATRIX_NIGHT);
+    //                 }
+    //             }
+    //         });
+    //     }
+    // };
 
     private int mCurrentUser = UserHandle.USER_NULL;
     private ContentObserver mUserSetupObserver;
@@ -135,17 +135,18 @@ public final class NightDisplayService extends SystemService
 
     @Override
     public void onBootPhase(int phase) {
-        if (phase == PHASE_SYSTEM_SERVICES_READY) {
-            IVrManager vrManager =
-                    (IVrManager) getBinderService(VrManagerService.VR_MANAGER_BINDER_SERVICE);
-            if (vrManager != null) {
-                try {
-                    vrManager.registerListener(mVrStateCallbacks);
-                } catch (RemoteException e) {
-                    Slog.e(TAG, "Failed to register VR mode state listener: " + e);
-                }
-            }
-        } else if (phase == PHASE_BOOT_COMPLETED) {
+        // if (phase == PHASE_SYSTEM_SERVICES_READY) {
+        //     IVrManager vrManager =
+        //             (IVrManager) getBinderService(VrManagerService.VR_MANAGER_BINDER_SERVICE);
+        //     if (vrManager != null) {
+        //         try {
+        //             vrManager.registerListener(mVrStateCallbacks);
+        //         } catch (RemoteException e) {
+        //             Slog.e(TAG, "Failed to register VR mode state listener: " + e);
+        //         }
+        //     }
+        // } else if (phase == PHASE_BOOT_COMPLETED) {
+        if (phase == PHASE_BOOT_COMPLETED) {
             mBootCompleted = true;
 
             // Register listeners now that boot is complete.

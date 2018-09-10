@@ -53,8 +53,8 @@ import android.provider.Settings;
 import android.provider.Settings.Secure;
 import android.provider.Settings.SettingNotFoundException;
 // import android.service.dreams.DreamManagerInternal;
-import android.service.vr.IVrManager;
-import android.service.vr.IVrStateCallbacks;
+// import android.service.vr.IVrManager;
+// import android.service.vr.IVrStateCallbacks;
 import android.util.EventLog;
 import android.util.PrintWriterPrinter;
 import android.util.Slog;
@@ -74,7 +74,7 @@ import com.android.server.SystemService;
 // import com.android.server.am.BatteryStatsService;
 import com.android.server.lights.Light;
 import com.android.server.lights.LightsManager;
-import com.android.server.vr.VrManagerService;
+// import com.android.server.vr.VrManagerService;
 import libcore.util.Objects;
 
 import java.io.FileDescriptor;
@@ -3120,20 +3120,20 @@ public final class PowerManagerService extends SystemService
         }
     }
 
-    private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
-        @Override
-        public void onVrStateChanged(boolean enabled) {
-            powerHintInternal(POWER_HINT_VR_MODE, enabled ? 1 : 0);
-
-            synchronized (mLock) {
-                if (mIsVrModeEnabled != enabled) {
-                    mIsVrModeEnabled = enabled;
-                    mDirty |= DIRTY_VR_MODE_CHANGED;
-                    updatePowerStateLocked();
-                }
-            }
-        }
-    };
+    // private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
+    //     @Override
+    //     public void onVrStateChanged(boolean enabled) {
+    //         powerHintInternal(POWER_HINT_VR_MODE, enabled ? 1 : 0);
+    //
+    //         synchronized (mLock) {
+    //             if (mIsVrModeEnabled != enabled) {
+    //                 mIsVrModeEnabled = enabled;
+    //                 mDirty |= DIRTY_VR_MODE_CHANGED;
+    //                 updatePowerStateLocked();
+    //             }
+    //         }
+    //     }
+    // };
 
     /**
      * Handler for asynchronous operations performed by the power manager.

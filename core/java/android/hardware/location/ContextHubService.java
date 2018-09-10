@@ -29,8 +29,8 @@ import android.content.pm.PackageManager;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.os.ServiceManager;
-import android.service.vr.IVrManager;
-import android.service.vr.IVrStateCallbacks;
+// import android.service.vr.IVrManager;
+// import android.service.vr.IVrStateCallbacks;
 import android.util.Log;
 
 import java.io.FileDescriptor;
@@ -83,17 +83,17 @@ public class ContextHubService extends IContextHubService.Stub {
     private native int nativeSendMessage(int[] header, byte[] data);
     private native ContextHubInfo[] nativeInitialize();
 
-    private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
-        @Override
-        public void onVrStateChanged(boolean enabled) {
-            for (NanoAppInstanceInfo app : mNanoAppHash.values()) {
-                if (app.getAppId() == APP_ID_ACTIVITY_RECOGNITION) {
-                    sendVrStateChangeMessageToApp(app, enabled);
-                    break;
-                }
-            }
-        }
-    };
+    // private final IVrStateCallbacks mVrStateCallbacks = new IVrStateCallbacks.Stub() {
+    //     @Override
+    //     public void onVrStateChanged(boolean enabled) {
+    //         for (NanoAppInstanceInfo app : mNanoAppHash.values()) {
+    //             if (app.getAppId() == APP_ID_ACTIVITY_RECOGNITION) {
+    //                 sendVrStateChangeMessageToApp(app, enabled);
+    //                 break;
+    //             }
+    //         }
+    //     }
+    // };
 
     public ContextHubService(Context context) {
         mContext = context;
@@ -104,17 +104,17 @@ public class ContextHubService extends IContextHubService.Stub {
                   + ", name:  " + mContextHubInfo[i].getName());
         }
 
-        if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_VR_MODE)) {
-            IVrManager vrManager =
-                    IVrManager.Stub.asInterface(ServiceManager.getService("vrmanager"));
-            if (vrManager != null) {
-                try {
-                    vrManager.registerListener(mVrStateCallbacks);
-                } catch (RemoteException e) {
-                    Log.e(TAG, "VR state listener registration failed", e);
-                }
-            }
-        }
+        // if (context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_VR_MODE)) {
+        //     IVrManager vrManager =
+        //             IVrManager.Stub.asInterface(ServiceManager.getService("vrmanager"));
+        //     if (vrManager != null) {
+        //         try {
+        //             vrManager.registerListener(mVrStateCallbacks);
+        //         } catch (RemoteException e) {
+        //             Log.e(TAG, "VR state listener registration failed", e);
+        //         }
+        //     }
+        // }
     }
 
     @Override

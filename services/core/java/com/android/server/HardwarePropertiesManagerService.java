@@ -26,7 +26,7 @@ import android.os.CpuUsageInfo;
 import android.os.IHardwarePropertiesManager;
 import android.os.Process;
 import android.os.UserHandle;
-import com.android.server.vr.VrManagerInternal;
+// import com.android.server.vr.VrManagerInternal;
 
 import java.util.Arrays;
 
@@ -113,10 +113,10 @@ public class HardwarePropertiesManagerService extends IHardwarePropertiesManager
         }
 
         final int userId = UserHandle.getUserId(uid);
-        final VrManagerInternal vrService = LocalServices.getService(VrManagerInternal.class);
+        // final VrManagerInternal vrService = LocalServices.getService(VrManagerInternal.class);
         final DevicePolicyManager dpm = mContext.getSystemService(DevicePolicyManager.class);
         if (!dpm.isDeviceOwnerApp(callingPackage) && !dpm.isProfileOwnerApp(callingPackage)
-                && !vrService.isCurrentVrListener(callingPackage, userId)
+                // && !vrService.isCurrentVrListener(callingPackage, userId)
                 && mContext.checkCallingOrSelfPermission(Manifest.permission.DEVICE_POWER)
                         != PackageManager.PERMISSION_GRANTED) {
             throw new SecurityException("The caller is not a device or profile owner, bound "

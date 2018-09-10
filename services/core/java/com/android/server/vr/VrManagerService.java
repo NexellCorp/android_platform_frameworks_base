@@ -110,8 +110,12 @@ public class VrManagerService extends SystemService implements EnabledComponentC
     /** Flag indicating that all system sleep flags have been set.*/
     private static final int FLAG_ALL = FLAG_AWAKE | FLAG_SCREEN_ON;
 
-    private static native void initializeNative();
-    private static native void setVrModeNative(boolean enabled);
+    // private static native void initializeNative();
+    // private static native void setVrModeNative(boolean enabled);
+    private static void initializeNative() {
+    }
+    private static void setVrModeNative(boolean enabled) {
+    }
 
     private final Object mLock = new Object();
 
