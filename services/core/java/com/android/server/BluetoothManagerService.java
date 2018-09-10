@@ -313,13 +313,13 @@ class BluetoothManagerService extends IBluetoothManager.Stub {
         }
 
         int systemUiUid = -1;
-        try {
-            systemUiUid = mContext.getPackageManager().getPackageUidAsUser("com.android.systemui",
-                    PackageManager.MATCH_SYSTEM_ONLY, UserHandle.USER_SYSTEM);
-        } catch (PackageManager.NameNotFoundException e) {
-            // Some platforms, such as wearables do not have a system ui.
-            Slog.w(TAG, "Unable to resolve SystemUI's UID.", e);
-        }
+        // try {
+        //     systemUiUid = mContext.getPackageManager().getPackageUidAsUser("com.android.systemui",
+        //             PackageManager.MATCH_SYSTEM_ONLY, UserHandle.USER_SYSTEM);
+        // } catch (PackageManager.NameNotFoundException e) {
+        //     // Some platforms, such as wearables do not have a system ui.
+        //     Slog.w(TAG, "Unable to resolve SystemUI's UID.", e);
+        // }
         mSystemUiUid = systemUiUid;
     }
 
