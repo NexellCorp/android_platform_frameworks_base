@@ -18,7 +18,7 @@ package com.android.server.power;
 
 import android.app.ActivityManagerInternal;
 import android.app.AppOpsManager;
-import android.app.RetailDemoModeServiceInternal;
+// import android.app.RetailDemoModeServiceInternal;
 
 import com.android.internal.app.IAppOpsService;
 import com.android.internal.app.IBatteryStats;
@@ -92,7 +92,7 @@ final class Notifier {
     private final ActivityManagerInternal mActivityManagerInternal;
     private final InputManagerInternal mInputManagerInternal;
     private final InputMethodManagerInternal mInputMethodManagerInternal;
-    private final RetailDemoModeServiceInternal mRetailDemoModeServiceInternal;
+    // private final RetailDemoModeServiceInternal mRetailDemoModeServiceInternal;
 
     private final NotifierHandler mHandler;
     private final Intent mScreenOnIntent;
@@ -138,7 +138,7 @@ final class Notifier {
         mActivityManagerInternal = LocalServices.getService(ActivityManagerInternal.class);
         mInputManagerInternal = LocalServices.getService(InputManagerInternal.class);
         mInputMethodManagerInternal = LocalServices.getService(InputMethodManagerInternal.class);
-        mRetailDemoModeServiceInternal = LocalServices.getService(RetailDemoModeServiceInternal.class);
+        // mRetailDemoModeServiceInternal = LocalServices.getService(RetailDemoModeServiceInternal.class);
 
         mHandler = new NotifierHandler(looper);
         mScreenOnIntent = new Intent(Intent.ACTION_SCREEN_ON);
@@ -579,9 +579,9 @@ final class Notifier {
             }
             mUserActivityPending = false;
         }
-        if (mRetailDemoModeServiceInternal != null) {
-            mRetailDemoModeServiceInternal.onUserActivity();
-        }
+        // if (mRetailDemoModeServiceInternal != null) {
+        //     mRetailDemoModeServiceInternal.onUserActivity();
+        // }
         mPolicy.userActivity();
     }
 
