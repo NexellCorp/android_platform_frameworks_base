@@ -66,8 +66,8 @@ import android.media.MediaRouter;
 import android.media.projection.MediaProjectionManager;
 import android.media.session.MediaSessionManager;
 // import android.media.soundtrigger.SoundTriggerManager;
-import android.media.tv.ITvInputManager;
-import android.media.tv.TvInputManager;
+// import android.media.tv.ITvInputManager;
+// import android.media.tv.TvInputManager;
 import android.net.ConnectivityManager;
 import android.net.ConnectivityThread;
 // import android.net.EthernetManager;
@@ -644,14 +644,14 @@ final class SystemServiceRegistry {
                 return new FingerprintManager(ctx.getOuterContext(), service);
             }});
 
-        registerService(Context.TV_INPUT_SERVICE, TvInputManager.class,
-                new StaticServiceFetcher<TvInputManager>() {
-            @Override
-            public TvInputManager createService() {
-                IBinder iBinder = ServiceManager.getService(Context.TV_INPUT_SERVICE);
-                ITvInputManager service = ITvInputManager.Stub.asInterface(iBinder);
-                return new TvInputManager(service, UserHandle.myUserId());
-            }});
+        // registerService(Context.TV_INPUT_SERVICE, TvInputManager.class,
+        //         new StaticServiceFetcher<TvInputManager>() {
+        //     @Override
+        //     public TvInputManager createService() {
+        //         IBinder iBinder = ServiceManager.getService(Context.TV_INPUT_SERVICE);
+        //         ITvInputManager service = ITvInputManager.Stub.asInterface(iBinder);
+        //         return new TvInputManager(service, UserHandle.myUserId());
+        //     }});
 
         registerService(Context.NETWORK_SCORE_SERVICE, NetworkScoreManager.class,
                 new CachedServiceFetcher<NetworkScoreManager>() {
