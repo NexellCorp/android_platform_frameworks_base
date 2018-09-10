@@ -196,7 +196,7 @@ import android.os.storage.MountServiceInternal;
 import android.os.storage.StorageManager;
 import android.provider.Settings;
 import android.service.voice.IVoiceInteractionSession;
-import android.service.voice.VoiceInteractionManagerInternal;
+// import android.service.voice.VoiceInteractionManagerInternal;
 import android.service.voice.VoiceInteractionSession;
 import android.telecom.TelecomManager;
 import android.text.format.DateUtils;
@@ -4518,20 +4518,21 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
             activity.pendingVoiceInteractionStart = true;
         }
-        LocalServices.getService(VoiceInteractionManagerInternal.class)
-                .startLocalVoiceInteraction(callingActivity, options);
+        // LocalServices.getService(VoiceInteractionManagerInternal.class)
+        //         .startLocalVoiceInteraction(callingActivity, options);
     }
 
     @Override
     public void stopLocalVoiceInteraction(IBinder callingActivity) throws RemoteException {
-        LocalServices.getService(VoiceInteractionManagerInternal.class)
-                .stopLocalVoiceInteraction(callingActivity);
+        // LocalServices.getService(VoiceInteractionManagerInternal.class)
+        //         .stopLocalVoiceInteraction(callingActivity);
     }
 
     @Override
     public boolean supportsLocalVoiceInteraction() throws RemoteException {
-        return LocalServices.getService(VoiceInteractionManagerInternal.class)
-                .supportsLocalVoiceInteraction();
+        // return LocalServices.getService(VoiceInteractionManagerInternal.class)
+        //         .supportsLocalVoiceInteraction();
+        return false;
     }
 
     void onLocalVoiceInteractionStartedLocked(IBinder activity,

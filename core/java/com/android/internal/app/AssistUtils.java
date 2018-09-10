@@ -41,108 +41,112 @@ public class AssistUtils {
     private static final String TAG = "AssistUtils";
 
     private final Context mContext;
-    private final IVoiceInteractionManagerService mVoiceInteractionManagerService;
+    // private final IVoiceInteractionManagerService mVoiceInteractionManagerService;
 
     public AssistUtils(Context context) {
         mContext = context;
-        mVoiceInteractionManagerService = IVoiceInteractionManagerService.Stub.asInterface(
-                ServiceManager.getService(Context.VOICE_INTERACTION_MANAGER_SERVICE));
+        // mVoiceInteractionManagerService = IVoiceInteractionManagerService.Stub.asInterface(
+        //         ServiceManager.getService(Context.VOICE_INTERACTION_MANAGER_SERVICE));
     }
 
     public boolean showSessionForActiveService(Bundle args, int sourceFlags,
             IVoiceInteractionSessionShowCallback showCallback, IBinder activityToken) {
-        try {
-            if (mVoiceInteractionManagerService != null) {
-                return mVoiceInteractionManagerService.showSessionForActiveService(args,
-                        sourceFlags, showCallback, activityToken);
-            }
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to call showSessionForActiveService", e);
-        }
+        // try {
+        //     if (mVoiceInteractionManagerService != null) {
+        //         return mVoiceInteractionManagerService.showSessionForActiveService(args,
+        //                 sourceFlags, showCallback, activityToken);
+        //     }
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to call showSessionForActiveService", e);
+        // }
         return false;
     }
 
     public void launchVoiceAssistFromKeyguard() {
-        try {
-            if (mVoiceInteractionManagerService != null) {
-                mVoiceInteractionManagerService.launchVoiceAssistFromKeyguard();
-            }
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to call launchVoiceAssistFromKeyguard", e);
-        }
+        // try {
+        //     if (mVoiceInteractionManagerService != null) {
+        //         mVoiceInteractionManagerService.launchVoiceAssistFromKeyguard();
+        //     }
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to call launchVoiceAssistFromKeyguard", e);
+        // }
     }
 
     public boolean activeServiceSupportsAssistGesture() {
-        try {
-            return mVoiceInteractionManagerService != null
-                    && mVoiceInteractionManagerService.activeServiceSupportsAssist();
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to call activeServiceSupportsAssistGesture", e);
-            return false;
-        }
+        // try {
+        //     return mVoiceInteractionManagerService != null
+        //             && mVoiceInteractionManagerService.activeServiceSupportsAssist();
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to call activeServiceSupportsAssistGesture", e);
+        //     return false;
+        // }
+        return false;
     }
 
     public boolean activeServiceSupportsLaunchFromKeyguard() {
-        try {
-            return mVoiceInteractionManagerService != null
-                    && mVoiceInteractionManagerService.activeServiceSupportsLaunchFromKeyguard();
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to call activeServiceSupportsLaunchFromKeyguard", e);
-            return false;
-        }
+        // try {
+        //     return mVoiceInteractionManagerService != null
+        //             && mVoiceInteractionManagerService.activeServiceSupportsLaunchFromKeyguard();
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to call activeServiceSupportsLaunchFromKeyguard", e);
+        //     return false;
+        // }
+        return false;
     }
 
     public ComponentName getActiveServiceComponentName() {
-        try {
-            if (mVoiceInteractionManagerService != null) {
-                return mVoiceInteractionManagerService.getActiveServiceComponentName();
-            } else {
-                return null;
-            }
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to call getActiveServiceComponentName", e);
-            return null;
-        }
+        // try {
+        //     if (mVoiceInteractionManagerService != null) {
+        //         return mVoiceInteractionManagerService.getActiveServiceComponentName();
+        //     } else {
+        //         return null;
+        //     }
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to call getActiveServiceComponentName", e);
+        //     return null;
+        // }
+        return null;
     }
 
     public boolean isSessionRunning() {
-        try {
-            return mVoiceInteractionManagerService != null
-                    && mVoiceInteractionManagerService.isSessionRunning();
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to call isSessionRunning", e);
-            return false;
-        }
+        // try {
+        //     return mVoiceInteractionManagerService != null
+        //             && mVoiceInteractionManagerService.isSessionRunning();
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to call isSessionRunning", e);
+        //     return false;
+        // }
+        return false;
     }
 
     public void hideCurrentSession() {
-        try {
-            if (mVoiceInteractionManagerService != null) {
-                mVoiceInteractionManagerService.hideCurrentSession();
-            }
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to call hideCurrentSession", e);
-        }
+        // try {
+        //     if (mVoiceInteractionManagerService != null) {
+        //         mVoiceInteractionManagerService.hideCurrentSession();
+        //     }
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to call hideCurrentSession", e);
+        // }
     }
 
     public void onLockscreenShown() {
-        try {
-            if (mVoiceInteractionManagerService != null) {
-                mVoiceInteractionManagerService.onLockscreenShown();
-            }
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to call onLockscreenShown", e);
-        }
+        // try {
+        //     if (mVoiceInteractionManagerService != null) {
+        //         mVoiceInteractionManagerService.onLockscreenShown();
+        //     }
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to call onLockscreenShown", e);
+        // }
     }
 
     public void registerVoiceInteractionSessionListener(IVoiceInteractionSessionListener listener) {
-        try {
-            if (mVoiceInteractionManagerService != null) {
-                mVoiceInteractionManagerService.registerVoiceInteractionSessionListener(listener);
-            }
-        } catch (RemoteException e) {
-            Log.w(TAG, "Failed to register voice interaction listener", e);
-        }
+        // try {
+        //     if (mVoiceInteractionManagerService != null) {
+        //         mVoiceInteractionManagerService.registerVoiceInteractionSessionListener(listener);
+        //     }
+        // } catch (RemoteException e) {
+        //     Log.w(TAG, "Failed to register voice interaction listener", e);
+        // }
     }
 
     public ComponentName getAssistComponentForUser(int userId) {
