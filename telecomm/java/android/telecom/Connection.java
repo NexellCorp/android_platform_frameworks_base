@@ -23,7 +23,7 @@ import com.android.internal.telecom.IVideoProvider;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.annotation.SystemApi;
-import android.hardware.camera2.CameraManager;
+// import android.hardware.camera2.CameraManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;

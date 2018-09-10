@@ -940,17 +940,6 @@ android.graphics.drawable.shapes.Shape
 android.graphics.pdf.PdfDocument
 android.graphics.pdf.PdfEditor
 android.graphics.pdf.PdfRenderer
-android.hardware.Camera
-android.hardware.Camera$CameraInfo
-android.hardware.Camera$Face
-android.hardware.camera2.CameraCharacteristics$Key
-android.hardware.camera2.CameraManager
-android.hardware.camera2.CaptureRequest$Key
-android.hardware.camera2.CaptureResult$Key
-android.hardware.camera2.DngCreator
-android.hardware.camera2.impl.CameraMetadataNative
-android.hardware.camera2.legacy.LegacyCameraDevice
-android.hardware.camera2.legacy.PerfMeasurement
 android.hardware.display.DisplayManager
 android.hardware.display.DisplayManager$DisplayListener
 android.hardware.display.DisplayManagerGlobal

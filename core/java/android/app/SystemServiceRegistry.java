@@ -46,7 +46,7 @@ import android.content.res.Resources;
 // import android.hardware.SensorManager;
 // import android.hardware.SerialManager;
 // import android.hardware.SystemSensorManager;
-import android.hardware.camera2.CameraManager;
+// import android.hardware.camera2.CameraManager;
 import android.hardware.display.DisplayManager;
 // import android.hardware.hdmi.HdmiControlManager;
 // import android.hardware.hdmi.IHdmiControlService;
@@ -580,12 +580,12 @@ final class SystemServiceRegistry {
                 return new AppOpsManager(ctx, service);
             }});
 
-        registerService(Context.CAMERA_SERVICE, CameraManager.class,
-                new CachedServiceFetcher<CameraManager>() {
-            @Override
-            public CameraManager createService(ContextImpl ctx) {
-                return new CameraManager(ctx);
-            }});
+        // registerService(Context.CAMERA_SERVICE, CameraManager.class,
+        //         new CachedServiceFetcher<CameraManager>() {
+        //     @Override
+        //     public CameraManager createService(ContextImpl ctx) {
+        //         return new CameraManager(ctx);
+        //     }});
 
         registerService(Context.LAUNCHER_APPS_SERVICE, LauncherApps.class,
                 new CachedServiceFetcher<LauncherApps>() {
