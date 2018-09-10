@@ -1514,7 +1514,6 @@ android.net.Uri$StringUri
 android.net.wifi.IWifiManager
 android.net.wifi.IWifiManager$Stub
 android.net.wifi.IWifiManager$Stub$Proxy
-android.net.wifi.RttManager
 android.net.wifi.SupplicantState
 android.net.wifi.SupplicantState$1
 android.net.wifi.WifiInfo
