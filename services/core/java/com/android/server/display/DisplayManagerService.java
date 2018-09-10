@@ -33,7 +33,7 @@ import android.hardware.display.IVirtualDisplayCallback;
 import android.hardware.display.WifiDisplayStatus;
 import android.hardware.input.InputManagerInternal;
 import android.media.projection.IMediaProjection;
-import android.media.projection.IMediaProjectionManager;
+// import android.media.projection.IMediaProjectionManager;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -133,7 +133,7 @@ public final class DisplayManagerService extends SystemService {
     private final DisplayAdapterListener mDisplayAdapterListener;
     private WindowManagerInternal mWindowManagerInternal;
     private InputManagerInternal mInputManagerInternal;
-    private IMediaProjectionManager mProjectionService;
+    // private IMediaProjectionManager mProjectionService;
 
     // The synchronization root for the display manager.
     // This lock guards most of the display manager's state.
@@ -1039,13 +1039,13 @@ public final class DisplayManagerService extends SystemService {
         mTempCallbacks.clear();
     }
 
-    private IMediaProjectionManager getProjectionService() {
-        if (mProjectionService == null) {
-            IBinder b = ServiceManager.getService(Context.MEDIA_PROJECTION_SERVICE);
-            mProjectionService = IMediaProjectionManager.Stub.asInterface(b);
-        }
-        return mProjectionService;
-    }
+    // private IMediaProjectionManager getProjectionService() {
+    //     if (mProjectionService == null) {
+    //         IBinder b = ServiceManager.getService(Context.MEDIA_PROJECTION_SERVICE);
+    //         mProjectionService = IMediaProjectionManager.Stub.asInterface(b);
+    //     }
+    //     return mProjectionService;
+    // }
 
     private void dumpInternal(PrintWriter pw) {
         pw.println("DISPLAY MANAGER (dumpsys display)");
@@ -1430,14 +1430,14 @@ public final class DisplayManagerService extends SystemService {
             }
 
             if (projection != null) {
-                try {
-                    if (!getProjectionService().isValidMediaProjection(projection)) {
-                        throw new SecurityException("Invalid media projection");
-                    }
-                    flags = projection.applyVirtualDisplayFlags(flags);
-                } catch (RemoteException e) {
-                    throw new SecurityException("unable to validate media projection or flags");
-                }
+                // try {
+                //     if (!getProjectionService().isValidMediaProjection(projection)) {
+                //         throw new SecurityException("Invalid media projection");
+                //     }
+                //     flags = projection.applyVirtualDisplayFlags(flags);
+                // } catch (RemoteException e) {
+                //     throw new SecurityException("unable to validate media projection or flags");
+                // }
             }
 
             if (callingUid != Process.SYSTEM_UID &&

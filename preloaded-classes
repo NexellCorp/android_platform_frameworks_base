@@ -1432,7 +1432,6 @@ android.media.ToneGenerator
 android.media.audiopolicy.AudioMix
 android.media.audiopolicy.AudioMixingRule
 android.media.audiopolicy.AudioMixingRule$AudioMixMatchCriterion
-android.media.projection.MediaProjectionManager
 android.media.session.MediaController
 android.media.session.MediaController$TransportControls
 android.media.session.MediaSession$Token

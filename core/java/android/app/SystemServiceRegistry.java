@@ -63,7 +63,7 @@ import android.media.AudioManager;
 import android.media.MediaRouter;
 // import android.media.midi.IMidiManager;
 // import android.media.midi.MidiManager;
-import android.media.projection.MediaProjectionManager;
+// import android.media.projection.MediaProjectionManager;
 import android.media.session.MediaSessionManager;
 // import android.media.soundtrigger.SoundTriggerManager;
 // import android.media.tv.ITvInputManager;
@@ -699,12 +699,12 @@ final class SystemServiceRegistry {
                 }
             }});
 
-        registerService(Context.MEDIA_PROJECTION_SERVICE, MediaProjectionManager.class,
-                new CachedServiceFetcher<MediaProjectionManager>() {
-            @Override
-            public MediaProjectionManager createService(ContextImpl ctx) {
-                return new MediaProjectionManager(ctx);
-            }});
+        // registerService(Context.MEDIA_PROJECTION_SERVICE, MediaProjectionManager.class,
+        //         new CachedServiceFetcher<MediaProjectionManager>() {
+        //     @Override
+        //     public MediaProjectionManager createService(ContextImpl ctx) {
+        //         return new MediaProjectionManager(ctx);
+        //     }});
 
         registerService(Context.APPWIDGET_SERVICE, AppWidgetManager.class,
                 new CachedServiceFetcher<AppWidgetManager>() {
