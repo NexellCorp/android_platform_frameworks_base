@@ -961,7 +961,6 @@ android.hardware.display.IDisplayManager$Stub
 android.hardware.display.IDisplayManager$Stub$Proxy
 android.hardware.display.IDisplayManagerCallback
 android.hardware.display.IDisplayManagerCallback$Stub
-android.hardware.fingerprint.FingerprintManager
 android.hardware.input.IInputDevicesChangedListener
 android.hardware.input.IInputDevicesChangedListener$Stub
 android.hardware.input.IInputManager

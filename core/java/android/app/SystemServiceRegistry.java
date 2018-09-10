@@ -109,8 +109,8 @@ import android.os.health.SystemHealthManager;
 import android.os.storage.StorageManager;
 // import android.print.IPrintManager;
 // import android.print.PrintManager;
-import android.hardware.fingerprint.FingerprintManager;
-import android.hardware.fingerprint.IFingerprintService;
+// import android.hardware.fingerprint.FingerprintManager;
+// import android.hardware.fingerprint.IFingerprintService;
 import android.service.persistentdata.IPersistentDataBlockService;
 import android.service.persistentdata.PersistentDataBlockManager;
 import android.telecom.TelecomManager;
@@ -635,14 +635,14 @@ final class SystemServiceRegistry {
         //         return new TrustManager(b);
         //     }});
 
-        registerService(Context.FINGERPRINT_SERVICE, FingerprintManager.class,
-                new CachedServiceFetcher<FingerprintManager>() {
-            @Override
-            public FingerprintManager createService(ContextImpl ctx) {
-                IBinder binder = ServiceManager.getService(Context.FINGERPRINT_SERVICE);
-                IFingerprintService service = IFingerprintService.Stub.asInterface(binder);
-                return new FingerprintManager(ctx.getOuterContext(), service);
-            }});
+        // registerService(Context.FINGERPRINT_SERVICE, FingerprintManager.class,
+        //         new CachedServiceFetcher<FingerprintManager>() {
+        //     @Override
+        //     public FingerprintManager createService(ContextImpl ctx) {
+        //         IBinder binder = ServiceManager.getService(Context.FINGERPRINT_SERVICE);
+        //         IFingerprintService service = IFingerprintService.Stub.asInterface(binder);
+        //         return new FingerprintManager(ctx.getOuterContext(), service);
+        //     }});
 
         // registerService(Context.TV_INPUT_SERVICE, TvInputManager.class,
         //         new StaticServiceFetcher<TvInputManager>() {

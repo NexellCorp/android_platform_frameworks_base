@@ -20,7 +20,7 @@ import android.app.ActivityThread;
 import android.app.Application;
 // import android.app.KeyguardManager;
 import android.content.Context;
-import android.hardware.fingerprint.FingerprintManager;
+// import android.hardware.fingerprint.FingerprintManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Process;
@@ -722,13 +722,13 @@ public class KeyStore {
                     return new UserNotAuthenticatedException();
                 }
 
-                long fingerprintOnlySid = getFingerprintOnlySid();
-                if ((fingerprintOnlySid != 0)
-                        && (keySids.contains(KeymasterArguments.toUint64(fingerprintOnlySid)))) {
-                    // One of the key's SIDs is the current fingerprint SID -- user can be
-                    // authenticated against that SID.
-                    return new UserNotAuthenticatedException();
-                }
+                // long fingerprintOnlySid = getFingerprintOnlySid();
+                // if ((fingerprintOnlySid != 0)
+                //         && (keySids.contains(KeymasterArguments.toUint64(fingerprintOnlySid)))) {
+                //     // One of the key's SIDs is the current fingerprint SID -- user can be
+                //     // authenticated against that SID.
+                //     return new UserNotAuthenticatedException();
+                // }
 
                 // None of the key's SIDs can ever be authenticated
                 return new KeyPermanentlyInvalidatedException();
@@ -739,14 +739,15 @@ public class KeyStore {
     }
 
     private long getFingerprintOnlySid() {
-        FingerprintManager fingerprintManager = mContext.getSystemService(FingerprintManager.class);
-        if (fingerprintManager == null) {
-            return 0;
-        }
-
-        // TODO: Restore USE_FINGERPRINT permission check in
-        // FingerprintManager.getAuthenticatorId once the ID is no longer needed here.
-        return fingerprintManager.getAuthenticatorId();
+        // FingerprintManager fingerprintManager = mContext.getSystemService(FingerprintManager.class);
+        // if (fingerprintManager == null) {
+        //     return 0;
+        // }
+        //
+        // // TODO: Restore USE_FINGERPRINT permission check in
+        // // FingerprintManager.getAuthenticatorId once the ID is no longer needed here.
+        // return fingerprintManager.getAuthenticatorId();
+        return 0;
     }
 
     /**

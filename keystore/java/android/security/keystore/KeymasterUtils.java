@@ -16,7 +16,7 @@
 
 package android.security.keystore;
 
-import android.hardware.fingerprint.FingerprintManager;
+// import android.hardware.fingerprint.FingerprintManager;
 import android.security.GateKeeper;
 import android.security.KeyStore;
 import android.security.keymaster.KeymasterArguments;
@@ -104,40 +104,40 @@ public abstract class KeymasterUtils {
             return;
         }
 
-        if (userAuthenticationValidityDurationSeconds == -1) {
-            // Every use of this key needs to be authorized by the user. This currently means
-            // fingerprint-only auth.
-            FingerprintManager fingerprintManager =
-                    KeyStore.getApplicationContext().getSystemService(FingerprintManager.class);
-            // TODO: Restore USE_FINGERPRINT permission check in
-            // FingerprintManager.getAuthenticatorId once the ID is no longer needed here.
-            long fingerprintOnlySid =
-                    (fingerprintManager != null) ? fingerprintManager.getAuthenticatorId() : 0;
-            if (fingerprintOnlySid == 0) {
-                throw new IllegalStateException(
-                        "At least one fingerprint must be enrolled to create keys requiring user"
-                        + " authentication for every use");
-            }
-
-            long sid;
-            if (invalidatedByBiometricEnrollment) {
-                // The fingerprint-only SID will change on fingerprint enrollment or removal of all,
-                // enrolled fingerprints, invalidating the key.
-                sid = fingerprintOnlySid;
-            } else {
-                // The root SID will *not* change on fingerprint enrollment, or removal of all
-                // enrolled fingerprints, allowing the key to remain valid.
-                sid = getRootSid();
-            }
-
-            args.addUnsignedLong(
-                    KeymasterDefs.KM_TAG_USER_SECURE_ID, KeymasterArguments.toUint64(sid));
-            args.addEnum(KeymasterDefs.KM_TAG_USER_AUTH_TYPE, KeymasterDefs.HW_AUTH_FINGERPRINT);
-            if (userAuthenticationValidWhileOnBody) {
-                throw new ProviderException("Key validity extension while device is on-body is not "
-                        + "supported for keys requiring fingerprint authentication");
-            }
-        } else {
+        // if (userAuthenticationValidityDurationSeconds == -1) {
+        //     // Every use of this key needs to be authorized by the user. This currently means
+        //     // fingerprint-only auth.
+        //     FingerprintManager fingerprintManager =
+        //             KeyStore.getApplicationContext().getSystemService(FingerprintManager.class);
+        //     // TODO: Restore USE_FINGERPRINT permission check in
+        //     // FingerprintManager.getAuthenticatorId once the ID is no longer needed here.
+        //     long fingerprintOnlySid =
+        //             (fingerprintManager != null) ? fingerprintManager.getAuthenticatorId() : 0;
+        //     if (fingerprintOnlySid == 0) {
+        //         throw new IllegalStateException(
+        //                 "At least one fingerprint must be enrolled to create keys requiring user"
+        //                 + " authentication for every use");
+        //     }
+        //
+        //     long sid;
+        //     if (invalidatedByBiometricEnrollment) {
+        //         // The fingerprint-only SID will change on fingerprint enrollment or removal of all,
+        //         // enrolled fingerprints, invalidating the key.
+        //         sid = fingerprintOnlySid;
+        //     } else {
+        //         // The root SID will *not* change on fingerprint enrollment, or removal of all
+        //         // enrolled fingerprints, allowing the key to remain valid.
+        //         sid = getRootSid();
+        //     }
+        //
+        //     args.addUnsignedLong(
+        //             KeymasterDefs.KM_TAG_USER_SECURE_ID, KeymasterArguments.toUint64(sid));
+        //     args.addEnum(KeymasterDefs.KM_TAG_USER_AUTH_TYPE, KeymasterDefs.HW_AUTH_FINGERPRINT);
+        //     if (userAuthenticationValidWhileOnBody) {
+        //         throw new ProviderException("Key validity extension while device is on-body is not "
+        //                 + "supported for keys requiring fingerprint authentication");
+        //     }
+        // } else {
             // The key is authorized for use for the specified amount of time after the user has
             // authenticated. Whatever unlocks the secure lock screen should authorize this key.
             long rootSid = getRootSid();
@@ -150,7 +150,7 @@ public abstract class KeymasterUtils {
             if (userAuthenticationValidWhileOnBody) {
                 args.addBoolean(KeymasterDefs.KM_TAG_ALLOW_WHILE_ON_BODY);
             }
-        }
+        // }
     }
 
     /**
