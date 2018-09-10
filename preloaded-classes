@@ -1646,7 +1646,6 @@ android.os.UserHandle$1
 android.os.UserManager
 android.os.Vibrator
 android.os.ZygoteStartFailedEx
-android.os.health.SystemHealthManager
 android.os.storage.IMountService
 android.os.storage.IMountService$Stub
 android.os.storage.IMountService$Stub$Proxy

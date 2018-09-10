@@ -105,7 +105,7 @@ import android.os.ServiceManager;
 import android.os.UserHandle;
 import android.os.UserManager;
 // import android.os.Vibrator;
-import android.os.health.SystemHealthManager;
+// import android.os.health.SystemHealthManager;
 import android.os.storage.StorageManager;
 // import android.print.IPrintManager;
 // import android.print.PrintManager;
@@ -761,12 +761,12 @@ final class SystemServiceRegistry {
                 return new ShortcutManager(ctx);
             }});
 
-        registerService(Context.SYSTEM_HEALTH_SERVICE, SystemHealthManager.class,
-                new CachedServiceFetcher<SystemHealthManager>() {
-            @Override
-            public SystemHealthManager createService(ContextImpl ctx) {
-                return new SystemHealthManager();
-            }});
+        // registerService(Context.SYSTEM_HEALTH_SERVICE, SystemHealthManager.class,
+        //         new CachedServiceFetcher<SystemHealthManager>() {
+        //     @Override
+        //     public SystemHealthManager createService(ContextImpl ctx) {
+        //         return new SystemHealthManager();
+        //     }});
 
         // registerService(Context.CONTEXTHUB_SERVICE, ContextHubManager.class,
         //         new CachedServiceFetcher<ContextHubManager>() {
