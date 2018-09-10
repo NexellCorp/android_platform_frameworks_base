@@ -119,7 +119,7 @@ import android.security.IKeyChainAliasCallback;
 import android.security.IKeyChainService;
 import android.security.KeyChain;
 import android.security.KeyChain.KeyChainConnection;
-import android.service.persistentdata.PersistentDataBlockManager;
+// import android.service.persistentdata.PersistentDataBlockManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.ArrayMap;
@@ -4803,11 +4803,11 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
                         throw new SecurityException(
                                "Only device owner admins can set WIPE_RESET_PROTECTION_DATA");
                     }
-                    PersistentDataBlockManager manager = (PersistentDataBlockManager)
-                            mContext.getSystemService(Context.PERSISTENT_DATA_BLOCK_SERVICE);
-                    if (manager != null) {
-                        manager.wipe();
-                    }
+                    // PersistentDataBlockManager manager = (PersistentDataBlockManager)
+                    //         mContext.getSystemService(Context.PERSISTENT_DATA_BLOCK_SERVICE);
+                    // if (manager != null) {
+                    //     manager.wipe();
+                    // }
                 }
             } finally {
                 mInjector.binderRestoreCallingIdentity(ident);

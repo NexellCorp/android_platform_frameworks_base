@@ -351,8 +351,14 @@ public class PersistentDataBlockService extends SystemService {
         }
     }
 
-    private native long nativeGetBlockDeviceSize(String path);
-    private native int nativeWipe(String path);
+    // private native long nativeGetBlockDeviceSize(String path);
+    // private native int nativeWipe(String path);
+    private long nativeGetBlockDeviceSize(String path) {
+        return 0;
+    }
+    private int nativeWipe(String path) {
+        return 0;
+    }
 
     private final IBinder mService = new IPersistentDataBlockService.Stub() {
         @Override

@@ -1728,7 +1728,6 @@ android.security.net.config.SystemCertificateSource
 android.security.net.config.TrustAnchor
 android.security.net.config.TrustedCertificateStoreAdapter
 android.security.net.config.UserCertificateSource
-android.service.persistentdata.PersistentDataBlockManager
 android.system.ErrnoException
 android.system.GaiException
 android.system.NetlinkSocketAddress

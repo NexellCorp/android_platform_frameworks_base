@@ -111,8 +111,8 @@ import android.os.storage.StorageManager;
 // import android.print.PrintManager;
 // import android.hardware.fingerprint.FingerprintManager;
 // import android.hardware.fingerprint.IFingerprintService;
-import android.service.persistentdata.IPersistentDataBlockService;
-import android.service.persistentdata.PersistentDataBlockManager;
+// import android.service.persistentdata.IPersistentDataBlockService;
+// import android.service.persistentdata.PersistentDataBlockManager;
 import android.telecom.TelecomManager;
 import android.telephony.CarrierConfigManager;
 import android.telephony.SubscriptionManager;
@@ -684,20 +684,20 @@ final class SystemServiceRegistry {
                 return new JobSchedulerImpl(IJobScheduler.Stub.asInterface(b));
             }});
 
-        registerService(Context.PERSISTENT_DATA_BLOCK_SERVICE, PersistentDataBlockManager.class,
-                new StaticServiceFetcher<PersistentDataBlockManager>() {
-            @Override
-            public PersistentDataBlockManager createService() {
-                IBinder b = ServiceManager.getService(Context.PERSISTENT_DATA_BLOCK_SERVICE);
-                IPersistentDataBlockService persistentDataBlockService =
-                        IPersistentDataBlockService.Stub.asInterface(b);
-                if (persistentDataBlockService != null) {
-                    return new PersistentDataBlockManager(persistentDataBlockService);
-                } else {
-                    // not supported
-                    return null;
-                }
-            }});
+        // registerService(Context.PERSISTENT_DATA_BLOCK_SERVICE, PersistentDataBlockManager.class,
+        //         new StaticServiceFetcher<PersistentDataBlockManager>() {
+        //     @Override
+        //     public PersistentDataBlockManager createService() {
+        //         IBinder b = ServiceManager.getService(Context.PERSISTENT_DATA_BLOCK_SERVICE);
+        //         IPersistentDataBlockService persistentDataBlockService =
+        //                 IPersistentDataBlockService.Stub.asInterface(b);
+        //         if (persistentDataBlockService != null) {
+        //             return new PersistentDataBlockManager(persistentDataBlockService);
+        //         } else {
+        //             // not supported
+        //             return null;
+        //         }
+        //     }});
 
         // registerService(Context.MEDIA_PROJECTION_SERVICE, MediaProjectionManager.class,
         //         new CachedServiceFetcher<MediaProjectionManager>() {
