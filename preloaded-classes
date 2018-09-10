@@ -1441,7 +1441,6 @@ android.media.session.MediaController
 android.media.session.MediaController$TransportControls
 android.media.session.MediaSession$Token
 android.media.session.MediaSessionManager
-android.media.soundtrigger.SoundTriggerManager
 android.media.tv.TvInputManager
 android.mtp.MtpDatabase
 android.mtp.MtpDevice
