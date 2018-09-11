@@ -82,8 +82,8 @@ extern "C" jint JNI_OnLoad(JavaVM* vm, void* /* reserved */)
     // register_android_server_ConsumerIrService(env);
     // register_android_server_BatteryStatsService(env);
     // register_android_server_hdmi_HdmiCecController(env);
-    register_android_server_tv_TvUinputBridge(env);
-    register_android_server_tv_TvInputHal(env);
+    // register_android_server_tv_TvUinputBridge(env);
+    // register_android_server_tv_TvInputHal(env);
     // register_android_server_PersistentDataBlockService(env);
     // register_android_server_Watchdog(env);
     // register_android_server_HardwarePropertiesManagerService(env);
