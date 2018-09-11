@@ -780,6 +780,11 @@ public class ZygoteInit {
                 startSystemServer(abiList, socketName);
             }
 
+            try {
+                Thread.sleep(2000);
+            } catch (Exception e) {
+            }
+
             preload();
 
             Log.i(TAG, "Accepting command socket connections");
