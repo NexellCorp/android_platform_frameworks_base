@@ -246,10 +246,12 @@ final class ProcessList {
         float scale = scaleMem > scaleDisp ? scaleMem : scaleDisp;
         if (scale < 0) scale = 0;
         else if (scale > 1) scale = 1;
-        int minfree_adj = Resources.getSystem().getInteger(
-                com.android.internal.R.integer.config_lowMemoryKillerMinFreeKbytesAdjust);
-        int minfree_abs = Resources.getSystem().getInteger(
-                com.android.internal.R.integer.config_lowMemoryKillerMinFreeKbytesAbsolute);
+        // int minfree_adj = Resources.getSystem().getInteger(
+        //         com.android.internal.R.integer.config_lowMemoryKillerMinFreeKbytesAdjust);
+        // int minfree_abs = Resources.getSystem().getInteger(
+        //         com.android.internal.R.integer.config_lowMemoryKillerMinFreeKbytesAbsolute);
+        int minfree_adj = 0;
+        int minfree_abs = -1;
         if (false) {
             Slog.i("XXXXXX", "minfree_adj=" + minfree_adj + " minfree_abs=" + minfree_abs);
         }
@@ -292,8 +294,10 @@ final class ProcessList {
         // Ask the kernel to try to keep enough memory free to allocate 3 full
         // screen 32bpp buffers without entering direct reclaim.
         int reserve = displayWidth * displayHeight * 4 * 3 / 1024;
-        int reserve_adj = Resources.getSystem().getInteger(com.android.internal.R.integer.config_extraFreeKbytesAdjust);
-        int reserve_abs = Resources.getSystem().getInteger(com.android.internal.R.integer.config_extraFreeKbytesAbsolute);
+        // int reserve_adj = Resources.getSystem().getInteger(com.android.internal.R.integer.config_extraFreeKbytesAdjust);
+        // int reserve_abs = Resources.getSystem().getInteger(com.android.internal.R.integer.config_extraFreeKbytesAbsolute);
+        int reserve_adj = 0;
+        int reserve_abs = -1;
 
         if (reserve_abs >= 0) {
             reserve = reserve_abs;
