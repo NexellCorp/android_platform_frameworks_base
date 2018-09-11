@@ -63,7 +63,7 @@ public final class ProcessStatsService extends IProcessStats.Stub {
     static long WRITE_PERIOD = 30*60*1000;      // Write file every 30 minutes or so.
 
     final ActivityManagerService mAm;
-    final File mBaseDir;
+    // final File mBaseDir;
     ProcessStats mProcessStats;
     AtomicFile mFile;
     boolean mCommitPending;
@@ -78,12 +78,13 @@ public final class ProcessStatsService extends IProcessStats.Stub {
     boolean mPendingWriteCommitted;
     long mLastWriteTime;
 
-    public ProcessStatsService(ActivityManagerService am, File file) {
+    // public ProcessStatsService(ActivityManagerService am, File file) {
+    public ProcessStatsService(ActivityManagerService am) {
         mAm = am;
-        mBaseDir = file;
-        mBaseDir.mkdirs();
+        // mBaseDir = file;
+        // mBaseDir.mkdirs();
         mProcessStats = new ProcessStats(true);
-        updateFile();
+        // updateFile();
         SystemProperties.addChangeCallback(new Runnable() {
             @Override public void run() {
                 synchronized (mAm) {
@@ -221,7 +222,7 @@ public final class ProcessStatsService extends IProcessStats.Stub {
             }
             if (commit) {
                 mProcessStats.resetSafely();
-                updateFile();
+                // updateFile();
             }
             mLastWriteTime = SystemClock.uptimeMillis();
             Slog.i(TAG, "Prepared write state in " + (SystemClock.uptimeMillis()-now) + "ms");
@@ -238,11 +239,11 @@ public final class ProcessStatsService extends IProcessStats.Stub {
         performWriteState();
     }
 
-    private void updateFile() {
-        mFile = new AtomicFile(new File(mBaseDir, STATE_FILE_PREFIX
-                + mProcessStats.mTimePeriodStartClockStr + STATE_FILE_SUFFIX));
-        mLastWriteTime = SystemClock.uptimeMillis();
-    }
+    // private void updateFile() {
+    //     mFile = new AtomicFile(new File(mBaseDir, STATE_FILE_PREFIX
+    //             + mProcessStats.mTimePeriodStartClockStr + STATE_FILE_SUFFIX));
+    //     mLastWriteTime = SystemClock.uptimeMillis();
+    // }
 
     void performWriteState() {
         if (DEBUG) Slog.d(TAG, "Performing write to " + mFile.getBaseFile());
@@ -337,29 +338,30 @@ public final class ProcessStatsService extends IProcessStats.Stub {
 
     private ArrayList<String> getCommittedFiles(int minNum, boolean inclCurrent,
             boolean inclCheckedIn) {
-        File[] files = mBaseDir.listFiles();
-        if (files == null || files.length <= minNum) {
-            return null;
-        }
-        ArrayList<String> filesArray = new ArrayList<String>(files.length);
-        String currentFile = mFile.getBaseFile().getPath();
-        if (DEBUG) Slog.d(TAG, "Collecting " + files.length + " files except: " + currentFile);
-        for (int i=0; i<files.length; i++) {
-            File file = files[i];
-            String fileStr = file.getPath();
-            if (DEBUG) Slog.d(TAG, "Collecting: " + fileStr);
-            if (!inclCheckedIn && fileStr.endsWith(STATE_FILE_CHECKIN_SUFFIX)) {
-                if (DEBUG) Slog.d(TAG, "Skipping: already checked in");
-                continue;
-            }
-            if (!inclCurrent && fileStr.equals(currentFile)) {
-                if (DEBUG) Slog.d(TAG, "Skipping: current stats");
-                continue;
-            }
-            filesArray.add(fileStr);
-        }
-        Collections.sort(filesArray);
-        return filesArray;
+        // File[] files = mBaseDir.listFiles();
+        // if (files == null || files.length <= minNum) {
+        //     return null;
+        // }
+        // ArrayList<String> filesArray = new ArrayList<String>(files.length);
+        // String currentFile = mFile.getBaseFile().getPath();
+        // if (DEBUG) Slog.d(TAG, "Collecting " + files.length + " files except: " + currentFile);
+        // for (int i=0; i<files.length; i++) {
+        //     File file = files[i];
+        //     String fileStr = file.getPath();
+        //     if (DEBUG) Slog.d(TAG, "Collecting: " + fileStr);
+        //     if (!inclCheckedIn && fileStr.endsWith(STATE_FILE_CHECKIN_SUFFIX)) {
+        //         if (DEBUG) Slog.d(TAG, "Skipping: already checked in");
+        //         continue;
+        //     }
+        //     if (!inclCurrent && fileStr.equals(currentFile)) {
+        //         if (DEBUG) Slog.d(TAG, "Skipping: current stats");
+        //         continue;
+        //     }
+        //     filesArray.add(fileStr);
+        // }
+        // Collections.sort(filesArray);
+        // return filesArray;
+        return null;
     }
 
     public void trimHistoricStatesWriteLocked() {

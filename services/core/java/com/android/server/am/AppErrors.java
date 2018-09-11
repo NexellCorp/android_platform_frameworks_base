@@ -747,9 +747,9 @@ class AppErrors {
         }
 
         long anrTime = SystemClock.uptimeMillis();
-        if (ActivityManagerService.MONITOR_CPU_USAGE) {
-            mService.updateCpuStatsNow();
-        }
+        // if (ActivityManagerService.MONITOR_CPU_USAGE) {
+        //     mService.updateCpuStatsNow();
+        // }
 
         // Unless configured otherwise, swallow ANRs in background processes & kill the process.
         boolean showBackground = Settings.Secure.getInt(mContext.getContentResolver(),
@@ -840,14 +840,14 @@ class AppErrors {
         }
 
         String cpuInfo = null;
-        if (ActivityManagerService.MONITOR_CPU_USAGE) {
-            mService.updateCpuStatsNow();
-            synchronized (mService.mProcessCpuTracker) {
-                cpuInfo = mService.mProcessCpuTracker.printCurrentState(anrTime);
-            }
-            info.append(processCpuTracker.printCurrentLoad());
-            info.append(cpuInfo);
-        }
+        // if (ActivityManagerService.MONITOR_CPU_USAGE) {
+        //     mService.updateCpuStatsNow();
+        //     synchronized (mService.mProcessCpuTracker) {
+        //         cpuInfo = mService.mProcessCpuTracker.printCurrentState(anrTime);
+        //     }
+        //     info.append(processCpuTracker.printCurrentLoad());
+        //     info.append(cpuInfo);
+        // }
 
         info.append(processCpuTracker.printCurrentState(anrTime));
 

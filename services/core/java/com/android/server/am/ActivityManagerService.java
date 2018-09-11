@@ -207,7 +207,7 @@ import android.util.ArraySet;
 import android.util.AtomicFile;
 import android.util.DebugUtils;
 import android.util.DisplayMetrics;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.util.PrintWriterPrinter;
@@ -2038,13 +2038,13 @@ public final class ActivityManagerService extends ActivityManagerNative
             case SYSTEM_USER_UNLOCK_MSG: {
                 final int userId = msg.arg1;
                 mSystemServiceManager.unlockUser(userId);
-                synchronized (ActivityManagerService.this) {
-                    mRecentTasks.loadUserRecentsLocked(userId);
-                }
-                if (userId == UserHandle.USER_SYSTEM) {
-                    startPersistentApps(PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
-                }
-                installEncryptionUnawareProviders(userId);
+                // synchronized (ActivityManagerService.this) {
+                //     mRecentTasks.loadUserRecentsLocked(userId);
+                // }
+                // if (userId == UserHandle.USER_SYSTEM) {
+                //     startPersistentApps(PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
+                // }
+                // installEncryptionUnawareProviders(userId);
                 mUserController.finishUserUnlocked((UserState) msg.obj);
                 break;
             }
@@ -2346,7 +2346,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                     }
                 }
                 if (memInfo != null) {
-                    updateCpuStatsNow();
+                    // updateCpuStatsNow();
                     long nativeTotalPss = 0;
                     final List<ProcessCpuTracker.Stats> stats;
                     synchronized (mProcessCpuTracker) {
@@ -2372,8 +2372,8 @@ public final class ActivityManagerService extends ActivityManagerNative
                         final long freeKb = memInfo.getFreeSizeKb();
                         final long zramKb = memInfo.getZramTotalSizeKb();
                         final long kernelKb = memInfo.getKernelUsedSizeKb();
-                        EventLogTags.writeAmMeminfo(cachedKb*1024, freeKb*1024, zramKb*1024,
-                                kernelKb*1024, nativeTotalPss*1024);
+                        // EventLogTags.writeAmMeminfo(cachedKb*1024, freeKb*1024, zramKb*1024,
+                        //         kernelKb*1024, nativeTotalPss*1024);
                         mProcessStats.addSysMemUsageLocked(cachedKb, freeKb, zramKb, kernelKb,
                                 nativeTotalPss);
                     }
@@ -2587,10 +2587,11 @@ public final class ActivityManagerService extends ActivityManagerNative
         mSystemThread = ActivityThread.currentActivityThread();
         mQuickBoot = SystemProperties.getBoolean("config.quickboot", false);
 
-        Slog.i(TAG, "Memory class: " + ActivityManager.staticGetMemoryClass());
+        // Slog.i(TAG, "Memory class: " + ActivityManager.staticGetMemoryClass());
 
-        mPermissionReviewRequired = mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_permissionReviewRequired);
+        // mPermissionReviewRequired = mContext.getResources().getBoolean(
+        //         com.android.internal.R.bool.config_permissionReviewRequired);
+        mPermissionReviewRequired = false;
 
         mHandlerThread = new ServiceThread(TAG,
                 android.os.Process.THREAD_PRIORITY_FOREGROUND, false /*allowIo*/);
@@ -2620,16 +2621,17 @@ public final class ActivityManagerService extends ActivityManagerNative
         // TODO: Move creation of battery stats service outside of activity manager service.
         File dataDir = Environment.getDataDirectory();
         File systemDir = new File(dataDir, "system");
-        systemDir.mkdirs();
+        // systemDir.mkdirs();
         // mBatteryStatsService = new BatteryStatsService(systemDir, mHandler);
         // mBatteryStatsService.getActiveStatistics().readLocked();
         // mBatteryStatsService.scheduleWriteToDisk();
         // mOnBattery = DEBUG_POWER ? true
         //         : mBatteryStatsService.getActiveStatistics().getIsOnBattery();
-        mOnBattery = true;
+        mOnBattery = false;
         // mBatteryStatsService.getActiveStatistics().setCallback(this);
 
-        mProcessStats = new ProcessStatsService(this, new File(systemDir, "procstats"));
+        // mProcessStats = new ProcessStatsService(this, new File(systemDir, "procstats"));
+        mProcessStats = new ProcessStatsService(this);
 
         mAppOpsService = new AppOpsService(new File(systemDir, "appops.xml"), mHandler);
         mAppOpsService.startWatchingMode(AppOpsManager.OP_RUN_IN_BACKGROUND, null,
@@ -2691,7 +2693,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                             }
                         } catch (InterruptedException e) {
                         }
-                        updateCpuStatsNow();
+                        // updateCpuStatsNow();
                     } catch (Exception e) {
                         Slog.e(TAG, "Unexpected exception collecting process stats", e);
                     }
@@ -2788,45 +2790,45 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
     }
 
-    void updateCpuStatsNow() {
-        synchronized (mProcessCpuTracker) {
-            mProcessCpuMutexFree.set(false);
-            final long now = SystemClock.uptimeMillis();
-            boolean haveNewCpuStats = false;
-
-            if (MONITOR_CPU_USAGE &&
-                    mLastCpuTime.get() < (now-MONITOR_CPU_MIN_TIME)) {
-                mLastCpuTime.set(now);
-                mProcessCpuTracker.update();
-                if (mProcessCpuTracker.hasGoodLastStats()) {
-                    haveNewCpuStats = true;
-                    //Slog.i(TAG, mProcessCpu.printCurrentState());
-                    //Slog.i(TAG, "Total CPU usage: "
-                    //        + mProcessCpu.getTotalCpuPercent() + "%");
-
-                    // Slog the cpu usage if the property is set.
-                    if ("true".equals(SystemProperties.get("events.cpu"))) {
-                        int user = mProcessCpuTracker.getLastUserTime();
-                        int system = mProcessCpuTracker.getLastSystemTime();
-                        int iowait = mProcessCpuTracker.getLastIoWaitTime();
-                        int irq = mProcessCpuTracker.getLastIrqTime();
-                        int softIrq = mProcessCpuTracker.getLastSoftIrqTime();
-                        int idle = mProcessCpuTracker.getLastIdleTime();
-
-                        int total = user + system + iowait + irq + softIrq + idle;
-                        if (total == 0) total = 1;
-
-                        EventLog.writeEvent(EventLogTags.CPU,
-                                ((user+system+iowait+irq+softIrq) * 100) / total,
-                                (user * 100) / total,
-                                (system * 100) / total,
-                                (iowait * 100) / total,
-                                (irq * 100) / total,
-                                (softIrq * 100) / total);
-                    }
-                }
-            }
-
+    // void updateCpuStatsNow() {
+        // synchronized (mProcessCpuTracker) {
+        //     mProcessCpuMutexFree.set(false);
+        //     final long now = SystemClock.uptimeMillis();
+        //     boolean haveNewCpuStats = false;
+        //
+        //     if (MONITOR_CPU_USAGE &&
+        //             mLastCpuTime.get() < (now-MONITOR_CPU_MIN_TIME)) {
+        //         mLastCpuTime.set(now);
+        //         mProcessCpuTracker.update();
+        //         if (mProcessCpuTracker.hasGoodLastStats()) {
+        //             haveNewCpuStats = true;
+        //             //Slog.i(TAG, mProcessCpu.printCurrentState());
+        //             //Slog.i(TAG, "Total CPU usage: "
+        //             //        + mProcessCpu.getTotalCpuPercent() + "%");
+        //
+        //             // Slog the cpu usage if the property is set.
+        //             if ("true".equals(SystemProperties.get("events.cpu"))) {
+        //                 int user = mProcessCpuTracker.getLastUserTime();
+        //                 int system = mProcessCpuTracker.getLastSystemTime();
+        //                 int iowait = mProcessCpuTracker.getLastIoWaitTime();
+        //                 int irq = mProcessCpuTracker.getLastIrqTime();
+        //                 int softIrq = mProcessCpuTracker.getLastSoftIrqTime();
+        //                 int idle = mProcessCpuTracker.getLastIdleTime();
+        //
+        //                 int total = user + system + iowait + irq + softIrq + idle;
+        //                 if (total == 0) total = 1;
+        //
+        //                 EventLog.writeEvent(EventLogTags.CPU,
+        //                         ((user+system+iowait+irq+softIrq) * 100) / total,
+        //                         (user * 100) / total,
+        //                         (system * 100) / total,
+        //                         (iowait * 100) / total,
+        //                         (irq * 100) / total,
+        //                         (softIrq * 100) / total);
+        //             }
+        //         }
+        //     }
+        //
             // final BatteryStatsImpl bstats = mBatteryStatsService.getActiveStatistics();
             // synchronized(bstats) {
             //     synchronized(mPidsSelfLocked) {
@@ -2877,8 +2879,8 @@ public final class ActivityManagerService extends ActivityManagerNative
             //         mBatteryStatsService.scheduleWriteToDisk();
             //     }
             // }
-        }
-    }
+        // }
+    // }
 
     // @Override
     // public void batteryNeedsCpuUpdate() {
@@ -3006,10 +3008,10 @@ public final class ActivityManagerService extends ActivityManagerNative
                 "setFocusedActivityLocked: r=" + r + " but focused to " + mFocusedActivity);
         mDoingSetFocusedActivity = wasDoingSetFocusedActivity;
 
-        EventLogTags.writeAmFocusedActivity(
-                mFocusedActivity == null ? -1 : mFocusedActivity.userId,
-                mFocusedActivity == null ? "NULL" : mFocusedActivity.shortComponentName,
-                reason);
+        // EventLogTags.writeAmFocusedActivity(
+        //         mFocusedActivity == null ? -1 : mFocusedActivity.userId,
+        //         mFocusedActivity == null ? "NULL" : mFocusedActivity.shortComponentName,
+        //         reason);
         return true;
     }
 
@@ -3038,7 +3040,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         if (DEBUG_FOCUS) Slog.d(TAG_FOCUS, "resetFocusedActivityIfNeeded: Setting focus to NULL "
                 + "prev mFocusedActivity=" + mFocusedActivity + " goingAway=" + goingAway);
         mFocusedActivity = null;
-        EventLogTags.writeAmFocusedActivity(-1, "NULL", "resetFocusedActivityIfNeeded");
+        // EventLogTags.writeAmFocusedActivity(-1, "NULL", "resetFocusedActivityIfNeeded");
     }
 
     @Override
@@ -3536,9 +3538,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                         + "/" + info.processName);
                 mAppErrors.resetProcessCrashTimeLocked(info);
                 if (mAppErrors.isBadProcessLocked(info)) {
-                    EventLog.writeEvent(EventLogTags.AM_PROC_GOOD,
-                            UserHandle.getUserId(info.uid), info.uid,
-                            info.processName);
+                    // EventLog.writeEvent(EventLogTags.AM_PROC_GOOD,
+                    //         UserHandle.getUserId(info.uid), info.uid,
+                    //         info.processName);
                     mAppErrors.clearBadProcessLocked(info);
                     if (app != null) {
                         app.bad = false;
@@ -3699,17 +3701,17 @@ public final class ActivityManagerService extends ActivityManagerNative
                 gids[1] = UserHandle.getUserGid(UserHandle.getUserId(uid));
             }
             checkTime(startTime, "startProcess: building args");
-            if (mFactoryTest != FactoryTest.FACTORY_TEST_OFF) {
-                if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL
-                        && mTopComponent != null
-                        && app.processName.equals(mTopComponent.getPackageName())) {
-                    uid = 0;
-                }
-                if (mFactoryTest == FactoryTest.FACTORY_TEST_HIGH_LEVEL
-                        && (app.info.flags&ApplicationInfo.FLAG_FACTORY_TEST) != 0) {
-                    uid = 0;
-                }
-            }
+            // if (mFactoryTest != FactoryTest.FACTORY_TEST_OFF) {
+            //     if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL
+            //             && mTopComponent != null
+            //             && app.processName.equals(mTopComponent.getPackageName())) {
+            //         uid = 0;
+            //     }
+            //     if (mFactoryTest == FactoryTest.FACTORY_TEST_HIGH_LEVEL
+            //             && (app.info.flags&ApplicationInfo.FLAG_FACTORY_TEST) != 0) {
+            //         uid = 0;
+            //     }
+            // }
             int debugFlags = 0;
             if ((app.info.flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0) {
                 debugFlags |= Zygote.DEBUG_ENABLE_DEBUGGER;
@@ -3775,10 +3777,10 @@ public final class ActivityManagerService extends ActivityManagerNative
             // mBatteryStatsService.noteProcessStart(app.processName, app.info.uid);
             checkTime(startTime, "startProcess: done updating battery stats");
 
-            EventLog.writeEvent(EventLogTags.AM_PROC_START,
-                    UserHandle.getUserId(uid), startResult.pid, uid,
-                    app.processName, hostingType,
-                    hostingNameStr != null ? hostingNameStr : "");
+            // EventLog.writeEvent(EventLogTags.AM_PROC_START,
+            //         UserHandle.getUserId(uid), startResult.pid, uid,
+            //         app.processName, hostingType,
+            //         hostingNameStr != null ? hostingNameStr : "");
 
             try {
                 AppGlobals.getPackageManager().logAppProcessStartIfNeeded(app.processName, app.uid,
@@ -3881,20 +3883,20 @@ public final class ActivityManagerService extends ActivityManagerNative
         Intent intent = new Intent(mTopAction, mTopData != null ? Uri.parse(mTopData) : null);
         intent.setComponent(mTopComponent);
         intent.addFlags(Intent.FLAG_DEBUG_TRIAGED_MISSING);
-        if (mFactoryTest != FactoryTest.FACTORY_TEST_LOW_LEVEL) {
+        // if (mFactoryTest != FactoryTest.FACTORY_TEST_LOW_LEVEL) {
             intent.addCategory(Intent.CATEGORY_HOME);
-        }
+        // }
         return intent;
     }
 
     boolean startHomeActivityLocked(int userId, String reason) {
-        if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL
-                && mTopAction == null) {
-            // We are running in factory test mode, but unable to find
-            // the factory test app, so just sit around displaying the
-            // error message and don't try to start anything.
-            return false;
-        }
+        // if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL
+        //         && mTopAction == null) {
+        //     // We are running in factory test mode, but unable to find
+        //     // the factory test app, so just sit around displaying the
+        //     // error message and don't try to start anything.
+        //     return false;
+        // }
         Intent intent = getHomeIntent();
         ActivityInfo aInfo = resolveActivityInfo(intent, STOCK_PM_FLAGS, userId);
         if (aInfo != null) {
@@ -5130,7 +5132,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
             final ArrayList<ProcessMemInfo> memInfos
                     = doReport ? new ArrayList<ProcessMemInfo>(mLruProcesses.size()) : null;
-            EventLog.writeEvent(EventLogTags.AM_LOW_MEMORY, mLruProcesses.size());
+            // EventLog.writeEvent(EventLogTags.AM_LOW_MEMORY, mLruProcesses.size());
             long now = SystemClock.uptimeMillis();
             for (int i=mLruProcesses.size()-1; i>=0; i--) {
                 ProcessRecord rec = mLruProcesses.get(i);
@@ -5207,7 +5209,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 mAllowLowerMemLevel = false;
                 doLowMem = false;
             }
-            EventLog.writeEvent(EventLogTags.AM_PROC_DIED, app.userId, app.pid, app.processName);
+            // EventLog.writeEvent(EventLogTags.AM_PROC_DIED, app.userId, app.pid, app.processName);
             if (DEBUG_CLEANUP) Slog.v(TAG_CLEANUP,
                 "Dying app: " + app + ", pid: " + pid + ", thread: " + thread.asBinder());
             handleAppDiedLocked(app, false, true);
@@ -5222,7 +5224,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             // A new process has already been started.
             Slog.i(TAG, "Process " + app.processName + " (pid " + pid
                     + ") has died and restarted (pid " + app.pid + ").");
-            EventLog.writeEvent(EventLogTags.AM_PROC_DIED, app.userId, app.pid, app.processName);
+            // EventLog.writeEvent(EventLogTags.AM_PROC_DIED, app.userId, app.pid, app.processName);
         } else if (DEBUG_PROCESSES) {
             Slog.d(TAG_PROCESSES, "Received spurious death notification for thread "
                     + thread.asBinder());
@@ -6374,8 +6376,8 @@ public final class ActivityManagerService extends ActivityManagerNative
 
         if (gone) {
             Slog.w(TAG, "Process " + app + " failed to attach");
-            EventLog.writeEvent(EventLogTags.AM_PROCESS_START_TIMEOUT, app.userId,
-                    pid, app.uid, app.processName);
+            // EventLog.writeEvent(EventLogTags.AM_PROCESS_START_TIMEOUT, app.userId,
+            //         pid, app.uid, app.processName);
             removeProcessNameLocked(app.processName, app.uid);
             if (mHeavyWeightProcess == app) {
                 mHandler.sendMessage(mHandler.obtainMessage(CANCEL_HEAVY_NOTIFICATION_MSG,
@@ -6430,7 +6432,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         if (app == null) {
             Slog.w(TAG, "No pending application record for pid " + pid
                     + " (IApplicationThread " + thread + "); dropping process");
-            EventLog.writeEvent(EventLogTags.AM_DROP_PROCESS, pid);
+            // EventLog.writeEvent(EventLogTags.AM_DROP_PROCESS, pid);
             if (pid > 0 && pid != MY_PID) {
                 Process.killProcessQuiet(pid);
                 //TODO: killProcessGroup(app.info.uid, pid);
@@ -6467,7 +6469,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             return false;
         }
 
-        EventLog.writeEvent(EventLogTags.AM_PROC_BOUND, app.userId, app.pid, app.processName);
+        // EventLog.writeEvent(EventLogTags.AM_PROC_BOUND, app.userId, app.pid, app.processName);
 
         app.makeActive(thread, mProcessStats);
         app.curAdj = app.setAdj = app.verifiedAdj = ProcessList.INVALID_ADJ;
@@ -6693,8 +6695,8 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     void enableScreenAfterBoot() {
-        EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_ENABLE_SCREEN,
-                SystemClock.uptimeMillis());
+        // EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_ENABLE_SCREEN,
+        //         SystemClock.uptimeMillis());
         mWindowManager.enableScreenAfterBoot();
 
         synchronized (this) {
@@ -10842,11 +10844,11 @@ public final class ActivityManagerService extends ActivityManagerNative
                     // If permissions need a review before any of the app components can run,
                     // we return no provider and launch a review activity if the calling app
                     // is in the foreground.
-                    if (mPermissionReviewRequired || Build.PERMISSIONS_REVIEW_REQUIRED) {
-                        if (!requestTargetProviderPermissionsReviewIfNeededLocked(cpi, r, userId)) {
-                            return null;
-                        }
-                    }
+                    // if (mPermissionReviewRequired || Build.PERMISSIONS_REVIEW_REQUIRED) {
+                    //     if (!requestTargetProviderPermissionsReviewIfNeededLocked(cpi, r, userId)) {
+                    //         return null;
+                    //     }
+                    // }
 
                     try {
                         checkTime(startTime, "getContentProviderImpl: before getApplicationInfo");
@@ -10975,10 +10977,10 @@ public final class ActivityManagerService extends ActivityManagerNative
                             + cpi.applicationInfo.packageName + "/"
                             + cpi.applicationInfo.uid + " for provider "
                             + name + ": launching app became null");
-                    EventLog.writeEvent(EventLogTags.AM_PROVIDER_LOST_PROCESS,
-                            UserHandle.getUserId(cpi.applicationInfo.uid),
-                            cpi.applicationInfo.packageName,
-                            cpi.applicationInfo.uid, name);
+                    // EventLog.writeEvent(EventLogTags.AM_PROVIDER_LOST_PROCESS,
+                    //         UserHandle.getUserId(cpi.applicationInfo.uid),
+                    //         cpi.applicationInfo.packageName,
+                    //         cpi.applicationInfo.uid, name);
                     return null;
                 }
                 try {
@@ -11362,7 +11364,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     private void startPersistentApps(int matchFlags) {
-        if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL) return;
+        // if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL) return;
 
         synchronized (this) {
             try {
@@ -13236,24 +13238,30 @@ public final class ActivityManagerService extends ActivityManagerNative
                     "Initial config: " + mConfiguration);
 
             // Load resources only after the current configuration has been set.
-            final Resources res = mContext.getResources();
-            mHasRecents = res.getBoolean(com.android.internal.R.bool.config_hasRecents);
-            mThumbnailWidth = res.getDimensionPixelSize(
-                    com.android.internal.R.dimen.thumbnail_width);
-            mThumbnailHeight = res.getDimensionPixelSize(
-                    com.android.internal.R.dimen.thumbnail_height);
-            mDefaultPinnedStackBounds = Rect.unflattenFromString(res.getString(
-                    com.android.internal.R.string.config_defaultPictureInPictureBounds));
-            mAppErrors.loadAppsNotReportingCrashesFromConfigLocked(res.getString(
-                    com.android.internal.R.string.config_appsNotReportingCrashes));
-            if ((mConfiguration.uiMode & UI_MODE_TYPE_TELEVISION) == UI_MODE_TYPE_TELEVISION) {
-                mFullscreenThumbnailScale = (float) res
-                    .getInteger(com.android.internal.R.integer.thumbnail_width_tv) /
-                    (float) mConfiguration.screenWidthDp;
-            } else {
-                mFullscreenThumbnailScale = res.getFraction(
-                    com.android.internal.R.fraction.thumbnail_fullscreen_scale, 1, 1);
-            }
+            // final Resources res = mContext.getResources();
+            // mHasRecents = res.getBoolean(com.android.internal.R.bool.config_hasRecents);
+            // mThumbnailWidth = res.getDimensionPixelSize(
+            //         com.android.internal.R.dimen.thumbnail_width);
+            // mThumbnailHeight = res.getDimensionPixelSize(
+            //         com.android.internal.R.dimen.thumbnail_height);
+            // mDefaultPinnedStackBounds = Rect.unflattenFromString(res.getString(
+            //         com.android.internal.R.string.config_defaultPictureInPictureBounds));
+            // mAppErrors.loadAppsNotReportingCrashesFromConfigLocked(res.getString(
+            //         com.android.internal.R.string.config_appsNotReportingCrashes));
+            // if ((mConfiguration.uiMode & UI_MODE_TYPE_TELEVISION) == UI_MODE_TYPE_TELEVISION) {
+            //     mFullscreenThumbnailScale = (float) res
+            //         .getInteger(com.android.internal.R.integer.thumbnail_width_tv) /
+            //         (float) mConfiguration.screenWidthDp;
+            // } else {
+            //     mFullscreenThumbnailScale = res.getFraction(
+            //         com.android.internal.R.fraction.thumbnail_fullscreen_scale, 1, 1);
+            // }
+            mHasRecents = false;
+            mThumbnailWidth = 192;
+            mThumbnailHeight = 192;
+            mDefaultPinnedStackBounds = new Rect(0, 0, 100, 100);
+            mAppErrors.loadAppsNotReportingCrashesFromConfigLocked("");
+            mFullscreenThumbnailScale = 0.6f;
         }
     }
 
@@ -13312,43 +13320,43 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
 
         Slog.i(TAG, "System now ready");
-        EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_AMS_READY,
-            SystemClock.uptimeMillis());
+        // EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_AMS_READY,
+        //     SystemClock.uptimeMillis());
 
         synchronized(this) {
             // Make sure we have no pre-ready processes sitting around.
 
-            if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL) {
-                ResolveInfo ri = mContext.getPackageManager()
-                        .resolveActivity(new Intent(Intent.ACTION_FACTORY_TEST),
-                                STOCK_PM_FLAGS);
-                CharSequence errorMsg = null;
-                if (ri != null) {
-                    ActivityInfo ai = ri.activityInfo;
-                    ApplicationInfo app = ai.applicationInfo;
-                    if ((app.flags&ApplicationInfo.FLAG_SYSTEM) != 0) {
-                        mTopAction = Intent.ACTION_FACTORY_TEST;
-                        mTopData = null;
-                        mTopComponent = new ComponentName(app.packageName,
-                                ai.name);
-                    } else {
-                        errorMsg = mContext.getResources().getText(
-                                com.android.internal.R.string.factorytest_not_system);
-                    }
-                } else {
-                    errorMsg = mContext.getResources().getText(
-                            com.android.internal.R.string.factorytest_no_action);
-                }
-                if (errorMsg != null) {
-                    mTopAction = null;
-                    mTopData = null;
-                    mTopComponent = null;
-                    Message msg = Message.obtain();
-                    msg.what = SHOW_FACTORY_ERROR_UI_MSG;
-                    msg.getData().putCharSequence("msg", errorMsg);
-                    mUiHandler.sendMessage(msg);
-                }
-            }
+            // if (mFactoryTest == FactoryTest.FACTORY_TEST_LOW_LEVEL) {
+            //     ResolveInfo ri = mContext.getPackageManager()
+            //             .resolveActivity(new Intent(Intent.ACTION_FACTORY_TEST),
+            //                     STOCK_PM_FLAGS);
+            //     CharSequence errorMsg = null;
+            //     if (ri != null) {
+            //         ActivityInfo ai = ri.activityInfo;
+            //         ApplicationInfo app = ai.applicationInfo;
+            //         if ((app.flags&ApplicationInfo.FLAG_SYSTEM) != 0) {
+            //             mTopAction = Intent.ACTION_FACTORY_TEST;
+            //             mTopData = null;
+            //             mTopComponent = new ComponentName(app.packageName,
+            //                     ai.name);
+            //         } else {
+            //             errorMsg = mContext.getResources().getText(
+            //                     com.android.internal.R.string.factorytest_not_system);
+            //         }
+            //     } else {
+            //         errorMsg = mContext.getResources().getText(
+            //                 com.android.internal.R.string.factorytest_no_action);
+            //     }
+            //     if (errorMsg != null) {
+            //         mTopAction = null;
+            //         mTopData = null;
+            //         mTopComponent = null;
+            //         Message msg = Message.obtain();
+            //         msg.what = SHOW_FACTORY_ERROR_UI_MSG;
+            //         msg.getData().putCharSequence("msg", errorMsg);
+            //         mUiHandler.sendMessage(msg);
+            //     }
+            // }
         }
 
         retrieveSettings();
@@ -13468,13 +13476,13 @@ public final class ActivityManagerService extends ActivityManagerNative
      */
     void handleApplicationCrashInner(String eventType, ProcessRecord r, String processName,
             ApplicationErrorReport.CrashInfo crashInfo) {
-        EventLog.writeEvent(EventLogTags.AM_CRASH, Binder.getCallingPid(),
-                UserHandle.getUserId(Binder.getCallingUid()), processName,
-                r == null ? -1 : r.info.flags,
-                crashInfo.exceptionClassName,
-                crashInfo.exceptionMessage,
-                crashInfo.throwFileName,
-                crashInfo.throwLineNumber);
+        // EventLog.writeEvent(EventLogTags.AM_CRASH, Binder.getCallingPid(),
+        //         UserHandle.getUserId(Binder.getCallingUid()), processName,
+        //         r == null ? -1 : r.info.flags,
+        //         crashInfo.exceptionClassName,
+        //         crashInfo.exceptionMessage,
+        //         crashInfo.throwFileName,
+        //         crashInfo.throwLineNumber);
 
         // addErrorToDropBox(eventType, r, processName, null, null, null, null, null, crashInfo);
 
@@ -16102,7 +16110,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                     && args[opti].charAt(0) != '-') {
                 ArrayList<ProcessCpuTracker.Stats> nativeProcs
                         = new ArrayList<ProcessCpuTracker.Stats>();
-                updateCpuStatsNow();
+                // updateCpuStatsNow();
                 int findPid = -1;
                 try {
                     findPid = Integer.parseInt(args[opti]);
@@ -16300,7 +16308,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         if (!isCheckinRequest && procs.size() > 1 && !packages) {
             // If we are showing aggregations, also look for native processes to
             // include so that our aggregations are more accurate.
-            updateCpuStatsNow();
+            // updateCpuStatsNow();
             mi = null;
             synchronized (mProcessCpuTracker) {
                 final int N = mProcessCpuTracker.countStats();
@@ -16418,8 +16426,8 @@ public final class ActivityManagerService extends ActivityManagerNative
                     final long freeKb = memInfo.getFreeSizeKb();
                     final long zramKb = memInfo.getZramTotalSizeKb();
                     final long kernelKb = memInfo.getKernelUsedSizeKb();
-                    EventLogTags.writeAmMeminfo(cachedKb*1024, freeKb*1024, zramKb*1024,
-                            kernelKb*1024, nativeProcTotalPss*1024);
+                    // EventLogTags.writeAmMeminfo(cachedKb*1024, freeKb*1024, zramKb*1024,
+                    //         kernelKb*1024, nativeProcTotalPss*1024);
                     mProcessStats.addSysMemUsageLocked(cachedKb, freeKb, zramKb, kernelKb,
                             nativeProcTotalPss);
                 }
@@ -16579,7 +16587,7 @@ public final class ActivityManagerService extends ActivityManagerNative
             ProcessMemInfo mi = memInfos.get(i);
             infoMap.put(mi.pid, mi);
         }
-        updateCpuStatsNow();
+        // updateCpuStatsNow();
         long[] memtrackTmp = new long[1];
         final List<ProcessCpuTracker.Stats> stats;
         // Get a list of Stats that have vsize > 0
@@ -19006,7 +19014,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 if (DEBUG_SWITCH || DEBUG_CONFIGURATION) Slog.i(TAG_CONFIGURATION,
                         "Updating configuration to: " + values);
 
-                EventLog.writeEvent(EventLogTags.CONFIGURATION_CHANGED, changes);
+                // EventLog.writeEvent(EventLogTags.CONFIGURATION_CHANGED, changes);
 
                 if (!initLocale && !values.getLocales().isEmpty() && values.userSetLocale) {
                     final LocaleList locales = values.getLocales();
@@ -20031,8 +20039,8 @@ public final class ActivityManagerService extends ActivityManagerNative
      */
     void recordPssSampleLocked(ProcessRecord proc, int procState, long pss, long uss, long swapPss,
             long now) {
-        EventLogTags.writeAmPss(proc.pid, proc.uid, proc.processName, pss * 1024, uss * 1024,
-                swapPss * 1024);
+        // EventLogTags.writeAmPss(proc.pid, proc.uid, proc.processName, pss * 1024, uss * 1024,
+        //         swapPss * 1024);
         proc.lastPssTime = now;
         proc.baseProcessTracker.addPss(pss, uss, true, proc.pkgList);
         if (DEBUG_PSS) Slog.d(TAG_PSS,
@@ -20315,7 +20323,7 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     final void checkExcessivePowerUsageLocked(boolean doKills) {
-        updateCpuStatsNow();
+        // updateCpuStatsNow();
 
         // BatteryStatsImpl stats = mBatteryStatsService.getActiveStatistics();
         boolean doWakeKills = doKills;
@@ -21112,9 +21120,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                 if (DEBUG_OOM_ADJ) Slog.d(TAG_OOM_ADJ, "Keeping last mem factor!");
             }
         }
-        if (memFactor != mLastMemoryLevel) {
-            EventLogTags.writeAmMemFactor(memFactor, mLastMemoryLevel);
-        }
+        // if (memFactor != mLastMemoryLevel) {
+        //     EventLogTags.writeAmMemFactor(memFactor, mLastMemoryLevel);
+        // }
         mLastMemoryLevel = memFactor;
         mLastNumProcesses = mLruProcesses.size();
         boolean allChanged = mProcessStats.setMemFactorLocked(memFactor, !isSleepingLocked(), now);
@@ -21302,15 +21310,15 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
         }
 
-        if (mProcessStats.shouldWriteNowLocked(now)) {
-            mHandler.post(new Runnable() {
-                @Override public void run() {
-                    synchronized (ActivityManagerService.this) {
-                        mProcessStats.writeStateAsyncLocked();
-                    }
-                }
-            });
-        }
+        // if (mProcessStats.shouldWriteNowLocked(now)) {
+        //     mHandler.post(new Runnable() {
+        //         @Override public void run() {
+        //             synchronized (ActivityManagerService.this) {
+        //                 mProcessStats.writeStateAsyncLocked();
+        //             }
+        //         }
+        //     });
+        // }
 
         if (DEBUG_OOM_ADJ) {
             final long duration = SystemClock.uptimeMillis() - now;
