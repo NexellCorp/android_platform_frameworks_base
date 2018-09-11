@@ -694,9 +694,9 @@ public class ZygoteInit {
 
         /* For child process */
         if (pid == 0) {
-            if (hasSecondZygote(abiList)) {
-                waitForSecondaryZygote(socketName);
-            }
+            // if (hasSecondZygote(abiList)) {
+            //     waitForSecondaryZygote(socketName);
+            // }
 
             handleSystemServerProcess(parsedArgs);
         }
