@@ -200,13 +200,14 @@ public final class ProcessStats implements Parcelable {
 
     public ProcessStats(boolean running) {
         mRunning = running;
-        reset();
+        // reset();
         if (running) {
             // If we are actively running, we need to determine whether the system is
             // collecting swap pss data.
-            Debug.MemoryInfo info = new Debug.MemoryInfo();
-            Debug.getMemoryInfo(android.os.Process.myPid(), info);
-            mHasSwappedOutPss = info.hasSwappedOutPss();
+            // Debug.MemoryInfo info = new Debug.MemoryInfo();
+            // Debug.getMemoryInfo(android.os.Process.myPid(), info);
+            // mHasSwappedOutPss = info.hasSwappedOutPss();
+            mHasSwappedOutPss = true;
         }
     }
 
@@ -502,8 +503,8 @@ public final class ProcessStats implements Parcelable {
         mStartTime = 0;
         mReadError = null;
         mFlags = 0;
-        evaluateSystemProperties(true);
-        updateFragmentation();
+        // evaluateSystemProperties(true);
+        // updateFragmentation();
     }
 
     public boolean evaluateSystemProperties(boolean update) {
