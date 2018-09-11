@@ -237,8 +237,9 @@ public final class DisplayManagerService extends SystemService {
         mUiHandler = UiThread.getHandler();
         mDisplayAdapterListener = new DisplayAdapterListener();
         mSingleDisplayDemoMode = SystemProperties.getBoolean("persist.demo.singledisplay", false);
-        mDefaultDisplayDefaultColorMode = mContext.getResources().getInteger(
-            com.android.internal.R.integer.config_defaultDisplayDefaultColorMode);
+        // mDefaultDisplayDefaultColorMode = mContext.getResources().getInteger(
+        //     com.android.internal.R.integer.config_defaultDisplayDefaultColorMode);
+        mDefaultDisplayDefaultColorMode = 0;
 
         PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
         mGlobalDisplayBrightness = pm.getDefaultScreenBrightnessSetting();
@@ -655,14 +656,14 @@ public final class DisplayManagerService extends SystemService {
     }
 
     private void registerWifiDisplayAdapterLocked() {
-        if (mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_enableWifiDisplay)
-                || SystemProperties.getInt(FORCE_WIFI_DISPLAY_ENABLE, -1) == 1) {
-            mWifiDisplayAdapter = new WifiDisplayAdapter(
-                    mSyncRoot, mContext, mHandler, mDisplayAdapterListener,
-                    mPersistentDataStore);
-            registerDisplayAdapterLocked(mWifiDisplayAdapter);
-        }
+        // if (mContext.getResources().getBoolean(
+        //         com.android.internal.R.bool.config_enableWifiDisplay)
+        //         || SystemProperties.getInt(FORCE_WIFI_DISPLAY_ENABLE, -1) == 1) {
+        //     mWifiDisplayAdapter = new WifiDisplayAdapter(
+        //             mSyncRoot, mContext, mHandler, mDisplayAdapterListener,
+        //             mPersistentDataStore);
+        //     registerDisplayAdapterLocked(mWifiDisplayAdapter);
+        // }
     }
 
     private void registerVirtualDisplayAdapterLocked() {
