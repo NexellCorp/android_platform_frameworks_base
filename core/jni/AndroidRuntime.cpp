@@ -82,15 +82,15 @@ extern int register_android_opengl_jni_GLES31(JNIEnv* env);
 extern int register_android_opengl_jni_GLES31Ext(JNIEnv* env);
 extern int register_android_opengl_jni_GLES32(JNIEnv* env);
 
-extern int register_android_hardware_Camera(JNIEnv *env);
-extern int register_android_hardware_camera2_CameraMetadata(JNIEnv *env);
-extern int register_android_hardware_camera2_legacy_LegacyCameraDevice(JNIEnv *env);
-extern int register_android_hardware_camera2_legacy_PerfMeasurement(JNIEnv *env);
-extern int register_android_hardware_camera2_DngCreator(JNIEnv *env);
+// extern int register_android_hardware_Camera(JNIEnv *env);
+// extern int register_android_hardware_camera2_CameraMetadata(JNIEnv *env);
+// extern int register_android_hardware_camera2_legacy_LegacyCameraDevice(JNIEnv *env);
+// extern int register_android_hardware_camera2_legacy_PerfMeasurement(JNIEnv *env);
+// extern int register_android_hardware_camera2_DngCreator(JNIEnv *env);
 extern int register_android_hardware_Radio(JNIEnv *env);
 // extern int register_android_hardware_SensorManager(JNIEnv *env);
-extern int register_android_hardware_SerialPort(JNIEnv *env);
-extern int register_android_hardware_SoundTrigger(JNIEnv *env);
+// extern int register_android_hardware_SerialPort(JNIEnv *env);
+// extern int register_android_hardware_SoundTrigger(JNIEnv *env);
 extern int register_android_hardware_UsbDevice(JNIEnv *env);
 extern int register_android_hardware_UsbDeviceConnection(JNIEnv *env);
 extern int register_android_hardware_UsbRequest(JNIEnv *env);
@@ -134,9 +134,9 @@ extern int register_android_graphics_SurfaceTexture(JNIEnv* env);
 extern int register_android_graphics_Xfermode(JNIEnv* env);
 extern int register_android_graphics_drawable_AnimatedVectorDrawable(JNIEnv* env);
 extern int register_android_graphics_drawable_VectorDrawable(JNIEnv* env);
-extern int register_android_graphics_pdf_PdfDocument(JNIEnv* env);
-extern int register_android_graphics_pdf_PdfEditor(JNIEnv* env);
-extern int register_android_graphics_pdf_PdfRenderer(JNIEnv* env);
+// extern int register_android_graphics_pdf_PdfDocument(JNIEnv* env);
+// extern int register_android_graphics_pdf_PdfEditor(JNIEnv* env);
+// extern int register_android_graphics_pdf_PdfRenderer(JNIEnv* env);
 extern int register_android_view_DisplayEventReceiver(JNIEnv* env);
 extern int register_android_view_DisplayListCanvas(JNIEnv* env);
 extern int register_android_view_GraphicBuffer(JNIEnv* env);
@@ -1337,9 +1337,9 @@ static const RegJNIRec gRegJNI[] = {
     REG_JNI(register_android_graphics_YuvImage),
     REG_JNI(register_android_graphics_drawable_AnimatedVectorDrawable),
     REG_JNI(register_android_graphics_drawable_VectorDrawable),
-    REG_JNI(register_android_graphics_pdf_PdfDocument),
-    REG_JNI(register_android_graphics_pdf_PdfEditor),
-    REG_JNI(register_android_graphics_pdf_PdfRenderer),
+    // REG_JNI(register_android_graphics_pdf_PdfDocument),
+    // REG_JNI(register_android_graphics_pdf_PdfEditor),
+    // REG_JNI(register_android_graphics_pdf_PdfRenderer),
 
     REG_JNI(register_android_database_CursorWindow),
     REG_JNI(register_android_database_SQLiteConnection),
@@ -1359,15 +1359,15 @@ static const RegJNIRec gRegJNI[] = {
     REG_JNI(register_com_android_internal_os_PathClassLoaderFactory),
     REG_JNI(register_com_android_internal_os_Zygote),
     REG_JNI(register_com_android_internal_util_VirtualRefBasePtr),
-    REG_JNI(register_android_hardware_Camera),
-    REG_JNI(register_android_hardware_camera2_CameraMetadata),
-    REG_JNI(register_android_hardware_camera2_legacy_LegacyCameraDevice),
-    REG_JNI(register_android_hardware_camera2_legacy_PerfMeasurement),
-    REG_JNI(register_android_hardware_camera2_DngCreator),
+    // REG_JNI(register_android_hardware_Camera),
+    // REG_JNI(register_android_hardware_camera2_CameraMetadata),
+    // REG_JNI(register_android_hardware_camera2_legacy_LegacyCameraDevice),
+    // REG_JNI(register_android_hardware_camera2_legacy_PerfMeasurement),
+    // REG_JNI(register_android_hardware_camera2_DngCreator),
     REG_JNI(register_android_hardware_Radio),
     // REG_JNI(register_android_hardware_SensorManager),
-    REG_JNI(register_android_hardware_SerialPort),
-    REG_JNI(register_android_hardware_SoundTrigger),
+    // REG_JNI(register_android_hardware_SerialPort),
+    // REG_JNI(register_android_hardware_SoundTrigger),
     REG_JNI(register_android_hardware_UsbDevice),
     REG_JNI(register_android_hardware_UsbDeviceConnection),
     REG_JNI(register_android_hardware_UsbRequest),
