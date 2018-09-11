@@ -3347,8 +3347,9 @@ public class PackageParser {
             }
         }
 
-        final boolean useRoundIcon =
-                Resources.getSystem().getBoolean(com.android.internal.R.bool.config_useRoundIcon);
+        // final boolean useRoundIcon =
+        //         Resources.getSystem().getBoolean(com.android.internal.R.bool.config_useRoundIcon);
+        final boolean useRoundIcon = false;
         int roundIconVal = useRoundIcon ? sa.getResourceId(roundIconRes, 0) : 0;
         if (roundIconVal != 0) {
             outInfo.icon = roundIconVal;
@@ -4559,8 +4560,9 @@ public class PackageParser {
             outInfo.nonLocalizedLabel = v.coerceToString();
         }
 
-        final boolean useRoundIcon =
-                Resources.getSystem().getBoolean(com.android.internal.R.bool.config_useRoundIcon);
+        // final boolean useRoundIcon =
+        //         Resources.getSystem().getBoolean(com.android.internal.R.bool.config_useRoundIcon);
+        final boolean useRoundIcon = false;
         int roundIconVal = useRoundIcon ? sa.getResourceId(
                 com.android.internal.R.styleable.AndroidManifestIntentFilter_roundIcon, 0) : 0;
         if (roundIconVal != 0) {
