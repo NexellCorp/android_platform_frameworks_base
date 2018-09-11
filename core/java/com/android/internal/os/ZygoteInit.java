@@ -579,8 +579,9 @@ public class ZygoteInit {
      */
     private static void performSystemServerDexOpt(String classPath) {
         final String[] classPathElements = classPath.split(":");
-        final InstallerConnection installer = new InstallerConnection();
-        installer.waitForConnection();
+        // final InstallerConnection installer = new InstallerConnection();
+        // installer.waitForConnection();
+        InstallerConnection installer = null;
         final String instructionSet = VMRuntime.getRuntime().vmInstructionSet();
 
         try {
@@ -610,6 +611,10 @@ public class ZygoteInit {
 
                 if (dexoptNeeded != DexFile.NO_DEXOPT_NEEDED) {
                     try {
+                        if (installer == null) {
+                            installer = new InstallerConnection();
+                            installer.waitForConnection();
+                        }
                         installer.dexopt(classPathElement, Process.SYSTEM_UID, instructionSet,
                                 dexoptNeeded, 0 /*dexFlags*/, "speed", null /*volumeUuid*/,
                                 sharedLibraries);
@@ -626,7 +631,11 @@ public class ZygoteInit {
                 sharedLibraries += classPathElement;
             }
         } finally {
-            installer.disconnect();
+            // installer.disconnect();
+            if (installer != null) {
+                installer.disconnect();
+                installer = null;
+            }
         }
     }
 
