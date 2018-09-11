@@ -124,7 +124,6 @@
 [Landroid.util.Range;
 [Landroid.util.Rational;
 [Landroid.view.Choreographer$CallbackQueue;
-[Landroid.view.Display$ColorTransform;
 [Landroid.view.Display$Mode;
 [Landroid.view.Display;
 [Landroid.view.HandlerActionQueue$HandlerAction;
@@ -1960,8 +1959,6 @@ android.view.ContextMenu
 android.view.ContextMenu$ContextMenuInfo
 android.view.ContextThemeWrapper
 android.view.Display
-android.view.Display$ColorTransform
-android.view.Display$ColorTransform$1
 android.view.Display$HdrCapabilities
 android.view.Display$HdrCapabilities$1
 android.view.Display$Mode
