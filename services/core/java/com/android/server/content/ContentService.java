@@ -144,21 +144,21 @@ public final class ContentService extends IContentService.Stub {
         }
     };
 
-    private SyncManager getSyncManager() {
-        if (SystemProperties.getBoolean("config.disable_network", false)) {
-            return null;
-        }
-
-        synchronized(mSyncManagerLock) {
-            try {
-                // Try to create the SyncManager, return null if it fails (e.g. the disk is full).
-                if (mSyncManager == null) mSyncManager = new SyncManager(mContext, mFactoryTest);
-            } catch (SQLiteException e) {
-                Log.e(TAG, "Can't create SyncManager", e);
-            }
-            return mSyncManager;
-        }
-    }
+    // private SyncManager getSyncManager() {
+    //     if (SystemProperties.getBoolean("config.disable_network", false)) {
+    //         return null;
+    //     }
+    //
+    //     synchronized(mSyncManagerLock) {
+    //         try {
+    //             // Try to create the SyncManager, return null if it fails (e.g. the disk is full).
+    //             if (mSyncManager == null) mSyncManager = new SyncManager(mContext, mFactoryTest);
+    //         } catch (SQLiteException e) {
+    //             Log.e(TAG, "Can't create SyncManager", e);
+    //         }
+    //         return mSyncManager;
+    //     }
+    // }
 
     @Override
     protected synchronized void dump(FileDescriptor fd, PrintWriter pw_, String[] args) {
@@ -275,7 +275,7 @@ public final class ContentService extends IContentService.Stub {
     }
 
     void systemReady() {
-        getSyncManager();
+        // getSyncManager();
     }
 
     /**
@@ -398,13 +398,13 @@ public final class ContentService extends IContentService.Stub {
                     }
                 }
             }
-            if ((flags&ContentResolver.NOTIFY_SYNC_TO_NETWORK) != 0) {
-                SyncManager syncManager = getSyncManager();
-                if (syncManager != null) {
-                    syncManager.scheduleLocalSync(null /* all accounts */, callingUserHandle, uid,
-                            uri.getAuthority());
-                }
-            }
+            // if ((flags&ContentResolver.NOTIFY_SYNC_TO_NETWORK) != 0) {
+            //     SyncManager syncManager = getSyncManager();
+            //     if (syncManager != null) {
+            //         syncManager.scheduleLocalSync(null #<{(| all accounts |)}>#, callingUserHandle, uid,
+            //                 uri.getAuthority());
+            //     }
+            // }
 
             synchronized (mCache) {
                 final String providerPackageName = getProviderPackageName(uri);
@@ -453,23 +453,23 @@ public final class ContentService extends IContentService.Stub {
 
     @Override
     public void requestSync(Account account, String authority, Bundle extras) {
-        Bundle.setDefusable(extras, true);
-        ContentResolver.validateSyncExtrasBundle(extras);
-        int userId = UserHandle.getCallingUserId();
-        int uId = Binder.getCallingUid();
-
-        // This makes it so that future permission checks will be in the context of this
-        // process rather than the caller's process. We will restore this before returning.
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null) {
-                syncManager.scheduleSync(account, userId, uId, authority, extras,
-                        SyncStorageEngine.AuthorityInfo.UNDEFINED);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // Bundle.setDefusable(extras, true);
+        // ContentResolver.validateSyncExtrasBundle(extras);
+        // int userId = UserHandle.getCallingUserId();
+        // int uId = Binder.getCallingUid();
+        //
+        // // This makes it so that future permission checks will be in the context of this
+        // // process rather than the caller's process. We will restore this before returning.
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null) {
+        //         syncManager.scheduleSync(account, userId, uId, authority, extras,
+        //                 SyncStorageEngine.AuthorityInfo.UNDEFINED);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     /**
@@ -502,40 +502,40 @@ public final class ContentService extends IContentService.Stub {
      */
     @Override
     public void syncAsUser(SyncRequest request, int userId) {
-        enforceCrossUserPermission(userId, "no permission to request sync as user: " + userId);
-        int callerUid = Binder.getCallingUid();
-        // This makes it so that future permission checks will be in the context of this
-        // process rather than the caller's process. We will restore this before returning.
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager == null) {
-                return;
-            }
-
-            Bundle extras = request.getBundle();
-            long flextime = request.getSyncFlexTime();
-            long runAtTime = request.getSyncRunTime();
-            if (request.isPeriodic()) {
-                mContext.enforceCallingOrSelfPermission(
-                        Manifest.permission.WRITE_SYNC_SETTINGS,
-                        "no permission to write the sync settings");
-                SyncStorageEngine.EndPoint info;
-                info = new SyncStorageEngine.EndPoint(
-                        request.getAccount(), request.getProvider(), userId);
-
-                runAtTime = clampPeriod(runAtTime);
-                // Schedule periodic sync.
-                getSyncManager().updateOrAddPeriodicSync(info, runAtTime,
-                        flextime, extras);
-            } else {
-                syncManager.scheduleSync(
-                        request.getAccount(), userId, callerUid, request.getProvider(), extras,
-                        SyncStorageEngine.AuthorityInfo.UNDEFINED);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // enforceCrossUserPermission(userId, "no permission to request sync as user: " + userId);
+        // int callerUid = Binder.getCallingUid();
+        // // This makes it so that future permission checks will be in the context of this
+        // // process rather than the caller's process. We will restore this before returning.
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager == null) {
+        //         return;
+        //     }
+        //
+        //     Bundle extras = request.getBundle();
+        //     long flextime = request.getSyncFlexTime();
+        //     long runAtTime = request.getSyncRunTime();
+        //     if (request.isPeriodic()) {
+        //         mContext.enforceCallingOrSelfPermission(
+        //                 Manifest.permission.WRITE_SYNC_SETTINGS,
+        //                 "no permission to write the sync settings");
+        //         SyncStorageEngine.EndPoint info;
+        //         info = new SyncStorageEngine.EndPoint(
+        //                 request.getAccount(), request.getProvider(), userId);
+        //
+        //         runAtTime = clampPeriod(runAtTime);
+        //         // Schedule periodic sync.
+        //         getSyncManager().updateOrAddPeriodicSync(info, runAtTime,
+        //                 flextime, extras);
+        //     } else {
+        //         syncManager.scheduleSync(
+        //                 request.getAccount(), userId, callerUid, request.getProvider(), extras,
+        //                 SyncStorageEngine.AuthorityInfo.UNDEFINED);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     /**
@@ -568,56 +568,56 @@ public final class ContentService extends IContentService.Stub {
     @Override
     public void cancelSyncAsUser(Account account, String authority, ComponentName cname,
                                  int userId) {
-        if (authority != null && authority.length() == 0) {
-            throw new IllegalArgumentException("Authority must be non-empty");
-        }
-        enforceCrossUserPermission(userId,
-                "no permission to modify the sync settings for user " + userId);
-        // This makes it so that future permission checks will be in the context of this
-        // process rather than the caller's process. We will restore this before returning.
-        long identityToken = clearCallingIdentity();
-        if (cname != null) {
-            Slog.e(TAG, "cname not null.");
-            return;
-        }
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null) {
-                SyncStorageEngine.EndPoint info;
-                info = new SyncStorageEngine.EndPoint(account, authority, userId);
-                syncManager.clearScheduledSyncOperations(info);
-                syncManager.cancelActiveSync(info, null /* all syncs for this adapter */);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // if (authority != null && authority.length() == 0) {
+        //     throw new IllegalArgumentException("Authority must be non-empty");
+        // }
+        // enforceCrossUserPermission(userId,
+        //         "no permission to modify the sync settings for user " + userId);
+        // // This makes it so that future permission checks will be in the context of this
+        // // process rather than the caller's process. We will restore this before returning.
+        // long identityToken = clearCallingIdentity();
+        // if (cname != null) {
+        //     Slog.e(TAG, "cname not null.");
+        //     return;
+        // }
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null) {
+        //         SyncStorageEngine.EndPoint info;
+        //         info = new SyncStorageEngine.EndPoint(account, authority, userId);
+        //         syncManager.clearScheduledSyncOperations(info);
+        //         syncManager.cancelActiveSync(info, null #<{(| all syncs for this adapter |)}>#);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     @Override
     public void cancelRequest(SyncRequest request) {
-        SyncManager syncManager = getSyncManager();
-        if (syncManager == null) return;
-        int userId = UserHandle.getCallingUserId();
-
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncStorageEngine.EndPoint info;
-            Bundle extras = new Bundle(request.getBundle());
-            Account account = request.getAccount();
-            String provider = request.getProvider();
-            info = new SyncStorageEngine.EndPoint(account, provider, userId);
-            if (request.isPeriodic()) {
-                // Remove periodic sync.
-                mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
-                        "no permission to write the sync settings");
-                getSyncManager().removePeriodicSync(info, extras);
-            }
-            // Cancel active syncs and clear pending syncs from the queue.
-            syncManager.cancelScheduledSyncOperation(info, extras);
-            syncManager.cancelActiveSync(info, extras);
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // SyncManager syncManager = getSyncManager();
+        // if (syncManager == null) return;
+        // int userId = UserHandle.getCallingUserId();
+        //
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncStorageEngine.EndPoint info;
+        //     Bundle extras = new Bundle(request.getBundle());
+        //     Account account = request.getAccount();
+        //     String provider = request.getProvider();
+        //     info = new SyncStorageEngine.EndPoint(account, provider, userId);
+        //     if (request.isPeriodic()) {
+        //         // Remove periodic sync.
+        //         mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
+        //                 "no permission to write the sync settings");
+        //         getSyncManager().removePeriodicSync(info, extras);
+        //     }
+        //     // Cancel active syncs and clear pending syncs from the queue.
+        //     syncManager.cancelScheduledSyncOperation(info, extras);
+        //     syncManager.cancelActiveSync(info, extras);
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     /**
@@ -639,32 +639,34 @@ public final class ContentService extends IContentService.Stub {
      */
     @Override
     public SyncAdapterType[] getSyncAdapterTypesAsUser(int userId) {
-        enforceCrossUserPermission(userId,
-                "no permission to read sync settings for user " + userId);
-        // This makes it so that future permission checks will be in the context of this
-        // process rather than the caller's process. We will restore this before returning.
-        final long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            return syncManager.getSyncAdapterTypes(userId);
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // enforceCrossUserPermission(userId,
+        //         "no permission to read sync settings for user " + userId);
+        // // This makes it so that future permission checks will be in the context of this
+        // // process rather than the caller's process. We will restore this before returning.
+        // final long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     return syncManager.getSyncAdapterTypes(userId);
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
+        return null;
     }
 
     @Override
     public String[] getSyncAdapterPackagesForAuthorityAsUser(String authority, int userId) {
-        enforceCrossUserPermission(userId,
-                "no permission to read sync settings for user " + userId);
-        // This makes it so that future permission checks will be in the context of this
-        // process rather than the caller's process. We will restore this before returning.
-        final long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            return syncManager.getSyncAdapterPackagesForAuthorityAsUser(authority, userId);
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // enforceCrossUserPermission(userId,
+        //         "no permission to read sync settings for user " + userId);
+        // // This makes it so that future permission checks will be in the context of this
+        // // process rather than the caller's process. We will restore this before returning.
+        // final long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     return syncManager.getSyncAdapterPackagesForAuthorityAsUser(authority, userId);
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
+        return null;
     }
 
     @Override
@@ -678,21 +680,21 @@ public final class ContentService extends IContentService.Stub {
      */
     @Override
     public boolean getSyncAutomaticallyAsUser(Account account, String providerName, int userId) {
-        enforceCrossUserPermission(userId,
-                "no permission to read the sync settings for user " + userId);
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS,
-                "no permission to read the sync settings");
-
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null) {
-                return syncManager.getSyncStorageEngine()
-                        .getSyncAutomatically(account, userId, providerName);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // enforceCrossUserPermission(userId,
+        //         "no permission to read the sync settings for user " + userId);
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS,
+        //         "no permission to read the sync settings");
+        //
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null) {
+        //         return syncManager.getSyncStorageEngine()
+        //                 .getSyncAutomatically(account, userId, providerName);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
         return false;
     }
 
@@ -704,100 +706,101 @@ public final class ContentService extends IContentService.Stub {
     @Override
     public void setSyncAutomaticallyAsUser(Account account, String providerName, boolean sync,
                                            int userId) {
-        if (TextUtils.isEmpty(providerName)) {
-            throw new IllegalArgumentException("Authority must be non-empty");
-        }
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
-                "no permission to write the sync settings");
-        enforceCrossUserPermission(userId,
-                "no permission to modify the sync settings for user " + userId);
-
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null) {
-                syncManager.getSyncStorageEngine().setSyncAutomatically(account, userId,
-                        providerName, sync);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // if (TextUtils.isEmpty(providerName)) {
+        //     throw new IllegalArgumentException("Authority must be non-empty");
+        // }
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
+        //         "no permission to write the sync settings");
+        // enforceCrossUserPermission(userId,
+        //         "no permission to modify the sync settings for user " + userId);
+        //
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null) {
+        //         syncManager.getSyncStorageEngine().setSyncAutomatically(account, userId,
+        //                 providerName, sync);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     /** Old API. Schedule periodic sync with default flexMillis time. */
     @Override
     public void addPeriodicSync(Account account, String authority, Bundle extras,
                                 long pollFrequency) {
-        Bundle.setDefusable(extras, true);
-        if (account == null) {
-            throw new IllegalArgumentException("Account must not be null");
-        }
-        if (TextUtils.isEmpty(authority)) {
-            throw new IllegalArgumentException("Authority must not be empty.");
-        }
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
-                "no permission to write the sync settings");
-
-        int userId = UserHandle.getCallingUserId();
-
-        pollFrequency = clampPeriod(pollFrequency);
-        long defaultFlex = SyncStorageEngine.calculateDefaultFlexTime(pollFrequency);
-
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncStorageEngine.EndPoint info =
-                    new SyncStorageEngine.EndPoint(account, authority, userId);
-            getSyncManager().updateOrAddPeriodicSync(info, pollFrequency,
-                    defaultFlex, extras);
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // Bundle.setDefusable(extras, true);
+        // if (account == null) {
+        //     throw new IllegalArgumentException("Account must not be null");
+        // }
+        // if (TextUtils.isEmpty(authority)) {
+        //     throw new IllegalArgumentException("Authority must not be empty.");
+        // }
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
+        //         "no permission to write the sync settings");
+        //
+        // int userId = UserHandle.getCallingUserId();
+        //
+        // pollFrequency = clampPeriod(pollFrequency);
+        // long defaultFlex = SyncStorageEngine.calculateDefaultFlexTime(pollFrequency);
+        //
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncStorageEngine.EndPoint info =
+        //             new SyncStorageEngine.EndPoint(account, authority, userId);
+        //     getSyncManager().updateOrAddPeriodicSync(info, pollFrequency,
+        //             defaultFlex, extras);
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     @Override
     public void removePeriodicSync(Account account, String authority, Bundle extras) {
-        Bundle.setDefusable(extras, true);
-        if (account == null) {
-            throw new IllegalArgumentException("Account must not be null");
-        }
-        if (TextUtils.isEmpty(authority)) {
-            throw new IllegalArgumentException("Authority must not be empty");
-        }
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
-                "no permission to write the sync settings");
-
-        int userId = UserHandle.getCallingUserId();
-        long identityToken = clearCallingIdentity();
-        try {
-            getSyncManager()
-                    .removePeriodicSync(
-                            new SyncStorageEngine.EndPoint(account, authority, userId),
-                            extras);
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // Bundle.setDefusable(extras, true);
+        // if (account == null) {
+        //     throw new IllegalArgumentException("Account must not be null");
+        // }
+        // if (TextUtils.isEmpty(authority)) {
+        //     throw new IllegalArgumentException("Authority must not be empty");
+        // }
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
+        //         "no permission to write the sync settings");
+        //
+        // int userId = UserHandle.getCallingUserId();
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     getSyncManager()
+        //             .removePeriodicSync(
+        //                     new SyncStorageEngine.EndPoint(account, authority, userId),
+        //                     extras);
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     @Override
     public List<PeriodicSync> getPeriodicSyncs(Account account, String providerName,
                                                ComponentName cname) {
-        if (account == null) {
-            throw new IllegalArgumentException("Account must not be null");
-        }
-        if (TextUtils.isEmpty(providerName)) {
-            throw new IllegalArgumentException("Authority must not be empty");
-        }
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS,
-                "no permission to read the sync settings");
-
-        int userId = UserHandle.getCallingUserId();
-        long identityToken = clearCallingIdentity();
-        try {
-            return getSyncManager().getPeriodicSyncs(
-                    new SyncStorageEngine.EndPoint(account, providerName, userId));
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // if (account == null) {
+        //     throw new IllegalArgumentException("Account must not be null");
+        // }
+        // if (TextUtils.isEmpty(providerName)) {
+        //     throw new IllegalArgumentException("Authority must not be empty");
+        // }
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS,
+        //         "no permission to read the sync settings");
+        //
+        // int userId = UserHandle.getCallingUserId();
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     return getSyncManager().getPeriodicSyncs(
+        //             new SyncStorageEngine.EndPoint(account, providerName, userId));
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
+        return null;
     }
 
     @Override
@@ -811,45 +814,45 @@ public final class ContentService extends IContentService.Stub {
      */
     @Override
     public int getIsSyncableAsUser(Account account, String providerName, int userId) {
-        enforceCrossUserPermission(userId,
-                "no permission to read the sync settings for user " + userId);
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS,
-                "no permission to read the sync settings");
-
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null) {
-                return syncManager.computeSyncable(
-                        account, userId, providerName, false);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // enforceCrossUserPermission(userId,
+        //         "no permission to read the sync settings for user " + userId);
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS,
+        //         "no permission to read the sync settings");
+        //
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null) {
+        //         return syncManager.computeSyncable(
+        //                 account, userId, providerName, false);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
         return -1;
     }
 
     @Override
     public void setIsSyncable(Account account, String providerName, int syncable) {
-        if (TextUtils.isEmpty(providerName)) {
-            throw new IllegalArgumentException("Authority must not be empty");
-        }
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
-                "no permission to write the sync settings");
-
-        syncable = normalizeSyncable(syncable);
-
-        int userId = UserHandle.getCallingUserId();
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null) {
-                syncManager.getSyncStorageEngine().setIsSyncable(
-                        account, userId, providerName, syncable);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // if (TextUtils.isEmpty(providerName)) {
+        //     throw new IllegalArgumentException("Authority must not be empty");
+        // }
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
+        //         "no permission to write the sync settings");
+        //
+        // syncable = normalizeSyncable(syncable);
+        //
+        // int userId = UserHandle.getCallingUserId();
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null) {
+        //         syncManager.getSyncStorageEngine().setIsSyncable(
+        //                 account, userId, providerName, syncable);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     @Override
@@ -863,20 +866,20 @@ public final class ContentService extends IContentService.Stub {
      */
     @Override
     public boolean getMasterSyncAutomaticallyAsUser(int userId) {
-        enforceCrossUserPermission(userId,
-                "no permission to read the sync settings for user " + userId);
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS,
-                "no permission to read the sync settings");
-
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null) {
-                return syncManager.getSyncStorageEngine().getMasterSyncAutomatically(userId);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // enforceCrossUserPermission(userId,
+        //         "no permission to read the sync settings for user " + userId);
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_SETTINGS,
+        //         "no permission to read the sync settings");
+        //
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null) {
+        //         return syncManager.getSyncStorageEngine().getMasterSyncAutomatically(userId);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
         return false;
     }
 
@@ -887,38 +890,39 @@ public final class ContentService extends IContentService.Stub {
 
     @Override
     public void setMasterSyncAutomaticallyAsUser(boolean flag, int userId) {
-        enforceCrossUserPermission(userId,
-                "no permission to set the sync status for user " + userId);
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
-                "no permission to write the sync settings");
-
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null) {
-                syncManager.getSyncStorageEngine().setMasterSyncAutomatically(flag, userId);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // enforceCrossUserPermission(userId,
+        //         "no permission to set the sync status for user " + userId);
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.WRITE_SYNC_SETTINGS,
+        //         "no permission to write the sync settings");
+        //
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null) {
+        //         syncManager.getSyncStorageEngine().setMasterSyncAutomatically(flag, userId);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     @Override
     public boolean isSyncActive(Account account, String authority, ComponentName cname) {
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_STATS,
-                "no permission to read the sync stats");
-        int userId = UserHandle.getCallingUserId();
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager == null) {
-                return false;
-            }
-            return syncManager.getSyncStorageEngine().isSyncActive(
-                    new SyncStorageEngine.EndPoint(account, authority, userId));
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_STATS,
+        //         "no permission to read the sync stats");
+        // int userId = UserHandle.getCallingUserId();
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager == null) {
+        //         return false;
+        //     }
+        //     return syncManager.getSyncStorageEngine().isSyncActive(
+        //             new SyncStorageEngine.EndPoint(account, authority, userId));
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
+        return false;
     }
 
     @Override
@@ -932,21 +936,22 @@ public final class ContentService extends IContentService.Stub {
      */
     @Override
     public List<SyncInfo> getCurrentSyncsAsUser(int userId) {
-        enforceCrossUserPermission(userId,
-                "no permission to read the sync settings for user " + userId);
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_STATS,
-                "no permission to read the sync stats");
-
-        final boolean canAccessAccounts =
-            mContext.checkCallingOrSelfPermission(Manifest.permission.GET_ACCOUNTS)
-                == PackageManager.PERMISSION_GRANTED;
-        long identityToken = clearCallingIdentity();
-        try {
-            return getSyncManager().getSyncStorageEngine()
-                .getCurrentSyncsCopy(userId, canAccessAccounts);
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // enforceCrossUserPermission(userId,
+        //         "no permission to read the sync settings for user " + userId);
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_STATS,
+        //         "no permission to read the sync stats");
+        //
+        // final boolean canAccessAccounts =
+        //     mContext.checkCallingOrSelfPermission(Manifest.permission.GET_ACCOUNTS)
+        //         == PackageManager.PERMISSION_GRANTED;
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     return getSyncManager().getSyncStorageEngine()
+        //         .getCurrentSyncsCopy(userId, canAccessAccounts);
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
+        return null;
     }
 
     @Override
@@ -961,31 +966,32 @@ public final class ContentService extends IContentService.Stub {
     @Override
     public SyncStatusInfo getSyncStatusAsUser(Account account, String authority,
                                               ComponentName cname, int userId) {
-        if (TextUtils.isEmpty(authority)) {
-            throw new IllegalArgumentException("Authority must not be empty");
-        }
+        // if (TextUtils.isEmpty(authority)) {
+        //     throw new IllegalArgumentException("Authority must not be empty");
+        // }
+        //
+        // enforceCrossUserPermission(userId,
+        //         "no permission to read the sync stats for user " + userId);
+        // mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_STATS,
+        //         "no permission to read the sync stats");
 
-        enforceCrossUserPermission(userId,
-                "no permission to read the sync stats for user " + userId);
-        mContext.enforceCallingOrSelfPermission(Manifest.permission.READ_SYNC_STATS,
-                "no permission to read the sync stats");
-
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager == null) {
-                return null;
-            }
-            SyncStorageEngine.EndPoint info;
-            if (!(account == null || authority == null)) {
-                info = new SyncStorageEngine.EndPoint(account, authority, userId);
-            } else {
-                throw new IllegalArgumentException("Must call sync status with valid authority");
-            }
-            return syncManager.getSyncStorageEngine().getStatusByAuthority(info);
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager == null) {
+        //         return null;
+        //     }
+        //     SyncStorageEngine.EndPoint info;
+        //     if (!(account == null || authority == null)) {
+        //         info = new SyncStorageEngine.EndPoint(account, authority, userId);
+        //     } else {
+        //         throw new IllegalArgumentException("Must call sync status with valid authority");
+        //     }
+        //     return syncManager.getSyncStorageEngine().getStatusByAuthority(info);
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
+        return null;
     }
 
     @Override
@@ -1001,46 +1007,47 @@ public final class ContentService extends IContentService.Stub {
         enforceCrossUserPermission(userId,
                 "no permission to retrieve the sync settings for user " + userId);
         long identityToken = clearCallingIdentity();
-        SyncManager syncManager = getSyncManager();
-        if (syncManager == null) return false;
-
-        try {
-            SyncStorageEngine.EndPoint info;
-            if (!(account == null || authority == null)) {
-                info = new SyncStorageEngine.EndPoint(account, authority, userId);
-            } else {
-                throw new IllegalArgumentException("Invalid authority specified");
-            }
-            return syncManager.getSyncStorageEngine().isSyncPending(info);
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // SyncManager syncManager = getSyncManager();
+        // if (syncManager == null) return false;
+        //
+        // try {
+        //     SyncStorageEngine.EndPoint info;
+        //     if (!(account == null || authority == null)) {
+        //         info = new SyncStorageEngine.EndPoint(account, authority, userId);
+        //     } else {
+        //         throw new IllegalArgumentException("Invalid authority specified");
+        //     }
+        //     return syncManager.getSyncStorageEngine().isSyncPending(info);
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
+        return false;
     }
 
     @Override
     public void addStatusChangeListener(int mask, ISyncStatusObserver callback) {
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null && callback != null) {
-                syncManager.getSyncStorageEngine().addStatusChangeListener(mask, callback);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null && callback != null) {
+        //         syncManager.getSyncStorageEngine().addStatusChangeListener(mask, callback);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     @Override
     public void removeStatusChangeListener(ISyncStatusObserver callback) {
-        long identityToken = clearCallingIdentity();
-        try {
-            SyncManager syncManager = getSyncManager();
-            if (syncManager != null && callback != null) {
-                syncManager.getSyncStorageEngine().removeStatusChangeListener(callback);
-            }
-        } finally {
-            restoreCallingIdentity(identityToken);
-        }
+        // long identityToken = clearCallingIdentity();
+        // try {
+        //     SyncManager syncManager = getSyncManager();
+        //     if (syncManager != null && callback != null) {
+        //         syncManager.getSyncStorageEngine().removeStatusChangeListener(callback);
+        //     }
+        // } finally {
+        //     restoreCallingIdentity(identityToken);
+        // }
     }
 
     private @Nullable String getProviderPackageName(Uri uri) {
