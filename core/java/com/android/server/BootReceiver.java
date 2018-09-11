@@ -86,30 +86,30 @@ public class BootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(final Context context, Intent intent) {
         // Log boot events in the background to avoid blocking the main thread with I/O
-        new Thread() {
-            @Override
-            public void run() {
-                // try {
-                //     logBootEvents(context);
-                // } catch (Exception e) {
-                //     Slog.e(TAG, "Can't log boot events", e);
-                // }
-                try {
-                    boolean onlyCore = false;
-                    try {
-                        onlyCore = IPackageManager.Stub.asInterface(ServiceManager.getService(
-                                "package")).isOnlyCoreApps();
-                    } catch (RemoteException e) {
-                    }
-                    if (!onlyCore) {
-                        removeOldUpdatePackages(context);
-                    }
-                } catch (Exception e) {
-                    Slog.e(TAG, "Can't remove old update packages", e);
-                }
-
-            }
-        }.start();
+        // new Thread() {
+        //     @Override
+        //     public void run() {
+        //         // try {
+        //         //     logBootEvents(context);
+        //         // } catch (Exception e) {
+        //         //     Slog.e(TAG, "Can't log boot events", e);
+        //         // }
+        //         try {
+        //             boolean onlyCore = false;
+        //             try {
+        //                 onlyCore = IPackageManager.Stub.asInterface(ServiceManager.getService(
+        //                         "package")).isOnlyCoreApps();
+        //             } catch (RemoteException e) {
+        //             }
+        //             if (!onlyCore) {
+        //                 removeOldUpdatePackages(context);
+        //             }
+        //         } catch (Exception e) {
+        //             Slog.e(TAG, "Can't remove old update packages", e);
+        //         }
+        //
+        //     }
+        // }.start();
     }
 
     private void removeOldUpdatePackages(Context context) {
