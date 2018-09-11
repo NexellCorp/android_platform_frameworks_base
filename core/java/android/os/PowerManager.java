@@ -448,8 +448,9 @@ public final class PowerManager {
      * @hide
      */
     public int getMinimumScreenBrightnessSetting() {
-        return mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessSettingMinimum);
+        // return mContext.getResources().getInteger(
+        //         com.android.internal.R.integer.config_screenBrightnessSettingMinimum);
+        return 10;
     }
 
     /**
@@ -459,8 +460,9 @@ public final class PowerManager {
      * @hide
      */
     public int getMaximumScreenBrightnessSetting() {
-        return mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessSettingMaximum);
+        // return mContext.getResources().getInteger(
+        //         com.android.internal.R.integer.config_screenBrightnessSettingMaximum);
+        return 255;
     }
 
     /**
@@ -468,8 +470,9 @@ public final class PowerManager {
      * @hide
      */
     public int getDefaultScreenBrightnessSetting() {
-        return mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessSettingDefault);
+        // return mContext.getResources().getInteger(
+        //         com.android.internal.R.integer.config_screenBrightnessSettingDefault);
+        return 102;
     }
 
     /**
@@ -477,8 +480,9 @@ public final class PowerManager {
      * @hide
      */
     public int getMinimumScreenBrightnessForVrSetting() {
-        return mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessForVrSettingMinimum);
+        // return mContext.getResources().getInteger(
+        //         com.android.internal.R.integer.config_screenBrightnessForVrSettingMinimum);
+        return 79;
     }
 
     /**
@@ -488,8 +492,9 @@ public final class PowerManager {
      * @hide
      */
     public int getMaximumScreenBrightnessForVrSetting() {
-        return mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessForVrSettingMaximum);
+        // return mContext.getResources().getInteger(
+        //         com.android.internal.R.integer.config_screenBrightnessForVrSettingMaximum);
+        return 255;
     }
 
     /**
@@ -497,8 +502,9 @@ public final class PowerManager {
      * @hide
      */
     public int getDefaultScreenBrightnessForVrSetting() {
-        return mContext.getResources().getInteger(
-                com.android.internal.R.integer.config_screenBrightnessForVrSettingDefault);
+        // return mContext.getResources().getInteger(
+        //         com.android.internal.R.integer.config_screenBrightnessForVrSettingDefault);
+        return 86;
     }
 
     /**
@@ -1057,8 +1063,9 @@ public final class PowerManager {
      * @see android.view.Window#setSustainedPerformanceMode
      */
     public boolean isSustainedPerformanceModeSupported() {
-        return mContext.getResources().getBoolean(
-                com.android.internal.R.bool.config_sustainedPerformanceModeSupported);
+        // return mContext.getResources().getBoolean(
+        //         com.android.internal.R.bool.config_sustainedPerformanceModeSupported);
+        return false;
     }
 
     /**
