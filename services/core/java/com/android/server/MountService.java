@@ -167,16 +167,18 @@ class MountService extends IMountService.Stub
             mMountService = new MountService(getContext());
             publishBinderService("mount", mMountService);
             mMountService.start();
+            mMountService.systemReady();
+            mMountService.bootCompleted();
         }
 
-        @Override
-        public void onBootPhase(int phase) {
-            if (phase == SystemService.PHASE_ACTIVITY_MANAGER_READY) {
-                mMountService.systemReady();
-            } else if (phase == SystemService.PHASE_BOOT_COMPLETED) {
-                mMountService.bootCompleted();
-            }
-        }
+        // @Override
+        // public void onBootPhase(int phase) {
+        //     if (phase == SystemService.PHASE_ACTIVITY_MANAGER_READY) {
+        //         mMountService.systemReady();
+        //     } else if (phase == SystemService.PHASE_BOOT_COMPLETED) {
+        //         mMountService.bootCompleted();
+        //     }
+        // }
 
         @Override
         public void onSwitchUser(int userHandle) {
@@ -453,7 +455,7 @@ class MountService extends IMountService.Stub
     private PackageManagerService mPms;
 
     private final Callbacks mCallbacks;
-    private final LockPatternUtils mLockPatternUtils;
+    // private final LockPatternUtils mLockPatternUtils;
 
     // Two connectors - mConnector & mCryptConnector
     private final CountDownLatch mConnectedSignal = new CountDownLatch(2);
@@ -804,7 +806,7 @@ class MountService extends IMountService.Stub
         resetIfReadyAndConnected();
 
         // Start scheduling nominally-daily fstrim operations
-        MountServiceIdler.scheduleIdlePass(mContext);
+        // MountServiceIdler.scheduleIdlePass(mContext);
     }
 
     /**
@@ -992,9 +994,9 @@ class MountService extends IMountService.Stub
 
         // On an encrypted device we can't see system properties yet, so pull
         // the system locale out of the mount service.
-        if ("".equals(SystemProperties.get("vold.encrypt_progress"))) {
-            copyLocaleFromMountService();
-        }
+        // if ("".equals(SystemProperties.get("vold.encrypt_progress"))) {
+        //     copyLocaleFromMountService();
+        // }
 
         // Let package manager load internal ASECs.
         mPms.scanAvailableAsecs();
@@ -1481,7 +1483,7 @@ class MountService extends IMountService.Stub
 
         mContext = context;
         mCallbacks = new Callbacks(FgThread.get().getLooper());
-        mLockPatternUtils = new LockPatternUtils(mContext);
+        // mLockPatternUtils = new LockPatternUtils(mContext);
 
         // XXX: This will go away soon in favor of IMountServiceObserver
         mPms = (PackageManagerService) ServiceManager.getService("package");
@@ -1981,10 +1983,10 @@ class MountService extends IMountService.Stub
                 throw new IllegalStateException(
                         "Emulation not available on device with native FBE");
             }
-            if (mLockPatternUtils.isCredentialRequiredToDecrypt(false)) {
-                throw new IllegalStateException(
-                        "Emulation requires disabling 'Secure start-up' in Settings > Security");
-            }
+            // if (mLockPatternUtils.isCredentialRequiredToDecrypt(false)) {
+            //     throw new IllegalStateException(
+            //             "Emulation requires disabling 'Secure start-up' in Settings > Security");
+            // }
 
             final long token = Binder.clearCallingIdentity();
             try {
@@ -2138,10 +2140,25 @@ class MountService extends IMountService.Stub
         Slog.w(TAG, "No primary storage mounted!");
     }
 
+    private boolean checkMounted() {
+        synchronized (mLock) {
+            for (int i = 0; i < mVolumes.size(); i++) {
+                final VolumeInfo vol = mVolumes.valueAt(i);
+                if (vol.isPrimary() && vol.isMountedWritable()) {
+                    // Cool beans, we have a mounted primary volume
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public String[] getSecureContainerList() {
-        enforcePermission(android.Manifest.permission.ASEC_ACCESS);
-        waitForReady();
-        warnOnNotMounted();
+        // enforcePermission(android.Manifest.permission.ASEC_ACCESS);
+        // waitForReady();
+        // warnOnNotMounted();
+        if (!checkMounted())
+            return new String[0];
 
         try {
             return NativeDaemonEvent.filterMessageList(
@@ -2371,9 +2388,9 @@ class MountService extends IMountService.Stub
     }
 
     public String getSecureContainerPath(String id) {
-        enforcePermission(android.Manifest.permission.ASEC_ACCESS);
-        waitForReady();
-        warnOnNotMounted();
+        // enforcePermission(android.Manifest.permission.ASEC_ACCESS);
+        // waitForReady();
+        // warnOnNotMounted();
 
         final NativeDaemonEvent event;
         try {
@@ -2883,9 +2900,9 @@ class MountService extends IMountService.Stub
         if (StorageManager.isFileEncryptedNativeOrEmulated()) {
             // When a user has secure lock screen, require a challenge token to
             // actually unlock. This check is mostly in place for emulation mode.
-            if (mLockPatternUtils.isSecure(userId) && ArrayUtils.isEmpty(token)) {
-                throw new IllegalStateException("Token required to unlock secure user " + userId);
-            }
+            // if (mLockPatternUtils.isSecure(userId) && ArrayUtils.isEmpty(token)) {
+            //     throw new IllegalStateException("Token required to unlock secure user " + userId);
+            // }
 
             try {
                 mCryptConnector.execute("cryptfs", "unlock_user_key", userId, serialNumber,
