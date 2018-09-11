@@ -69,8 +69,8 @@ static const bool kDebugXMLNoisy = false;
 static const bool kDebugTableNoisy = false;
 static const bool kDebugTableGetEntry = false;
 static const bool kDebugTableSuperNoisy = false;
-static const bool kDebugLoadTableNoisy = false;
-static const bool kDebugLoadTableSuperNoisy = false;
+// static const bool kDebugLoadTableNoisy = false;
+// static const bool kDebugLoadTableSuperNoisy = false;
 static const bool kDebugTableTheme = false;
 static const bool kDebugResXMLTree = false;
 static const bool kDebugLibNoisy = false;
@@ -3767,11 +3767,11 @@ status_t ResTable::addInternal(const void* data, size_t dataSize, const void* id
         return NO_ERROR;
     }
 
-    if (dataSize < sizeof(ResTable_header)) {
-        ALOGE("Invalid data. Size(%d) is smaller than a ResTable_header(%d).",
-                (int) dataSize, (int) sizeof(ResTable_header));
-        return UNKNOWN_ERROR;
-    }
+    // if (dataSize < sizeof(ResTable_header)) {
+    //     ALOGE("Invalid data. Size(%d) is smaller than a ResTable_header(%d).",
+    //             (int) dataSize, (int) sizeof(ResTable_header));
+    //     return UNKNOWN_ERROR;
+    // }
 
     Header* header = new Header(this);
     header->index = mHeaders.size();
@@ -3789,10 +3789,10 @@ status_t ResTable::addInternal(const void* data, size_t dataSize, const void* id
 
     const bool notDeviceEndian = htods(0xf0) != 0xf0;
 
-    if (kDebugLoadTableNoisy) {
-        ALOGV("Adding resources to ResTable: data=%p, size=%zu, cookie=%d, copy=%d "
-                "idmap=%p\n", data, dataSize, cookie, copyData, idmapData);
-    }
+    // if (kDebugLoadTableNoisy) {
+    //     ALOGV("Adding resources to ResTable: data=%p, size=%zu, cookie=%d, copy=%d "
+    //             "idmap=%p\n", data, dataSize, cookie, copyData, idmapData);
+    // }
 
     if (copyData || notDeviceEndian) {
         header->ownedData = malloc(dataSize);
@@ -3805,26 +3805,26 @@ status_t ResTable::addInternal(const void* data, size_t dataSize, const void* id
 
     header->header = (const ResTable_header*)data;
     header->size = dtohl(header->header->header.size);
-    if (kDebugLoadTableSuperNoisy) {
-        ALOGI("Got size %zu, again size 0x%x, raw size 0x%x\n", header->size,
-                dtohl(header->header->header.size), header->header->header.size);
-    }
-    if (kDebugLoadTableNoisy) {
-        ALOGV("Loading ResTable @%p:\n", header->header);
-    }
-    if (dtohs(header->header->header.headerSize) > header->size
-            || header->size > dataSize) {
-        ALOGW("Bad resource table: header size 0x%x or total size 0x%x is larger than data size 0x%x\n",
-             (int)dtohs(header->header->header.headerSize),
-             (int)header->size, (int)dataSize);
-        return (mError=BAD_TYPE);
-    }
-    if (((dtohs(header->header->header.headerSize)|header->size)&0x3) != 0) {
-        ALOGW("Bad resource table: header size 0x%x or total size 0x%x is not on an integer boundary\n",
-             (int)dtohs(header->header->header.headerSize),
-             (int)header->size);
-        return (mError=BAD_TYPE);
-    }
+    // if (kDebugLoadTableSuperNoisy) {
+    //     ALOGI("Got size %zu, again size 0x%x, raw size 0x%x\n", header->size,
+    //             dtohl(header->header->header.size), header->header->header.size);
+    // }
+    // if (kDebugLoadTableNoisy) {
+    //     ALOGV("Loading ResTable @%p:\n", header->header);
+    // }
+    // if (dtohs(header->header->header.headerSize) > header->size
+    //         || header->size > dataSize) {
+    //     ALOGW("Bad resource table: header size 0x%x or total size 0x%x is larger than data size 0x%x\n",
+    //          (int)dtohs(header->header->header.headerSize),
+    //          (int)header->size, (int)dataSize);
+    //     return (mError=BAD_TYPE);
+    // }
+    // if (((dtohs(header->header->header.headerSize)|header->size)&0x3) != 0) {
+    //     ALOGW("Bad resource table: header size 0x%x or total size 0x%x is not on an integer boundary\n",
+    //          (int)dtohs(header->header->header.headerSize),
+    //          (int)header->size);
+    //     return (mError=BAD_TYPE);
+    // }
     header->dataEnd = ((const uint8_t*)header->header) + header->size;
 
     // Iterate through all chunks.
@@ -3835,15 +3835,15 @@ status_t ResTable::addInternal(const void* data, size_t dataSize, const void* id
                                  + dtohs(header->header->header.headerSize));
     while (((const uint8_t*)chunk) <= (header->dataEnd-sizeof(ResChunk_header)) &&
            ((const uint8_t*)chunk) <= (header->dataEnd-dtohl(chunk->size))) {
-        status_t err = validate_chunk(chunk, sizeof(ResChunk_header), header->dataEnd, "ResTable");
-        if (err != NO_ERROR) {
-            return (mError=err);
-        }
-        if (kDebugTableNoisy) {
-            ALOGV("Chunk: type=0x%x, headerSize=0x%x, size=0x%x, pos=%p\n",
-                    dtohs(chunk->type), dtohs(chunk->headerSize), dtohl(chunk->size),
-                    (void*)(((const uint8_t*)chunk) - ((const uint8_t*)header->header)));
-        }
+        // status_t err = validate_chunk(chunk, sizeof(ResChunk_header), header->dataEnd, "ResTable");
+        // if (err != NO_ERROR) {
+        //     return (mError=err);
+        // }
+        // if (kDebugTableNoisy) {
+        //     ALOGV("Chunk: type=0x%x, headerSize=0x%x, size=0x%x, pos=%p\n",
+        //             dtohs(chunk->type), dtohs(chunk->headerSize), dtohl(chunk->size),
+        //             (void*)(((const uint8_t*)chunk) - ((const uint8_t*)header->header)));
+        // }
         const size_t csize = dtohl(chunk->size);
         const uint16_t ctype = dtohs(chunk->type);
         if (ctype == RES_STRING_POOL_TYPE) {
@@ -3858,11 +3858,11 @@ status_t ResTable::addInternal(const void* data, size_t dataSize, const void* id
                 ALOGW("Multiple string chunks found in resource table.");
             }
         } else if (ctype == RES_TABLE_PACKAGE_TYPE) {
-            if (curPackage >= dtohl(header->header->packageCount)) {
-                ALOGW("More package chunks were found than the %d declared in the header.",
-                     dtohl(header->header->packageCount));
-                return (mError=BAD_TYPE);
-            }
+            // if (curPackage >= dtohl(header->header->packageCount)) {
+            //     ALOGW("More package chunks were found than the %d declared in the header.",
+            //          dtohl(header->header->packageCount));
+            //     return (mError=BAD_TYPE);
+            // }
 
             if (parsePackage(
                     (ResTable_package*)chunk, header, appAsLib, isSystemAsset) != NO_ERROR) {
@@ -3878,19 +3878,19 @@ status_t ResTable::addInternal(const void* data, size_t dataSize, const void* id
             (((const uint8_t*)chunk) + csize);
     }
 
-    if (curPackage < dtohl(header->header->packageCount)) {
-        ALOGW("Fewer package chunks (%d) were found than the %d declared in the header.",
-             (int)curPackage, dtohl(header->header->packageCount));
-        return (mError=BAD_TYPE);
-    }
+    // if (curPackage < dtohl(header->header->packageCount)) {
+    //     ALOGW("Fewer package chunks (%d) were found than the %d declared in the header.",
+    //          (int)curPackage, dtohl(header->header->packageCount));
+    //     return (mError=BAD_TYPE);
+    // }
     mError = header->values.getError();
     if (mError != NO_ERROR) {
         ALOGW("No string values found in resource table!");
     }
 
-    if (kDebugTableNoisy) {
-        ALOGV("Returning from add with mError=%d\n", mError);
-    }
+    // if (kDebugTableNoisy) {
+    //     ALOGV("Returning from add with mError=%d\n", mError);
+    // }
     return mError;
 }
 
@@ -6129,34 +6129,35 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
                                 const Header* const header, bool appAsLib, bool isSystemAsset)
 {
     const uint8_t* base = (const uint8_t*)pkg;
-    status_t err = validate_chunk(&pkg->header, sizeof(*pkg) - sizeof(pkg->typeIdOffset),
-                                  header->dataEnd, "ResTable_package");
-    if (err != NO_ERROR) {
-        return (mError=err);
-    }
-
-    const uint32_t pkgSize = dtohl(pkg->header.size);
-
-    if (dtohl(pkg->typeStrings) >= pkgSize) {
-        ALOGW("ResTable_package type strings at 0x%x are past chunk size 0x%x.",
-             dtohl(pkg->typeStrings), pkgSize);
-        return (mError=BAD_TYPE);
-    }
-    if ((dtohl(pkg->typeStrings)&0x3) != 0) {
-        ALOGW("ResTable_package type strings at 0x%x is not on an integer boundary.",
-             dtohl(pkg->typeStrings));
-        return (mError=BAD_TYPE);
-    }
-    if (dtohl(pkg->keyStrings) >= pkgSize) {
-        ALOGW("ResTable_package key strings at 0x%x are past chunk size 0x%x.",
-             dtohl(pkg->keyStrings), pkgSize);
-        return (mError=BAD_TYPE);
-    }
-    if ((dtohl(pkg->keyStrings)&0x3) != 0) {
-        ALOGW("ResTable_package key strings at 0x%x is not on an integer boundary.",
-             dtohl(pkg->keyStrings));
-        return (mError=BAD_TYPE);
-    }
+    // status_t err = validate_chunk(&pkg->header, sizeof(*pkg) - sizeof(pkg->typeIdOffset),
+    //                               header->dataEnd, "ResTable_package");
+    // if (err != NO_ERROR) {
+    //     return (mError=err);
+    // }
+    //
+    // const uint32_t pkgSize = dtohl(pkg->header.size);
+    //
+    // if (dtohl(pkg->typeStrings) >= pkgSize) {
+    //     ALOGW("ResTable_package type strings at 0x%x are past chunk size 0x%x.",
+    //          dtohl(pkg->typeStrings), pkgSize);
+    //     return (mError=BAD_TYPE);
+    // }
+    // if ((dtohl(pkg->typeStrings)&0x3) != 0) {
+    //     ALOGW("ResTable_package type strings at 0x%x is not on an integer boundary.",
+    //          dtohl(pkg->typeStrings));
+    //     return (mError=BAD_TYPE);
+    // }
+    // if (dtohl(pkg->keyStrings) >= pkgSize) {
+    //     ALOGW("ResTable_package key strings at 0x%x are past chunk size 0x%x.",
+    //          dtohl(pkg->keyStrings), pkgSize);
+    //     return (mError=BAD_TYPE);
+    // }
+    // if ((dtohl(pkg->keyStrings)&0x3) != 0) {
+    //     ALOGW("ResTable_package key strings at 0x%x is not on an integer boundary.",
+    //          dtohl(pkg->keyStrings));
+    //     return (mError=BAD_TYPE);
+    // }
+    status_t err = NO_ERROR;
 
     uint32_t id = dtohl(pkg->id);
     KeyedVector<uint8_t, IdmapEntries> idmapEntries;
@@ -6245,45 +6246,45 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
     const uint8_t* endPos = ((const uint8_t*)pkg) + dtohs(pkg->header.size);
     while (((const uint8_t*)chunk) <= (endPos-sizeof(ResChunk_header)) &&
            ((const uint8_t*)chunk) <= (endPos-dtohl(chunk->size))) {
-        if (kDebugTableNoisy) {
-            ALOGV("PackageChunk: type=0x%x, headerSize=0x%x, size=0x%x, pos=%p\n",
-                    dtohs(chunk->type), dtohs(chunk->headerSize), dtohl(chunk->size),
-                    (void*)(((const uint8_t*)chunk) - ((const uint8_t*)header->header)));
-        }
+        // if (kDebugTableNoisy) {
+        //     ALOGV("PackageChunk: type=0x%x, headerSize=0x%x, size=0x%x, pos=%p\n",
+        //             dtohs(chunk->type), dtohs(chunk->headerSize), dtohl(chunk->size),
+        //             (void*)(((const uint8_t*)chunk) - ((const uint8_t*)header->header)));
+        // }
         const size_t csize = dtohl(chunk->size);
         const uint16_t ctype = dtohs(chunk->type);
         if (ctype == RES_TABLE_TYPE_SPEC_TYPE) {
             const ResTable_typeSpec* typeSpec = (const ResTable_typeSpec*)(chunk);
-            err = validate_chunk(&typeSpec->header, sizeof(*typeSpec),
-                                 endPos, "ResTable_typeSpec");
-            if (err != NO_ERROR) {
-                return (mError=err);
-            }
+            // err = validate_chunk(&typeSpec->header, sizeof(*typeSpec),
+            //                      endPos, "ResTable_typeSpec");
+            // if (err != NO_ERROR) {
+            //     return (mError=err);
+            // }
 
-            const size_t typeSpecSize = dtohl(typeSpec->header.size);
+            // const size_t typeSpecSize = dtohl(typeSpec->header.size);
             const size_t newEntryCount = dtohl(typeSpec->entryCount);
 
-            if (kDebugLoadTableNoisy) {
-                ALOGI("TypeSpec off %p: type=0x%x, headerSize=0x%x, size=%p\n",
-                        (void*)(base-(const uint8_t*)chunk),
-                        dtohs(typeSpec->header.type),
-                        dtohs(typeSpec->header.headerSize),
-                        (void*)typeSpecSize);
-            }
-            // look for block overrun or int overflow when multiplying by 4
-            if ((dtohl(typeSpec->entryCount) > (INT32_MAX/sizeof(uint32_t))
-                    || dtohs(typeSpec->header.headerSize)+(sizeof(uint32_t)*newEntryCount)
-                    > typeSpecSize)) {
-                ALOGW("ResTable_typeSpec entry index to %p extends beyond chunk end %p.",
-                        (void*)(dtohs(typeSpec->header.headerSize) + (sizeof(uint32_t)*newEntryCount)),
-                        (void*)typeSpecSize);
-                return (mError=BAD_TYPE);
-            }
+            // if (kDebugLoadTableNoisy) {
+            //     ALOGI("TypeSpec off %p: type=0x%x, headerSize=0x%x, size=%p\n",
+            //             (void*)(base-(const uint8_t*)chunk),
+            //             dtohs(typeSpec->header.type),
+            //             dtohs(typeSpec->header.headerSize),
+            //             (void*)typeSpecSize);
+            // }
+            // // look for block overrun or int overflow when multiplying by 4
+            // if ((dtohl(typeSpec->entryCount) > (INT32_MAX/sizeof(uint32_t))
+            //         || dtohs(typeSpec->header.headerSize)+(sizeof(uint32_t)*newEntryCount)
+            //         > typeSpecSize)) {
+            //     ALOGW("ResTable_typeSpec entry index to %p extends beyond chunk end %p.",
+            //             (void*)(dtohs(typeSpec->header.headerSize) + (sizeof(uint32_t)*newEntryCount)),
+            //             (void*)typeSpecSize);
+            //     return (mError=BAD_TYPE);
+            // }
 
-            if (typeSpec->id == 0) {
-                ALOGW("ResTable_type has an id of 0.");
-                return (mError=BAD_TYPE);
-            }
+            // if (typeSpec->id == 0) {
+            //     ALOGW("ResTable_type has an id of 0.");
+            //     return (mError=BAD_TYPE);
+            // }
 
             if (newEntryCount > 0) {
                 uint8_t typeIndex = typeSpec->id - 1;
@@ -6318,40 +6319,40 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
 
         } else if (ctype == RES_TABLE_TYPE_TYPE) {
             const ResTable_type* type = (const ResTable_type*)(chunk);
-            err = validate_chunk(&type->header, sizeof(*type)-sizeof(ResTable_config)+4,
-                                 endPos, "ResTable_type");
-            if (err != NO_ERROR) {
-                return (mError=err);
-            }
+            // err = validate_chunk(&type->header, sizeof(*type)-sizeof(ResTable_config)+4,
+            //                      endPos, "ResTable_type");
+            // if (err != NO_ERROR) {
+            //     return (mError=err);
+            // }
 
-            const uint32_t typeSize = dtohl(type->header.size);
+            // const uint32_t typeSize = dtohl(type->header.size);
             const size_t newEntryCount = dtohl(type->entryCount);
 
-            if (kDebugLoadTableNoisy) {
-                printf("Type off %p: type=0x%x, headerSize=0x%x, size=%u\n",
-                        (void*)(base-(const uint8_t*)chunk),
-                        dtohs(type->header.type),
-                        dtohs(type->header.headerSize),
-                        typeSize);
-            }
-            if (dtohs(type->header.headerSize)+(sizeof(uint32_t)*newEntryCount) > typeSize) {
-                ALOGW("ResTable_type entry index to %p extends beyond chunk end 0x%x.",
-                        (void*)(dtohs(type->header.headerSize) + (sizeof(uint32_t)*newEntryCount)),
-                        typeSize);
-                return (mError=BAD_TYPE);
-            }
-
-            if (newEntryCount != 0
-                && dtohl(type->entriesStart) > (typeSize-sizeof(ResTable_entry))) {
-                ALOGW("ResTable_type entriesStart at 0x%x extends beyond chunk end 0x%x.",
-                     dtohl(type->entriesStart), typeSize);
-                return (mError=BAD_TYPE);
-            }
-
-            if (type->id == 0) {
-                ALOGW("ResTable_type has an id of 0.");
-                return (mError=BAD_TYPE);
-            }
+            // if (kDebugLoadTableNoisy) {
+            //     printf("Type off %p: type=0x%x, headerSize=0x%x, size=%u\n",
+            //             (void*)(base-(const uint8_t*)chunk),
+            //             dtohs(type->header.type),
+            //             dtohs(type->header.headerSize),
+            //             typeSize);
+            // }
+            // if (dtohs(type->header.headerSize)+(sizeof(uint32_t)*newEntryCount) > typeSize) {
+            //     ALOGW("ResTable_type entry index to %p extends beyond chunk end 0x%x.",
+            //             (void*)(dtohs(type->header.headerSize) + (sizeof(uint32_t)*newEntryCount)),
+            //             typeSize);
+            //     return (mError=BAD_TYPE);
+            // }
+            //
+            // if (newEntryCount != 0
+            //     && dtohl(type->entriesStart) > (typeSize-sizeof(ResTable_entry))) {
+            //     ALOGW("ResTable_type entriesStart at 0x%x extends beyond chunk end 0x%x.",
+            //          dtohl(type->entriesStart), typeSize);
+            //     return (mError=BAD_TYPE);
+            // }
+            //
+            // if (type->id == 0) {
+            //     ALOGW("ResTable_type has an id of 0.");
+            //     return (mError=BAD_TYPE);
+            // }
 
             if (newEntryCount > 0) {
                 uint8_t typeIndex = type->id - 1;
@@ -6361,31 +6362,31 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
                 }
 
                 TypeList& typeList = group->types.editItemAt(typeIndex);
-                if (typeList.isEmpty()) {
-                    ALOGE("No TypeSpec for type %d", type->id);
-                    return (mError=BAD_TYPE);
-                }
+                // if (typeList.isEmpty()) {
+                //     ALOGE("No TypeSpec for type %d", type->id);
+                //     return (mError=BAD_TYPE);
+                // }
 
                 Type* t = typeList.editItemAt(typeList.size() - 1);
-                if (newEntryCount != t->entryCount) {
-                    ALOGE("ResTable_type entry count inconsistent: given %d, previously %d",
-                        (int)newEntryCount, (int)t->entryCount);
-                    return (mError=BAD_TYPE);
-                }
+                // if (newEntryCount != t->entryCount) {
+                //     ALOGE("ResTable_type entry count inconsistent: given %d, previously %d",
+                //         (int)newEntryCount, (int)t->entryCount);
+                //     return (mError=BAD_TYPE);
+                // }
 
-                if (t->package != package) {
-                    ALOGE("No TypeSpec for type %d", type->id);
-                    return (mError=BAD_TYPE);
-                }
+                // if (t->package != package) {
+                //     ALOGE("No TypeSpec for type %d", type->id);
+                //     return (mError=BAD_TYPE);
+                // }
 
                 t->configs.add(type);
 
-                if (kDebugTableGetEntry) {
-                    ResTable_config thisConfig;
-                    thisConfig.copyFromDtoH(type->config);
-                    ALOGI("Adding config to type %d: %s\n", type->id,
-                            thisConfig.toString().string());
-                }
+                // if (kDebugTableGetEntry) {
+                //     ResTable_config thisConfig;
+                //     thisConfig.copyFromDtoH(type->config);
+                //     ALOGI("Adding config to type %d: %s\n", type->id,
+                //             thisConfig.toString().string());
+                // }
             } else {
                 ALOGV("Skipping empty ResTable_type for type %d", type->id);
             }
@@ -6406,11 +6407,11 @@ status_t ResTable::parsePackage(const ResTable_package* const pkg,
                 ALOGW("Found multiple library tables, ignoring...");
             }
         } else {
-            status_t err = validate_chunk(chunk, sizeof(ResChunk_header),
-                                          endPos, "ResTable_package:unknown");
-            if (err != NO_ERROR) {
-                return (mError=err);
-            }
+            // status_t err = validate_chunk(chunk, sizeof(ResChunk_header),
+            //                               endPos, "ResTable_package:unknown");
+            // if (err != NO_ERROR) {
+            //     return (mError=err);
+            // }
         }
         chunk = (const ResChunk_header*)
             (((const uint8_t*)chunk) + csize);
