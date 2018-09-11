@@ -6025,11 +6025,11 @@ public final class ActivityThread {
         // The system process on low-memory devices do not get to use hardware
         // accelerated drawing, since this can add too much overhead to the
         // process.
-        if (!ActivityManager.isHighEndGfx()) {
-            ThreadedRenderer.disable(true);
-        } else {
+        // if (!ActivityManager.isHighEndGfx()) {
+        //     ThreadedRenderer.disable(true);
+        // } else {
             ThreadedRenderer.enableForegroundTrimming();
-        }
+        // }
         ActivityThread thread = new ActivityThread();
         thread.attach(true);
         return thread;
