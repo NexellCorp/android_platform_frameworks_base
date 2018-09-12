@@ -208,7 +208,7 @@ import android.text.format.DateUtils;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.DisplayMetrics;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.ExceptionUtils;
 import android.util.Log;
 import android.util.LogPrinter;
@@ -1766,8 +1766,8 @@ public class PackageManagerService extends IPackageManager.Stub {
             }
 
             // Log current value of "unknown sources" setting
-            EventLog.writeEvent(EventLogTags.UNKNOWN_SOURCES_ENABLED,
-                    getUnknownSourcesSettings());
+            // EventLog.writeEvent(EventLogTags.UNKNOWN_SOURCES_ENABLED,
+            //         getUnknownSourcesSettings());
 
             // Force a gc to clear up things
             Runtime.getRuntime().gc();
@@ -2064,17 +2064,18 @@ public class PackageManagerService extends IPackageManager.Stub {
 
     public PackageManagerService(Context context, Installer installer,
             boolean factoryTest, boolean onlyCore) {
-        EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_START,
-                SystemClock.uptimeMillis());
+        // EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_START,
+        //         SystemClock.uptimeMillis());
 
-        if (mSdkVersion <= 0) {
-            Slog.w(TAG, "**** ro.build.version.sdk not set!");
-        }
+        // if (mSdkVersion <= 0) {
+        //     Slog.w(TAG, "**** ro.build.version.sdk not set!");
+        // }
 
         mContext = context;
 
-        mPermissionReviewRequired = context.getResources().getBoolean(
-                R.bool.config_permissionReviewRequired);
+        // mPermissionReviewRequired = context.getResources().getBoolean(
+        //         R.bool.config_permissionReviewRequired);
+        mPermissionReviewRequired = false;
 
         mFactoryTest = factoryTest;
         mOnlyCore = onlyCore;
@@ -2093,22 +2094,22 @@ public class PackageManagerService extends IPackageManager.Stub {
         mSettings.addSharedUserLPw("android.uid.shell", SHELL_UID,
                 ApplicationInfo.FLAG_SYSTEM, ApplicationInfo.PRIVATE_FLAG_PRIVILEGED);
 
-        String separateProcesses = SystemProperties.get("debug.separate_processes");
-        if (separateProcesses != null && separateProcesses.length() > 0) {
-            if ("*".equals(separateProcesses)) {
-                mDefParseFlags = PackageParser.PARSE_IGNORE_PROCESSES;
-                mSeparateProcesses = null;
-                Slog.w(TAG, "Running with debug.separate_processes: * (ALL)");
-            } else {
-                mDefParseFlags = 0;
-                mSeparateProcesses = separateProcesses.split(",");
-                Slog.w(TAG, "Running with debug.separate_processes: "
-                        + separateProcesses);
-            }
-        } else {
+        // String separateProcesses = SystemProperties.get("debug.separate_processes");
+        // if (separateProcesses != null && separateProcesses.length() > 0) {
+        //     if ("*".equals(separateProcesses)) {
+        //         mDefParseFlags = PackageParser.PARSE_IGNORE_PROCESSES;
+        //         mSeparateProcesses = null;
+        //         Slog.w(TAG, "Running with debug.separate_processes: * (ALL)");
+        //     } else {
+        //         mDefParseFlags = 0;
+        //         mSeparateProcesses = separateProcesses.split(",");
+        //         Slog.w(TAG, "Running with debug.separate_processes: "
+        //                 + separateProcesses);
+        //     }
+        // } else {
             mDefParseFlags = 0;
             mSeparateProcesses = null;
-        }
+        // }
 
         mInstaller = installer;
         mPackageDexOptimizer = new PackageDexOptimizer(installer, mInstallLock, context,
@@ -2189,74 +2190,77 @@ public class PackageManagerService extends IPackageManager.Stub {
                 requestCopyPreoptedFiles();
             }
 
-            String customResolverActivity = Resources.getSystem().getString(
-                    R.string.config_customResolverActivity);
-            if (TextUtils.isEmpty(customResolverActivity)) {
-                customResolverActivity = null;
-            } else {
-                mCustomResolverComponentName = ComponentName.unflattenFromString(
-                        customResolverActivity);
-            }
+            // String customResolverActivity = Resources.getSystem().getString(
+            //         R.string.config_customResolverActivity);
+            // if (TextUtils.isEmpty(customResolverActivity)) {
+            //     customResolverActivity = null;
+            // } else {
+            //     mCustomResolverComponentName = ComponentName.unflattenFromString(
+            //             customResolverActivity);
+            // }
+            String customResolverActivity = null;
 
             long startTime = SystemClock.uptimeMillis();
 
-            EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_SYSTEM_SCAN_START,
-                    startTime);
+            // EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_SYSTEM_SCAN_START,
+            //         startTime);
 
             // Set flag to monitor and not change apk file paths when
             // scanning install directories.
             final int scanFlags = SCAN_NO_PATHS | SCAN_DEFER_DEX | SCAN_BOOTING | SCAN_INITIAL;
 
-            final String bootClassPath = System.getenv("BOOTCLASSPATH");
-            final String systemServerClassPath = System.getenv("SYSTEMSERVERCLASSPATH");
+            if (mFirstBoot) {
+                final String bootClassPath = System.getenv("BOOTCLASSPATH");
+                final String systemServerClassPath = System.getenv("SYSTEMSERVERCLASSPATH");
 
-            if (bootClassPath == null) {
-                Slog.w(TAG, "No BOOTCLASSPATH found!");
-            }
+                if (bootClassPath == null) {
+                    Slog.w(TAG, "No BOOTCLASSPATH found!");
+                }
 
-            if (systemServerClassPath == null) {
-                Slog.w(TAG, "No SYSTEMSERVERCLASSPATH found!");
-            }
+                if (systemServerClassPath == null) {
+                    Slog.w(TAG, "No SYSTEMSERVERCLASSPATH found!");
+                }
 
-            final List<String> allInstructionSets = InstructionSets.getAllInstructionSets();
-            final String[] dexCodeInstructionSets =
+                final List<String> allInstructionSets = InstructionSets.getAllInstructionSets();
+                final String[] dexCodeInstructionSets =
                     getDexCodeInstructionSets(
                             allInstructionSets.toArray(new String[allInstructionSets.size()]));
 
-            /**
-             * Ensure all external libraries have had dexopt run on them.
-             */
-            if (mSharedLibraries.size() > 0) {
-                // NOTE: For now, we're compiling these system "shared libraries"
-                // (and framework jars) into all available architectures. It's possible
-                // to compile them only when we come across an app that uses them (there's
-                // already logic for that in scanPackageLI) but that adds some complexity.
-                for (String dexCodeInstructionSet : dexCodeInstructionSets) {
-                    for (SharedLibraryEntry libEntry : mSharedLibraries.values()) {
-                        final String lib = libEntry.path;
-                        if (lib == null) {
-                            continue;
-                        }
-
-                        try {
-                            // Shared libraries do not have profiles so we perform a full
-                            // AOT compilation (if needed).
-                            int dexoptNeeded = DexFile.getDexOptNeeded(
-                                    lib, dexCodeInstructionSet,
-                                    getCompilerFilterForReason(REASON_SHARED_APK),
-                                    false /* newProfile */);
-                            if (dexoptNeeded != DexFile.NO_DEXOPT_NEEDED) {
-                                mInstaller.dexopt(lib, Process.SYSTEM_UID, dexCodeInstructionSet,
-                                        dexoptNeeded, DEXOPT_PUBLIC /*dexFlags*/,
-                                        getCompilerFilterForReason(REASON_SHARED_APK),
-                                        StorageManager.UUID_PRIVATE_INTERNAL,
-                                        SKIP_SHARED_LIBRARY_CHECK);
+                /**
+                 * Ensure all external libraries have had dexopt run on them.
+                 */
+                if (mSharedLibraries.size() > 0) {
+                    // NOTE: For now, we're compiling these system "shared libraries"
+                    // (and framework jars) into all available architectures. It's possible
+                    // to compile them only when we come across an app that uses them (there's
+                    // already logic for that in scanPackageLI) but that adds some complexity.
+                    for (String dexCodeInstructionSet : dexCodeInstructionSets) {
+                        for (SharedLibraryEntry libEntry : mSharedLibraries.values()) {
+                            final String lib = libEntry.path;
+                            if (lib == null) {
+                                continue;
                             }
-                        } catch (FileNotFoundException e) {
-                            Slog.w(TAG, "Library not found: " + lib);
-                        } catch (IOException | InstallerException e) {
-                            Slog.w(TAG, "Cannot dexopt " + lib + "; is it an APK or JAR? "
-                                    + e.getMessage());
+
+                            try {
+                                // Shared libraries do not have profiles so we perform a full
+                                // AOT compilation (if needed).
+                                int dexoptNeeded = DexFile.getDexOptNeeded(
+                                        lib, dexCodeInstructionSet,
+                                        getCompilerFilterForReason(REASON_SHARED_APK),
+                                        false /* newProfile */);
+                                if (dexoptNeeded != DexFile.NO_DEXOPT_NEEDED) {
+                                    mInstaller.dexopt(lib, Process.SYSTEM_UID, dexCodeInstructionSet,
+                                            dexoptNeeded, DEXOPT_PUBLIC /*dexFlags*/,
+                                            getCompilerFilterForReason(REASON_SHARED_APK),
+                                            StorageManager.UUID_PRIVATE_INTERNAL,
+                                            SKIP_SHARED_LIBRARY_CHECK);
+                                }
+                            } catch (FileNotFoundException e) {
+                                Slog.w(TAG, "Library not found: " + lib);
+                            } catch (IOException | InstallerException e) {
+                                Slog.w(TAG, "Cannot dexopt " + lib + "; is it an APK or JAR? "
+                                        + e.getMessage());
+                            }
                         }
                     }
                 }
@@ -2268,145 +2272,190 @@ public class PackageManagerService extends IPackageManager.Stub {
             mIsUpgrade = !Build.FINGERPRINT.equals(ver.fingerprint);
 
             // when upgrading from pre-M, promote system app permissions from install to runtime
-            mPromoteSystemApps =
-                    mIsUpgrade && ver.sdkVersion <= Build.VERSION_CODES.LOLLIPOP_MR1;
+            // mPromoteSystemApps =
+            //         mIsUpgrade && ver.sdkVersion <= Build.VERSION_CODES.LOLLIPOP_MR1;
+            mPromoteSystemApps = false;
 
             // When upgrading from pre-N, we need to handle package extraction like first boot,
             // as there is no profiling data available.
-            mIsPreNUpgrade = mIsUpgrade && ver.sdkVersion < Build.VERSION_CODES.N;
+            // mIsPreNUpgrade = mIsUpgrade && ver.sdkVersion < Build.VERSION_CODES.N;
+            mIsPreNUpgrade = false;
 
-            mIsPreNMR1Upgrade = mIsUpgrade && ver.sdkVersion < Build.VERSION_CODES.N_MR1;
+            // mIsPreNMR1Upgrade = mIsUpgrade && ver.sdkVersion < Build.VERSION_CODES.N_MR1;
+            mIsPreNMR1Upgrade = false;
 
             // save off the names of pre-existing system packages prior to scanning; we don't
             // want to automatically grant runtime permissions for new system apps
-            if (mPromoteSystemApps) {
-                Iterator<PackageSetting> pkgSettingIter = mSettings.mPackages.values().iterator();
-                while (pkgSettingIter.hasNext()) {
-                    PackageSetting ps = pkgSettingIter.next();
-                    if (isSystemApp(ps)) {
-                        mExistingSystemPackages.add(ps.name);
-                    }
-                }
-            }
+            // if (mPromoteSystemApps) {
+            //     Iterator<PackageSetting> pkgSettingIter = mSettings.mPackages.values().iterator();
+            //     while (pkgSettingIter.hasNext()) {
+            //         PackageSetting ps = pkgSettingIter.next();
+            //         if (isSystemApp(ps)) {
+            //             mExistingSystemPackages.add(ps.name);
+            //         }
+            //     }
+            // }
 
             // Collect vendor overlay packages. (Do this before scanning any apps.)
             // For security and version matching reason, only consider
             // overlay packages if they reside in the right directory.
-            String overlayThemeDir = SystemProperties.get(VENDOR_OVERLAY_THEME_PROPERTY);
-            if (!overlayThemeDir.isEmpty()) {
-                scanDirTracedLI(new File(VENDOR_OVERLAY_DIR, overlayThemeDir), mDefParseFlags
+            // String overlayThemeDir = SystemProperties.get(VENDOR_OVERLAY_THEME_PROPERTY);
+            // if (!overlayThemeDir.isEmpty()) {
+            //     scanDirTracedLI(new File(VENDOR_OVERLAY_DIR, overlayThemeDir), mDefParseFlags
+            //             | PackageParser.PARSE_IS_SYSTEM
+            //             | PackageParser.PARSE_IS_SYSTEM_DIR
+            //             | PackageParser.PARSE_TRUSTED_OVERLAY, scanFlags | SCAN_TRUSTED_OVERLAY, 0);
+            // }
+            // scanDirTracedLI(new File(VENDOR_OVERLAY_DIR), mDefParseFlags
+            //         | PackageParser.PARSE_IS_SYSTEM
+            //         | PackageParser.PARSE_IS_SYSTEM_DIR
+            //         | PackageParser.PARSE_TRUSTED_OVERLAY, scanFlags | SCAN_TRUSTED_OVERLAY, 0);
+
+            if (mFirstBoot) {
+                // Find base frameworks (resource packages without code).
+                scanDirTracedLI(frameworkDir, mDefParseFlags
                         | PackageParser.PARSE_IS_SYSTEM
                         | PackageParser.PARSE_IS_SYSTEM_DIR
-                        | PackageParser.PARSE_TRUSTED_OVERLAY, scanFlags | SCAN_TRUSTED_OVERLAY, 0);
+                        | PackageParser.PARSE_IS_PRIVILEGED,
+                        scanFlags | SCAN_NO_DEX, 0);
+
+                // Collected privileged system packages.
+                final File privilegedAppDir = new File(Environment.getRootDirectory(), "priv-app");
+                scanDirTracedLI(privilegedAppDir, mDefParseFlags
+                        | PackageParser.PARSE_IS_SYSTEM
+                        | PackageParser.PARSE_IS_SYSTEM_DIR
+                        | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
+
+                // Collect ordinary system packages.
+                final File systemAppDir = new File(Environment.getRootDirectory(), "app");
+                scanDirTracedLI(systemAppDir, mDefParseFlags
+                        | PackageParser.PARSE_IS_SYSTEM
+                        | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+            } else {
+                Slog.d(TAG, "Start scan framework-res.apk");
+                File frameworkRes = new File("/system/framework/framework-res.apk");
+                try {
+                    scanPackageTracedLI(frameworkRes, mDefParseFlags
+                            | PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR
+                            | PackageParser.PARSE_IS_PRIVILEGED
+                            | PackageParser.PARSE_MUST_BE_APK,
+                            scanFlags | SCAN_NO_DEX, 0, null);
+                } catch (PackageManagerException e) {
+                    Slog.w(TAG, "Failed to parse " + frameworkRes + ": " + e.getMessage());
+                }
+                Slog.d(TAG, "End scan of framework-res.apk");
+
+
+                Slog.d(TAG, "Start scan SettingsProvider.apk");
+                File settingsProvider = new File("/system/priv-app/SettingsProvider/SettingsProvider.apk");
+                try {
+                    scanPackageTracedLI(settingsProvider, mDefParseFlags
+                            | PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR
+                            | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0, null);
+
+                } catch (PackageManagerException e) {
+                    Slog.w(TAG, "Failed to parse " + settingsProvider + ": " + e.getMessage());
+                }
+                Slog.d(TAG, "End scan of SettingsProvider.apk");
+
+
+                Slog.d(TAG, "Start scan Home.apk");
+                File homeApp = new File("/system/app/Home/Home.apk");
+                try {
+                    scanPackageTracedLI(homeApp, mDefParseFlags
+                            | PackageParser.PARSE_IS_SYSTEM
+                            | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0, null);
+                } catch (PackageManagerException e) {
+                    Slog.w(TAG, "Failed to parse " + homeApp + ": " + e.getMessage());
+                }
+                Slog.d(TAG, "End of scan Home.apk");
             }
-            scanDirTracedLI(new File(VENDOR_OVERLAY_DIR), mDefParseFlags
-                    | PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_TRUSTED_OVERLAY, scanFlags | SCAN_TRUSTED_OVERLAY, 0);
-
-            // Find base frameworks (resource packages without code).
-            scanDirTracedLI(frameworkDir, mDefParseFlags
-                    | PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_IS_PRIVILEGED,
-                    scanFlags | SCAN_NO_DEX, 0);
-
-            // Collected privileged system packages.
-            final File privilegedAppDir = new File(Environment.getRootDirectory(), "priv-app");
-            scanDirTracedLI(privilegedAppDir, mDefParseFlags
-                    | PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                    | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
-
-            // Collect ordinary system packages.
-            final File systemAppDir = new File(Environment.getRootDirectory(), "app");
-            scanDirTracedLI(systemAppDir, mDefParseFlags
-                    | PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
 
             // Collect all vendor packages.
-            File vendorAppDir = new File("/vendor/app");
-            try {
-                vendorAppDir = vendorAppDir.getCanonicalFile();
-            } catch (IOException e) {
-                // failed to look up canonical path, continue with original one
-            }
-            scanDirTracedLI(vendorAppDir, mDefParseFlags
-                    | PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+            // File vendorAppDir = new File("/vendor/app");
+            // try {
+            //     vendorAppDir = vendorAppDir.getCanonicalFile();
+            // } catch (IOException e) {
+            //     // failed to look up canonical path, continue with original one
+            // }
+            // scanDirTracedLI(vendorAppDir, mDefParseFlags
+            //         | PackageParser.PARSE_IS_SYSTEM
+            //         | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
 
             // Collect all OEM packages.
-            final File oemAppDir = new File(Environment.getOemDirectory(), "app");
-            scanDirTracedLI(oemAppDir, mDefParseFlags
-                    | PackageParser.PARSE_IS_SYSTEM
-                    | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+            // final File oemAppDir = new File(Environment.getOemDirectory(), "app");
+            // scanDirTracedLI(oemAppDir, mDefParseFlags
+            //         | PackageParser.PARSE_IS_SYSTEM
+            //         | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
 
             // Prune any system packages that no longer exist.
-            final List<String> possiblyDeletedUpdatedSystemApps = new ArrayList<String>();
-            if (!mOnlyCore) {
-                Iterator<PackageSetting> psit = mSettings.mPackages.values().iterator();
-                while (psit.hasNext()) {
-                    PackageSetting ps = psit.next();
-
-                    /*
-                     * If this is not a system app, it can't be a
-                     * disable system app.
-                     */
-                    if ((ps.pkgFlags & ApplicationInfo.FLAG_SYSTEM) == 0) {
-                        continue;
-                    }
-
-                    /*
-                     * If the package is scanned, it's not erased.
-                     */
-                    final PackageParser.Package scannedPkg = mPackages.get(ps.name);
-                    if (scannedPkg != null) {
-                        /*
-                         * If the system app is both scanned and in the
-                         * disabled packages list, then it must have been
-                         * added via OTA. Remove it from the currently
-                         * scanned package so the previously user-installed
-                         * application can be scanned.
-                         */
-                        if (mSettings.isDisabledSystemPackageLPr(ps.name)) {
-                            logCriticalInfo(Log.WARN, "Expecting better updated system app for "
-                                    + ps.name + "; removing system app.  Last known codePath="
-                                    + ps.codePathString + ", installStatus=" + ps.installStatus
-                                    + ", versionCode=" + ps.versionCode + "; scanned versionCode="
-                                    + scannedPkg.mVersionCode);
-                            removePackageLI(scannedPkg, true);
-                            mExpectingBetter.put(ps.name, ps.codePath);
-                        }
-
-                        continue;
-                    }
-
-                    if (!mSettings.isDisabledSystemPackageLPr(ps.name)) {
-                        psit.remove();
-                        logCriticalInfo(Log.WARN, "System package " + ps.name
-                                + " no longer exists; it's data will be wiped");
-                        // Actual deletion of code and data will be handled by later
-                        // reconciliation step
-                    } else {
-                        final PackageSetting disabledPs = mSettings.getDisabledSystemPkgLPr(ps.name);
-                        if (disabledPs.codePath == null || !disabledPs.codePath.exists()) {
-                            possiblyDeletedUpdatedSystemApps.add(ps.name);
-                        }
-                    }
-                }
-            }
+            // final List<String> possiblyDeletedUpdatedSystemApps = new ArrayList<String>();
+            // if (!mOnlyCore) {
+            //     Iterator<PackageSetting> psit = mSettings.mPackages.values().iterator();
+            //     while (psit.hasNext()) {
+            //         PackageSetting ps = psit.next();
+            //
+            //         #<{(|
+            //          * If this is not a system app, it can't be a
+            //          * disable system app.
+            //          |)}>#
+            //         if ((ps.pkgFlags & ApplicationInfo.FLAG_SYSTEM) == 0) {
+            //             continue;
+            //         }
+            //
+            //         #<{(|
+            //          * If the package is scanned, it's not erased.
+            //          |)}>#
+            //         final PackageParser.Package scannedPkg = mPackages.get(ps.name);
+            //         if (scannedPkg != null) {
+            //             #<{(|
+            //              * If the system app is both scanned and in the
+            //              * disabled packages list, then it must have been
+            //              * added via OTA. Remove it from the currently
+            //              * scanned package so the previously user-installed
+            //              * application can be scanned.
+            //              |)}>#
+            //             if (mSettings.isDisabledSystemPackageLPr(ps.name)) {
+            //                 logCriticalInfo(Log.WARN, "Expecting better updated system app for "
+            //                         + ps.name + "; removing system app.  Last known codePath="
+            //                         + ps.codePathString + ", installStatus=" + ps.installStatus
+            //                         + ", versionCode=" + ps.versionCode + "; scanned versionCode="
+            //                         + scannedPkg.mVersionCode);
+            //                 removePackageLI(scannedPkg, true);
+            //                 mExpectingBetter.put(ps.name, ps.codePath);
+            //             }
+            //
+            //             continue;
+            //         }
+            //
+            //         if (!mSettings.isDisabledSystemPackageLPr(ps.name)) {
+            //             psit.remove();
+            //             logCriticalInfo(Log.WARN, "System package " + ps.name
+            //                     + " no longer exists; it's data will be wiped");
+            //             // Actual deletion of code and data will be handled by later
+            //             // reconciliation step
+            //         } else {
+            //             final PackageSetting disabledPs = mSettings.getDisabledSystemPkgLPr(ps.name);
+            //             if (disabledPs.codePath == null || !disabledPs.codePath.exists()) {
+            //                 possiblyDeletedUpdatedSystemApps.add(ps.name);
+            //             }
+            //         }
+            //     }
+            // }
 
             //look for any incomplete package installations
-            ArrayList<PackageSetting> deletePkgsList = mSettings.getListOfIncompleteInstallPackagesLPr();
-            for (int i = 0; i < deletePkgsList.size(); i++) {
-                // Actual deletion of code and data will be handled by later
-                // reconciliation step
-                final String packageName = deletePkgsList.get(i).name;
-                logCriticalInfo(Log.WARN, "Cleaning up incompletely installed app: " + packageName);
-                synchronized (mPackages) {
-                    mSettings.removePackageLPw(packageName);
-                }
-            }
+            // ArrayList<PackageSetting> deletePkgsList = mSettings.getListOfIncompleteInstallPackagesLPr();
+            // for (int i = 0; i < deletePkgsList.size(); i++) {
+            //     // Actual deletion of code and data will be handled by later
+            //     // reconciliation step
+            //     final String packageName = deletePkgsList.get(i).name;
+            //     logCriticalInfo(Log.WARN, "Cleaning up incompletely installed app: " + packageName);
+            //     synchronized (mPackages) {
+            //         mSettings.removePackageLPw(packageName);
+            //     }
+            // }
 
             //delete tmp files
             deleteTempPackageFiles();
@@ -2415,17 +2464,17 @@ public class PackageManagerService extends IPackageManager.Stub {
             mSettings.pruneSharedUsersLPw();
 
             if (!mOnlyCore) {
-                EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_DATA_SCAN_START,
-                        SystemClock.uptimeMillis());
-                scanDirTracedLI(mAppInstallDir, 0, scanFlags | SCAN_REQUIRE_KNOWN, 0);
+                // EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_DATA_SCAN_START,
+                //         SystemClock.uptimeMillis());
+                // scanDirTracedLI(mAppInstallDir, 0, scanFlags | SCAN_REQUIRE_KNOWN, 0);
 
-                scanDirTracedLI(mDrmAppPrivateInstallDir, mDefParseFlags
-                        | PackageParser.PARSE_FORWARD_LOCK,
-                        scanFlags | SCAN_REQUIRE_KNOWN, 0);
+                // scanDirTracedLI(mDrmAppPrivateInstallDir, mDefParseFlags
+                //         | PackageParser.PARSE_FORWARD_LOCK,
+                //         scanFlags | SCAN_REQUIRE_KNOWN, 0);
 
-                scanDirLI(mEphemeralInstallDir, mDefParseFlags
-                        | PackageParser.PARSE_IS_EPHEMERAL,
-                        scanFlags | SCAN_REQUIRE_KNOWN, 0);
+                // scanDirLI(mEphemeralInstallDir, mDefParseFlags
+                //         | PackageParser.PARSE_IS_EPHEMERAL,
+                //         scanFlags | SCAN_REQUIRE_KNOWN, 0);
 
                 /**
                  * Remove disable package settings for any updated system
@@ -2433,104 +2482,106 @@ public class PackageManagerService extends IPackageManager.Stub {
                  * previously-updated app, remove them completely.
                  * Otherwise, just revoke their system-level permissions.
                  */
-                for (String deletedAppName : possiblyDeletedUpdatedSystemApps) {
-                    PackageParser.Package deletedPkg = mPackages.get(deletedAppName);
-                    mSettings.removeDisabledSystemPackageLPw(deletedAppName);
-
-                    String msg;
-                    if (deletedPkg == null) {
-                        msg = "Updated system package " + deletedAppName
-                                + " no longer exists; it's data will be wiped";
-                        // Actual deletion of code and data will be handled by later
-                        // reconciliation step
-                    } else {
-                        msg = "Updated system app + " + deletedAppName
-                                + " no longer present; removing system privileges for "
-                                + deletedAppName;
-
-                        deletedPkg.applicationInfo.flags &= ~ApplicationInfo.FLAG_SYSTEM;
-
-                        PackageSetting deletedPs = mSettings.mPackages.get(deletedAppName);
-                        deletedPs.pkgFlags &= ~ApplicationInfo.FLAG_SYSTEM;
-                    }
-                    logCriticalInfo(Log.WARN, msg);
-                }
+                // for (String deletedAppName : possiblyDeletedUpdatedSystemApps) {
+                //     PackageParser.Package deletedPkg = mPackages.get(deletedAppName);
+                //     mSettings.removeDisabledSystemPackageLPw(deletedAppName);
+                //
+                //     String msg;
+                //     if (deletedPkg == null) {
+                //         msg = "Updated system package " + deletedAppName
+                //             + " no longer exists; it's data will be wiped";
+                //         // Actual deletion of code and data will be handled by later
+                //         // reconciliation step
+                //     } else {
+                //         msg = "Updated system app + " + deletedAppName
+                //             + " no longer present; removing system privileges for "
+                //             + deletedAppName;
+                //
+                //         deletedPkg.applicationInfo.flags &= ~ApplicationInfo.FLAG_SYSTEM;
+                //
+                //         PackageSetting deletedPs = mSettings.mPackages.get(deletedAppName);
+                //         deletedPs.pkgFlags &= ~ApplicationInfo.FLAG_SYSTEM;
+                //     }
+                //     logCriticalInfo(Log.WARN, msg);
+                // }
 
                 /**
                  * Make sure all system apps that we expected to appear on
                  * the userdata partition actually showed up. If they never
                  * appeared, crawl back and revive the system version.
                  */
-                for (int i = 0; i < mExpectingBetter.size(); i++) {
-                    final String packageName = mExpectingBetter.keyAt(i);
-                    if (!mPackages.containsKey(packageName)) {
-                        final File scanFile = mExpectingBetter.valueAt(i);
-
-                        logCriticalInfo(Log.WARN, "Expected better " + packageName
-                                + " but never showed up; reverting to system");
-
-                        int reparseFlags = mDefParseFlags;
-                        if (FileUtils.contains(privilegedAppDir, scanFile)) {
-                            reparseFlags = PackageParser.PARSE_IS_SYSTEM
-                                    | PackageParser.PARSE_IS_SYSTEM_DIR
-                                    | PackageParser.PARSE_IS_PRIVILEGED;
-                        } else if (FileUtils.contains(systemAppDir, scanFile)) {
-                            reparseFlags = PackageParser.PARSE_IS_SYSTEM
-                                    | PackageParser.PARSE_IS_SYSTEM_DIR;
-                        } else if (FileUtils.contains(vendorAppDir, scanFile)) {
-                            reparseFlags = PackageParser.PARSE_IS_SYSTEM
-                                    | PackageParser.PARSE_IS_SYSTEM_DIR;
-                        } else if (FileUtils.contains(oemAppDir, scanFile)) {
-                            reparseFlags = PackageParser.PARSE_IS_SYSTEM
-                                    | PackageParser.PARSE_IS_SYSTEM_DIR;
-                        } else {
-                            Slog.e(TAG, "Ignoring unexpected fallback path " + scanFile);
-                            continue;
-                        }
-
-                        mSettings.enableSystemPackageLPw(packageName);
-
-                        try {
-                            scanPackageTracedLI(scanFile, reparseFlags, scanFlags, 0, null);
-                        } catch (PackageManagerException e) {
-                            Slog.e(TAG, "Failed to parse original system package: "
-                                    + e.getMessage());
-                        }
-                    }
-                }
+                // for (int i = 0; i < mExpectingBetter.size(); i++) {
+                //     final String packageName = mExpectingBetter.keyAt(i);
+                //     if (!mPackages.containsKey(packageName)) {
+                //         final File scanFile = mExpectingBetter.valueAt(i);
+                //
+                //         logCriticalInfo(Log.WARN, "Expected better " + packageName
+                //                 + " but never showed up; reverting to system");
+                //
+                //         int reparseFlags = mDefParseFlags;
+                //         if (FileUtils.contains(privilegedAppDir, scanFile)) {
+                //             reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                //                 | PackageParser.PARSE_IS_SYSTEM_DIR
+                //                 | PackageParser.PARSE_IS_PRIVILEGED;
+                //         } else if (FileUtils.contains(systemAppDir, scanFile)) {
+                //             reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                //                 | PackageParser.PARSE_IS_SYSTEM_DIR;
+                //             // } else if (FileUtils.contains(vendorAppDir, scanFile)) {
+                //             //     reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                //             //         | PackageParser.PARSE_IS_SYSTEM_DIR;
+                //             // } else if (FileUtils.contains(oemAppDir, scanFile)) {
+                //             //     reparseFlags = PackageParser.PARSE_IS_SYSTEM
+                //             //         | PackageParser.PARSE_IS_SYSTEM_DIR;
+                //     } else {
+                //         Slog.e(TAG, "Ignoring unexpected fallback path " + scanFile);
+                //         continue;
+                //     }
+                //
+                //     mSettings.enableSystemPackageLPw(packageName);
+                //
+                //     try {
+                //         scanPackageTracedLI(scanFile, reparseFlags, scanFlags, 0, null);
+                //     } catch (PackageManagerException e) {
+                //         Slog.e(TAG, "Failed to parse original system package: "
+                //                 + e.getMessage());
+                //     }
+                //     }
+                // }
             }
             mExpectingBetter.clear();
 
             // Resolve the storage manager.
-            mStorageManagerPackage = getStorageManagerPackageName();
+            // mStorageManagerPackage = getStorageManagerPackageName();
+            mStorageManagerPackage = null;
 
             // Resolve protected action filters. Only the setup wizard is allowed to
             // have a high priority filter for these actions.
-            mSetupWizardPackage = getSetupWizardPackageName();
-            if (mProtectedFilters.size() > 0) {
-                if (DEBUG_FILTERS && mSetupWizardPackage == null) {
-                    Slog.i(TAG, "No setup wizard;"
-                        + " All protected intents capped to priority 0");
-                }
-                for (ActivityIntentInfo filter : mProtectedFilters) {
-                    if (filter.activity.info.packageName.equals(mSetupWizardPackage)) {
-                        if (DEBUG_FILTERS) {
-                            Slog.i(TAG, "Found setup wizard;"
-                                + " allow priority " + filter.getPriority() + ";"
-                                + " package: " + filter.activity.info.packageName
-                                + " activity: " + filter.activity.className
-                                + " priority: " + filter.getPriority());
-                        }
-                        // skip setup wizard; allow it to keep the high priority filter
-                        continue;
-                    }
-                    Slog.w(TAG, "Protected action; cap priority to 0;"
-                            + " package: " + filter.activity.info.packageName
-                            + " activity: " + filter.activity.className
-                            + " origPrio: " + filter.getPriority());
-                    filter.setPriority(0);
-                }
-            }
+            // mSetupWizardPackage = getSetupWizardPackageName();
+            mSetupWizardPackage = null;
+            // if (mProtectedFilters.size() > 0) {
+            //     if (DEBUG_FILTERS && mSetupWizardPackage == null) {
+            //         Slog.i(TAG, "No setup wizard;"
+            //             + " All protected intents capped to priority 0");
+            //     }
+            //     for (ActivityIntentInfo filter : mProtectedFilters) {
+            //         if (filter.activity.info.packageName.equals(mSetupWizardPackage)) {
+            //             if (DEBUG_FILTERS) {
+            //                 Slog.i(TAG, "Found setup wizard;"
+            //                     + " allow priority " + filter.getPriority() + ";"
+            //                     + " package: " + filter.activity.info.packageName
+            //                     + " activity: " + filter.activity.className
+            //                     + " priority: " + filter.getPriority());
+            //             }
+            //             // skip setup wizard; allow it to keep the high priority filter
+            //             continue;
+            //         }
+            //         Slog.w(TAG, "Protected action; cap priority to 0;"
+            //                 + " package: " + filter.activity.info.packageName
+            //                 + " activity: " + filter.activity.className
+            //                 + " origPrio: " + filter.getPriority());
+            //         filter.setPriority(0);
+            //     }
+            // }
             mDeferProtectedFilters = false;
             mProtectedFilters.clear();
 
@@ -2538,21 +2589,21 @@ public class PackageManagerService extends IPackageManager.Stub {
             // the correct library paths.
             updateAllSharedLibrariesLPw();
 
-            for (SharedUserSetting setting : mSettings.getAllSharedUsersLPw()) {
-                // NOTE: We ignore potential failures here during a system scan (like
-                // the rest of the commands above) because there's precious little we
-                // can do about it. A settings error is reported, though.
-                adjustCpuAbisForSharedUserLPw(setting.packages, null /* scanned package */,
-                        false /* boot complete */);
-            }
+            // for (SharedUserSetting setting : mSettings.getAllSharedUsersLPw()) {
+            //     // NOTE: We ignore potential failures here during a system scan (like
+            //     // the rest of the commands above) because there's precious little we
+            //     // can do about it. A settings error is reported, though.
+            //     adjustCpuAbisForSharedUserLPw(setting.packages, null #<{(| scanned package |)}>#,
+            //             false #<{(| boot complete |)}>#);
+            // }
 
             // Now that we know all the packages we are keeping,
             // read and update their last usage times.
             mPackageUsage.read(mPackages);
             mCompilerStats.read();
 
-            EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_SCAN_END,
-                    SystemClock.uptimeMillis());
+            // EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_SCAN_END,
+            //         SystemClock.uptimeMillis());
             Slog.i(TAG, "Time to scan packages: "
                     + ((SystemClock.uptimeMillis()-startTime)/1000f)
                     + " seconds");
@@ -2592,8 +2643,9 @@ public class PackageManagerService extends IPackageManager.Stub {
             } else {
                 storageFlags = StorageManager.FLAG_STORAGE_DE | StorageManager.FLAG_STORAGE_CE;
             }
-            reconcileAppsDataLI(StorageManager.UUID_PRIVATE_INTERNAL, UserHandle.USER_SYSTEM,
-                    storageFlags);
+            if (mFirstBoot)
+                reconcileAppsDataLI(StorageManager.UUID_PRIVATE_INTERNAL, UserHandle.USER_SYSTEM,
+                        storageFlags);
 
             // If this is first boot after an OTA, and a normal boot, then
             // we need to clear code cache directories.
@@ -2624,7 +2676,8 @@ public class PackageManagerService extends IPackageManager.Stub {
             ver.databaseVersion = Settings.CURRENT_DATABASE_VERSION;
 
             // can downgrade to reader
-            mSettings.writeLPr();
+            if (mFirstBoot)
+                mSettings.writeLPr();
 
             // Perform dexopt on all apps that mark themselves as coreApps. We do this pretty
             // early on (before the package manager declares itself as early) because other
@@ -2661,59 +2714,76 @@ public class PackageManagerService extends IPackageManager.Stub {
                 // MetricsLogger.histogram(mContext, "opt_coreapps_num_total", coreApps.size());
             }
 
-            EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_READY,
-                    SystemClock.uptimeMillis());
+            // EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_READY,
+            //         SystemClock.uptimeMillis());
 
-            if (!mOnlyCore) {
-                mRequiredVerifierPackage = getRequiredButNotReallyRequiredVerifierLPr();
-                mRequiredInstallerPackage = getRequiredInstallerLPr();
-                mRequiredUninstallerPackage = getRequiredUninstallerLPr();
-                mIntentFilterVerifierComponent = getIntentFilterVerifierComponentNameLPr();
-                mIntentFilterVerifier = new IntentVerifierProxy(mContext,
-                        mIntentFilterVerifierComponent);
-                mServicesSystemSharedLibraryPackageName = getRequiredSharedLibraryLPr(
-                        PackageManager.SYSTEM_SHARED_LIBRARY_SERVICES);
-                mSharedSystemSharedLibraryPackageName = getRequiredSharedLibraryLPr(
-                        PackageManager.SYSTEM_SHARED_LIBRARY_SHARED);
-            } else {
-                mRequiredVerifierPackage = null;
-                mRequiredInstallerPackage = null;
-                mRequiredUninstallerPackage = null;
-                mIntentFilterVerifierComponent = null;
-                mIntentFilterVerifier = null;
-                mServicesSystemSharedLibraryPackageName = null;
-                mSharedSystemSharedLibraryPackageName = null;
-            }
+            // if (!mOnlyCore) {
+            //     mRequiredVerifierPackage = getRequiredButNotReallyRequiredVerifierLPr();
+            //     mRequiredInstallerPackage = getRequiredInstallerLPr();
+            //     mRequiredUninstallerPackage = getRequiredUninstallerLPr();
+            //     mIntentFilterVerifierComponent = getIntentFilterVerifierComponentNameLPr();
+            //     mIntentFilterVerifier = new IntentVerifierProxy(mContext,
+            //             mIntentFilterVerifierComponent);
+            //     mServicesSystemSharedLibraryPackageName = getRequiredSharedLibraryLPr(
+            //             PackageManager.SYSTEM_SHARED_LIBRARY_SERVICES);
+            //     mSharedSystemSharedLibraryPackageName = getRequiredSharedLibraryLPr(
+            //             PackageManager.SYSTEM_SHARED_LIBRARY_SHARED);
+            //     Slog.d(TAG, "mRequiredVerifierPackage --> " + mRequiredVerifierPackage);
+            //     Slog.d(TAG, "mRequiredInstallerPackage --> " + mRequiredInstallerPackage);
+            //     Slog.d(TAG, "mRequiredUninstallerPackage --> " + mRequiredUninstallerPackage);
+            //     Slog.d(TAG, "mIntentFilterVerifierComponent --> " + mIntentFilterVerifierComponent);
+            //     Slog.d(TAG, "mServicesSystemSharedLibraryPackageName --> " + mServicesSystemSharedLibraryPackageName);
+            //     Slog.d(TAG, "mSharedSystemSharedLibraryPackageName --> " + mSharedSystemSharedLibraryPackageName);
+            // } else {
+            //     mRequiredVerifierPackage = null;
+            //     mRequiredInstallerPackage = null;
+            //     mRequiredUninstallerPackage = null;
+            //     mIntentFilterVerifierComponent = null;
+            //     mIntentFilterVerifier = null;
+            //     mServicesSystemSharedLibraryPackageName = null;
+            //     mSharedSystemSharedLibraryPackageName = null;
+            // }
+            mRequiredVerifierPackage = null;
+            mRequiredInstallerPackage = "com.android.packageinstaller";
+            mRequiredUninstallerPackage = "com.android.packageinstaller";
+            mIntentFilterVerifierComponent = new ComponentName("com.android.statementservice",
+                    ".IntentFilterVerificationReceiver");
+            mIntentFilterVerifier = new IntentVerifierProxy(mContext,
+                    mIntentFilterVerifierComponent);
+            mServicesSystemSharedLibraryPackageName = "android.ext.services";
+            mSharedSystemSharedLibraryPackageName = "android.ext.shared";
 
             mInstallerService = new PackageInstallerService(context, this);
 
-            final ComponentName ephemeralResolverComponent = getEphemeralResolverLPr();
-            final ComponentName ephemeralInstallerComponent = getEphemeralInstallerLPr();
+            // final ComponentName ephemeralResolverComponent = getEphemeralResolverLPr();
+            // final ComponentName ephemeralInstallerComponent = getEphemeralInstallerLPr();
+            final ComponentName ephemeralResolverComponent = null;
+            final ComponentName ephemeralInstallerComponent = null;
             // both the installer and resolver must be present to enable ephemeral
-            if (ephemeralInstallerComponent != null && ephemeralResolverComponent != null) {
-                if (DEBUG_EPHEMERAL) {
-                    Slog.i(TAG, "Ephemeral activated; resolver: " + ephemeralResolverComponent
-                            + " installer:" + ephemeralInstallerComponent);
-                }
-                mEphemeralResolverComponent = ephemeralResolverComponent;
-                mEphemeralInstallerComponent = ephemeralInstallerComponent;
-                setUpEphemeralInstallerActivityLP(mEphemeralInstallerComponent);
-                mEphemeralResolverConnection =
-                        new EphemeralResolverConnection(mContext, mEphemeralResolverComponent);
-            } else {
-                if (DEBUG_EPHEMERAL) {
-                    final String missingComponent =
-                            (ephemeralResolverComponent == null)
-                            ? (ephemeralInstallerComponent == null)
-                                    ? "resolver and installer"
-                                    : "resolver"
-                            : "installer";
-                    Slog.i(TAG, "Ephemeral deactivated; missing " + missingComponent);
-                }
+            // if (ephemeralInstallerComponent != null && ephemeralResolverComponent != null) {
+            //     if (DEBUG_EPHEMERAL) {
+            //         Slog.i(TAG, "Ephemeral activated; resolver: " + ephemeralResolverComponent
+            //                 + " installer:" + ephemeralInstallerComponent);
+            //     }
+            //     mEphemeralResolverComponent = ephemeralResolverComponent;
+            //     mEphemeralInstallerComponent = ephemeralInstallerComponent;
+            //     setUpEphemeralInstallerActivityLP(mEphemeralInstallerComponent);
+            //     mEphemeralResolverConnection =
+            //             new EphemeralResolverConnection(mContext, mEphemeralResolverComponent);
+            // } else {
+            //     if (DEBUG_EPHEMERAL) {
+            //         final String missingComponent =
+            //                 (ephemeralResolverComponent == null)
+            //                 ? (ephemeralInstallerComponent == null)
+            //                         ? "resolver and installer"
+            //                         : "resolver"
+            //                 : "installer";
+            //         Slog.i(TAG, "Ephemeral deactivated; missing " + missingComponent);
+            //     }
                 mEphemeralResolverComponent = null;
                 mEphemeralInstallerComponent = null;
                 mEphemeralResolverConnection = null;
-            }
+            // }
 
             mEphemeralApplicationRegistry = new EphemeralApplicationRegistry(this);
         } // synchronized (mPackages)
@@ -2722,7 +2792,7 @@ public class PackageManagerService extends IPackageManager.Stub {
         // Now after opening every single application zip, make sure they
         // are all flushed.  Not really needed, but keeps things nice and
         // tidy.
-        Runtime.getRuntime().gc();
+        // Runtime.getRuntime().gc();
 
         // The initial scanning above does many calls into installd while
         // holding the mPackages lock, but we're mostly interested in yelling
@@ -2837,57 +2907,57 @@ public class PackageManagerService extends IPackageManager.Stub {
     }
 
     private @Nullable ComponentName getEphemeralResolverLPr() {
-        final String[] packageArray =
-                mContext.getResources().getStringArray(R.array.config_ephemeralResolverPackage);
-        if (packageArray.length == 0 && !Build.IS_DEBUGGABLE) {
-            if (DEBUG_EPHEMERAL) {
-                Slog.d(TAG, "Ephemeral resolver NOT found; empty package list");
-            }
-            return null;
-        }
-
-        final int resolveFlags =
-                MATCH_DIRECT_BOOT_AWARE
-                | MATCH_DIRECT_BOOT_UNAWARE
-                | (!Build.IS_DEBUGGABLE ? MATCH_SYSTEM_ONLY : 0);
-        final Intent resolverIntent = new Intent(Intent.ACTION_RESOLVE_EPHEMERAL_PACKAGE);
-        final List<ResolveInfo> resolvers = queryIntentServicesInternal(resolverIntent, null,
-                resolveFlags, UserHandle.USER_SYSTEM);
-
-        final int N = resolvers.size();
-        if (N == 0) {
-            if (DEBUG_EPHEMERAL) {
-                Slog.d(TAG, "Ephemeral resolver NOT found; no matching intent filters");
-            }
-            return null;
-        }
-
-        final Set<String> possiblePackages = new ArraySet<>(Arrays.asList(packageArray));
-        for (int i = 0; i < N; i++) {
-            final ResolveInfo info = resolvers.get(i);
-
-            if (info.serviceInfo == null) {
-                continue;
-            }
-
-            final String packageName = info.serviceInfo.packageName;
-            if (!possiblePackages.contains(packageName) && !Build.IS_DEBUGGABLE) {
-                if (DEBUG_EPHEMERAL) {
-                    Slog.d(TAG, "Ephemeral resolver not in allowed package list;"
-                            + " pkg: " + packageName + ", info:" + info);
-                }
-                continue;
-            }
-
-            if (DEBUG_EPHEMERAL) {
-                Slog.v(TAG, "Ephemeral resolver found;"
-                        + " pkg: " + packageName + ", info:" + info);
-            }
-            return new ComponentName(packageName, info.serviceInfo.name);
-        }
-        if (DEBUG_EPHEMERAL) {
-            Slog.v(TAG, "Ephemeral resolver NOT found");
-        }
+        // final String[] packageArray =
+        //         mContext.getResources().getStringArray(R.array.config_ephemeralResolverPackage);
+        // if (packageArray.length == 0 && !Build.IS_DEBUGGABLE) {
+        //     if (DEBUG_EPHEMERAL) {
+        //         Slog.d(TAG, "Ephemeral resolver NOT found; empty package list");
+        //     }
+        //     return null;
+        // }
+        //
+        // final int resolveFlags =
+        //         MATCH_DIRECT_BOOT_AWARE
+        //         | MATCH_DIRECT_BOOT_UNAWARE
+        //         | (!Build.IS_DEBUGGABLE ? MATCH_SYSTEM_ONLY : 0);
+        // final Intent resolverIntent = new Intent(Intent.ACTION_RESOLVE_EPHEMERAL_PACKAGE);
+        // final List<ResolveInfo> resolvers = queryIntentServicesInternal(resolverIntent, null,
+        //         resolveFlags, UserHandle.USER_SYSTEM);
+        //
+        // final int N = resolvers.size();
+        // if (N == 0) {
+        //     if (DEBUG_EPHEMERAL) {
+        //         Slog.d(TAG, "Ephemeral resolver NOT found; no matching intent filters");
+        //     }
+        //     return null;
+        // }
+        //
+        // final Set<String> possiblePackages = new ArraySet<>(Arrays.asList(packageArray));
+        // for (int i = 0; i < N; i++) {
+        //     final ResolveInfo info = resolvers.get(i);
+        //
+        //     if (info.serviceInfo == null) {
+        //         continue;
+        //     }
+        //
+        //     final String packageName = info.serviceInfo.packageName;
+        //     if (!possiblePackages.contains(packageName) && !Build.IS_DEBUGGABLE) {
+        //         if (DEBUG_EPHEMERAL) {
+        //             Slog.d(TAG, "Ephemeral resolver not in allowed package list;"
+        //                     + " pkg: " + packageName + ", info:" + info);
+        //         }
+        //         continue;
+        //     }
+        //
+        //     if (DEBUG_EPHEMERAL) {
+        //         Slog.v(TAG, "Ephemeral resolver found;"
+        //                 + " pkg: " + packageName + ", info:" + info);
+        //     }
+        //     return new ComponentName(packageName, info.serviceInfo.name);
+        // }
+        // if (DEBUG_EPHEMERAL) {
+        //     Slog.v(TAG, "Ephemeral resolver NOT found");
+        // }
         return null;
     }
 
@@ -2967,24 +3037,24 @@ public class PackageManagerService extends IPackageManager.Stub {
     private void applyFactoryDefaultBrowserLPw(int userId) {
         // The default browser app's package name is stored in a string resource,
         // with a product-specific overlay used for vendor customization.
-        String browserPkg = mContext.getResources().getString(
-                com.android.internal.R.string.default_browser);
-        if (!TextUtils.isEmpty(browserPkg)) {
-            // non-empty string => required to be a known package
-            PackageSetting ps = mSettings.mPackages.get(browserPkg);
-            if (ps == null) {
-                Slog.e(TAG, "Product default browser app does not exist: " + browserPkg);
-                browserPkg = null;
-            } else {
-                mSettings.setDefaultBrowserPackageNameLPw(browserPkg, userId);
-            }
-        }
-
-        // Nothing valid explicitly set? Make the factory-installed browser the explicit
-        // default.  If there's more than one, just leave everything alone.
-        if (browserPkg == null) {
+        // String browserPkg = mContext.getResources().getString(
+        //         com.android.internal.R.string.default_browser);
+        // if (!TextUtils.isEmpty(browserPkg)) {
+        //     // non-empty string => required to be a known package
+        //     PackageSetting ps = mSettings.mPackages.get(browserPkg);
+        //     if (ps == null) {
+        //         Slog.e(TAG, "Product default browser app does not exist: " + browserPkg);
+        //         browserPkg = null;
+        //     } else {
+        //         mSettings.setDefaultBrowserPackageNameLPw(browserPkg, userId);
+        //     }
+        // }
+        //
+        // // Nothing valid explicitly set? Make the factory-installed browser the explicit
+        // // default.  If there's more than one, just leave everything alone.
+        // if (browserPkg == null) {
             calculateDefaultBrowserLPw(userId);
-        }
+        // }
     }
 
     private void calculateDefaultBrowserLPw(int userId) {
@@ -7220,9 +7290,10 @@ public class PackageManagerService extends IPackageManager.Stub {
                     }
                     if (!isFirstBoot() && dexOptDialogShown) {
                         try {
-                            ActivityManagerNative.getDefault().showBootMessage(
-                                    mContext.getResources().getString(
-                                            R.string.android_upgrading_fstrim), true);
+                            // ActivityManagerNative.getDefault().showBootMessage(
+                            //         mContext.getResources().getString(
+                            //                 R.string.android_upgrading_fstrim), true);
+                            ActivityManagerNative.getDefault().showBootMessage("Optimizing storage.", true);
                         } catch (RemoteException e) {
                         }
                     }
@@ -7305,17 +7376,17 @@ public class PackageManagerService extends IPackageManager.Stub {
                         numberOfPackagesToDexopt + ": " + pkg.packageName);
             }
 
-            if (showDialog) {
-                try {
-                    ActivityManagerNative.getDefault().showBootMessage(
-                            mContext.getResources().getString(R.string.android_upgrading_apk,
-                                    numberOfPackagesVisited, numberOfPackagesToDexopt), true);
-                } catch (RemoteException e) {
-                }
-                synchronized (mPackages) {
-                    mDexOptDialogShown = true;
-                }
-            }
+            // if (showDialog) {
+            //     try {
+            //         ActivityManagerNative.getDefault().showBootMessage(
+            //                 mContext.getResources().getString(R.string.android_upgrading_apk,
+            //                         numberOfPackagesVisited, numberOfPackagesToDexopt), true);
+            //     } catch (RemoteException e) {
+            //     }
+            //     synchronized (mPackages) {
+            //         mDexOptDialogShown = true;
+            //     }
+            // }
 
             // If the OTA updates a system app which was previously preopted to a non-preopted state
             // the app might end up being verified at runtime. That's because by default the apps
@@ -18298,8 +18369,10 @@ Slog.v(TAG, ":: stepped forward, applying functor at tag " + parser.getName());
         });
 
         // Now that we're mostly running, clean up stale users and apps
-        reconcileUsers(StorageManager.UUID_PRIVATE_INTERNAL);
-        reconcileApps(StorageManager.UUID_PRIVATE_INTERNAL);
+        if (mFirstBoot) {
+            reconcileUsers(StorageManager.UUID_PRIVATE_INTERNAL);
+            reconcileApps(StorageManager.UUID_PRIVATE_INTERNAL);
+        }
     }
 
     @Override
