@@ -38,7 +38,7 @@ import android.content.res.Configuration;
 import android.graphics.Rect;
 import android.os.Debug;
 import android.os.RemoteException;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.view.DisplayInfo;
@@ -49,7 +49,7 @@ import android.view.animation.Animation;
 import com.android.internal.policy.DividerSnapAlgorithm;
 import com.android.internal.policy.DividerSnapAlgorithm.SnapTarget;
 import com.android.internal.policy.DockedDividerUtils;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -141,7 +141,7 @@ public class TaskStack implements DimLayer.DimLayerUser,
         mStackId = stackId;
         mDockedStackMinimizeThickness = service.mContext.getResources().getDimensionPixelSize(
                 com.android.internal.R.dimen.docked_stack_minimize_thickness);
-        EventLog.writeEvent(EventLogTags.WM_STACK_CREATED, stackId);
+        // EventLog.writeEvent(EventLogTags.WM_STACK_CREATED, stackId);
     }
 
     DisplayContent getDisplayContent() {
@@ -561,7 +561,7 @@ public class TaskStack implements DimLayer.DimLayerUser,
         } else {
             forceWindowsScaleable(task, false);
         }
-        EventLog.writeEvent(EventLogTags.WM_TASK_MOVED, task.mTaskId, toTop ? 1 : 0, position);
+        // EventLog.writeEvent(EventLogTags.WM_TASK_MOVED, task.mTaskId, toTop ? 1 : 0, position);
     }
 
     /** Calculate the minimum possible position for a task that can be shown to the user.
@@ -793,7 +793,7 @@ public class TaskStack implements DimLayer.DimLayerUser,
     }
 
     void detachDisplay() {
-        EventLog.writeEvent(EventLogTags.WM_STACK_REMOVED, mStackId);
+        // EventLog.writeEvent(EventLogTags.WM_STACK_REMOVED, mStackId);
 
         boolean doAnotherLayoutPass = false;
         for (int taskNdx = mTasks.size() - 1; taskNdx >= 0; --taskNdx) {

@@ -1560,9 +1560,9 @@ public class SyncStorageEngine extends Handler {
                                     if (authority.ident > highestAuthorityId) {
                                         highestAuthorityId = authority.ident;
                                     }
-                                } else {
-                                    EventLog.writeEvent(0x534e4554, "26513719", -1,
-                                            "Malformed authority");
+                                // } else {
+                                //     EventLog.writeEvent(0x534e4554, "26513719", -1,
+                                //             "Malformed authority");
                                 }
                             } else if (XML_TAG_LISTEN_FOR_TICKLES.equals(tagName)) {
                                 parseListenForTickles(parser);
@@ -1740,10 +1740,10 @@ public class SyncStorageEngine extends Handler {
                         if (version > 0) {
                             authority.periodicSyncs.clear();
                         }
-                    } else {
-                        EventLog.writeEvent(0x534e4554, "35028827", -1,
-                                "account:" + info.account + " provider:" + authorityName + " user:"
-                                        + userId);
+                    // } else {
+                    //     EventLog.writeEvent(0x534e4554, "35028827", -1,
+                    //             "account:" + info.account + " provider:" + authorityName + " user:"
+                    //                     + userId);
                     }
                 }
             }

@@ -170,7 +170,7 @@ import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.FastXmlSerializer;
 import com.android.internal.util.IndentingPrintWriter;
 // import com.android.server.DeviceIdleController;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.LocalServices;
 import com.android.server.SystemConfig;
 
@@ -2231,11 +2231,11 @@ public class NetworkPolicyManagerService extends INetworkPolicyManager.Stub {
                     updateRulesForRestrictPowerUL();
                 }
             }
-            if (enabled) {
-                EventLogTags.writeDeviceIdleOnPhase("net");
-            } else {
-                EventLogTags.writeDeviceIdleOffPhase("net");
-            }
+            // if (enabled) {
+            //     EventLogTags.writeDeviceIdleOnPhase("net");
+            // } else {
+            //     EventLogTags.writeDeviceIdleOffPhase("net");
+            // }
         // } finally {
         //     Trace.traceEnd(Trace.TRACE_TAG_NETWORK);
         // }

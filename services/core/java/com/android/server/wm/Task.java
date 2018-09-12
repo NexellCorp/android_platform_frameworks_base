@@ -34,13 +34,13 @@ import android.app.ActivityManager.StackId;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Rect;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.view.DisplayInfo;
 import android.view.Surface;
 import android.view.animation.Animation;
 
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -144,7 +144,7 @@ class Task implements DimLayer.DimLayerUser {
             return;
         }
         if (DEBUG_STACK) Slog.i(TAG, "removeTask: removing taskId=" + mTaskId);
-        EventLog.writeEvent(EventLogTags.WM_TASK_REMOVED, mTaskId, "removeTask");
+        // EventLog.writeEvent(EventLogTags.WM_TASK_REMOVED, mTaskId, "removeTask");
         mDeferRemoval = false;
         DisplayContent content = getDisplayContent();
         if (content != null) {
@@ -160,7 +160,7 @@ class Task implements DimLayer.DimLayerUser {
         }
         if (DEBUG_STACK) Slog.i(TAG, "moveTaskToStack: removing taskId=" + mTaskId
                 + " from stack=" + mStack);
-        EventLog.writeEvent(EventLogTags.WM_TASK_REMOVED, mTaskId, "moveTask");
+        // EventLog.writeEvent(EventLogTags.WM_TASK_REMOVED, mTaskId, "moveTask");
         if (mStack != null) {
             mStack.removeTask(this);
         }
@@ -171,7 +171,7 @@ class Task implements DimLayer.DimLayerUser {
         if (mStack != null && stack != mStack) {
             if (DEBUG_STACK) Slog.i(TAG, "positionTaskInStack: removing taskId=" + mTaskId
                     + " from stack=" + mStack);
-            EventLog.writeEvent(EventLogTags.WM_TASK_REMOVED, mTaskId, "moveTask");
+            // EventLog.writeEvent(EventLogTags.WM_TASK_REMOVED, mTaskId, "moveTask");
             mStack.removeTask(this);
         }
         stack.positionTask(this, position, showForAllUsers());
@@ -189,7 +189,7 @@ class Task implements DimLayer.DimLayerUser {
     boolean removeAppToken(AppWindowToken wtoken) {
         boolean removed = mAppTokens.remove(wtoken);
         if (mAppTokens.size() == 0) {
-            EventLog.writeEvent(EventLogTags.WM_TASK_REMOVED, mTaskId, "removeAppToken: last token");
+            // EventLog.writeEvent(EventLogTags.WM_TASK_REMOVED, mTaskId, "removeAppToken: last token");
             if (mDeferRemoval) {
                 removeLocked();
             }

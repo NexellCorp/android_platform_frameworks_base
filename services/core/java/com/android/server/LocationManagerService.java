@@ -88,7 +88,7 @@ import android.os.UserManager;
 import android.os.WorkSource;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Slog;
 
@@ -2560,12 +2560,12 @@ public class LocationManagerService extends ILocationManager.Stub {
             Location mock = new Location(loc);
             mock.setIsFromMockProvider(true);
 
-            if (!TextUtils.isEmpty(loc.getProvider()) && !provider.equals(loc.getProvider())) {
+            // if (!TextUtils.isEmpty(loc.getProvider()) && !provider.equals(loc.getProvider())) {
                 // The location has an explicit provider that is different from the mock provider
                 // name. The caller may be trying to fool us via bug 33091107.
-                EventLog.writeEvent(0x534e4554, "33091107", Binder.getCallingUid(),
-                        provider + "!=" + loc.getProvider());
-            }
+                // EventLog.writeEvent(0x534e4554, "33091107", Binder.getCallingUid(),
+                //         provider + "!=" + loc.getProvider());
+            // }
 
             // clear calling identity so INSTALL_LOCATION_PROVIDER permission is not required
             long identity = Binder.clearCallingIdentity();

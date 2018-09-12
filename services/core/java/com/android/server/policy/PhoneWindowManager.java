@@ -108,7 +108,7 @@ import android.provider.Settings;
 import android.speech.RecognizerIntent;
 import android.telecom.TelecomManager;
 import android.util.DisplayMetrics;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.MutableBoolean;
 import android.util.Slog;
@@ -6409,7 +6409,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Called on the PowerManager's Notifier thread.
     @Override
     public void finishedGoingToSleep(int why) {
-        EventLog.writeEvent(70000, 0);
+        // EventLog.writeEvent(70000, 0);
         if (DEBUG_WAKEUP) Slog.i(TAG, "Finished going to sleep... (why=" + why + ")");
         // MetricsLogger.histogram(mContext, "screen_timeout", mLockScreenTimeout / 1000);
 
@@ -6433,7 +6433,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Called on the PowerManager's Notifier thread.
     @Override
     public void startedWakingUp() {
-        EventLog.writeEvent(70000, 1);
+        // EventLog.writeEvent(70000, 1);
         if (DEBUG_WAKEUP) Slog.i(TAG, "Started waking up...");
 
         // Since goToSleep performs these functions synchronously, we must

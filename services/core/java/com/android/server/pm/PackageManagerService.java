@@ -6783,7 +6783,7 @@ public class PackageManagerService extends IPackageManager.Stub {
 
     static void logCriticalInfo(int priority, String msg) {
         Slog.println(priority, TAG, msg);
-        EventLogTags.writePmCriticalInfo(msg);
+        // EventLogTags.writePmCriticalInfo(msg);
         try {
             File fname = getSettingsProblemFile();
             FileOutputStream out = new FileOutputStream(fname, true);

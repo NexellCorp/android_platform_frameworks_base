@@ -75,7 +75,7 @@ import static com.android.server.am.ActivityStackSupervisor.FORCE_FOCUS;
 import static com.android.server.am.ActivityStackSupervisor.ON_TOP;
 import static com.android.server.am.ActivityStackSupervisor.PRESERVE_WINDOWS;
 import static com.android.server.am.ActivityStackSupervisor.TAG_TASKS;
-import static com.android.server.am.EventLogTags.AM_NEW_INTENT;
+// import static com.android.server.am.EventLogTags.AM_NEW_INTENT;
 
 import android.app.ActivityManager;
 import android.app.ActivityOptions;
@@ -109,7 +109,7 @@ import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.UserManager;
 import android.service.voice.IVoiceInteractionSession;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.view.Display;
 
@@ -1077,7 +1077,7 @@ class ActivityStarter {
                         // so make sure the task now has the identity of the new intent.
                         top.task.setIntent(mStartActivity);
                     }
-                    ActivityStack.logStartActivity(AM_NEW_INTENT, mStartActivity, top.task);
+                    // ActivityStack.logStartActivity(AM_NEW_INTENT, mStartActivity, top.task);
 
                     if (shouldActivityBeBroughtToFront(mReusedActivity)) {
                         mStartActivity.intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
@@ -1129,7 +1129,7 @@ class ActivityStarter {
                 && ((mLaunchFlags & FLAG_ACTIVITY_SINGLE_TOP) != 0
                 || mLaunchSingleTop || mLaunchSingleTask);
         if (dontStart) {
-            ActivityStack.logStartActivity(AM_NEW_INTENT, top, top.task);
+            // ActivityStack.logStartActivity(AM_NEW_INTENT, top, top.task);
             // For paranoia, make sure we have correctly resumed the top activity.
             topStack.mLastPausedActivity = null;
             if (mDoResume) {
@@ -1207,12 +1207,12 @@ class ActivityStarter {
         if (mSourceRecord != null && mSourceRecord.isRecentsActivity()) {
             mStartActivity.task.setTaskToReturnTo(RECENTS_ACTIVITY_TYPE);
         }
-        if (newTask) {
-            EventLog.writeEvent(
-                    EventLogTags.AM_CREATE_TASK, mStartActivity.userId, mStartActivity.task.taskId);
-        }
-        ActivityStack.logStartActivity(
-                EventLogTags.AM_CREATE_ACTIVITY, mStartActivity, mStartActivity.task);
+        // if (newTask) {
+        //     EventLog.writeEvent(
+        //             EventLogTags.AM_CREATE_TASK, mStartActivity.userId, mStartActivity.task.taskId);
+        // }
+        // ActivityStack.logStartActivity(
+        //         EventLogTags.AM_CREATE_ACTIVITY, mStartActivity, mStartActivity.task);
         mTargetStack.mLastPausedActivity = null;
 
         sendPowerHintForLaunchStartIfNeeded(false /* forceSend */);
@@ -1660,8 +1660,8 @@ class ActivityStarter {
             // desires.
             if (((mLaunchFlags & FLAG_ACTIVITY_SINGLE_TOP) != 0 || mLaunchSingleTop)
                     && intentActivity.realActivity.equals(mStartActivity.realActivity)) {
-                ActivityStack.logStartActivity(AM_NEW_INTENT, mStartActivity,
-                        intentActivity.task);
+                // ActivityStack.logStartActivity(AM_NEW_INTENT, mStartActivity,
+                //         intentActivity.task);
                 if (intentActivity.frontOfTask) {
                     intentActivity.task.setIntent(mStartActivity);
                 }
@@ -1763,7 +1763,7 @@ class ActivityStarter {
             ActivityRecord top = sourceTask.performClearTaskLocked(mStartActivity, mLaunchFlags);
             mKeepCurTransition = true;
             if (top != null) {
-                ActivityStack.logStartActivity(AM_NEW_INTENT, mStartActivity, top.task);
+                // ActivityStack.logStartActivity(AM_NEW_INTENT, mStartActivity, top.task);
                 top.deliverNewIntentLocked(mCallingUid, mStartActivity.intent, mStartActivity.launchedFromPackage);
                 // For paranoia, make sure we have correctly resumed the top activity.
                 mTargetStack.mLastPausedActivity = null;
@@ -1782,7 +1782,7 @@ class ActivityStarter {
                 final TaskRecord task = top.task;
                 task.moveActivityToFrontLocked(top);
                 top.updateOptionsLocked(mOptions);
-                ActivityStack.logStartActivity(AM_NEW_INTENT, mStartActivity, task);
+                // ActivityStack.logStartActivity(AM_NEW_INTENT, mStartActivity, task);
                 top.deliverNewIntentLocked(mCallingUid, mStartActivity.intent, mStartActivity.launchedFromPackage);
                 mTargetStack.mLastPausedActivity = null;
                 if (mDoResume) {
@@ -1823,7 +1823,7 @@ class ActivityStarter {
         if (top != null && top.realActivity.equals(mStartActivity.realActivity) && top.userId == mStartActivity.userId) {
             if ((mLaunchFlags & FLAG_ACTIVITY_SINGLE_TOP) != 0
                     || mLaunchSingleTop || mLaunchSingleTask) {
-                ActivityStack.logStartActivity(AM_NEW_INTENT, top, top.task);
+                // ActivityStack.logStartActivity(AM_NEW_INTENT, top, top.task);
                 if ((mStartFlags & START_FLAG_ONLY_IF_NEEDED) != 0) {
                     // We don't need to start a new activity, and the client said not to do
                     // anything if that is the case, so this is it!

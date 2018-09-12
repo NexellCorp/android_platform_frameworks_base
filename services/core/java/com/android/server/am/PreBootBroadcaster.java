@@ -101,7 +101,7 @@ public abstract class PreBootBroadcaster extends IIntentReceiver.Stub {
         }
 
         Slog.i(TAG, "Pre-boot of " + componentName.toShortString() + " for user " + mUserId);
-        EventLogTags.writeAmPreBoot(mUserId, componentName.getPackageName());
+        // EventLogTags.writeAmPreBoot(mUserId, componentName.getPackageName());
 
         mIntent.setComponent(componentName);
         mService.broadcastIntentLocked(null, null, mIntent, null, this, 0, null, null, null,

@@ -22,7 +22,7 @@ import android.app.AppOpsManager;
 
 import com.android.internal.app.IAppOpsService;
 import com.android.internal.app.IBatteryStats;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.LocalServices;
 
 import android.app.ActivityManagerNative;
@@ -46,7 +46,7 @@ import android.os.SystemClock;
 import android.os.UserHandle;
 import android.os.WorkSource;
 import android.provider.Settings;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.view.WindowManagerPolicy;
 import android.view.inputmethod.InputMethodManagerInternal;
@@ -402,7 +402,7 @@ final class Notifier {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        EventLog.writeEvent(EventLogTags.POWER_SCREEN_STATE, 1, 0, 0, 0);
+                        // EventLog.writeEvent(EventLogTags.POWER_SCREEN_STATE, 1, 0, 0, 0);
                         mPolicy.startedWakingUp();
                     }
                 });
@@ -458,7 +458,7 @@ final class Notifier {
                 mHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        EventLog.writeEvent(EventLogTags.POWER_SCREEN_STATE, 0, why, 0, 0);
+                        // EventLog.writeEvent(EventLogTags.POWER_SCREEN_STATE, 0, why, 0, 0);
                         mPolicy.finishedGoingToSleep(why);
                     }
                 });
@@ -618,7 +618,7 @@ final class Notifier {
             powerState = mBroadcastedInteractiveState;
         }
 
-        EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_SEND, 1);
+        // EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_SEND, 1);
 
         if (powerState == INTERACTIVE_STATE_AWAKE) {
             sendWakeUpBroadcast();
@@ -652,7 +652,7 @@ final class Notifier {
             mContext.sendOrderedBroadcastAsUser(mScreenOnIntent, UserHandle.ALL, null,
                     mWakeUpBroadcastDone, mHandler, 0, null, null);
         } else {
-            EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_STOP, 2, 1);
+            // EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_STOP, 2, 1);
             sendNextBroadcast();
         }
     }
@@ -660,8 +660,8 @@ final class Notifier {
     private final BroadcastReceiver mWakeUpBroadcastDone = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_DONE, 1,
-                    SystemClock.uptimeMillis() - mBroadcastStartTime, 1);
+            // EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_DONE, 1,
+            //         SystemClock.uptimeMillis() - mBroadcastStartTime, 1);
             sendNextBroadcast();
         }
     };
@@ -675,7 +675,7 @@ final class Notifier {
             mContext.sendOrderedBroadcastAsUser(mScreenOffIntent, UserHandle.ALL, null,
                     mGoToSleepBroadcastDone, mHandler, 0, null, null);
         } else {
-            EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_STOP, 3, 1);
+            // EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_STOP, 3, 1);
             sendNextBroadcast();
         }
     }
@@ -683,8 +683,8 @@ final class Notifier {
     private final BroadcastReceiver mGoToSleepBroadcastDone = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_DONE, 0,
-                    SystemClock.uptimeMillis() - mBroadcastStartTime, 1);
+            // EventLog.writeEvent(EventLogTags.POWER_SCREEN_BROADCAST_DONE, 0,
+            //         SystemClock.uptimeMillis() - mBroadcastStartTime, 1);
             sendNextBroadcast();
         }
     };

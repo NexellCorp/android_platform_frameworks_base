@@ -391,11 +391,11 @@ public class GestureLauncherService extends SystemService {
                     sensor1OnTimeDiff,
                     sensor2OnTimeDiff,
                     extraDiff));
-            EventLogTags.writeCameraGestureTriggered(
-                    gestureOnTimeDiff,
-                    sensor1OnTimeDiff,
-                    sensor2OnTimeDiff,
-                    extraDiff);
+            // EventLogTags.writeCameraGestureTriggered(
+            //         gestureOnTimeDiff,
+            //         sensor1OnTimeDiff,
+            //         sensor2OnTimeDiff,
+            //         extraDiff);
 
             mCameraGestureLastEventTime = now;
             mCameraGestureSensor1LastOnTimeMs = sensor1OnTime;

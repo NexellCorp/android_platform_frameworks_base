@@ -2148,10 +2148,10 @@ class AlarmManagerService extends SystemService {
 
                 alarm.count = 1;
                 triggerList.add(alarm);
-                if ((alarm.flags&AlarmManager.FLAG_WAKE_FROM_IDLE) != 0) {
-                    EventLogTags.writeDeviceIdleWakeFromIdle(mPendingIdleUntil != null ? 1 : 0,
-                            alarm.statsTag);
-                }
+                // if ((alarm.flags&AlarmManager.FLAG_WAKE_FROM_IDLE) != 0) {
+                //     EventLogTags.writeDeviceIdleWakeFromIdle(mPendingIdleUntil != null ? 1 : 0,
+                //             alarm.statsTag);
+                // }
                 if (mPendingIdleUntil == alarm) {
                     mPendingIdleUntil = null;
                     rebatchAllAlarmsLocked(false);

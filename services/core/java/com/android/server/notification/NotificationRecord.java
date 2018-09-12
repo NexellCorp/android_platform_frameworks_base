@@ -35,7 +35,7 @@ import android.service.notification.StatusBarNotification;
 import android.util.Log;
 
 import com.android.internal.annotations.VisibleForTesting;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 
 import java.io.PrintWriter;
 import java.lang.reflect.Array;
@@ -468,11 +468,11 @@ public final class NotificationRecord {
         final long now = System.currentTimeMillis();
         mVisibleSinceMs = visible ? now : mVisibleSinceMs;
         stats.onVisibilityChanged(visible);
-        EventLogTags.writeNotificationVisibility(getKey(), visible ? 1 : 0,
-                (int) (now - mCreationTimeMs),
-                (int) (now - mUpdateTimeMs),
-                0, // exposure time
-                rank);
+        // EventLogTags.writeNotificationVisibility(getKey(), visible ? 1 : 0,
+        //         (int) (now - mCreationTimeMs),
+        //         (int) (now - mUpdateTimeMs),
+        //         0, // exposure time
+        //         rank);
     }
 
     /**

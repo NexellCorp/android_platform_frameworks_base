@@ -42,7 +42,7 @@ import android.os.UserHandle;
 import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.ArraySet;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Slog;
 import android.util.SparseArray;
@@ -585,16 +585,16 @@ class AppErrors {
             // This process loses!
             Slog.w(TAG, "Process " + app.info.processName
                     + " has crashed too many times: killing!");
-            EventLog.writeEvent(EventLogTags.AM_PROCESS_CRASHED_TOO_MUCH,
-                    app.userId, app.info.processName, app.uid);
+            // EventLog.writeEvent(EventLogTags.AM_PROCESS_CRASHED_TOO_MUCH,
+            //         app.userId, app.info.processName, app.uid);
             mService.mStackSupervisor.handleAppCrashLocked(app);
             if (!app.persistent) {
                 // We don't want to start this process again until the user
                 // explicitly does so...  but for persistent process, we really
                 // need to keep it running.  If a persistent process is actually
                 // repeatedly crashing, then badness for everyone.
-                EventLog.writeEvent(EventLogTags.AM_PROC_BAD, app.userId, app.uid,
-                        app.info.processName);
+                // EventLog.writeEvent(EventLogTags.AM_PROC_BAD, app.userId, app.uid,
+                //         app.info.processName);
                 if (!app.isolated) {
                     // XXX We don't have a way to mark isolated processes
                     // as bad, since they don't have a peristent identity.
@@ -775,8 +775,8 @@ class AppErrors {
             app.notResponding = true;
 
             // Log the ANR to the event log.
-            EventLog.writeEvent(EventLogTags.AM_ANR, app.userId, app.pid,
-                    app.processName, app.info.flags, annotation);
+            // EventLog.writeEvent(EventLogTags.AM_ANR, app.userId, app.pid,
+            //         app.processName, app.info.flags, annotation);
 
             // Dump thread traces as quickly as we can, starting with "interesting" processes.
             firstPids.add(app.pid);

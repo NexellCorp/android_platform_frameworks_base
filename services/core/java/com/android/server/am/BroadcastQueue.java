@@ -46,7 +46,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.UserHandle;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.util.TimeUtils;
 // import com.android.server.DeviceIdleController;
@@ -317,7 +317,7 @@ public final class BroadcastQueue {
             } catch (Exception e) {
                 Slog.w(TAG, "Exception in new application when starting receiver "
                         + br.curComponent.flattenToShortString(), e);
-                logBroadcastReceiverDiscardLocked(br);
+                // logBroadcastReceiverDiscardLocked(br);
                 finishReceiverLocked(br, br.resultCode, br.resultData,
                         br.resultExtras, br.resultAbort, false);
                 scheduleBroadcastsLocked();
@@ -359,7 +359,7 @@ public final class BroadcastQueue {
     }
 
     private void skipReceiverLocked(BroadcastRecord r) {
-        logBroadcastReceiverDiscardLocked(r);
+        // logBroadcastReceiverDiscardLocked(r);
         finishReceiverLocked(r, r.resultCode, r.resultData,
                 r.resultExtras, r.resultAbort, false);
         scheduleBroadcastsLocked();
@@ -1235,7 +1235,7 @@ public final class BroadcastQueue {
                     // from a client, so throwing an exception out from here
                     // will crash the entire system instead of just whoever
                     // sent the broadcast.
-                    logBroadcastReceiverDiscardLocked(r);
+                    // logBroadcastReceiverDiscardLocked(r);
                     finishReceiverLocked(r, r.resultCode, r.resultData,
                             r.resultExtras, r.resultAbort, false);
                     scheduleBroadcastsLocked();
@@ -1264,7 +1264,7 @@ public final class BroadcastQueue {
                         + info.activityInfo.applicationInfo.packageName + "/"
                         + info.activityInfo.applicationInfo.uid + " for broadcast "
                         + r.intent + ": process is bad");
-                logBroadcastReceiverDiscardLocked(r);
+                // logBroadcastReceiverDiscardLocked(r);
                 finishReceiverLocked(r, r.resultCode, r.resultData,
                         r.resultExtras, r.resultAbort, false);
                 scheduleBroadcastsLocked();
@@ -1364,7 +1364,7 @@ public final class BroadcastQueue {
         Object curReceiver = r.receivers.get(r.nextReceiver-1);
         r.delivery[r.nextReceiver-1] = BroadcastRecord.DELIVERY_TIMEOUT;
         Slog.w(TAG, "Receiver during timeout: " + curReceiver);
-        logBroadcastReceiverDiscardLocked(r);
+        // logBroadcastReceiverDiscardLocked(r);
         if (curReceiver instanceof BroadcastFilter) {
             BroadcastFilter bf = (BroadcastFilter)curReceiver;
             if (bf.receiverList.pid != 0
@@ -1444,31 +1444,31 @@ public final class BroadcastQueue {
         return didSomething;
     }
 
-    final void logBroadcastReceiverDiscardLocked(BroadcastRecord r) {
-        final int logIndex = r.nextReceiver - 1;
-        if (logIndex >= 0 && logIndex < r.receivers.size()) {
-            Object curReceiver = r.receivers.get(logIndex);
-            if (curReceiver instanceof BroadcastFilter) {
-                BroadcastFilter bf = (BroadcastFilter) curReceiver;
-                EventLog.writeEvent(EventLogTags.AM_BROADCAST_DISCARD_FILTER,
-                        bf.owningUserId, System.identityHashCode(r),
-                        r.intent.getAction(), logIndex, System.identityHashCode(bf));
-            } else {
-                ResolveInfo ri = (ResolveInfo) curReceiver;
-                EventLog.writeEvent(EventLogTags.AM_BROADCAST_DISCARD_APP,
-                        UserHandle.getUserId(ri.activityInfo.applicationInfo.uid),
-                        System.identityHashCode(r), r.intent.getAction(), logIndex, ri.toString());
-            }
-        } else {
-            if (logIndex < 0) Slog.w(TAG,
-                    "Discarding broadcast before first receiver is invoked: " + r);
-            EventLog.writeEvent(EventLogTags.AM_BROADCAST_DISCARD_APP,
-                    -1, System.identityHashCode(r),
-                    r.intent.getAction(),
-                    r.nextReceiver,
-                    "NONE");
-        }
-    }
+    // final void logBroadcastReceiverDiscardLocked(BroadcastRecord r) {
+    //     final int logIndex = r.nextReceiver - 1;
+    //     if (logIndex >= 0 && logIndex < r.receivers.size()) {
+    //         Object curReceiver = r.receivers.get(logIndex);
+    //         if (curReceiver instanceof BroadcastFilter) {
+    //             BroadcastFilter bf = (BroadcastFilter) curReceiver;
+    //             EventLog.writeEvent(EventLogTags.AM_BROADCAST_DISCARD_FILTER,
+    //                     bf.owningUserId, System.identityHashCode(r),
+    //                     r.intent.getAction(), logIndex, System.identityHashCode(bf));
+    //         } else {
+    //             ResolveInfo ri = (ResolveInfo) curReceiver;
+    //             EventLog.writeEvent(EventLogTags.AM_BROADCAST_DISCARD_APP,
+    //                     UserHandle.getUserId(ri.activityInfo.applicationInfo.uid),
+    //                     System.identityHashCode(r), r.intent.getAction(), logIndex, ri.toString());
+    //         }
+    //     } else {
+    //         if (logIndex < 0) Slog.w(TAG,
+    //                 "Discarding broadcast before first receiver is invoked: " + r);
+    //         EventLog.writeEvent(EventLogTags.AM_BROADCAST_DISCARD_APP,
+    //                 -1, System.identityHashCode(r),
+    //                 r.intent.getAction(),
+    //                 r.nextReceiver,
+    //                 "NONE");
+    //     }
+    // }
 
     final boolean dumpLocked(FileDescriptor fd, PrintWriter pw, String[] args,
             int opti, boolean dumpAll, String dumpPackage, boolean needSep) {

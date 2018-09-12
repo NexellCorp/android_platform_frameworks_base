@@ -76,7 +76,7 @@ import android.provider.Settings.SettingNotFoundException;
 import android.service.voice.IVoiceInteractionSession;
 import android.util.ArrayMap;
 import android.util.ArraySet;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.util.SparseIntArray;
@@ -607,9 +607,9 @@ public final class ActivityStackSupervisor implements DisplayListener {
             mLastFocusedStack = mFocusedStack;
             mFocusedStack = focusCandidate;
 
-            EventLogTags.writeAmFocusedStack(
-                    mCurrentUser, mFocusedStack == null ? -1 : mFocusedStack.getStackId(),
-                    mLastFocusedStack == null ? -1 : mLastFocusedStack.getStackId(), reason);
+            // EventLogTags.writeAmFocusedStack(
+            //         mCurrentUser, mFocusedStack == null ? -1 : mFocusedStack.getStackId(),
+            //         mLastFocusedStack == null ? -1 : mLastFocusedStack.getStackId(), reason);
         }
 
         final ActivityRecord r = topRunningActivityLocked();
@@ -1258,11 +1258,11 @@ public final class ActivityStackSupervisor implements DisplayListener {
             if (DEBUG_SWITCH) Slog.v(TAG_SWITCH,
                     "Launching: " + r + " icicle=" + r.icicle + " with results=" + results
                     + " newIntents=" + newIntents + " andResume=" + andResume);
-            if (andResume) {
-                EventLog.writeEvent(EventLogTags.AM_RESTART_ACTIVITY,
-                        r.userId, System.identityHashCode(r),
-                        task.taskId, r.shortComponentName);
-            }
+            // if (andResume) {
+            //     EventLog.writeEvent(EventLogTags.AM_RESTART_ACTIVITY,
+            //             r.userId, System.identityHashCode(r),
+            //             task.taskId, r.shortComponentName);
+            // }
             if (r.isHomeActivity()) {
                 // Home process is the root process of the task.
                 mService.mHomeProcess = task.mActivities.get(0).app;

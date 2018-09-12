@@ -1027,7 +1027,7 @@ public class DeviceIdleController extends SystemService
                 case MSG_REPORT_IDLE_ON:
                 case MSG_REPORT_IDLE_ON_LIGHT: {
                     // mGoingIdleWakeLock is held at this point
-                    EventLogTags.writeDeviceIdleOnStart();
+                    // EventLogTags.writeDeviceIdleOnStart();
                     final boolean deepChanged;
                     final boolean lightChanged;
                     if (msg.what == MSG_REPORT_IDLE_ON) {
@@ -1050,12 +1050,12 @@ public class DeviceIdleController extends SystemService
                     if (lightChanged) {
                         getContext().sendBroadcastAsUser(mLightIdleIntent, UserHandle.ALL);
                     }
-                    EventLogTags.writeDeviceIdleOnComplete();
+                    // EventLogTags.writeDeviceIdleOnComplete();
                     mGoingIdleWakeLock.release();
                 } break;
                 case MSG_REPORT_IDLE_OFF: {
                     // mActiveIdleWakeLock is held at this point
-                    EventLogTags.writeDeviceIdleOffStart("unknown");
+                    // EventLogTags.writeDeviceIdleOffStart("unknown");
                     final boolean deepChanged = mLocalPowerManager.setDeviceIdleMode(false);
                     final boolean lightChanged = mLocalPowerManager.setLightDeviceIdleMode(false);
                     try {
@@ -1077,14 +1077,14 @@ public class DeviceIdleController extends SystemService
                     // Always start with one active op for the message being sent here.
                     // Now we are done!
                     decActiveIdleOps();
-                    EventLogTags.writeDeviceIdleOffComplete();
+                    // EventLogTags.writeDeviceIdleOffComplete();
                 } break;
                 case MSG_REPORT_ACTIVE: {
                     // The device is awake at this point, so no wakelock necessary.
                     String activeReason = (String)msg.obj;
                     int activeUid = msg.arg1;
-                    EventLogTags.writeDeviceIdleOffStart(
-                            activeReason != null ? activeReason : "unknown");
+                    // EventLogTags.writeDeviceIdleOffStart(
+                    //         activeReason != null ? activeReason : "unknown");
                     final boolean deepChanged = mLocalPowerManager.setDeviceIdleMode(false);
                     final boolean lightChanged = mLocalPowerManager.setLightDeviceIdleMode(false);
                     try {
@@ -1099,7 +1099,7 @@ public class DeviceIdleController extends SystemService
                     if (lightChanged) {
                         getContext().sendBroadcastAsUser(mLightIdleIntent, UserHandle.ALL);
                     }
-                    EventLogTags.writeDeviceIdleOffComplete();
+                    // EventLogTags.writeDeviceIdleOffComplete();
                 } break;
                 case MSG_TEMP_APP_WHITELIST_TIMEOUT: {
                     // TODO: What is keeping the device awake at this point? Does it need to be?
@@ -1806,8 +1806,8 @@ public class DeviceIdleController extends SystemService
     void becomeActiveLocked(String activeReason, int activeUid) {
         if (DEBUG) Slog.i(TAG, "becomeActiveLocked, reason = " + activeReason);
         if (mState != STATE_ACTIVE || mLightState != STATE_ACTIVE) {
-            EventLogTags.writeDeviceIdle(STATE_ACTIVE, activeReason);
-            EventLogTags.writeDeviceIdleLight(LIGHT_STATE_ACTIVE, activeReason);
+            // EventLogTags.writeDeviceIdle(STATE_ACTIVE, activeReason);
+            // EventLogTags.writeDeviceIdleLight(LIGHT_STATE_ACTIVE, activeReason);
             scheduleReportActiveLocked(activeReason, activeUid);
             mState = STATE_ACTIVE;
             mLightState = LIGHT_STATE_ACTIVE;
@@ -1830,14 +1830,14 @@ public class DeviceIdleController extends SystemService
                 if (DEBUG) Slog.d(TAG, "Moved from STATE_ACTIVE to STATE_INACTIVE");
                 resetIdleManagementLocked();
                 scheduleAlarmLocked(mInactiveTimeout, false);
-                EventLogTags.writeDeviceIdle(mState, "no activity");
+                // EventLogTags.writeDeviceIdle(mState, "no activity");
             }
             if (mLightState == LIGHT_STATE_ACTIVE && mLightEnabled) {
                 mLightState = LIGHT_STATE_INACTIVE;
                 if (DEBUG) Slog.d(TAG, "Moved from LIGHT_STATE_ACTIVE to LIGHT_STATE_INACTIVE");
                 resetLightIdleManagementLocked();
                 scheduleLightAlarmLocked(mConstants.LIGHT_IDLE_AFTER_INACTIVE_TIMEOUT);
-                EventLogTags.writeDeviceIdleLight(mLightState, "no activity");
+                // EventLogTags.writeDeviceIdleLight(mLightState, "no activity");
             }
         }
     }
@@ -1874,7 +1874,7 @@ public class DeviceIdleController extends SystemService
         }
 
         if (DEBUG) Slog.d(TAG, "stepLightIdleStateLocked: mLightState=" + mLightState);
-        EventLogTags.writeDeviceIdleLightStep();
+        // EventLogTags.writeDeviceIdleLightStep();
 
         switch (mLightState) {
             case LIGHT_STATE_INACTIVE:
@@ -1886,7 +1886,7 @@ public class DeviceIdleController extends SystemService
                     // We have some active ops going on...  give them a chance to finish
                     // before going in to our first idle.
                     mLightState = LIGHT_STATE_PRE_IDLE;
-                    EventLogTags.writeDeviceIdleLight(mLightState, reason);
+                    // EventLogTags.writeDeviceIdleLight(mLightState, reason);
                     scheduleLightAlarmLocked(mConstants.LIGHT_PRE_IDLE_TIMEOUT);
                     break;
                 }
@@ -1912,7 +1912,7 @@ public class DeviceIdleController extends SystemService
                 }
                 if (DEBUG) Slog.d(TAG, "Moved to LIGHT_STATE_IDLE.");
                 mLightState = LIGHT_STATE_IDLE;
-                EventLogTags.writeDeviceIdleLight(mLightState, reason);
+                // EventLogTags.writeDeviceIdleLight(mLightState, reason);
                 addEvent(EVENT_LIGHT_IDLE);
                 mGoingIdleWakeLock.acquire();
                 mHandler.sendEmptyMessage(MSG_REPORT_IDLE_ON_LIGHT);
@@ -1933,7 +1933,7 @@ public class DeviceIdleController extends SystemService
                     if (DEBUG) Slog.d(TAG,
                             "Moved from LIGHT_STATE_IDLE to LIGHT_STATE_IDLE_MAINTENANCE.");
                     mLightState = LIGHT_STATE_IDLE_MAINTENANCE;
-                    EventLogTags.writeDeviceIdleLight(mLightState, reason);
+                    // EventLogTags.writeDeviceIdleLight(mLightState, reason);
                     addEvent(EVENT_LIGHT_MAINTENANCE);
                     mHandler.sendEmptyMessage(MSG_REPORT_IDLE_OFF);
                 } else {
@@ -1943,7 +1943,7 @@ public class DeviceIdleController extends SystemService
                     scheduleLightAlarmLocked(mNextLightIdleDelay);
                     if (DEBUG) Slog.d(TAG, "Moved to LIGHT_WAITING_FOR_NETWORK.");
                     mLightState = LIGHT_STATE_WAITING_FOR_NETWORK;
-                    EventLogTags.writeDeviceIdleLight(mLightState, reason);
+                    // EventLogTags.writeDeviceIdleLight(mLightState, reason);
                 }
                 break;
         }
@@ -1951,7 +1951,7 @@ public class DeviceIdleController extends SystemService
 
     void stepIdleStateLocked(String reason) {
         if (DEBUG) Slog.d(TAG, "stepIdleStateLocked: mState=" + mState);
-        EventLogTags.writeDeviceIdleStep();
+        // EventLogTags.writeDeviceIdleStep();
 
         final long now = SystemClock.elapsedRealtime();
         if ((now+mConstants.MIN_TIME_TO_ALARM) > mAlarmManager.getNextWakeFromIdleTime()) {
@@ -1974,12 +1974,12 @@ public class DeviceIdleController extends SystemService
                 mNextIdleDelay = mConstants.IDLE_TIMEOUT;
                 mState = STATE_IDLE_PENDING;
                 if (DEBUG) Slog.d(TAG, "Moved from STATE_INACTIVE to STATE_IDLE_PENDING.");
-                EventLogTags.writeDeviceIdle(mState, reason);
+                // EventLogTags.writeDeviceIdle(mState, reason);
                 break;
             case STATE_IDLE_PENDING:
                 mState = STATE_SENSING;
                 if (DEBUG) Slog.d(TAG, "Moved from STATE_IDLE_PENDING to STATE_SENSING.");
-                EventLogTags.writeDeviceIdle(mState, reason);
+                // EventLogTags.writeDeviceIdle(mState, reason);
                 scheduleSensingTimeoutAlarmLocked(mConstants.SENSING_TIMEOUT);
                 cancelLocatingLocked();
                 mNotMoving = false;
@@ -1992,7 +1992,7 @@ public class DeviceIdleController extends SystemService
                 cancelSensingTimeoutAlarmLocked();
                 mState = STATE_LOCATING;
                 if (DEBUG) Slog.d(TAG, "Moved from STATE_SENSING to STATE_LOCATING.");
-                EventLogTags.writeDeviceIdle(mState, reason);
+                // EventLogTags.writeDeviceIdle(mState, reason);
                 scheduleAlarmLocked(mConstants.LOCATING_TIMEOUT, false);
                 if (mLocationManager != null
                         && mLocationManager.getProvider(LocationManager.NETWORK_PROVIDER) != null) {
@@ -2038,7 +2038,7 @@ public class DeviceIdleController extends SystemService
                     mLightState = LIGHT_STATE_OVERRIDE;
                     cancelLightAlarmLocked();
                 }
-                EventLogTags.writeDeviceIdle(mState, reason);
+                // EventLogTags.writeDeviceIdle(mState, reason);
                 addEvent(EVENT_DEEP_IDLE);
                 mGoingIdleWakeLock.acquire();
                 mHandler.sendEmptyMessage(MSG_REPORT_IDLE_ON);
@@ -2057,7 +2057,7 @@ public class DeviceIdleController extends SystemService
                     mNextIdlePendingDelay = mConstants.IDLE_PENDING_TIMEOUT;
                 }
                 mState = STATE_IDLE_MAINTENANCE;
-                EventLogTags.writeDeviceIdle(mState, reason);
+                // EventLogTags.writeDeviceIdle(mState, reason);
                 addEvent(EVENT_DEEP_MAINTENANCE);
                 mHandler.sendEmptyMessage(MSG_REPORT_IDLE_OFF);
                 break;
@@ -2168,7 +2168,7 @@ public class DeviceIdleController extends SystemService
             mInactiveTimeout = timeout;
             mCurIdleBudget = 0;
             mMaintenanceStartTime = 0;
-            EventLogTags.writeDeviceIdle(mState, type);
+            // EventLogTags.writeDeviceIdle(mState, type);
             addEvent(EVENT_NORMAL);
             becomeInactive = true;
         }
@@ -2176,7 +2176,7 @@ public class DeviceIdleController extends SystemService
             // We went out of light idle mode because we had started deep idle mode...  let's
             // now go back and reset things so we resume light idling if appropriate.
             mLightState = STATE_ACTIVE;
-            EventLogTags.writeDeviceIdleLight(mLightState, type);
+            // EventLogTags.writeDeviceIdleLight(mLightState, type);
             becomeInactive = true;
         }
         if (becomeInactive) {

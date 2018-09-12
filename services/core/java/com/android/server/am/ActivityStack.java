@@ -117,7 +117,7 @@ import android.os.SystemClock;
 import android.os.UserHandle;
 import android.service.voice.IVoiceInteractionSession;
 import android.util.ArraySet;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Slog;
 import android.view.Display;
@@ -1134,9 +1134,9 @@ final class ActivityStack {
         if (prev.app != null && prev.app.thread != null) {
             if (DEBUG_PAUSE) Slog.v(TAG_PAUSE, "Enqueueing pending pause: " + prev);
             try {
-                EventLog.writeEvent(EventLogTags.AM_PAUSE_ACTIVITY,
-                        prev.userId, System.identityHashCode(prev),
-                        prev.shortComponentName);
+                // EventLog.writeEvent(EventLogTags.AM_PAUSE_ACTIVITY,
+                //         prev.userId, System.identityHashCode(prev),
+                //         prev.shortComponentName);
                 mService.updateUsageStats(prev, false);
                 prev.app.thread.schedulePauseActivity(prev.appToken, prev.finishing,
                         userLeaving, prev.configChangeFlags, dontWait);
@@ -1212,10 +1212,10 @@ final class ActivityStack {
                 completePauseLocked(true, null);
                 return;
             } else {
-                EventLog.writeEvent(EventLogTags.AM_FAILED_TO_PAUSE,
-                        r.userId, System.identityHashCode(r), r.shortComponentName,
-                        mPausingActivity != null
-                            ? mPausingActivity.shortComponentName : "(none)");
+                // EventLog.writeEvent(EventLogTags.AM_FAILED_TO_PAUSE,
+                //         r.userId, System.identityHashCode(r), r.shortComponentName,
+                //         mPausingActivity != null
+                //             ? mPausingActivity.shortComponentName : "(none)");
                 if (r.state == ActivityState.PAUSING) {
                     r.state = ActivityState.PAUSED;
                     if (r.finishing) {
@@ -2515,8 +2515,8 @@ final class ActivityStack {
                 // Clear app token stopped state in window manager if needed.
                 mWindowManager.notifyAppResumed(next.appToken, next.stopped, allowSavedSurface);
 
-                EventLog.writeEvent(EventLogTags.AM_RESUME_ACTIVITY, next.userId,
-                        System.identityHashCode(next), next.task.taskId, next.shortComponentName);
+                // EventLog.writeEvent(EventLogTags.AM_RESUME_ACTIVITY, next.userId,
+                //         System.identityHashCode(next), next.task.taskId, next.shortComponentName);
 
                 next.sleeping = false;
                 mService.showUnsupportedZoomDialogIfNeededLocked(next);
@@ -3286,8 +3286,8 @@ final class ActivityStack {
                 if (!r.visible) {
                     mWindowManager.setAppVisibility(r.appToken, false);
                 }
-                EventLogTags.writeAmStopActivity(
-                        r.userId, System.identityHashCode(r), r.shortComponentName);
+                // EventLogTags.writeAmStopActivity(
+                //         r.userId, System.identityHashCode(r), r.shortComponentName);
                 r.app.thread.scheduleStopActivity(r.appToken, r.visible, r.configChangeFlags);
                 if (mService.isSleepingOrShuttingDownLocked()) {
                     r.setSleeping(true);
@@ -3483,9 +3483,9 @@ final class ActivityStack {
 
         r.makeFinishingLocked();
         final TaskRecord task = r.task;
-        EventLog.writeEvent(EventLogTags.AM_FINISH_ACTIVITY,
-                r.userId, System.identityHashCode(r),
-                task.taskId, r.shortComponentName, reason);
+        // EventLog.writeEvent(EventLogTags.AM_FINISH_ACTIVITY,
+        //         r.userId, System.identityHashCode(r),
+        //         task.taskId, r.shortComponentName, reason);
         final ArrayList<ActivityRecord> activities = task.mActivities;
         final int index = activities.indexOf(r);
         if (index < (activities.size() - 1)) {
@@ -3978,9 +3978,9 @@ final class ActivityStack {
         if (DEBUG_SWITCH || DEBUG_CLEANUP) Slog.v(TAG_SWITCH,
                 "Removing activity from " + reason + ": token=" + r
                         + ", app=" + (r.app != null ? r.app.processName : "(null)"));
-        EventLog.writeEvent(EventLogTags.AM_DESTROY_ACTIVITY,
-                r.userId, System.identityHashCode(r),
-                r.task.taskId, r.shortComponentName, reason);
+        // EventLog.writeEvent(EventLogTags.AM_DESTROY_ACTIVITY,
+        //         r.userId, System.identityHashCode(r),
+        //         r.task.taskId, r.shortComponentName, reason);
 
         boolean removedFromHistory = false;
 
@@ -4217,10 +4217,10 @@ final class ActivityStack {
                                 + " state=" + r.state + " callers=" + Debug.getCallers(5));
                         if (!r.finishing) {
                             Slog.w(TAG, "Force removing " + r + ": app died, no saved state");
-                            EventLog.writeEvent(EventLogTags.AM_FINISH_ACTIVITY,
-                                    r.userId, System.identityHashCode(r),
-                                    r.task.taskId, r.shortComponentName,
-                                    "proc died without state saved");
+                            // EventLog.writeEvent(EventLogTags.AM_FINISH_ACTIVITY,
+                            //         r.userId, System.identityHashCode(r),
+                            //         r.task.taskId, r.shortComponentName,
+                            //         "proc died without state saved");
                             if (r.state == ActivityState.RESUMED) {
                                 mService.updateUsageStats(r, false);
                             }
@@ -4345,7 +4345,7 @@ final class ActivityStack {
         }
 
         mStackSupervisor.resumeFocusedStackTopActivityLocked();
-        EventLog.writeEvent(EventLogTags.AM_TASK_TO_FRONT, tr.userId, tr.taskId);
+        // EventLog.writeEvent(EventLogTags.AM_TASK_TO_FRONT, tr.userId, tr.taskId);
 
         if (VALIDATE_TOKENS) {
             validateAppTokensLocked();
@@ -4470,16 +4470,16 @@ final class ActivityStack {
         return true;
     }
 
-    static final void logStartActivity(int tag, ActivityRecord r,
-            TaskRecord task) {
-        final Uri data = r.intent.getData();
-        final String strData = data != null ? data.toSafeString() : null;
-
-        EventLog.writeEvent(tag,
-                r.userId, System.identityHashCode(r), task.taskId,
-                r.shortComponentName, r.intent.getAction(),
-                r.intent.getType(), strData, r.intent.getFlags());
-    }
+    // static final void logStartActivity(int tag, ActivityRecord r,
+    //         TaskRecord task) {
+    //     final Uri data = r.intent.getData();
+    //     final String strData = data != null ? data.toSafeString() : null;
+    //
+    //     EventLog.writeEvent(tag,
+    //             r.userId, System.identityHashCode(r), task.taskId,
+    //             r.shortComponentName, r.intent.getAction(),
+    //             r.intent.getType(), strData, r.intent.getFlags());
+    // }
 
     /**
      * Ensures all visible activities at or below the input activity have the right configuration.
@@ -4751,9 +4751,9 @@ final class ActivityStack {
         if (DEBUG_SWITCH) Slog.v(TAG_SWITCH,
                 "Relaunching: " + r + " with results=" + results + " newIntents=" + newIntents
                 + " andResume=" + andResume + " preserveWindow=" + preserveWindow);
-        EventLog.writeEvent(andResume ? EventLogTags.AM_RELAUNCH_RESUME_ACTIVITY
-                : EventLogTags.AM_RELAUNCH_ACTIVITY, r.userId, System.identityHashCode(r),
-                r.task.taskId, r.shortComponentName);
+        // EventLog.writeEvent(andResume ? EventLogTags.AM_RELAUNCH_RESUME_ACTIVITY
+        //         : EventLogTags.AM_RELAUNCH_ACTIVITY, r.userId, System.identityHashCode(r),
+        //         r.task.taskId, r.shortComponentName);
 
         r.startFreezingScreenLocked(r.app, 0);
 

@@ -132,7 +132,7 @@ import com.android.internal.statusbar.NotificationVisibility;
 import com.android.internal.util.FastXmlSerializer;
 import com.android.internal.util.Preconditions;
 import com.android.server.DeviceIdleController;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.LocalServices;
 import com.android.server.SystemService;
 import com.android.server.lights.Light;
@@ -533,8 +533,8 @@ public class NotificationManagerService extends SystemService {
                     return;
                 }
                 final long now = System.currentTimeMillis();
-                EventLogTags.writeNotificationClicked(key,
-                        r.getLifespanMs(now), r.getFreshnessMs(now), r.getExposureMs(now));
+                // EventLogTags.writeNotificationClicked(key,
+                //         r.getLifespanMs(now), r.getFreshnessMs(now), r.getExposureMs(now));
 
                 StatusBarNotification sbn = r.sbn;
                 cancelNotification(callingUid, callingPid, sbn.getPackageName(), sbn.getTag(),
@@ -554,8 +554,8 @@ public class NotificationManagerService extends SystemService {
                     return;
                 }
                 final long now = System.currentTimeMillis();
-                EventLogTags.writeNotificationActionClicked(key, actionIndex,
-                        r.getLifespanMs(now), r.getFreshnessMs(now), r.getExposureMs(now));
+                // EventLogTags.writeNotificationActionClicked(key, actionIndex,
+                //         r.getLifespanMs(now), r.getFreshnessMs(now), r.getExposureMs(now));
                 // TODO: Log action click via UsageStats.
             }
         }
@@ -570,7 +570,7 @@ public class NotificationManagerService extends SystemService {
 
         @Override
         public void onPanelRevealed(boolean clearEffects, int items) {
-            EventLogTags.writeNotificationPanelRevealed(items);
+            // EventLogTags.writeNotificationPanelRevealed(items);
             if (clearEffects) {
                 clearEffects();
             }
@@ -578,7 +578,7 @@ public class NotificationManagerService extends SystemService {
 
         @Override
         public void onPanelHidden() {
-            EventLogTags.writeNotificationPanelHidden();
+            // EventLogTags.writeNotificationPanelHidden();
         }
 
         @Override
@@ -638,10 +638,10 @@ public class NotificationManagerService extends SystemService {
                 NotificationRecord r = mNotificationsByKey.get(key);
                 if (r != null) {
                     r.stats.onExpansionChanged(userAction, expanded);
-                    final long now = System.currentTimeMillis();
-                    EventLogTags.writeNotificationExpansion(key,
-                            userAction ? 1 : 0, expanded ? 1 : 0,
-                            r.getLifespanMs(now), r.getFreshnessMs(now), r.getExposureMs(now));
+                    // final long now = System.currentTimeMillis();
+                    // EventLogTags.writeNotificationExpansion(key,
+                    //         userAction ? 1 : 0, expanded ? 1 : 0,
+                    //         r.getLifespanMs(now), r.getFreshnessMs(now), r.getExposureMs(now));
                 }
             }
         }
@@ -2224,11 +2224,11 @@ public class NotificationManagerService extends SystemService {
             Bundle.setDefusable(adjustment.getSignals(), true);
             final String autoGroupKey = adjustment.getSignals().getString(
                     Adjustment.GROUP_KEY_OVERRIDE_KEY, null);
-            if (autoGroupKey == null) {
-                EventLogTags.writeNotificationUnautogrouped(adjustment.getKey());
-            } else {
-                EventLogTags.writeNotificationAutogrouped(adjustment.getKey());
-            }
+            // if (autoGroupKey == null) {
+            //     EventLogTags.writeNotificationUnautogrouped(adjustment.getKey());
+            // } else {
+            //     EventLogTags.writeNotificationAutogrouped(adjustment.getKey());
+            // }
             n.sbn.setOverrideGroupKey(autoGroupKey);
         }
     }
@@ -2665,9 +2665,9 @@ public class NotificationManagerService extends SystemService {
                     if (old != null) {
                         enqueueStatus = EVENTLOG_ENQUEUE_STATUS_UPDATE;
                     }
-                    EventLogTags.writeNotificationEnqueue(callingUid, callingPid,
-                            pkg, id, tag, userId, notification.toString(),
-                            enqueueStatus);
+                    // EventLogTags.writeNotificationEnqueue(callingUid, callingPid,
+                    //         pkg, id, tag, userId, notification.toString(),
+                    //         enqueueStatus);
                 }
 
                 mRankingHelper.extractSignals(r);
@@ -2970,8 +2970,8 @@ public class NotificationManagerService extends SystemService {
                     & NotificationListenerService.SUPPRESSED_EFFECT_SCREEN_OFF) != 0)) {
                 if (DBG) Slog.v(TAG, "Suppressed SystemUI from triggering screen on");
             } else {
-                EventLogTags.writeNotificationAlert(key,
-                        buzz ? 1 : 0, beep ? 1 : 0, blink ? 1 : 0);
+                // EventLogTags.writeNotificationAlert(key,
+                //         buzz ? 1 : 0, beep ? 1 : 0, blink ? 1 : 0);
                 // mHandler.post(mBuzzBeepBlinked);
             }
         }
@@ -3385,9 +3385,9 @@ public class NotificationManagerService extends SystemService {
         // Save it for users of getHistoricalNotifications()
         mArchive.record(r.sbn);
 
-        final long now = System.currentTimeMillis();
-        EventLogTags.writeNotificationCanceled(canceledKey, reason,
-                r.getLifespanMs(now), r.getFreshnessMs(now), r.getExposureMs(now));
+        // final long now = System.currentTimeMillis();
+        // EventLogTags.writeNotificationCanceled(canceledKey, reason,
+        //         r.getLifespanMs(now), r.getFreshnessMs(now), r.getExposureMs(now));
     }
 
     /**
@@ -3406,8 +3406,8 @@ public class NotificationManagerService extends SystemService {
             @Override
             public void run() {
                 String listenerName = listener == null ? null : listener.component.toShortString();
-                if (DBG) EventLogTags.writeNotificationCancel(callingUid, callingPid, pkg, id, tag,
-                        userId, mustHaveFlags, mustNotHaveFlags, reason, listenerName);
+                // if (DBG) EventLogTags.writeNotificationCancel(callingUid, callingPid, pkg, id, tag,
+                //         userId, mustHaveFlags, mustNotHaveFlags, reason, listenerName);
 
                 synchronized (mNotificationList) {
                     int index = indexOfNotificationLocked(pkg, tag, id, userId);
@@ -3471,9 +3471,9 @@ public class NotificationManagerService extends SystemService {
             int mustNotHaveFlags, boolean doit, int userId, int reason,
             ManagedServiceInfo listener) {
         String listenerName = listener == null ? null : listener.component.toShortString();
-        EventLogTags.writeNotificationCancelAll(callingUid, callingPid,
-                pkg, userId, mustHaveFlags, mustNotHaveFlags, reason,
-                listenerName);
+        // EventLogTags.writeNotificationCancelAll(callingUid, callingPid,
+        //         pkg, userId, mustHaveFlags, mustNotHaveFlags, reason,
+        //         listenerName);
 
         synchronized (mNotificationList) {
             final int N = mNotificationList.size();
@@ -3523,8 +3523,8 @@ public class NotificationManagerService extends SystemService {
     void cancelAllLocked(int callingUid, int callingPid, int userId, int reason,
             ManagedServiceInfo listener, boolean includeCurrentProfiles) {
         String listenerName = listener == null ? null : listener.component.toShortString();
-        EventLogTags.writeNotificationCancelAll(callingUid, callingPid,
-                null, userId, 0, 0, reason, listenerName);
+        // EventLogTags.writeNotificationCancelAll(callingUid, callingPid,
+        //         null, userId, 0, 0, reason, listenerName);
 
         ArrayList<NotificationRecord> canceledNotifications = null;
         final int N = mNotificationList.size();
@@ -3582,8 +3582,8 @@ public class NotificationManagerService extends SystemService {
             if ((childSbn.isGroup() && !childSbn.getNotification().isGroupSummary()) &&
                     childR.getGroupKey().equals(r.getGroupKey())
                     && (childR.getFlags() & Notification.FLAG_FOREGROUND_SERVICE) == 0) {
-                EventLogTags.writeNotificationCancel(callingUid, callingPid, pkg, childSbn.getId(),
-                        childSbn.getTag(), userId, 0, 0, reason, listenerName);
+                // EventLogTags.writeNotificationCancel(callingUid, callingPid, pkg, childSbn.getId(),
+                //         childSbn.getTag(), userId, 0, 0, reason, listenerName);
                 mNotificationList.remove(i);
                 cancelNotificationLocked(childR, sendDelete, reason);
             }

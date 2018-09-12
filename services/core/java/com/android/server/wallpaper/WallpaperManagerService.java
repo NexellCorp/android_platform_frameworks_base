@@ -75,7 +75,7 @@ import android.service.wallpaper.IWallpaperService;
 import android.service.wallpaper.WallpaperService;
 import android.system.ErrnoException;
 import android.system.Os;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.util.Xml;
@@ -88,7 +88,7 @@ import com.android.internal.content.PackageMonitor;
 import com.android.internal.os.BackgroundThread;
 import com.android.internal.util.FastXmlSerializer;
 import com.android.internal.util.JournaledFile;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.FgThread;
 import com.android.server.SystemService;
 
@@ -677,9 +677,9 @@ public class WallpaperManagerService extends IWallpaperManager.Stub {
                                     WALLPAPER_RECONNECT_TIMEOUT_MS);
                         }
                         final String flattened = name.flattenToString();
-                        EventLog.writeEvent(EventLogTags.WP_WALLPAPER_CRASHED,
-                                flattened.substring(0, Math.min(flattened.length(),
-                                        MAX_WALLPAPER_COMPONENT_LOG_LENGTH)));
+                        // EventLog.writeEvent(EventLogTags.WP_WALLPAPER_CRASHED,
+                        //         flattened.substring(0, Math.min(flattened.length(),
+                        //                 MAX_WALLPAPER_COMPONENT_LOG_LENGTH)));
                     }
                 }
             }

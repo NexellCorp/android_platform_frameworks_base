@@ -89,7 +89,7 @@ import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.AtomicFile;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.util.Slog;
@@ -100,7 +100,7 @@ import com.android.internal.annotations.GuardedBy;
 import com.android.internal.backup.IBackupTransport;
 import com.android.internal.backup.IObbBackupService;
 import com.android.server.AppWidgetBackupBridge;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.SystemConfig;
 import com.android.server.SystemService;
 import com.android.server.backup.PackageManagerBackupAgent.Metadata;
@@ -938,7 +938,7 @@ public class BackupManagerService {
                     synchronized (params.session) {
                         params.session.mRestoreSets = sets;
                     }
-                    if (sets == null) EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
+                    // if (sets == null) EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
                 } catch (Exception e) {
                     Slog.e(TAG, "Error from transport getting set list: " + e.getMessage());
                 } finally {
@@ -2066,11 +2066,11 @@ public class BackupManagerService {
             try {
                 IBackupTransport transport = IBackupTransport.Stub.asInterface(service);
                 registerTransport(transport.name(), name, transport);
-                EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_LIFECYCLE, name, 1);
+                // EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_LIFECYCLE, name, 1);
             } catch (Exception e) {
                 Slog.e(TAG, "Unable to register transport " + component
                         + ": " + e.getMessage());
-                EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_LIFECYCLE, name, 0);
+                // EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_LIFECYCLE, name, 0);
             }
         }
 
@@ -2078,7 +2078,7 @@ public class BackupManagerService {
         public void onServiceDisconnected(ComponentName component) {
             if (DEBUG) Slog.v(TAG, "Disconnected from transport " + component);
             final String name = component.flattenToShortString();
-            EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_LIFECYCLE, name, 0);
+            // EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_LIFECYCLE, name, 0);
             registerTransport(null, name, null);
         }
     };
@@ -2522,8 +2522,8 @@ public class BackupManagerService {
                         BackupManager.ERROR_PACKAGE_NOT_FOUND);
             }
         }
-        EventLog.writeEvent(EventLogTags.BACKUP_REQUESTED, packages.length, kvBackupList.size(),
-                fullBackupList.size());
+        // EventLog.writeEvent(EventLogTags.BACKUP_REQUESTED, packages.length, kvBackupList.size(),
+        //         fullBackupList.size());
         if (MORE_DEBUG) {
             Slog.i(TAG, "Backup requested for " + packages.length + " packages, of them: " +
                 fullBackupList.size() + " full backups, " + kvBackupList.size() + " k/v backups");
@@ -2761,7 +2761,7 @@ public class BackupManagerService {
             File pmState = new File(mStateDir, PACKAGE_MANAGER_SENTINEL);
             try {
                 final String transportName = mTransport.transportDirName();
-                EventLog.writeEvent(EventLogTags.BACKUP_START, transportName);
+                // EventLog.writeEvent(EventLogTags.BACKUP_START, transportName);
 
                 // If we haven't stored package manager metadata yet, we must init the transport.
                 if (mStatus == BackupTransport.TRANSPORT_OK && pmState.length() <= 0) {
@@ -2771,12 +2771,12 @@ public class BackupManagerService {
                     mStatus = mTransport.initializeDevice();
 
                     addBackupTrace("transport.initializeDevice() == " + mStatus);
-                    if (mStatus == BackupTransport.TRANSPORT_OK) {
-                        EventLog.writeEvent(EventLogTags.BACKUP_INITIALIZE);
-                    } else {
-                        EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, "(initialize)");
-                        Slog.e(TAG, "Transport error in initializeDevice()");
-                    }
+                    // if (mStatus == BackupTransport.TRANSPORT_OK) {
+                    //     EventLog.writeEvent(EventLogTags.BACKUP_INITIALIZE);
+                    // } else {
+                    //     EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, "(initialize)");
+                    //     Slog.e(TAG, "Transport error in initializeDevice()");
+                    // }
                 }
 
                 // The package manager doesn't have a proper <application> etc, but since
@@ -2797,12 +2797,12 @@ public class BackupManagerService {
                     mBackupHandler.removeMessages(MSG_TIMEOUT);
                 }
 
-                if (mStatus == BackupTransport.TRANSPORT_NOT_INITIALIZED) {
+                // if (mStatus == BackupTransport.TRANSPORT_NOT_INITIALIZED) {
                     // The backend reports that our dataset has been wiped.  Note this in
                     // the event log; the no-success code below will reset the backup
                     // state as well.
-                    EventLog.writeEvent(EventLogTags.BACKUP_RESET, mTransport.transportDirName());
-                }
+                //     EventLog.writeEvent(EventLogTags.BACKUP_RESET, mTransport.transportDirName());
+                // }
             } catch (Exception e) {
                 Slog.e(TAG, "Error in backup thread", e);
                 addBackupTrace("Exception in backup thread: " + e);
@@ -3110,8 +3110,8 @@ public class BackupManagerService {
             } catch (Exception e) {
                 Slog.e(TAG, "Error invoking for backup on " + packageName);
                 addBackupTrace("exception: " + e);
-                EventLog.writeEvent(EventLogTags.BACKUP_AGENT_FAILURE, packageName,
-                        e.toString());
+                // EventLog.writeEvent(EventLogTags.BACKUP_AGENT_FAILURE, packageName,
+                //         e.toString());
                 agentErrorCleanup();
                 return BackupTransport.AGENT_ERROR;
             }
@@ -3247,8 +3247,8 @@ public class BackupManagerService {
                                 // Not okay: crash them and bail.
                                 failAgent(mAgentBinder, "Illegal backup key: " + key);
                                 addBackupTrace("illegal key " + key + " from " + pkgName);
-                                EventLog.writeEvent(EventLogTags.BACKUP_AGENT_FAILURE, pkgName,
-                                        "bad key");
+                                // EventLog.writeEvent(EventLogTags.BACKUP_AGENT_FAILURE, pkgName,
+                                //         "bad key");
                                 mBackupHandler.removeMessages(MSG_TIMEOUT);
                                 sendBackupOnPackageResult(mObserver, pkgName,
                                         BackupManager.ERROR_AGENT_FAILURE);
@@ -3326,7 +3326,7 @@ public class BackupManagerService {
                     mBackupDataName.delete();
                     mNewStateName.renameTo(mSavedStateName);
                     sendBackupOnPackageResult(mObserver, pkgName, BackupManager.SUCCESS);
-                    EventLog.writeEvent(EventLogTags.BACKUP_PACKAGE, pkgName, size);
+                    // EventLog.writeEvent(EventLogTags.BACKUP_PACKAGE, pkgName, size);
                     logBackupComplete(pkgName);
                 } else if (mStatus == BackupTransport.TRANSPORT_PACKAGE_REJECTED) {
                     // The transport has rejected backup of this specific package.  Roll it
@@ -3335,22 +3335,22 @@ public class BackupManagerService {
                     mNewStateName.delete();
                     sendBackupOnPackageResult(mObserver, pkgName,
                             BackupManager.ERROR_TRANSPORT_PACKAGE_REJECTED);
-                    EventLogTags.writeBackupAgentFailure(pkgName, "Transport rejected");
+                    // EventLogTags.writeBackupAgentFailure(pkgName, "Transport rejected");
                 } else if (mStatus == BackupTransport.TRANSPORT_QUOTA_EXCEEDED) {
                     sendBackupOnPackageResult(mObserver, pkgName,
                             BackupManager.ERROR_TRANSPORT_QUOTA_EXCEEDED);
-                    EventLog.writeEvent(EventLogTags.BACKUP_QUOTA_EXCEEDED, pkgName);
+                    // EventLog.writeEvent(EventLogTags.BACKUP_QUOTA_EXCEEDED, pkgName);
                 } else {
                     // Actual transport-level failure to communicate the data to the backend
                     sendBackupOnPackageResult(mObserver, pkgName,
                             BackupManager.ERROR_TRANSPORT_ABORTED);
-                    EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, pkgName);
+                    // EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, pkgName);
                 }
             } catch (Exception e) {
                 sendBackupOnPackageResult(mObserver, pkgName,
                         BackupManager.ERROR_TRANSPORT_ABORTED);
                 Slog.e(TAG, "Transport error backing up " + pkgName, e);
-                EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, pkgName);
+                // EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, pkgName);
                 mStatus = BackupTransport.TRANSPORT_ERROR;
             } finally {
                 try { if (backupData != null) backupData.close(); } catch (IOException e) {}
@@ -3393,8 +3393,8 @@ public class BackupManagerService {
             // !!! TODO: keep track of failure counts per agent, and blacklist those which
             // fail repeatedly (i.e. have proved themselves to be buggy).
             Slog.e(TAG, "Timeout backing up " + mCurrentPackage.packageName);
-            EventLog.writeEvent(EventLogTags.BACKUP_AGENT_FAILURE, mCurrentPackage.packageName,
-                    "timeout");
+            // EventLog.writeEvent(EventLogTags.BACKUP_AGENT_FAILURE, mCurrentPackage.packageName,
+            //         "timeout");
             addBackupTrace("timeout of " + mCurrentPackage.packageName);
             agentErrorCleanup();
             dataChangedImpl(mCurrentPackage.packageName);
@@ -4483,7 +4483,7 @@ public class BackupManagerService {
                     if (DEBUG) {
                         Slog.i(TAG, "Initiating full-data transport backup of " + packageName);
                     }
-                    EventLog.writeEvent(EventLogTags.FULL_BACKUP_PACKAGE, packageName);
+                    // EventLog.writeEvent(EventLogTags.FULL_BACKUP_PACKAGE, packageName);
 
                     transportPipes = ParcelFileDescriptor.createPipe();
 
@@ -4633,30 +4633,30 @@ public class BackupManagerService {
                             Slog.i(TAG, "Transport rejected backup of " + packageName
                                     + ", skipping");
                         }
-                        EventLog.writeEvent(EventLogTags.FULL_BACKUP_AGENT_FAILURE, packageName,
-                                "transport rejected");
+                        // EventLog.writeEvent(EventLogTags.FULL_BACKUP_AGENT_FAILURE, packageName,
+                        //         "transport rejected");
                         // Do nothing, clean up, and continue looping.
                     } else if (backupPackageStatus == BackupTransport.TRANSPORT_QUOTA_EXCEEDED) {
                         sendBackupOnPackageResult(mBackupObserver, packageName,
                                 BackupManager.ERROR_TRANSPORT_QUOTA_EXCEEDED);
                         if (DEBUG) {
                             Slog.i(TAG, "Transport quota exceeded for package: " + packageName);
-                            EventLog.writeEvent(EventLogTags.FULL_BACKUP_QUOTA_EXCEEDED,
-                                    packageName);
+                            // EventLog.writeEvent(EventLogTags.FULL_BACKUP_QUOTA_EXCEEDED,
+                            //         packageName);
                         }
                         // Do nothing, clean up, and continue looping.
                     } else if (backupPackageStatus == BackupTransport.AGENT_ERROR) {
                         sendBackupOnPackageResult(mBackupObserver, packageName,
                                 BackupManager.ERROR_AGENT_FAILURE);
                         Slog.w(TAG, "Application failure for package: " + packageName);
-                        EventLog.writeEvent(EventLogTags.BACKUP_AGENT_FAILURE, packageName);
+                        // EventLog.writeEvent(EventLogTags.BACKUP_AGENT_FAILURE, packageName);
                         tearDownAgentAndKill(currentPackage.applicationInfo);
                         // Do nothing, clean up, and continue looping.
                     } else if (backupPackageStatus != BackupTransport.TRANSPORT_OK) {
                         sendBackupOnPackageResult(mBackupObserver, packageName,
                             BackupManager.ERROR_TRANSPORT_ABORTED);
                         Slog.w(TAG, "Transport failed; aborting backup: " + backupPackageStatus);
-                        EventLog.writeEvent(EventLogTags.FULL_BACKUP_TRANSPORT_FAILURE);
+                        // EventLog.writeEvent(EventLogTags.FULL_BACKUP_TRANSPORT_FAILURE);
                         // Abort entire backup pass.
                         backupRunStatus = BackupManager.ERROR_TRANSPORT_ABORTED;
                         return;
@@ -4664,7 +4664,7 @@ public class BackupManagerService {
                         // Success!
                         sendBackupOnPackageResult(mBackupObserver, packageName,
                                 BackupManager.SUCCESS);
-                        EventLog.writeEvent(EventLogTags.FULL_BACKUP_SUCCESS, packageName);
+                        // EventLog.writeEvent(EventLogTags.FULL_BACKUP_SUCCESS, packageName);
                         logBackupComplete(packageName);
                     }
                     cleanUpPipes(transportPipes);
@@ -8236,9 +8236,9 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                 // the restore operation.
                 if (!mPmAgent.hasMetadata()) {
                     Slog.e(TAG, "No restore metadata available, so not restoring");
-                    EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
-                            PACKAGE_MANAGER_SENTINEL,
-                            "Package manager restore metadata missing");
+                    // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
+                    //         PACKAGE_MANAGER_SENTINEL,
+                    //         "Package manager restore metadata missing");
                     mStatus = BackupTransport.TRANSPORT_ERROR;
                     mBackupHandler.removeMessages(MSG_BACKUP_RESTORE_STEP, this);
                     executeNextState(UnifiedRestoreState.FINAL);
@@ -8268,7 +8268,7 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                         ? mRestoreDescription.getPackageName() : null;
                 if (pkgName == null) {
                     Slog.e(TAG, "Failure getting next package name");
-                    EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
+                    // EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
                     nextState = UnifiedRestoreState.FINAL;
                     return;
                 } else if (mRestoreDescription == RestoreDescription.NO_MORE_PACKAGES) {
@@ -8277,7 +8277,7 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                         Slog.v(TAG, "No more packages; finishing restore");
                     }
                     int millis = (int) (SystemClock.elapsedRealtime() - mStartRealtime);
-                    EventLog.writeEvent(EventLogTags.RESTORE_SUCCESS, mCount, millis);
+                    // EventLog.writeEvent(EventLogTags.RESTORE_SUCCESS, mCount, millis);
                     nextState = UnifiedRestoreState.FINAL;
                     return;
                 }
@@ -8290,8 +8290,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                 Metadata metaInfo = mPmAgent.getRestoredMetadata(pkgName);
                 if (metaInfo == null) {
                     Slog.e(TAG, "No metadata for " + pkgName);
-                    EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, pkgName,
-                            "Package metadata missing");
+                    // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, pkgName,
+                    //         "Package metadata missing");
                     nextState = UnifiedRestoreState.RUNNING_QUEUE;
                     return;
                 }
@@ -8303,8 +8303,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                     // Whoops, we thought we could restore this package but it
                     // turns out not to be present.  Skip it.
                     Slog.e(TAG, "Package not present: " + pkgName);
-                    EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, pkgName,
-                            "Package missing on device");
+                    // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, pkgName,
+                    //         "Package missing on device");
                     nextState = UnifiedRestoreState.RUNNING_QUEUE;
                     return;
                 }
@@ -8318,8 +8318,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                         String message = "Version " + metaInfo.versionCode
                                 + " > installed version " + mCurrentPackage.versionCode;
                         Slog.w(TAG, "Package " + pkgName + ": " + message);
-                        EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
-                                pkgName, message);
+                        // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
+                        //         pkgName, message);
                         nextState = UnifiedRestoreState.RUNNING_QUEUE;
                         return;
                     } else {
@@ -8350,7 +8350,7 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
             } catch (Exception e) {
                 Slog.e(TAG, "Can't get next restore target from transport; halting: "
                         + e.getMessage());
-                EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
+                // EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
                 nextState = UnifiedRestoreState.FINAL;
                 return;
             } finally {
@@ -8372,8 +8372,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                     Slog.i(TAG, "Data exists for package " + packageName
                             + " but app has no agent; skipping");
                 }
-                EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, packageName,
-                        "Package has no agent");
+                // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, packageName,
+                //         "Package has no agent");
                 executeNextState(UnifiedRestoreState.RUNNING_QUEUE);
                 return;
             }
@@ -8381,8 +8381,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
             Metadata metaInfo = mPmAgent.getRestoredMetadata(packageName);
             if (!BackupUtils.signaturesMatch(metaInfo.sigHashes, mCurrentPackage)) {
                 Slog.w(TAG, "Signature mismatch restoring " + packageName);
-                EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, packageName,
-                        "Signature mismatch");
+                // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, packageName,
+                //         "Signature mismatch");
                 executeNextState(UnifiedRestoreState.RUNNING_QUEUE);
                 return;
             }
@@ -8393,8 +8393,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                     IApplicationThread.BACKUP_MODE_INCREMENTAL);
             if (mAgent == null) {
                 Slog.w(TAG, "Can't find backup agent for " + packageName);
-                EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, packageName,
-                        "Restore agent missing");
+                // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE, packageName,
+                //         "Restore agent missing");
                 executeNextState(UnifiedRestoreState.RUNNING_QUEUE);
                 return;
             }
@@ -8445,7 +8445,7 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                     // Transport-level failure, so we wind everything up and
                     // terminate the restore operation.
                     Slog.e(TAG, "Error getting restore data for " + packageName);
-                    EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
+                    // EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
                     stage.close();
                     downloadFile.delete();
                     executeNextState(UnifiedRestoreState.FINAL);
@@ -8511,8 +8511,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                         token, mBackupManagerBinder);
             } catch (Exception e) {
                 Slog.e(TAG, "Unable to call app for restore: " + packageName, e);
-                EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
-                        packageName, e.toString());
+                // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
+                //         packageName, e.toString());
                 keyValueAgentErrorCleanup();    // clears any pending timeout messages as well
 
                 // After a restore failure we go back to running the queue.  If there
@@ -8563,8 +8563,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
             } catch (Exception e) {
                 final String packageName = mCurrentPackage.packageName;
                 Slog.e(TAG, "Unable to finalize restore of " + packageName);
-                EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
-                        packageName, e.toString());
+                // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
+                //         packageName, e.toString());
                 keyValueAgentErrorCleanup();
                 executeNextState(UnifiedRestoreState.RUNNING_QUEUE);
             }
@@ -8592,8 +8592,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                 UnifiedRestoreState nextState = UnifiedRestoreState.RUNNING_QUEUE;
                 int status = BackupTransport.TRANSPORT_OK;
 
-                EventLog.writeEvent(EventLogTags.FULL_RESTORE_PACKAGE,
-                        mCurrentPackage.packageName);
+                // EventLog.writeEvent(EventLogTags.FULL_RESTORE_PACKAGE,
+                //         mCurrentPackage.packageName);
 
                 mEngine = new FullRestoreEngine(this, null, mCurrentPackage, false, false);
                 mEngineThread = new EngineThread(mEngine, mEnginePipes[0]);
@@ -8646,7 +8646,7 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                             // handling will deal properly with that.
                             Slog.e(TAG, "Error " + result + " streaming restore for "
                                     + mCurrentPackage.packageName);
-                            EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
+                            // EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
                             status = result;
                         }
                     }
@@ -8656,15 +8656,15 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                     // but potentially recoverable; abandon this package's restore but
                     // carry on with the next restore target.
                     Slog.e(TAG, "Unable to route data for restore");
-                    EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
-                            mCurrentPackage.packageName, "I/O error on pipes");
+                    // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
+                    //         mCurrentPackage.packageName, "I/O error on pipes");
                     status = BackupTransport.AGENT_ERROR;
                 } catch (Exception e) {
                     // The transport threw; terminate the whole operation.  Closing
                     // the sockets will wake up the engine and it will then tidy up the
                     // remote end.
                     Slog.e(TAG, "Transport failed during restore: " + e.getMessage());
-                    EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
+                    // EventLog.writeEvent(EventLogTags.RESTORE_TRANSPORT_FAILURE);
                     status = BackupTransport.TRANSPORT_ERROR;
                 } finally {
                     // Close the transport pipes and *our* end of the engine pipe,
@@ -8947,8 +8947,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                     // Okay, we're done with this package.  Tidy up and go on to the next
                     // app in the queue.
                     int size = (int) mBackupDataName.length();
-                    EventLog.writeEvent(EventLogTags.RESTORE_PACKAGE,
-                            mCurrentPackage.packageName, size);
+                    // EventLog.writeEvent(EventLogTags.RESTORE_PACKAGE,
+                    //         mCurrentPackage.packageName, size);
 
                     // Just go back to running the restore queue
                     keyValueAgentCleanup();
@@ -8981,8 +8981,8 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
         @Override
         public void handleTimeout() {
             Slog.e(TAG, "Timeout restoring application " + mCurrentPackage.packageName);
-            EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
-                    mCurrentPackage.packageName, "restore timeout");
+            // EventLog.writeEvent(EventLogTags.RESTORE_AGENT_FAILURE,
+            //         mCurrentPackage.packageName, "restore timeout");
             // Handle like an agent that threw on invocation: wipe it and go on to the next
             keyValueAgentErrorCleanup();
             executeNextState(UnifiedRestoreState.RUNNING_QUEUE);
@@ -9086,7 +9086,7 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                     }
 
                     Slog.i(TAG, "Initializing (wiping) backup transport storage: " + transportName);
-                    EventLog.writeEvent(EventLogTags.BACKUP_START, transport.transportDirName());
+                    // EventLog.writeEvent(EventLogTags.BACKUP_START, transport.transportDirName());
                     long startRealtime = SystemClock.elapsedRealtime();
                     int status = transport.initializeDevice();
 
@@ -9098,9 +9098,9 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                     if (status == BackupTransport.TRANSPORT_OK) {
                         Slog.i(TAG, "Device init successful");
                         int millis = (int) (SystemClock.elapsedRealtime() - startRealtime);
-                        EventLog.writeEvent(EventLogTags.BACKUP_INITIALIZE);
+                        // EventLog.writeEvent(EventLogTags.BACKUP_INITIALIZE);
                         resetBackupState(new File(mBaseStateDir, transport.transportDirName()));
-                        EventLog.writeEvent(EventLogTags.BACKUP_SUCCESS, 0, millis);
+                        // EventLog.writeEvent(EventLogTags.BACKUP_SUCCESS, 0, millis);
                         synchronized (mQueueLock) {
                             recordInitPendingLocked(false, transportName);
                         }
@@ -9108,7 +9108,7 @@ if (MORE_DEBUG) Slog.v(TAG, "   + got " + nRead + "; now wanting " + (size - soF
                         // If this didn't work, requeue this one and try again
                         // after a suitable interval
                         Slog.e(TAG, "Transport error in initializeDevice()");
-                        EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, "(initialize)");
+                        // EventLog.writeEvent(EventLogTags.BACKUP_TRANSPORT_FAILURE, "(initialize)");
                         synchronized (mQueueLock) {
                             recordInitPendingLocked(true, transportName);
                         }

@@ -124,7 +124,7 @@ import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.ArraySet;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.util.Slog;
@@ -8633,7 +8633,7 @@ public class DevicePolicyManagerService extends IDevicePolicyManager.Stub {
                     return false;
                 }
                 if (!isRuntimePermission(permission)) {
-                    EventLog.writeEvent(0x534e4554, "62623498", user.getIdentifier(), "");
+                    // EventLog.writeEvent(0x534e4554, "62623498", user.getIdentifier(), "");
                     return false;
                 }
                 final PackageManager packageManager = mContext.getPackageManager();

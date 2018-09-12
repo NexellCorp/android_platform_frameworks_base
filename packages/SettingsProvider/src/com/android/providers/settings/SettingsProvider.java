@@ -1604,8 +1604,8 @@ public class SettingsProvider extends ContentProvider {
                 } break;
             }
 
-            EventLogTags.writeUnsupportedSettingsQuery(
-                    uri.toSafeString(), where, Arrays.toString(whereArgs));
+            // EventLogTags.writeUnsupportedSettingsQuery(
+            //         uri.toSafeString(), where, Arrays.toString(whereArgs));
             String message = String.format( "Supported SQL:\n"
                     + "  uri content://some_table/some_property with null where and where args\n"
                     + "  uri content://some_table with query name=? and single name as arg\n"

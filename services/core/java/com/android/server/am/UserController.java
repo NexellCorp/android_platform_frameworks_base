@@ -1174,7 +1174,7 @@ final class UserController {
         } else {
             mService.mStackSupervisor.resumeFocusedStackTopActivityLocked();
         }
-        EventLogTags.writeAmSwitchUser(newUserId);
+        // EventLogTags.writeAmSwitchUser(newUserId);
         sendUserSwitchBroadcastsLocked(oldUserId, newUserId);
     }
 

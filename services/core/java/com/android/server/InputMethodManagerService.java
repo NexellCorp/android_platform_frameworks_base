@@ -98,7 +98,7 @@ import android.text.style.SuggestionSpan;
 import android.util.ArrayMap;
 import android.util.ArraySet;
 import android.util.AtomicFile;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.LruCache;
 import android.util.Pair;
 import android.util.PrintWriterPrinter;
@@ -1438,9 +1438,9 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                     // to see if we can get back in touch with the service.
                     return new InputBindResult(null, null, mCurId, mCurSeq,
                             mCurUserActionNotificationSequenceNumber);
-                } else {
-                    EventLog.writeEvent(EventLogTags.IMF_FORCE_RECONNECT_IME,
-                            mCurMethodId, SystemClock.uptimeMillis()-mLastBindTime, 0);
+                // } else {
+                //     EventLog.writeEvent(EventLogTags.IMF_FORCE_RECONNECT_IME,
+                //             mCurMethodId, SystemClock.uptimeMillis()-mLastBindTime, 0);
                 }
             }
         }
@@ -2138,8 +2138,8 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
             // we have been sitting here too long with a connection to the
             // service and no interface received, so let's disconnect/connect
             // to try to prod things along.
-            EventLog.writeEvent(EventLogTags.IMF_FORCE_RECONNECT_IME, mCurMethodId,
-                    SystemClock.uptimeMillis()-mLastBindTime,1);
+            // EventLog.writeEvent(EventLogTags.IMF_FORCE_RECONNECT_IME, mCurMethodId,
+            //         SystemClock.uptimeMillis()-mLastBindTime,1);
             Slog.w(TAG, "Force disconnect/connect to the IME in showCurrentInputLocked()");
             mContext.unbindService(this);
             bindCurrentInputMethodService(mCurIntent, this, Context.BIND_AUTO_CREATE

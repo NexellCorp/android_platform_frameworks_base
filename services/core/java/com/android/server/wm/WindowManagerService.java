@@ -78,7 +78,7 @@ import android.os.WorkSource;
 import android.provider.Settings;
 import android.util.ArraySet;
 import android.util.DisplayMetrics;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.util.Slog;
@@ -137,7 +137,7 @@ import com.android.internal.view.IInputMethodManager;
 import com.android.internal.view.WindowManagerPolicyThread;
 import com.android.server.AttributeCache;
 import com.android.server.DisplayThread;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.FgThread;
 import com.android.server.LocalServices;
 import com.android.server.UiThread;
@@ -3526,7 +3526,7 @@ public class WindowManagerService extends IWindowManager.Stub
         if (stack == null) {
             throw new IllegalArgumentException("addAppToken: invalid stackId=" + stackId);
         }
-        EventLog.writeEvent(EventLogTags.WM_TASK_CREATED, taskId, stackId);
+        // EventLog.writeEvent(EventLogTags.WM_TASK_CREATED, taskId, stackId);
         Task task = new Task(taskId, stack, userId, this, bounds, config);
         mTaskIdToTask.put(taskId, task);
         stack.addTask(task, !atoken.mLaunchTaskBehind /* toTop */, atoken.showForAllUsers);
@@ -6078,7 +6078,7 @@ public class WindowManagerService extends IWindowManager.Stub
                 return;
             }
 
-            EventLog.writeEvent(EventLogTags.WM_BOOT_ANIMATION_DONE, SystemClock.uptimeMillis());
+            // EventLog.writeEvent(EventLogTags.WM_BOOT_ANIMATION_DONE, SystemClock.uptimeMillis());
             // Trace.asyncTraceEnd(Trace.TRACE_TAG_WINDOW_MANAGER, "Stop bootanim", 0);
             mDisplayEnabled = true;
             if (DEBUG_SCREEN_ON || DEBUG_BOOT) Slog.i(TAG_WM, "******************** ENABLING SCREEN!");
@@ -9814,8 +9814,8 @@ public class WindowManagerService extends IWindowManager.Stub
         boolean leakedSurface = false;
         boolean killedApps = false;
 
-        EventLog.writeEvent(EventLogTags.WM_NO_SURFACE_MEMORY, winAnimator.mWin.toString(),
-                winAnimator.mSession.mPid, operation);
+        // EventLog.writeEvent(EventLogTags.WM_NO_SURFACE_MEMORY, winAnimator.mWin.toString(),
+        //         winAnimator.mSession.mPid, operation);
 
         final long callingIdentity = Binder.clearCallingIdentity();
         try {

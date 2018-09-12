@@ -47,7 +47,7 @@ import android.os.SystemClock;
 import android.os.UEventObserver;
 import android.os.UserHandle;
 import android.provider.Settings;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 
 import java.io.File;
@@ -387,8 +387,8 @@ public final class BatteryService extends SystemService {
                     if (mDischargeStartTime != 0 && mDischargeStartLevel != mBatteryProps.batteryLevel) {
                         dischargeDuration = SystemClock.elapsedRealtime() - mDischargeStartTime;
                         logOutlier = true;
-                        EventLog.writeEvent(EventLogTags.BATTERY_DISCHARGE, dischargeDuration,
-                                mDischargeStartLevel, mBatteryProps.batteryLevel);
+                        // EventLog.writeEvent(EventLogTags.BATTERY_DISCHARGE, dischargeDuration,
+                        //         mDischargeStartLevel, mBatteryProps.batteryLevel);
                         // make sure we see a discharge event before logging again
                         mDischargeStartTime = 0;
                     }
@@ -402,16 +402,16 @@ public final class BatteryService extends SystemService {
                     mBatteryProps.batteryHealth != mLastBatteryHealth ||
                     mBatteryProps.batteryPresent != mLastBatteryPresent ||
                     mPlugType != mLastPlugType) {
-                EventLog.writeEvent(EventLogTags.BATTERY_STATUS,
-                        mBatteryProps.batteryStatus, mBatteryProps.batteryHealth, mBatteryProps.batteryPresent ? 1 : 0,
-                        mPlugType, mBatteryProps.batteryTechnology);
+                // EventLog.writeEvent(EventLogTags.BATTERY_STATUS,
+                //         mBatteryProps.batteryStatus, mBatteryProps.batteryHealth, mBatteryProps.batteryPresent ? 1 : 0,
+                //         mPlugType, mBatteryProps.batteryTechnology);
             }
-            if (mBatteryProps.batteryLevel != mLastBatteryLevel) {
-                // Don't do this just from voltage or temperature changes, that is
-                // too noisy.
-                EventLog.writeEvent(EventLogTags.BATTERY_LEVEL,
-                        mBatteryProps.batteryLevel, mBatteryProps.batteryVoltage, mBatteryProps.batteryTemperature);
-            }
+            // if (mBatteryProps.batteryLevel != mLastBatteryLevel) {
+            //     // Don't do this just from voltage or temperature changes, that is
+            //     // too noisy.
+            //     EventLog.writeEvent(EventLogTags.BATTERY_LEVEL,
+            //             mBatteryProps.batteryLevel, mBatteryProps.batteryVoltage, mBatteryProps.batteryTemperature);
+            // }
             if (mBatteryLevelCritical && !mLastBatteryLevelCritical &&
                     mPlugType == BATTERY_PLUGGED_NONE) {
                 // We want to make sure we log discharge cycle outliers

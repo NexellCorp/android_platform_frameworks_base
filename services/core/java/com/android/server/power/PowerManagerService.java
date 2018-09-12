@@ -55,7 +55,7 @@ import android.provider.Settings.SettingNotFoundException;
 // import android.service.dreams.DreamManagerInternal;
 // import android.service.vr.IVrManager;
 // import android.service.vr.IVrStateCallbacks;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.PrintWriterPrinter;
 import android.util.Slog;
 import android.util.SparseIntArray;
@@ -67,7 +67,7 @@ import com.android.internal.app.IAppOpsService;
 // import com.android.internal.app.IBatteryStats;
 import com.android.internal.os.BackgroundThread;
 import com.android.internal.util.ArrayUtils;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.ServiceThread;
 import com.android.server.SystemService;
 // import com.android.server.Watchdog;
@@ -1338,7 +1338,7 @@ public final class PowerManagerService extends SystemService
                         break;
                 }
             }
-            EventLog.writeEvent(EventLogTags.POWER_SLEEP_REQUESTED, numWakeLocksCleared);
+            // EventLog.writeEvent(EventLogTags.POWER_SLEEP_REQUESTED, numWakeLocksCleared);
 
             // Skip dozing if requested.
             if ((flags & PowerManager.GO_TO_SLEEP_FLAG_NO_DOZE) != 0) {
@@ -1420,7 +1420,7 @@ public final class PowerManagerService extends SystemService
         final long now = SystemClock.uptimeMillis();
         final long savedWakeTimeMs = mOverriddenTimeout - now;
         if (savedWakeTimeMs >= 0) {
-            EventLog.writeEvent(EventLogTags.POWER_SOFT_SLEEP_REQUESTED, savedWakeTimeMs);
+            // EventLog.writeEvent(EventLogTags.POWER_SOFT_SLEEP_REQUESTED, savedWakeTimeMs);
             mOverriddenTimeout = -1;
         }
     }
@@ -2600,11 +2600,11 @@ public final class PowerManagerService extends SystemService
             mDeviceIdleMode = enabled;
             updateWakeLockDisabledStatesLocked();
         }
-        if (enabled) {
-            EventLogTags.writeDeviceIdleOnPhase("power");
-        } else {
-            EventLogTags.writeDeviceIdleOffPhase("power");
-        }
+        // if (enabled) {
+        //     EventLogTags.writeDeviceIdleOnPhase("power");
+        // } else {
+        //     EventLogTags.writeDeviceIdleOffPhase("power");
+        // }
         return true;
     }
 

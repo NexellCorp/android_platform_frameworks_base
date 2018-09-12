@@ -22,7 +22,7 @@ import static com.android.server.am.ActivityManagerDebugConfig.TAG_WITH_CLASS_NA
 
 import android.util.ArraySet;
 import android.util.DebugUtils;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import com.android.internal.app.procstats.ProcessStats;
 import com.android.internal.app.procstats.ProcessState;
@@ -604,7 +604,7 @@ final class ProcessRecord {
             if (noisy) {
                 Slog.i(TAG, "Killing " + toShortString() + " (adj " + setAdj + "): " + reason);
             }
-            EventLog.writeEvent(EventLogTags.AM_KILL, userId, pid, processName, setAdj, reason);
+            // EventLog.writeEvent(EventLogTags.AM_KILL, userId, pid, processName, setAdj, reason);
             Process.killProcessQuiet(pid);
             ActivityManagerService.killProcessGroup(uid, pid);
             if (!persistent) {

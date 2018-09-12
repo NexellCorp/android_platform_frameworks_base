@@ -77,7 +77,7 @@ import android.os.WorkSource;
 import android.provider.Settings;
 import android.text.format.DateUtils;
 import android.text.format.Time;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Pair;
 import android.util.Slog;
@@ -3292,15 +3292,15 @@ public class SyncManager {
 
         public long insertStartSyncEvent(SyncOperation syncOperation) {
             final long now = System.currentTimeMillis();
-            EventLog.writeEvent(2720,
-                    syncOperation.toEventLog(SyncStorageEngine.EVENT_START));
+            // EventLog.writeEvent(2720,
+            //         syncOperation.toEventLog(SyncStorageEngine.EVENT_START));
             return mSyncStorageEngine.insertStartSyncEvent(syncOperation, now);
         }
 
         public void stopSyncEvent(long rowId, SyncOperation syncOperation, String resultMessage,
                 int upstreamActivity, int downstreamActivity, long elapsedTime) {
-            EventLog.writeEvent(2720,
-                    syncOperation.toEventLog(SyncStorageEngine.EVENT_STOP));
+            // EventLog.writeEvent(2720,
+            //         syncOperation.toEventLog(SyncStorageEngine.EVENT_STOP));
             mSyncStorageEngine.stopSyncEvent(rowId, elapsedTime,
                     resultMessage, downstreamActivity, upstreamActivity);
         }

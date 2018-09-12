@@ -16,14 +16,14 @@
 
 package com.android.server.updates;
 
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.internal.util.HexDump;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 
 import java.io.File;
@@ -74,8 +74,8 @@ public class ConfigUpdateInstallReceiver extends BroadcastReceiver {
                     if (!verifyVersion(currentVersion, altVersion)) {
                         Slog.i(TAG, "Not installing, new version is <= current version");
                     } else if (!verifyPreviousHash(currentHash, altRequiredHash)) {
-                        EventLog.writeEvent(EventLogTags.CONFIG_INSTALL_FAILED,
-                                            "Current hash did not match required value");
+                        // EventLog.writeEvent(EventLogTags.CONFIG_INSTALL_FAILED,
+                        //                     "Current hash did not match required value");
                     } else {
                         // install the new content
                         Slog.i(TAG, "Found new update, installing...");
@@ -90,7 +90,7 @@ public class ConfigUpdateInstallReceiver extends BroadcastReceiver {
                     if (errMsg.length() > 100) {
                         errMsg = errMsg.substring(0, 99);
                     }
-                    EventLog.writeEvent(EventLogTags.CONFIG_INSTALL_FAILED, errMsg);
+                    // EventLog.writeEvent(EventLogTags.CONFIG_INSTALL_FAILED, errMsg);
                 }
             }
         }.start();

@@ -110,7 +110,7 @@ import android.view.KeyEvent;
 import android.view.accessibility.AccessibilityManager;
 
 import com.android.internal.util.XmlUtils;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.LocalServices;
 import com.android.server.SystemService;
 import com.android.server.pm.UserManagerService;
@@ -3877,9 +3877,9 @@ public class AudioService extends IAudioService.Stub {
                 observeDevicesForStreams(mStreamType);
             }
             // log base stream changes to the event log
-            if (mStreamVolumeAlias[mStreamType] == mStreamType) {
-                EventLogTags.writeStreamDevicesChanged(mStreamType, prevDevices, devices);
-            }
+            // if (mStreamVolumeAlias[mStreamType] == mStreamType) {
+            //     EventLogTags.writeStreamDevicesChanged(mStreamType, prevDevices, devices);
+            // }
             sendBroadcastToAll(mStreamDevicesChanged
                     .putExtra(AudioManager.EXTRA_PREV_VOLUME_STREAM_DEVICES, prevDevices)
                     .putExtra(AudioManager.EXTRA_VOLUME_STREAM_DEVICES, devices));
@@ -4064,8 +4064,8 @@ public class AudioService extends IAudioService.Stub {
                     if (caller == null) {
                         Log.w(TAG, "No caller for volume_changed event", new Throwable());
                     }
-                    EventLogTags.writeVolumeChanged(mStreamType, oldIndex, index, mIndexMax / 10,
-                            caller);
+                    // EventLogTags.writeVolumeChanged(mStreamType, oldIndex, index, mIndexMax / 10,
+                    //         caller);
                 }
                 // fire changed intents for all streams
                 mVolumeChanged.putExtra(AudioManager.EXTRA_VOLUME_STREAM_VALUE, index);

@@ -108,7 +108,7 @@ import android.telephony.TelephonyManager;
 import android.text.format.DateUtils;
 import android.util.ArrayMap;
 import android.util.ArraySet;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.MathUtils;
 import android.util.NtpTrustedTime;
@@ -121,7 +121,7 @@ import com.android.internal.net.VpnInfo;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.FileRotator;
 import com.android.internal.util.IndentingPrintWriter;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.connectivity.Tethering;
 
 import java.io.File;
@@ -1136,10 +1136,10 @@ public class NetworkStatsService extends INetworkStatsService.Stub {
             Slog.v(TAG, "performPollLocked() took " + duration + "ms");
         }
 
-        if (mSettings.getSampleEnabled()) {
-            // sample stats after each full poll
-            performSampleLocked();
-        }
+        // if (mSettings.getSampleEnabled()) {
+        //     // sample stats after each full poll
+        //     performSampleLocked();
+        // }
 
         // finally, dispatch updated event to any listeners
         final Intent updatedIntent = new Intent(ACTION_NETWORK_STATS_UPDATED);
@@ -1151,39 +1151,39 @@ public class NetworkStatsService extends INetworkStatsService.Stub {
     /**
      * Sample recent statistics summary into {@link EventLog}.
      */
-    private void performSampleLocked() {
+    // private void performSampleLocked() {
         // TODO: migrate trustedtime fixes to separate binary log events
-        final long trustedTime = mTime.hasCache() ? mTime.currentTimeMillis() : -1;
-
-        NetworkTemplate template;
-        NetworkStats.Entry devTotal;
-        NetworkStats.Entry xtTotal;
-        NetworkStats.Entry uidTotal;
-
-        // collect mobile sample
-        template = buildTemplateMobileWildcard();
-        devTotal = mDevRecorder.getTotalSinceBootLocked(template);
-        xtTotal = mXtRecorder.getTotalSinceBootLocked(template);
-        uidTotal = mUidRecorder.getTotalSinceBootLocked(template);
-
-        EventLogTags.writeNetstatsMobileSample(
-                devTotal.rxBytes, devTotal.rxPackets, devTotal.txBytes, devTotal.txPackets,
-                xtTotal.rxBytes, xtTotal.rxPackets, xtTotal.txBytes, xtTotal.txPackets,
-                uidTotal.rxBytes, uidTotal.rxPackets, uidTotal.txBytes, uidTotal.txPackets,
-                trustedTime);
-
-        // collect wifi sample
-        template = buildTemplateWifiWildcard();
-        devTotal = mDevRecorder.getTotalSinceBootLocked(template);
-        xtTotal = mXtRecorder.getTotalSinceBootLocked(template);
-        uidTotal = mUidRecorder.getTotalSinceBootLocked(template);
-
-        EventLogTags.writeNetstatsWifiSample(
-                devTotal.rxBytes, devTotal.rxPackets, devTotal.txBytes, devTotal.txPackets,
-                xtTotal.rxBytes, xtTotal.rxPackets, xtTotal.txBytes, xtTotal.txPackets,
-                uidTotal.rxBytes, uidTotal.rxPackets, uidTotal.txBytes, uidTotal.txPackets,
-                trustedTime);
-    }
+        // final long trustedTime = mTime.hasCache() ? mTime.currentTimeMillis() : -1;
+        //
+        // NetworkTemplate template;
+        // NetworkStats.Entry devTotal;
+        // NetworkStats.Entry xtTotal;
+        // NetworkStats.Entry uidTotal;
+        //
+        // // collect mobile sample
+        // template = buildTemplateMobileWildcard();
+        // devTotal = mDevRecorder.getTotalSinceBootLocked(template);
+        // xtTotal = mXtRecorder.getTotalSinceBootLocked(template);
+        // uidTotal = mUidRecorder.getTotalSinceBootLocked(template);
+        //
+        // EventLogTags.writeNetstatsMobileSample(
+        //         devTotal.rxBytes, devTotal.rxPackets, devTotal.txBytes, devTotal.txPackets,
+        //         xtTotal.rxBytes, xtTotal.rxPackets, xtTotal.txBytes, xtTotal.txPackets,
+        //         uidTotal.rxBytes, uidTotal.rxPackets, uidTotal.txBytes, uidTotal.txPackets,
+        //         trustedTime);
+        //
+        // // collect wifi sample
+        // template = buildTemplateWifiWildcard();
+        // devTotal = mDevRecorder.getTotalSinceBootLocked(template);
+        // xtTotal = mXtRecorder.getTotalSinceBootLocked(template);
+        // uidTotal = mUidRecorder.getTotalSinceBootLocked(template);
+        //
+        // EventLogTags.writeNetstatsWifiSample(
+        //         devTotal.rxBytes, devTotal.rxPackets, devTotal.txBytes, devTotal.txPackets,
+        //         xtTotal.rxBytes, xtTotal.rxPackets, xtTotal.txBytes, xtTotal.txPackets,
+        //         uidTotal.rxBytes, uidTotal.rxPackets, uidTotal.txBytes, uidTotal.txPackets,
+        //         trustedTime);
+    // }
 
     /**
      * Clean up {@link #mUidRecorder} after UID is removed.

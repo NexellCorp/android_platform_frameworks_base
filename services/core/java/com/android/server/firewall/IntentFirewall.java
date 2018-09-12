@@ -34,7 +34,7 @@ import android.util.Slog;
 import android.util.Xml;
 import com.android.internal.util.ArrayUtils;
 import com.android.internal.util.XmlUtils;
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.IntentResolver;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -205,9 +205,9 @@ public class IntentFirewall {
             }
         }
 
-        EventLogTags.writeIfwIntentMatched(intentType, shortComponent, callerUid,
-                callerPackageCount, callerPackages, intent.getAction(), resolvedType,
-                intent.getDataString(), intent.getFlags());
+        // EventLogTags.writeIfwIntentMatched(intentType, shortComponent, callerUid,
+        //         callerPackageCount, callerPackages, intent.getAction(), resolvedType,
+        //         intent.getDataString(), intent.getFlags());
     }
 
     /**

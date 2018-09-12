@@ -71,7 +71,7 @@ import android.os.Process;
 import android.os.RemoteException;
 import android.os.SystemClock;
 import android.os.UserHandle;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.util.SparseArray;
 import android.util.TimeUtils;
@@ -85,7 +85,7 @@ public final class ActiveServices {
     private static final boolean DEBUG_DELAYED_SERVICE = DEBUG_SERVICE;
     private static final boolean DEBUG_DELAYED_STARTS = DEBUG_DELAYED_SERVICE;
 
-    private static final boolean LOG_SERVICE_START_STOP = false;
+    // private static final boolean LOG_SERVICE_START_STOP = false;
 
     // How long we wait for a service to finish executing.
     static final int SERVICE_TIMEOUT = 20*1000;
@@ -1589,8 +1589,8 @@ public final class ActiveServices {
         r.nextRestartTime = SystemClock.uptimeMillis() + r.restartDelay;
         Slog.w(TAG, "Scheduling restart of crashed service "
                 + r.shortName + " in " + r.restartDelay + "ms");
-        EventLog.writeEvent(EventLogTags.AM_SCHEDULE_SERVICE_RESTART,
-                r.userId, r.shortName, r.restartDelay);
+        // EventLog.writeEvent(EventLogTags.AM_SCHEDULE_SERVICE_RESTART,
+        //         r.userId, r.shortName, r.restartDelay);
 
         return canceled;
     }
@@ -1802,13 +1802,13 @@ public final class ActiveServices {
 
         boolean created = false;
         try {
-            if (LOG_SERVICE_START_STOP) {
-                String nameTerm;
-                int lastPeriod = r.shortName.lastIndexOf('.');
-                nameTerm = lastPeriod >= 0 ? r.shortName.substring(lastPeriod) : r.shortName;
-                EventLogTags.writeAmCreateService(
-                        r.userId, System.identityHashCode(r), nameTerm, r.app.uid, r.app.pid);
-            }
+            // if (LOG_SERVICE_START_STOP) {
+            //     String nameTerm;
+            //     int lastPeriod = r.shortName.lastIndexOf('.');
+            //     nameTerm = lastPeriod >= 0 ? r.shortName.substring(lastPeriod) : r.shortName;
+            //     EventLogTags.writeAmCreateService(
+            //             r.userId, System.identityHashCode(r), nameTerm, r.app.uid, r.app.pid);
+            // }
             // synchronized (r.stats.getBatteryStats()) {
             //     r.stats.startLaunchedLocked();
             // }
@@ -2025,10 +2025,10 @@ public final class ActiveServices {
 
         if (DEBUG_SERVICE) Slog.v(TAG_SERVICE, "Bringing down " + r + " " + r.intent);
         r.destroyTime = SystemClock.uptimeMillis();
-        if (LOG_SERVICE_START_STOP) {
-            EventLogTags.writeAmDestroyService(
-                    r.userId, System.identityHashCode(r), (r.app != null) ? r.app.pid : -1);
-        }
+        // if (LOG_SERVICE_START_STOP) {
+        //     EventLogTags.writeAmDestroyService(
+        //             r.userId, System.identityHashCode(r), (r.app != null) ? r.app.pid : -1);
+        // }
 
         final ServiceMap smap = getServiceMap(r.userId);
         smap.mServicesByName.remove(r.name);
@@ -2646,8 +2646,8 @@ public final class ActiveServices {
                     &ApplicationInfo.FLAG_PERSISTENT) == 0) {
                 Slog.w(TAG, "Service crashed " + sr.crashCount
                         + " times, stopping: " + sr);
-                EventLog.writeEvent(EventLogTags.AM_SERVICE_CRASHED_TOO_MUCH,
-                        sr.userId, sr.crashCount, sr.shortName, app.pid);
+                // EventLog.writeEvent(EventLogTags.AM_SERVICE_CRASHED_TOO_MUCH,
+                //         sr.userId, sr.crashCount, sr.shortName, app.pid);
                 bringDownServiceLocked(sr);
             } else if (!allowRestart
                     || !mAm.mUserController.isUserRunningLocked(sr.userId, 0)) {

@@ -34,7 +34,7 @@ import android.os.Process;
 import android.os.ServiceManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Slog;
 
@@ -416,7 +416,7 @@ public class Watchdog extends Thread {
             // If we got here, that means that the system is most likely hung.
             // First collect stack traces from all threads of the system process.
             // Then kill this process so that the system will restart.
-            EventLog.writeEvent(EventLogTags.WATCHDOG, subject);
+            // EventLog.writeEvent(EventLogTags.WATCHDOG, subject);
 
             ArrayList<Integer> pids = new ArrayList<Integer>();
             pids.add(Process.myPid());

@@ -16,7 +16,7 @@
 
 package com.android.server.storage;
 
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.SystemService;
 import com.android.server.pm.InstructionSets;
 import android.app.Notification;
@@ -43,7 +43,7 @@ import android.os.UserHandle;
 import android.os.storage.StorageManager;
 import android.provider.Settings;
 import android.text.format.Formatter;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Slog;
 import android.util.TimeUtils;
 
@@ -117,7 +117,7 @@ public class DeviceStorageMonitorService extends SystemService {
     private final Intent mStorageFullIntent;
     private final Intent mStorageNotFullIntent;
     private CachePackageDataObserver mClearCacheObserver;
-    private CacheFileDeletedObserver mCacheFileDeletedObserver;
+    // private CacheFileDeletedObserver mCacheFileDeletedObserver;
     private static final int _TRUE = 1;
     private static final int _FALSE = 0;
     // This is the raw threshold that has been set at which we consider
@@ -203,8 +203,8 @@ public class DeviceStorageMonitorService extends SystemService {
             } catch (IllegalArgumentException e) {
                 // ignore; report -1
             }
-            EventLog.writeEvent(EventLogTags.FREE_STORAGE_LEFT,
-                                mFreeMem, mFreeSystem, mFreeCache);
+            // EventLog.writeEvent(EventLogTags.FREE_STORAGE_LEFT,
+            //                     mFreeMem, mFreeSystem, mFreeCache);
         }
         // Read the reporting threshold from secure settings
         long threshold = Settings.Global.getLong(mResolver,
@@ -214,7 +214,7 @@ public class DeviceStorageMonitorService extends SystemService {
         long delta = mFreeMem - mLastReportedFreeMem;
         if (delta > threshold || delta < -threshold) {
             mLastReportedFreeMem = mFreeMem;
-            EventLog.writeEvent(EventLogTags.FREE_STORAGE_CHANGED, mFreeMem);
+            // EventLog.writeEvent(EventLogTags.FREE_STORAGE_CHANGED, mFreeMem);
         }
     }
 
@@ -373,8 +373,8 @@ public class DeviceStorageMonitorService extends SystemService {
         mFreeMemAfterLastCacheClear = mTotalMemory;
         checkMemory(true);
 
-        mCacheFileDeletedObserver = new CacheFileDeletedObserver();
-        mCacheFileDeletedObserver.startWatching();
+        // mCacheFileDeletedObserver = new CacheFileDeletedObserver();
+        // mCacheFileDeletedObserver.startWatching();
 
         publishBinderService(SERVICE, mRemoteService);
         publishLocalService(DeviceStorageMonitorInternal.class, mLocalService);
@@ -459,7 +459,7 @@ public class DeviceStorageMonitorService extends SystemService {
         final Context context = getContext();
         if(localLOGV) Slog.i(TAG, "Sending low memory notification");
         //log the event to event log with the amount of free storage(in bytes) left on the device
-        EventLog.writeEvent(EventLogTags.LOW_STORAGE, mFreeMem);
+        // EventLog.writeEvent(EventLogTags.LOW_STORAGE, mFreeMem);
         //  Pack up the values and broadcast them to everyone
         Intent lowMemIntent = new Intent(StorageManager.ACTION_MANAGE_STORAGE);
         lowMemIntent.putExtra("memory", mFreeMem);
@@ -526,14 +526,14 @@ public class DeviceStorageMonitorService extends SystemService {
         getContext().sendBroadcastAsUser(mStorageNotFullIntent, UserHandle.ALL);
     }
 
-    private static class CacheFileDeletedObserver extends FileObserver {
-        public CacheFileDeletedObserver() {
-            super(Environment.getDownloadCacheDirectory().getAbsolutePath(), FileObserver.DELETE);
-        }
-
-        @Override
-        public void onEvent(int event, String path) {
-            EventLogTags.writeCacheFileDeleted(path);
-        }
-    }
+    // private static class CacheFileDeletedObserver extends FileObserver {
+    //     public CacheFileDeletedObserver() {
+    //         super(Environment.getDownloadCacheDirectory().getAbsolutePath(), FileObserver.DELETE);
+    //     }
+    //
+    //     @Override
+    //     public void onEvent(int event, String path) {
+    //         EventLogTags.writeCacheFileDeleted(path);
+    //     }
+    // }
 }

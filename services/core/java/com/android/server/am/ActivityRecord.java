@@ -57,7 +57,7 @@ import android.os.SystemClock;
 // import android.os.Trace;
 import android.os.UserHandle;
 import android.service.voice.IVoiceInteractionSession;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.Log;
 import android.util.Slog;
 import android.util.TimeUtils;
@@ -1183,9 +1183,9 @@ final class ActivityRecord {
                     ? (curTime - stack.mFullyDrawnStartTime) : thisTime;
             if (SHOW_ACTIVITY_START_TIME) {
                 // Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "drawing", 0);
-                EventLog.writeEvent(EventLogTags.AM_ACTIVITY_FULLY_DRAWN_TIME,
-                        userId, System.identityHashCode(this), shortComponentName,
-                        thisTime, totalTime);
+                // EventLog.writeEvent(EventLogTags.AM_ACTIVITY_FULLY_DRAWN_TIME,
+                //         userId, System.identityHashCode(this), shortComponentName,
+                //         thisTime, totalTime);
                 StringBuilder sb = service.mStringBuilder;
                 sb.setLength(0);
                 sb.append("Fully drawn ");
@@ -1217,9 +1217,9 @@ final class ActivityRecord {
                 ? (curTime - stack.mLaunchStartTime) : thisTime;
         if (SHOW_ACTIVITY_START_TIME) {
             // Trace.asyncTraceEnd(Trace.TRACE_TAG_ACTIVITY_MANAGER, "launching: " + packageName, 0);
-            EventLog.writeEvent(EventLogTags.AM_ACTIVITY_LAUNCH_TIME,
-                    userId, System.identityHashCode(this), shortComponentName,
-                    thisTime, totalTime);
+            // EventLog.writeEvent(EventLogTags.AM_ACTIVITY_LAUNCH_TIME,
+            //         userId, System.identityHashCode(this), shortComponentName,
+            //         thisTime, totalTime);
             StringBuilder sb = service.mStringBuilder;
             sb.setLength(0);
             sb.append("Displayed ");

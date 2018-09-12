@@ -16,7 +16,7 @@
 
 package com.android.server.display;
 
-import com.android.server.EventLogTags;
+// import com.android.server.EventLogTags;
 import com.android.server.LocalServices;
 
 import android.annotation.Nullable;
@@ -30,7 +30,7 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.text.format.DateUtils;
-import android.util.EventLog;
+// import android.util.EventLog;
 import android.util.MathUtils;
 import android.util.Spline;
 import android.util.Slog;
@@ -606,15 +606,15 @@ class AutomaticBrightnessController {
                             + ", ring=" + mAmbientLightRingBuffer);
                 }
 
-                EventLog.writeEvent(EventLogTags.AUTO_BRIGHTNESS_ADJ,
-                        mBrightnessAdjustmentSampleOldAdjustment,
-                        mBrightnessAdjustmentSampleOldLux,
-                        mBrightnessAdjustmentSampleOldBrightness,
-                        mBrightnessAdjustmentSampleOldGamma,
-                        mScreenAutoBrightnessAdjustment,
-                        mAmbientLux,
-                        mScreenAutoBrightness,
-                        mLastScreenAutoBrightnessGamma);
+                // EventLog.writeEvent(EventLogTags.AUTO_BRIGHTNESS_ADJ,
+                //         mBrightnessAdjustmentSampleOldAdjustment,
+                //         mBrightnessAdjustmentSampleOldLux,
+                //         mBrightnessAdjustmentSampleOldBrightness,
+                //         mBrightnessAdjustmentSampleOldGamma,
+                //         mScreenAutoBrightnessAdjustment,
+                //         mAmbientLux,
+                //         mScreenAutoBrightness,
+                //         mLastScreenAutoBrightnessGamma);
             }
         }
     }
