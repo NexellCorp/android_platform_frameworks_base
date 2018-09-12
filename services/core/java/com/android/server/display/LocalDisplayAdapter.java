@@ -383,17 +383,18 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                             | DisplayDeviceInfo.FLAG_SUPPORTS_PROTECTED_BUFFERS;
                 }
 
-                final Resources res = getContext().getResources();
+                // final Resources res = getContext().getResources();
                 if (mBuiltInDisplayId == SurfaceControl.BUILT_IN_DISPLAY_ID_MAIN) {
-                    mInfo.name = res.getString(
-                            com.android.internal.R.string.display_manager_built_in_display_name);
+                    // mInfo.name = res.getString(
+                    //         com.android.internal.R.string.display_manager_built_in_display_name);
+                    mInfo.name = "Built-in Screen";
                     mInfo.flags |= DisplayDeviceInfo.FLAG_DEFAULT_DISPLAY
                             | DisplayDeviceInfo.FLAG_ROTATES_WITH_CONTENT;
-                    if (res.getBoolean(com.android.internal.R.bool.config_mainBuiltInDisplayIsRound)
-                            || (Build.IS_EMULATOR
-                            && SystemProperties.getBoolean(PROPERTY_EMULATOR_CIRCULAR, false))) {
-                        mInfo.flags |= DisplayDeviceInfo.FLAG_ROUND;
-                    }
+                    // if (res.getBoolean(com.android.internal.R.bool.config_mainBuiltInDisplayIsRound)
+                    //         || (Build.IS_EMULATOR
+                    //         && SystemProperties.getBoolean(PROPERTY_EMULATOR_CIRCULAR, false))) {
+                    //     mInfo.flags |= DisplayDeviceInfo.FLAG_ROUND;
+                    // }
                     mInfo.type = Display.TYPE_BUILT_IN;
                     mInfo.densityDpi = (int)(phys.density * 160 + 0.5f);
                     mInfo.xDpi = phys.xDpi;
@@ -402,8 +403,9 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                 } else {
                     mInfo.type = Display.TYPE_HDMI;
                     mInfo.flags |= DisplayDeviceInfo.FLAG_PRESENTATION;
-                    mInfo.name = getContext().getResources().getString(
-                            com.android.internal.R.string.display_manager_hdmi_display_name);
+                    // mInfo.name = getContext().getResources().getString(
+                    //         com.android.internal.R.string.display_manager_hdmi_display_name);
+                    mInfo.name = "HDMI Screen";
                     mInfo.touch = DisplayDeviceInfo.TOUCH_EXTERNAL;
                     mInfo.setAssumedDensityForExternalDisplay(phys.width, phys.height);
 
@@ -419,10 +421,10 @@ final class LocalDisplayAdapter extends DisplayAdapter {
                         mInfo.flags |= DisplayDeviceInfo.FLAG_ROTATES_WITH_CONTENT;
                     }
 
-                    if (!res.getBoolean(
-                                com.android.internal.R.bool.config_localDisplaysMirrorContent)) {
-                        mInfo.flags |= DisplayDeviceInfo.FLAG_OWN_CONTENT_ONLY;
-                    }
+                    // if (!res.getBoolean(
+                    //             com.android.internal.R.bool.config_localDisplaysMirrorContent)) {
+                    //     mInfo.flags |= DisplayDeviceInfo.FLAG_OWN_CONTENT_ONLY;
+                    // }
                 }
             }
             return mInfo;
