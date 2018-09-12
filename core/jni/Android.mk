@@ -105,7 +105,6 @@ LOCAL_SRC_FILES:= \
     android_graphics_Picture.cpp \
     android/graphics/Bitmap.cpp \
     android/graphics/BitmapFactory.cpp \
-    android/graphics/Camera.cpp \
     android/graphics/CanvasProperty.cpp \
     android/graphics/ColorFilter.cpp \
     android/graphics/DrawFilter.cpp \
@@ -134,41 +133,22 @@ LOCAL_SRC_FILES:= \
     android/graphics/Utils.cpp \
     android/graphics/Xfermode.cpp \
     android/graphics/YuvToJpegEncoder.cpp \
-    android/graphics/pdf/PdfDocument.cpp \
-    android/graphics/pdf/PdfEditor.cpp \
-    android/graphics/pdf/PdfRenderer.cpp \
     android_media_AudioRecord.cpp \
     android_media_AudioSystem.cpp \
     android_media_AudioTrack.cpp \
     android_media_DeviceCallback.cpp \
     android_media_JetPlayer.cpp \
-    android_media_RemoteDisplay.cpp \
     android_media_ToneGenerator.cpp \
-    android_hardware_Camera.cpp \
-    android_hardware_camera2_CameraMetadata.cpp \
-    android_hardware_camera2_legacy_LegacyCameraDevice.cpp \
-    android_hardware_camera2_legacy_PerfMeasurement.cpp \
-    android_hardware_camera2_DngCreator.cpp \
     android_hardware_Radio.cpp \
-    android_hardware_SensorManager.cpp \
-    android_hardware_SerialPort.cpp \
-    android_hardware_SoundTrigger.cpp \
     android_hardware_UsbDevice.cpp \
     android_hardware_UsbDeviceConnection.cpp \
     android_hardware_UsbRequest.cpp \
-    android_hardware_location_ContextHubService.cpp \
     android_hardware_location_ActivityRecognitionHardware.cpp \
     android_util_FileObserver.cpp \
     android/opengl/poly_clip.cpp.arm \
     android/opengl/util.cpp \
     android_server_NetworkManagementSocketTagger.cpp \
-    android_server_Watchdog.cpp \
     android_ddm_DdmHandleNativeHeap.cpp \
-    android_backup_BackupDataInput.cpp \
-    android_backup_BackupDataOutput.cpp \
-    android_backup_FileBackupHelperBase.cpp \
-    android_backup_BackupHelperDispatcher.cpp \
-    android_app_backup_FullBackup.cpp \
     android_content_res_ObbScanner.cpp \
     android_content_res_Configuration.cpp \
     android_animation_PropertyValuesHolder.cpp \

@@ -12,13 +12,9 @@ endif
 
 LOCAL_SRC_FILES += \
     $(LOCAL_REL_DIR)/com_android_server_AlarmManagerService.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_am_BatteryStatsService.cpp \
     $(LOCAL_REL_DIR)/com_android_server_am_ActivityManagerService.cpp \
     $(LOCAL_REL_DIR)/com_android_server_AssetAtlasService.cpp \
     $(LOCAL_REL_DIR)/com_android_server_connectivity_Vpn.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_ConsumerIrService.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_HardwarePropertiesManagerService.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_hdmi_HdmiCecController.cpp \
     $(LOCAL_REL_DIR)/com_android_server_input_InputApplicationHandle.cpp \
     $(LOCAL_REL_DIR)/com_android_server_input_InputManagerService.cpp \
     $(LOCAL_REL_DIR)/com_android_server_input_InputWindowHandle.cpp \
@@ -26,16 +22,9 @@ LOCAL_SRC_FILES += \
     $(LOCAL_REL_DIR)/com_android_server_location_GnssLocationProvider.cpp \
     $(LOCAL_REL_DIR)/com_android_server_location_FlpHardwareProvider.cpp \
     $(LOCAL_REL_DIR)/com_android_server_power_PowerManagerService.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_SerialService.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_SystemServer.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_tv_TvUinputBridge.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_tv_TvInputHal.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_vr_VrManagerService.cpp \
     $(LOCAL_REL_DIR)/com_android_server_UsbDeviceManager.cpp \
     $(LOCAL_REL_DIR)/com_android_server_UsbMidiDevice.cpp \
     $(LOCAL_REL_DIR)/com_android_server_UsbHostManager.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_VibratorService.cpp \
-    $(LOCAL_REL_DIR)/com_android_server_PersistentDataBlockService.cpp \
     $(LOCAL_REL_DIR)/onload.cpp
 
 LOCAL_C_INCLUDES += \
