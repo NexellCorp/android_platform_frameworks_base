@@ -2803,6 +2803,22 @@ public class PackageManagerService extends IPackageManager.Stub {
         LocalServices.addService(PackageManagerInternal.class, new PackageManagerInternalImpl());
     }
 
+    public void scanAfterBoot() {
+        final int scanFlags = SCAN_NO_PATHS | SCAN_DEFER_DEX | SCAN_BOOTING | SCAN_INITIAL;
+
+        final File privilegedAppDir = new File(Environment.getRootDirectory(), "priv-app");
+        scanDirTracedLI(privilegedAppDir, mDefParseFlags
+                | PackageParser.PARSE_IS_SYSTEM
+                | PackageParser.PARSE_IS_SYSTEM_DIR
+                | PackageParser.PARSE_IS_PRIVILEGED, scanFlags, 0);
+
+        // Collect ordinary system packages.
+        final File systemAppDir = new File(Environment.getRootDirectory(), "app");
+        scanDirTracedLI(systemAppDir, mDefParseFlags
+                | PackageParser.PARSE_IS_SYSTEM
+                | PackageParser.PARSE_IS_SYSTEM_DIR, scanFlags, 0);
+    }
+
     @Override
     public boolean isFirstBoot() {
         return mFirstBoot;
@@ -19919,13 +19935,13 @@ Slog.v(TAG, ":: stepped forward, applying functor at tag " + parser.getName());
      * correct for all installed apps on all mounted volumes.
      */
     void reconcileAppsData(int userId, int flags) {
-        final StorageManager storage = mContext.getSystemService(StorageManager.class);
-        for (VolumeInfo vol : storage.getWritablePrivateVolumes()) {
-            final String volumeUuid = vol.getFsUuid();
-            synchronized (mInstallLock) {
-                reconcileAppsDataLI(volumeUuid, userId, flags);
-            }
-        }
+        // final StorageManager storage = mContext.getSystemService(StorageManager.class);
+        // for (VolumeInfo vol : storage.getWritablePrivateVolumes()) {
+        //     final String volumeUuid = vol.getFsUuid();
+        //     synchronized (mInstallLock) {
+        //         reconcileAppsDataLI(volumeUuid, userId, flags);
+        //     }
+        // }
     }
 
     /**

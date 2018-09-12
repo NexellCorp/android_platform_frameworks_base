@@ -431,6 +431,11 @@ public final class SystemServer {
             reportWtf("Failed to ActivityManager.systemReady()", e);
         }
 
+        if (!mFirstBoot) {
+            Slog.i(TAG, "[BootProf] start PackageManagerService scanAfterBoot");
+            mPackageManagerService.scanAfterBoot();
+        }
+
         Slog.i(TAG, "[BootProf] start WebViewUpdateService");
         mWebViewUpdateService = mSystemServiceManager.startService(WebViewUpdateService.class);
         mWebViewUpdateService.prepareWebViewInSystemServer();
