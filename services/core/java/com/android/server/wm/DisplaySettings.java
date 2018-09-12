@@ -106,66 +106,66 @@ public class DisplaySettings {
     }
 
     public void readSettingsLocked() {
-        FileInputStream stream;
-        try {
-            stream = mFile.openRead();
-        } catch (FileNotFoundException e) {
-            Slog.i(TAG, "No existing display settings " + mFile.getBaseFile()
-                    + "; starting empty");
-            return;
-        }
-        boolean success = false;
-        try {
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(stream, StandardCharsets.UTF_8.name());
-            int type;
-            while ((type = parser.next()) != XmlPullParser.START_TAG
-                    && type != XmlPullParser.END_DOCUMENT) {
-                // Do nothing.
-            }
-
-            if (type != XmlPullParser.START_TAG) {
-                throw new IllegalStateException("no start tag found");
-            }
-
-            int outerDepth = parser.getDepth();
-            while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
-                    && (type != XmlPullParser.END_TAG || parser.getDepth() > outerDepth)) {
-                if (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) {
-                    continue;
-                }
-
-                String tagName = parser.getName();
-                if (tagName.equals("display")) {
-                    readDisplay(parser);
-                } else {
-                    Slog.w(TAG, "Unknown element under <display-settings>: "
-                            + parser.getName());
-                    XmlUtils.skipCurrentTag(parser);
-                }
-            }
-            success = true;
-        } catch (IllegalStateException e) {
-            Slog.w(TAG, "Failed parsing " + e);
-        } catch (NullPointerException e) {
-            Slog.w(TAG, "Failed parsing " + e);
-        } catch (NumberFormatException e) {
-            Slog.w(TAG, "Failed parsing " + e);
-        } catch (XmlPullParserException e) {
-            Slog.w(TAG, "Failed parsing " + e);
-        } catch (IOException e) {
-            Slog.w(TAG, "Failed parsing " + e);
-        } catch (IndexOutOfBoundsException e) {
-            Slog.w(TAG, "Failed parsing " + e);
-        } finally {
-            if (!success) {
-                mEntries.clear();
-            }
-            try {
-                stream.close();
-            } catch (IOException e) {
-            }
-        }
+        // FileInputStream stream;
+        // try {
+        //     stream = mFile.openRead();
+        // } catch (FileNotFoundException e) {
+        //     Slog.i(TAG, "No existing display settings " + mFile.getBaseFile()
+        //             + "; starting empty");
+        //     return;
+        // }
+        // boolean success = false;
+        // try {
+        //     XmlPullParser parser = Xml.newPullParser();
+        //     parser.setInput(stream, StandardCharsets.UTF_8.name());
+        //     int type;
+        //     while ((type = parser.next()) != XmlPullParser.START_TAG
+        //             && type != XmlPullParser.END_DOCUMENT) {
+        //         // Do nothing.
+        //     }
+        //
+        //     if (type != XmlPullParser.START_TAG) {
+        //         throw new IllegalStateException("no start tag found");
+        //     }
+        //
+        //     int outerDepth = parser.getDepth();
+        //     while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
+        //             && (type != XmlPullParser.END_TAG || parser.getDepth() > outerDepth)) {
+        //         if (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) {
+        //             continue;
+        //         }
+        //
+        //         String tagName = parser.getName();
+        //         if (tagName.equals("display")) {
+        //             readDisplay(parser);
+        //         } else {
+        //             Slog.w(TAG, "Unknown element under <display-settings>: "
+        //                     + parser.getName());
+        //             XmlUtils.skipCurrentTag(parser);
+        //         }
+        //     }
+        //     success = true;
+        // } catch (IllegalStateException e) {
+        //     Slog.w(TAG, "Failed parsing " + e);
+        // } catch (NullPointerException e) {
+        //     Slog.w(TAG, "Failed parsing " + e);
+        // } catch (NumberFormatException e) {
+        //     Slog.w(TAG, "Failed parsing " + e);
+        // } catch (XmlPullParserException e) {
+        //     Slog.w(TAG, "Failed parsing " + e);
+        // } catch (IOException e) {
+        //     Slog.w(TAG, "Failed parsing " + e);
+        // } catch (IndexOutOfBoundsException e) {
+        //     Slog.w(TAG, "Failed parsing " + e);
+        // } finally {
+        //     if (!success) {
+        //         mEntries.clear();
+        //     }
+        //     try {
+        //         stream.close();
+        //     } catch (IOException e) {
+        //     }
+        // }
     }
 
     private int getIntAttribute(XmlPullParser parser, String name) {
