@@ -53,8 +53,9 @@ public class ProtectedPackages {
 
     public ProtectedPackages(Context context) {
         mContext = context;
-        mDeviceProvisioningPackage = mContext.getResources().getString(
-                R.string.config_deviceProvisioningPackage);
+        // mDeviceProvisioningPackage = mContext.getResources().getString(
+        //         R.string.config_deviceProvisioningPackage);
+        mDeviceProvisioningPackage = "";
     }
 
     /**
@@ -95,7 +96,8 @@ public class ProtectedPackages {
      * can modify its data or package state.
      */
     private synchronized boolean isProtectedPackage(String packageName) {
-        return packageName != null && packageName.equals(mDeviceProvisioningPackage);
+        // return packageName != null && packageName.equals(mDeviceProvisioningPackage);
+        return false;
     }
 
     /**
