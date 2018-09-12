@@ -89,7 +89,7 @@ import com.android.internal.app.IAppOpsService;
 import com.android.internal.util.FastXmlSerializer;
 import com.android.internal.util.Preconditions;
 import com.android.internal.util.XmlUtils;
-import com.android.internal.widget.LockPatternUtils;
+// import com.android.internal.widget.LockPatternUtils;
 import com.android.server.LocalServices;
 import com.android.server.SystemService;
 import com.android.server.am.UserState;
@@ -211,8 +211,8 @@ public class UserManagerService extends IUserManager.Stub {
 
     private final Handler mHandler;
 
-    private final File mUsersDir;
-    private final File mUserListFile;
+    // private final File mUsersDir;
+    // private final File mUserListFile;
 
     private static final IBinder mUserRestriconToken = new Binder();
 
@@ -334,28 +334,28 @@ public class UserManagerService extends IUserManager.Stub {
     private final ArrayList<UserRestrictionsListener> mUserRestrictionsListeners =
             new ArrayList<>();
 
-    private final LockPatternUtils mLockPatternUtils;
+    // private final LockPatternUtils mLockPatternUtils;
 
     private final String ACTION_DISABLE_QUIET_MODE_AFTER_UNLOCK =
             "com.android.server.pm.DISABLE_QUIET_MODE_AFTER_UNLOCK";
 
-    private final BroadcastReceiver mDisableQuietModeCallback = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (ACTION_DISABLE_QUIET_MODE_AFTER_UNLOCK.equals(intent.getAction())) {
-                final IntentSender target = intent.getParcelableExtra(Intent.EXTRA_INTENT);
-                final int userHandle = intent.getIntExtra(Intent.EXTRA_USER_ID, 0);
-                setQuietModeEnabled(userHandle, false);
-                if (target != null) {
-                    try {
-                        mContext.startIntentSender(target, null, 0, 0, 0);
-                    } catch (IntentSender.SendIntentException e) {
-                        /* ignore */
-                    }
-                }
-            }
-        }
-    };
+    // private final BroadcastReceiver mDisableQuietModeCallback = new BroadcastReceiver() {
+    //     @Override
+    //     public void onReceive(Context context, Intent intent) {
+    //         if (ACTION_DISABLE_QUIET_MODE_AFTER_UNLOCK.equals(intent.getAction())) {
+    //             final IntentSender target = intent.getParcelableExtra(Intent.EXTRA_INTENT);
+    //             final int userHandle = intent.getIntExtra(Intent.EXTRA_USER_ID, 0);
+    //             setQuietModeEnabled(userHandle, false);
+    //             if (target != null) {
+    //                 try {
+    //                     mContext.startIntentSender(target, null, 0, 0, 0);
+    //                 } catch (IntentSender.SendIntentException e) {
+    //                     #<{(| ignore |)}>#
+    //                 }
+    //             }
+    //         }
+    //     }
+    // };
 
     /**
      * Whether all users should be created ephemeral.
@@ -419,23 +419,25 @@ public class UserManagerService extends IUserManager.Stub {
         mPm = pm;
         mPackagesLock = packagesLock;
         mHandler = new MainHandler();
-        synchronized (mPackagesLock) {
-            mUsersDir = new File(dataDir, USER_INFO_DIR);
-            mUsersDir.mkdirs();
-            // Make zeroth user directory, for services to migrate their files to that location
-            File userZeroDir = new File(mUsersDir, String.valueOf(UserHandle.USER_SYSTEM));
-            userZeroDir.mkdirs();
-            FileUtils.setPermissions(mUsersDir.toString(),
-                    FileUtils.S_IRWXU | FileUtils.S_IRWXG | FileUtils.S_IROTH | FileUtils.S_IXOTH,
-                    -1, -1);
-            mUserListFile = new File(mUsersDir, USER_LIST_FILENAME);
-            initDefaultGuestRestrictions();
-            readUserListLP();
-            sInstance = this;
-        }
+        // synchronized (mPackagesLock) {
+        //     mUsersDir = new File(dataDir, USER_INFO_DIR);
+        //     mUsersDir.mkdirs();
+        //     // Make zeroth user directory, for services to migrate their files to that location
+        //     File userZeroDir = new File(mUsersDir, String.valueOf(UserHandle.USER_SYSTEM));
+        //     userZeroDir.mkdirs();
+        //     FileUtils.setPermissions(mUsersDir.toString(),
+        //             FileUtils.S_IRWXU | FileUtils.S_IRWXG | FileUtils.S_IROTH | FileUtils.S_IXOTH,
+        //             -1, -1);
+        //     mUserListFile = new File(mUsersDir, USER_LIST_FILENAME);
+        //     initDefaultGuestRestrictions();
+        //     readUserListLP();
+        //     sInstance = this;
+        // }
+        readUserListLP();
+        sInstance = this;
         mLocalService = new LocalService();
         LocalServices.addService(UserManagerInternal.class, mLocalService);
-        mLockPatternUtils = new LockPatternUtils(mContext);
+        // mLockPatternUtils = new LockPatternUtils(mContext);
         mUserStates.put(UserHandle.USER_SYSTEM, UserState.STATE_BOOTING);
     }
 
@@ -456,9 +458,9 @@ public class UserManagerService extends IUserManager.Stub {
             setUserRestriction(UserManager.DISALLOW_CONFIG_WIFI, true, currentGuestUser.id);
         }
 
-        mContext.registerReceiver(mDisableQuietModeCallback,
-                new IntentFilter(ACTION_DISABLE_QUIET_MODE_AFTER_UNLOCK),
-                null, mHandler);
+        // mContext.registerReceiver(mDisableQuietModeCallback,
+        //         new IntentFilter(ACTION_DISABLE_QUIET_MODE_AFTER_UNLOCK),
+        //         null, mHandler);
     }
 
     void cleanupPartialUsers() {
@@ -486,7 +488,7 @@ public class UserManagerService extends IUserManager.Stub {
 
     @Override
     public String getUserAccount(int userId) {
-        checkManageUserAndAcrossUsersFullPermission("get user account");
+        // checkManageUserAndAcrossUsersFullPermission("get user account");
         synchronized (mUsersLock) {
             return mUsers.get(userId).account;
         }
@@ -494,7 +496,7 @@ public class UserManagerService extends IUserManager.Stub {
 
     @Override
     public void setUserAccount(int userId, String accountName) {
-        checkManageUserAndAcrossUsersFullPermission("set user account");
+        // checkManageUserAndAcrossUsersFullPermission("set user account");
         UserData userToUpdate = null;
         synchronized (mPackagesLock) {
             synchronized (mUsersLock) {
@@ -510,9 +512,9 @@ public class UserManagerService extends IUserManager.Stub {
                 }
             }
 
-            if (userToUpdate != null) {
-                writeUserLP(userToUpdate);
-            }
+            // if (userToUpdate != null) {
+            //     writeUserLP(userToUpdate);
+            // }
         }
     }
 
@@ -635,15 +637,15 @@ public class UserManagerService extends IUserManager.Stub {
 
     @Override
     public int getCredentialOwnerProfile(int userHandle) {
-        checkManageUsersPermission("get the credential owner");
-        if (!mLockPatternUtils.isSeparateProfileChallengeEnabled(userHandle)) {
-            synchronized (mUsersLock) {
-                UserInfo profileParent = getProfileParentLU(userHandle);
-                if (profileParent != null) {
-                    return profileParent.id;
-                }
-            }
-        }
+        // checkManageUsersPermission("get the credential owner");
+        // if (!mLockPatternUtils.isSeparateProfileChallengeEnabled(userHandle)) {
+        //     synchronized (mUsersLock) {
+        //         UserInfo profileParent = getProfileParentLU(userHandle);
+        //         if (profileParent != null) {
+        //             return profileParent.id;
+        //         }
+        //     }
+        // }
 
         return userHandle;
     }
@@ -728,7 +730,7 @@ public class UserManagerService extends IUserManager.Stub {
             }
             if (profile.isQuietModeEnabled() != enableQuietMode) {
                 profile.flags ^= UserInfo.FLAG_QUIET_MODE;
-                writeUserLP(getUserDataLU(profile.id));
+                // writeUserLP(getUserDataLU(profile.id));
                 changed = true;
             }
         }
@@ -769,13 +771,15 @@ public class UserManagerService extends IUserManager.Stub {
 
     @Override
     public boolean trySetQuietModeDisabled(int userHandle, IntentSender target) {
-        checkManageUsersPermission("silence profile");
-        if (StorageManager.isUserKeyUnlocked(userHandle)
-                || !mLockPatternUtils.isSecure(userHandle)) {
-            // if the user is already unlocked, no need to show a profile challenge
-            setQuietModeEnabled(userHandle, false);
-            return true;
-        }
+        setQuietModeEnabled(userHandle, false);
+        return true;
+        // checkManageUsersPermission("silence profile");
+        // if (StorageManager.isUserKeyUnlocked(userHandle)
+        //         || !mLockPatternUtils.isSecure(userHandle)) {
+        //     // if the user is already unlocked, no need to show a profile challenge
+        //     setQuietModeEnabled(userHandle, false);
+        //     return true;
+        // }
 
         // long identity = Binder.clearCallingIdentity();
         // try {
@@ -813,7 +817,7 @@ public class UserManagerService extends IUserManager.Stub {
         // } finally {
         //     Binder.restoreCallingIdentity(identity);
         // }
-        return false;
+        // return false;
     }
 
     @Override
@@ -826,7 +830,7 @@ public class UserManagerService extends IUserManager.Stub {
             }
             if (info != null && !info.isEnabled()) {
                 info.flags ^= UserInfo.FLAG_DISABLED;
-                writeUserLP(getUserDataLU(info.id));
+                // writeUserLP(getUserDataLU(info.id));
             }
         }
     }
@@ -888,16 +892,16 @@ public class UserManagerService extends IUserManager.Stub {
     }
 
     private void checkManageOrInteractPermIfCallerInOtherProfileGroup(int userId, String name) {
-        int callingUserId = UserHandle.getCallingUserId();
-        if (callingUserId == userId || isSameProfileGroupNoChecks(callingUserId, userId) ||
-                hasManageUsersPermission()) {
-            return;
-        }
-        if (ActivityManager.checkComponentPermission(Manifest.permission.INTERACT_ACROSS_USERS,
-                Binder.getCallingUid(), -1, true) != PackageManager.PERMISSION_GRANTED) {
-            throw new SecurityException("You need INTERACT_ACROSS_USERS or MANAGE_USERS permission "
-                    + "to: check " + name);
-        }
+        // int callingUserId = UserHandle.getCallingUserId();
+        // if (callingUserId == userId || isSameProfileGroupNoChecks(callingUserId, userId) ||
+        //         hasManageUsersPermission()) {
+        //     return;
+        // }
+        // if (ActivityManager.checkComponentPermission(Manifest.permission.INTERACT_ACROSS_USERS,
+        //         Binder.getCallingUid(), -1, true) != PackageManager.PERMISSION_GRANTED) {
+        //     throw new SecurityException("You need INTERACT_ACROSS_USERS or MANAGE_USERS permission "
+        //             + "to: check " + name);
+        // }
     }
 
     @Override
@@ -996,7 +1000,7 @@ public class UserManagerService extends IUserManager.Stub {
             }
             if (name != null && !name.equals(userData.info.name)) {
                 userData.info.name = name;
-                writeUserLP(userData);
+                // writeUserLP(userData);
                 changed = true;
             }
         }
@@ -1108,9 +1112,9 @@ public class UserManagerService extends IUserManager.Stub {
             mGuestRestrictions.clear();
             mGuestRestrictions.putAll(restrictions);
         }
-        synchronized (mPackagesLock) {
-            writeUserListLP();
-        }
+        // synchronized (mPackagesLock) {
+        //     writeUserListLP();
+        // }
     }
 
     /**
@@ -1157,14 +1161,14 @@ public class UserManagerService extends IUserManager.Stub {
             );
         }
         // Don't call them within the mRestrictionsLock.
-        synchronized (mPackagesLock) {
-            if (localChanged) {
-                writeUserLP(getUserDataNoChecks(userId));
-            }
-            if (globalChanged) {
-                writeUserListLP();
-            }
-        }
+        // synchronized (mPackagesLock) {
+        //     if (localChanged) {
+        //         writeUserLP(getUserDataNoChecks(userId));
+        //     }
+        //     if (globalChanged) {
+        //         writeUserListLP();
+        //     }
+        // }
 
         synchronized (mRestrictionsLock) {
             if (globalChanged) {
@@ -1611,33 +1615,33 @@ public class UserManagerService extends IUserManager.Stub {
         }
     }
 
-    private void writeBitmapLP(UserInfo info, Bitmap bitmap) {
-        try {
-            File dir = new File(mUsersDir, Integer.toString(info.id));
-            File file = new File(dir, USER_PHOTO_FILENAME);
-            File tmp = new File(dir, USER_PHOTO_FILENAME_TMP);
-            if (!dir.exists()) {
-                dir.mkdir();
-                FileUtils.setPermissions(
-                        dir.getPath(),
-                        FileUtils.S_IRWXU|FileUtils.S_IRWXG|FileUtils.S_IXOTH,
-                        -1, -1);
-            }
-            FileOutputStream os;
-            if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os = new FileOutputStream(tmp))
-                    && tmp.renameTo(file) && SELinux.restorecon(file)) {
-                info.iconPath = file.getAbsolutePath();
-            }
-            try {
-                os.close();
-            } catch (IOException ioe) {
-                // What the ... !
-            }
-            tmp.delete();
-        } catch (FileNotFoundException e) {
-            Slog.w(LOG_TAG, "Error setting photo for user ", e);
-        }
-    }
+    // private void writeBitmapLP(UserInfo info, Bitmap bitmap) {
+    //     try {
+    //         File dir = new File(mUsersDir, Integer.toString(info.id));
+    //         File file = new File(dir, USER_PHOTO_FILENAME);
+    //         File tmp = new File(dir, USER_PHOTO_FILENAME_TMP);
+    //         if (!dir.exists()) {
+    //             dir.mkdir();
+    //             FileUtils.setPermissions(
+    //                     dir.getPath(),
+    //                     FileUtils.S_IRWXU|FileUtils.S_IRWXG|FileUtils.S_IXOTH,
+    //                     -1, -1);
+    //         }
+    //         FileOutputStream os;
+    //         if (bitmap.compress(Bitmap.CompressFormat.PNG, 100, os = new FileOutputStream(tmp))
+    //                 && tmp.renameTo(file) && SELinux.restorecon(file)) {
+    //             info.iconPath = file.getAbsolutePath();
+    //         }
+    //         try {
+    //             os.close();
+    //         } catch (IOException ioe) {
+    //             // What the ... !
+    //         }
+    //         tmp.delete();
+    //     } catch (FileNotFoundException e) {
+    //         Slog.w(LOG_TAG, "Error setting photo for user ", e);
+    //     }
+    // }
 
     /**
      * Returns an array of user ids. This array is cached here for quick access, so do not modify or
@@ -1651,94 +1655,95 @@ public class UserManagerService extends IUserManager.Stub {
     }
 
     private void readUserListLP() {
-        if (!mUserListFile.exists()) {
-            fallbackToSingleUserLP();
-            return;
-        }
-        FileInputStream fis = null;
-        AtomicFile userListFile = new AtomicFile(mUserListFile);
-        try {
-            fis = userListFile.openRead();
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(fis, StandardCharsets.UTF_8.name());
-            int type;
-            while ((type = parser.next()) != XmlPullParser.START_TAG
-                    && type != XmlPullParser.END_DOCUMENT) {
-                // Skip
-            }
-
-            if (type != XmlPullParser.START_TAG) {
-                Slog.e(LOG_TAG, "Unable to read user list");
-                fallbackToSingleUserLP();
-                return;
-            }
-
-            mNextSerialNumber = -1;
-            if (parser.getName().equals(TAG_USERS)) {
-                String lastSerialNumber = parser.getAttributeValue(null, ATTR_NEXT_SERIAL_NO);
-                if (lastSerialNumber != null) {
-                    mNextSerialNumber = Integer.parseInt(lastSerialNumber);
-                }
-                String versionNumber = parser.getAttributeValue(null, ATTR_USER_VERSION);
-                if (versionNumber != null) {
-                    mUserVersion = Integer.parseInt(versionNumber);
-                }
-            }
-
-            final Bundle newDevicePolicyGlobalUserRestrictions = new Bundle();
-
-            while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
-                if (type == XmlPullParser.START_TAG) {
-                    final String name = parser.getName();
-                    if (name.equals(TAG_USER)) {
-                        String id = parser.getAttributeValue(null, ATTR_ID);
-
-                        UserData userData = readUserLP(Integer.parseInt(id));
-
-                        if (userData != null) {
-                            synchronized (mUsersLock) {
-                                mUsers.put(userData.info.id, userData);
-                                if (mNextSerialNumber < 0
-                                        || mNextSerialNumber <= userData.info.id) {
-                                    mNextSerialNumber = userData.info.id + 1;
-                                }
-                            }
-                        }
-                    } else if (name.equals(TAG_GUEST_RESTRICTIONS)) {
-                        while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
-                                && type != XmlPullParser.END_TAG) {
-                            if (type == XmlPullParser.START_TAG) {
-                                if (parser.getName().equals(TAG_RESTRICTIONS)) {
-                                    synchronized (mGuestRestrictions) {
-                                        UserRestrictionsUtils
-                                                .readRestrictions(parser, mGuestRestrictions);
-                                    }
-                                } else if (parser.getName().equals(TAG_DEVICE_POLICY_RESTRICTIONS)
-                                        ) {
-                                    UserRestrictionsUtils.readRestrictions(parser,
-                                            newDevicePolicyGlobalUserRestrictions);
-                                }
-                                break;
-                            }
-                        }
-                    } else if (name.equals(TAG_GLOBAL_RESTRICTION_OWNER_ID)) {
-                        String ownerUserId = parser.getAttributeValue(null, ATTR_ID);
-                        if (ownerUserId != null) {
-                            mGlobalRestrictionOwnerUserId = Integer.parseInt(ownerUserId);
-                        }
-                    }
-                }
-            }
-            synchronized (mRestrictionsLock) {
-                mDevicePolicyGlobalUserRestrictions = newDevicePolicyGlobalUserRestrictions;
-            }
-            updateUserIds();
-            upgradeIfNecessaryLP();
-        } catch (IOException | XmlPullParserException e) {
-            fallbackToSingleUserLP();
-        } finally {
-            IoUtils.closeQuietly(fis);
-        }
+        fallbackToSingleUserLP();
+        // if (!mUserListFile.exists()) {
+        //     fallbackToSingleUserLP();
+        //     return;
+        // }
+        // FileInputStream fis = null;
+        // AtomicFile userListFile = new AtomicFile(mUserListFile);
+        // try {
+        //     fis = userListFile.openRead();
+        //     XmlPullParser parser = Xml.newPullParser();
+        //     parser.setInput(fis, StandardCharsets.UTF_8.name());
+        //     int type;
+        //     while ((type = parser.next()) != XmlPullParser.START_TAG
+        //             && type != XmlPullParser.END_DOCUMENT) {
+        //         // Skip
+        //     }
+        //
+        //     if (type != XmlPullParser.START_TAG) {
+        //         Slog.e(LOG_TAG, "Unable to read user list");
+        //         fallbackToSingleUserLP();
+        //         return;
+        //     }
+        //
+        //     mNextSerialNumber = -1;
+        //     if (parser.getName().equals(TAG_USERS)) {
+        //         String lastSerialNumber = parser.getAttributeValue(null, ATTR_NEXT_SERIAL_NO);
+        //         if (lastSerialNumber != null) {
+        //             mNextSerialNumber = Integer.parseInt(lastSerialNumber);
+        //         }
+        //         String versionNumber = parser.getAttributeValue(null, ATTR_USER_VERSION);
+        //         if (versionNumber != null) {
+        //             mUserVersion = Integer.parseInt(versionNumber);
+        //         }
+        //     }
+        //
+        //     final Bundle newDevicePolicyGlobalUserRestrictions = new Bundle();
+        //
+        //     while ((type = parser.next()) != XmlPullParser.END_DOCUMENT) {
+        //         if (type == XmlPullParser.START_TAG) {
+        //             final String name = parser.getName();
+        //             if (name.equals(TAG_USER)) {
+        //                 String id = parser.getAttributeValue(null, ATTR_ID);
+        //
+        //                 UserData userData = readUserLP(Integer.parseInt(id));
+        //
+        //                 if (userData != null) {
+        //                     synchronized (mUsersLock) {
+        //                         mUsers.put(userData.info.id, userData);
+        //                         if (mNextSerialNumber < 0
+        //                                 || mNextSerialNumber <= userData.info.id) {
+        //                             mNextSerialNumber = userData.info.id + 1;
+        //                         }
+        //                     }
+        //                 }
+        //             } else if (name.equals(TAG_GUEST_RESTRICTIONS)) {
+        //                 while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
+        //                         && type != XmlPullParser.END_TAG) {
+        //                     if (type == XmlPullParser.START_TAG) {
+        //                         if (parser.getName().equals(TAG_RESTRICTIONS)) {
+        //                             synchronized (mGuestRestrictions) {
+        //                                 UserRestrictionsUtils
+        //                                         .readRestrictions(parser, mGuestRestrictions);
+        //                             }
+        //                         } else if (parser.getName().equals(TAG_DEVICE_POLICY_RESTRICTIONS)
+        //                                 ) {
+        //                             UserRestrictionsUtils.readRestrictions(parser,
+        //                                     newDevicePolicyGlobalUserRestrictions);
+        //                         }
+        //                         break;
+        //                     }
+        //                 }
+        //             } else if (name.equals(TAG_GLOBAL_RESTRICTION_OWNER_ID)) {
+        //                 String ownerUserId = parser.getAttributeValue(null, ATTR_ID);
+        //                 if (ownerUserId != null) {
+        //                     mGlobalRestrictionOwnerUserId = Integer.parseInt(ownerUserId);
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     synchronized (mRestrictionsLock) {
+        //         mDevicePolicyGlobalUserRestrictions = newDevicePolicyGlobalUserRestrictions;
+        //     }
+        //     updateUserIds();
+        //     upgradeIfNecessaryLP();
+        // } catch (IOException | XmlPullParserException e) {
+        //     fallbackToSingleUserLP();
+        // } finally {
+        //     IoUtils.closeQuietly(fis);
+        // }
     }
 
     /**
@@ -1801,9 +1806,9 @@ public class UserManagerService extends IUserManager.Stub {
         } else {
             mUserVersion = userVersion;
 
-            if (originalVersion < mUserVersion) {
-                writeUserListLP();
-            }
+            // if (originalVersion < mUserVersion) {
+            //     writeUserListLP();
+            // }
         }
     }
 
@@ -1811,9 +1816,9 @@ public class UserManagerService extends IUserManager.Stub {
         int flags = UserInfo.FLAG_INITIALIZED;
         // In split system user mode, the admin and primary flags are assigned to the first human
         // user.
-        if (!UserManager.isSplitSystemUser()) {
+        // if (!UserManager.isSplitSystemUser()) {
             flags |= UserInfo.FLAG_ADMIN | UserInfo.FLAG_PRIMARY;
-        }
+        // }
         // Create the system user
         UserInfo system = new UserInfo(UserHandle.USER_SYSTEM, null, null, flags);
         UserData userData = new UserData();
@@ -1825,17 +1830,17 @@ public class UserManagerService extends IUserManager.Stub {
         mUserVersion = USER_VERSION;
 
         Bundle restrictions = new Bundle();
-        try {
-            final String[] defaultFirstUserRestrictions = mContext.getResources().getStringArray(
-                    com.android.internal.R.array.config_defaultFirstUserRestrictions);
-            for (String userRestriction : defaultFirstUserRestrictions) {
-                if (UserRestrictionsUtils.isValidRestriction(userRestriction)) {
-                    restrictions.putBoolean(userRestriction, true);
-                }
-            }
-        } catch (Resources.NotFoundException e) {
-            Log.e(LOG_TAG, "Couldn't find resource: config_defaultFirstUserRestrictions", e);
-        }
+        // try {
+        //     final String[] defaultFirstUserRestrictions = mContext.getResources().getStringArray(
+        //             com.android.internal.R.array.config_defaultFirstUserRestrictions);
+        //     for (String userRestriction : defaultFirstUserRestrictions) {
+        //         if (UserRestrictionsUtils.isValidRestriction(userRestriction)) {
+        //             restrictions.putBoolean(userRestriction, true);
+        //         }
+        //     }
+        // } catch (Resources.NotFoundException e) {
+        //     Log.e(LOG_TAG, "Couldn't find resource: config_defaultFirstUserRestrictions", e);
+        // }
 
         synchronized (mRestrictionsLock) {
             mBaseUserRestrictions.append(UserHandle.USER_SYSTEM, restrictions);
@@ -1844,8 +1849,8 @@ public class UserManagerService extends IUserManager.Stub {
         updateUserIds();
         initDefaultGuestRestrictions();
 
-        writeUserLP(userData);
-        writeUserListLP();
+        // writeUserLP(userData);
+        // writeUserListLP();
     }
 
     private String getOwnerName() {
@@ -1871,93 +1876,93 @@ public class UserManagerService extends IUserManager.Stub {
      *   <name>Primary</name>
      * </user>
      */
-    private void writeUserLP(UserData userData) {
-        if (DBG) {
-            debug("writeUserLP " + userData);
-        }
-        FileOutputStream fos = null;
-        AtomicFile userFile = new AtomicFile(new File(mUsersDir, userData.info.id + XML_SUFFIX));
-        try {
-            fos = userFile.startWrite();
-            final BufferedOutputStream bos = new BufferedOutputStream(fos);
-
-            // XmlSerializer serializer = XmlUtils.serializerInstance();
-            final XmlSerializer serializer = new FastXmlSerializer();
-            serializer.setOutput(bos, StandardCharsets.UTF_8.name());
-            serializer.startDocument(null, true);
-            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-
-            final UserInfo userInfo = userData.info;
-            serializer.startTag(null, TAG_USER);
-            serializer.attribute(null, ATTR_ID, Integer.toString(userInfo.id));
-            serializer.attribute(null, ATTR_SERIAL_NO, Integer.toString(userInfo.serialNumber));
-            serializer.attribute(null, ATTR_FLAGS, Integer.toString(userInfo.flags));
-            serializer.attribute(null, ATTR_CREATION_TIME, Long.toString(userInfo.creationTime));
-            serializer.attribute(null, ATTR_LAST_LOGGED_IN_TIME,
-                    Long.toString(userInfo.lastLoggedInTime));
-            if (userInfo.lastLoggedInFingerprint != null) {
-                serializer.attribute(null, ATTR_LAST_LOGGED_IN_FINGERPRINT,
-                        userInfo.lastLoggedInFingerprint);
-            }
-            if (userInfo.iconPath != null) {
-                serializer.attribute(null,  ATTR_ICON_PATH, userInfo.iconPath);
-            }
-            if (userInfo.partial) {
-                serializer.attribute(null, ATTR_PARTIAL, "true");
-            }
-            if (userInfo.guestToRemove) {
-                serializer.attribute(null, ATTR_GUEST_TO_REMOVE, "true");
-            }
-            if (userInfo.profileGroupId != UserInfo.NO_PROFILE_GROUP_ID) {
-                serializer.attribute(null, ATTR_PROFILE_GROUP_ID,
-                        Integer.toString(userInfo.profileGroupId));
-            }
-            if (userInfo.restrictedProfileParentId != UserInfo.NO_PROFILE_GROUP_ID) {
-                serializer.attribute(null, ATTR_RESTRICTED_PROFILE_PARENT_ID,
-                        Integer.toString(userInfo.restrictedProfileParentId));
-            }
-            // Write seed data
-            if (userData.persistSeedData) {
-                if (userData.seedAccountName != null) {
-                    serializer.attribute(null, ATTR_SEED_ACCOUNT_NAME, userData.seedAccountName);
-                }
-                if (userData.seedAccountType != null) {
-                    serializer.attribute(null, ATTR_SEED_ACCOUNT_TYPE, userData.seedAccountType);
-                }
-            }
-            if (userInfo.name != null) {
-                serializer.startTag(null, TAG_NAME);
-                serializer.text(userInfo.name);
-                serializer.endTag(null, TAG_NAME);
-            }
-            synchronized (mRestrictionsLock) {
-                UserRestrictionsUtils.writeRestrictions(serializer,
-                        mBaseUserRestrictions.get(userInfo.id), TAG_RESTRICTIONS);
-                UserRestrictionsUtils.writeRestrictions(serializer,
-                        mDevicePolicyLocalUserRestrictions.get(userInfo.id),
-                        TAG_DEVICE_POLICY_RESTRICTIONS);
-            }
-
-            if (userData.account != null) {
-                serializer.startTag(null, TAG_ACCOUNT);
-                serializer.text(userData.account);
-                serializer.endTag(null, TAG_ACCOUNT);
-            }
-
-            if (userData.persistSeedData && userData.seedAccountOptions != null) {
-                serializer.startTag(null, TAG_SEED_ACCOUNT_OPTIONS);
-                userData.seedAccountOptions.saveToXml(serializer);
-                serializer.endTag(null, TAG_SEED_ACCOUNT_OPTIONS);
-            }
-            serializer.endTag(null, TAG_USER);
-
-            serializer.endDocument();
-            userFile.finishWrite(fos);
-        } catch (Exception ioe) {
-            Slog.e(LOG_TAG, "Error writing user info " + userData.info.id, ioe);
-            userFile.failWrite(fos);
-        }
-    }
+    // private void writeUserLP(UserData userData) {
+    //     if (DBG) {
+    //         debug("writeUserLP " + userData);
+    //     }
+    //     FileOutputStream fos = null;
+    //     AtomicFile userFile = new AtomicFile(new File(mUsersDir, userData.info.id + XML_SUFFIX));
+    //     try {
+    //         fos = userFile.startWrite();
+    //         final BufferedOutputStream bos = new BufferedOutputStream(fos);
+    //
+    //         // XmlSerializer serializer = XmlUtils.serializerInstance();
+    //         final XmlSerializer serializer = new FastXmlSerializer();
+    //         serializer.setOutput(bos, StandardCharsets.UTF_8.name());
+    //         serializer.startDocument(null, true);
+    //         serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+    //
+    //         final UserInfo userInfo = userData.info;
+    //         serializer.startTag(null, TAG_USER);
+    //         serializer.attribute(null, ATTR_ID, Integer.toString(userInfo.id));
+    //         serializer.attribute(null, ATTR_SERIAL_NO, Integer.toString(userInfo.serialNumber));
+    //         serializer.attribute(null, ATTR_FLAGS, Integer.toString(userInfo.flags));
+    //         serializer.attribute(null, ATTR_CREATION_TIME, Long.toString(userInfo.creationTime));
+    //         serializer.attribute(null, ATTR_LAST_LOGGED_IN_TIME,
+    //                 Long.toString(userInfo.lastLoggedInTime));
+    //         if (userInfo.lastLoggedInFingerprint != null) {
+    //             serializer.attribute(null, ATTR_LAST_LOGGED_IN_FINGERPRINT,
+    //                     userInfo.lastLoggedInFingerprint);
+    //         }
+    //         if (userInfo.iconPath != null) {
+    //             serializer.attribute(null,  ATTR_ICON_PATH, userInfo.iconPath);
+    //         }
+    //         if (userInfo.partial) {
+    //             serializer.attribute(null, ATTR_PARTIAL, "true");
+    //         }
+    //         if (userInfo.guestToRemove) {
+    //             serializer.attribute(null, ATTR_GUEST_TO_REMOVE, "true");
+    //         }
+    //         if (userInfo.profileGroupId != UserInfo.NO_PROFILE_GROUP_ID) {
+    //             serializer.attribute(null, ATTR_PROFILE_GROUP_ID,
+    //                     Integer.toString(userInfo.profileGroupId));
+    //         }
+    //         if (userInfo.restrictedProfileParentId != UserInfo.NO_PROFILE_GROUP_ID) {
+    //             serializer.attribute(null, ATTR_RESTRICTED_PROFILE_PARENT_ID,
+    //                     Integer.toString(userInfo.restrictedProfileParentId));
+    //         }
+    //         // Write seed data
+    //         if (userData.persistSeedData) {
+    //             if (userData.seedAccountName != null) {
+    //                 serializer.attribute(null, ATTR_SEED_ACCOUNT_NAME, userData.seedAccountName);
+    //             }
+    //             if (userData.seedAccountType != null) {
+    //                 serializer.attribute(null, ATTR_SEED_ACCOUNT_TYPE, userData.seedAccountType);
+    //             }
+    //         }
+    //         if (userInfo.name != null) {
+    //             serializer.startTag(null, TAG_NAME);
+    //             serializer.text(userInfo.name);
+    //             serializer.endTag(null, TAG_NAME);
+    //         }
+    //         synchronized (mRestrictionsLock) {
+    //             UserRestrictionsUtils.writeRestrictions(serializer,
+    //                     mBaseUserRestrictions.get(userInfo.id), TAG_RESTRICTIONS);
+    //             UserRestrictionsUtils.writeRestrictions(serializer,
+    //                     mDevicePolicyLocalUserRestrictions.get(userInfo.id),
+    //                     TAG_DEVICE_POLICY_RESTRICTIONS);
+    //         }
+    //
+    //         if (userData.account != null) {
+    //             serializer.startTag(null, TAG_ACCOUNT);
+    //             serializer.text(userData.account);
+    //             serializer.endTag(null, TAG_ACCOUNT);
+    //         }
+    //
+    //         if (userData.persistSeedData && userData.seedAccountOptions != null) {
+    //             serializer.startTag(null, TAG_SEED_ACCOUNT_OPTIONS);
+    //             userData.seedAccountOptions.saveToXml(serializer);
+    //             serializer.endTag(null, TAG_SEED_ACCOUNT_OPTIONS);
+    //         }
+    //         serializer.endTag(null, TAG_USER);
+    //
+    //         serializer.endDocument();
+    //         userFile.finishWrite(fos);
+    //     } catch (Exception ioe) {
+    //         Slog.e(LOG_TAG, "Error writing user info " + userData.info.id, ioe);
+    //         userFile.failWrite(fos);
+    //     }
+    // }
 
     /*
      * Writes the user list file in this format:
@@ -1967,198 +1972,198 @@ public class UserManagerService extends IUserManager.Stub {
      *   <user id="2"></user>
      * </users>
      */
-    private void writeUserListLP() {
-        if (DBG) {
-            debug("writeUserList");
-        }
-        FileOutputStream fos = null;
-        AtomicFile userListFile = new AtomicFile(mUserListFile);
-        try {
-            fos = userListFile.startWrite();
-            final BufferedOutputStream bos = new BufferedOutputStream(fos);
+    // private void writeUserListLP() {
+    //     if (DBG) {
+    //         debug("writeUserList");
+    //     }
+    //     FileOutputStream fos = null;
+    //     AtomicFile userListFile = new AtomicFile(mUserListFile);
+    //     try {
+    //         fos = userListFile.startWrite();
+    //         final BufferedOutputStream bos = new BufferedOutputStream(fos);
+    //
+    //         // XmlSerializer serializer = XmlUtils.serializerInstance();
+    //         final XmlSerializer serializer = new FastXmlSerializer();
+    //         serializer.setOutput(bos, StandardCharsets.UTF_8.name());
+    //         serializer.startDocument(null, true);
+    //         serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
+    //
+    //         serializer.startTag(null, TAG_USERS);
+    //         serializer.attribute(null, ATTR_NEXT_SERIAL_NO, Integer.toString(mNextSerialNumber));
+    //         serializer.attribute(null, ATTR_USER_VERSION, Integer.toString(mUserVersion));
+    //
+    //         serializer.startTag(null, TAG_GUEST_RESTRICTIONS);
+    //         synchronized (mGuestRestrictions) {
+    //             UserRestrictionsUtils
+    //                     .writeRestrictions(serializer, mGuestRestrictions, TAG_RESTRICTIONS);
+    //         }
+    //         serializer.endTag(null, TAG_GUEST_RESTRICTIONS);
+    //         synchronized (mRestrictionsLock) {
+    //             UserRestrictionsUtils.writeRestrictions(serializer,
+    //                     mDevicePolicyGlobalUserRestrictions, TAG_DEVICE_POLICY_RESTRICTIONS);
+    //         }
+    //         serializer.startTag(null, TAG_GLOBAL_RESTRICTION_OWNER_ID);
+    //         serializer.attribute(null, ATTR_ID, Integer.toString(mGlobalRestrictionOwnerUserId));
+    //         serializer.endTag(null, TAG_GLOBAL_RESTRICTION_OWNER_ID);
+    //         int[] userIdsToWrite;
+    //         synchronized (mUsersLock) {
+    //             userIdsToWrite = new int[mUsers.size()];
+    //             for (int i = 0; i < userIdsToWrite.length; i++) {
+    //                 UserInfo user = mUsers.valueAt(i).info;
+    //                 userIdsToWrite[i] = user.id;
+    //             }
+    //         }
+    //         for (int id : userIdsToWrite) {
+    //             serializer.startTag(null, TAG_USER);
+    //             serializer.attribute(null, ATTR_ID, Integer.toString(id));
+    //             serializer.endTag(null, TAG_USER);
+    //         }
+    //
+    //         serializer.endTag(null, TAG_USERS);
+    //
+    //         serializer.endDocument();
+    //         userListFile.finishWrite(fos);
+    //     } catch (Exception e) {
+    //         userListFile.failWrite(fos);
+    //         Slog.e(LOG_TAG, "Error writing user list");
+    //     }
+    // }
 
-            // XmlSerializer serializer = XmlUtils.serializerInstance();
-            final XmlSerializer serializer = new FastXmlSerializer();
-            serializer.setOutput(bos, StandardCharsets.UTF_8.name());
-            serializer.startDocument(null, true);
-            serializer.setFeature("http://xmlpull.org/v1/doc/features.html#indent-output", true);
-
-            serializer.startTag(null, TAG_USERS);
-            serializer.attribute(null, ATTR_NEXT_SERIAL_NO, Integer.toString(mNextSerialNumber));
-            serializer.attribute(null, ATTR_USER_VERSION, Integer.toString(mUserVersion));
-
-            serializer.startTag(null, TAG_GUEST_RESTRICTIONS);
-            synchronized (mGuestRestrictions) {
-                UserRestrictionsUtils
-                        .writeRestrictions(serializer, mGuestRestrictions, TAG_RESTRICTIONS);
-            }
-            serializer.endTag(null, TAG_GUEST_RESTRICTIONS);
-            synchronized (mRestrictionsLock) {
-                UserRestrictionsUtils.writeRestrictions(serializer,
-                        mDevicePolicyGlobalUserRestrictions, TAG_DEVICE_POLICY_RESTRICTIONS);
-            }
-            serializer.startTag(null, TAG_GLOBAL_RESTRICTION_OWNER_ID);
-            serializer.attribute(null, ATTR_ID, Integer.toString(mGlobalRestrictionOwnerUserId));
-            serializer.endTag(null, TAG_GLOBAL_RESTRICTION_OWNER_ID);
-            int[] userIdsToWrite;
-            synchronized (mUsersLock) {
-                userIdsToWrite = new int[mUsers.size()];
-                for (int i = 0; i < userIdsToWrite.length; i++) {
-                    UserInfo user = mUsers.valueAt(i).info;
-                    userIdsToWrite[i] = user.id;
-                }
-            }
-            for (int id : userIdsToWrite) {
-                serializer.startTag(null, TAG_USER);
-                serializer.attribute(null, ATTR_ID, Integer.toString(id));
-                serializer.endTag(null, TAG_USER);
-            }
-
-            serializer.endTag(null, TAG_USERS);
-
-            serializer.endDocument();
-            userListFile.finishWrite(fos);
-        } catch (Exception e) {
-            userListFile.failWrite(fos);
-            Slog.e(LOG_TAG, "Error writing user list");
-        }
-    }
-
-    private UserData readUserLP(int id) {
-        int flags = 0;
-        int serialNumber = id;
-        String name = null;
-        String account = null;
-        String iconPath = null;
-        long creationTime = 0L;
-        long lastLoggedInTime = 0L;
-        String lastLoggedInFingerprint = null;
-        int profileGroupId = UserInfo.NO_PROFILE_GROUP_ID;
-        int restrictedProfileParentId = UserInfo.NO_PROFILE_GROUP_ID;
-        boolean partial = false;
-        boolean guestToRemove = false;
-        boolean persistSeedData = false;
-        String seedAccountName = null;
-        String seedAccountType = null;
-        PersistableBundle seedAccountOptions = null;
-        Bundle baseRestrictions = new Bundle();
-        Bundle localRestrictions = new Bundle();
-
-        FileInputStream fis = null;
-        try {
-            AtomicFile userFile =
-                    new AtomicFile(new File(mUsersDir, Integer.toString(id) + XML_SUFFIX));
-            fis = userFile.openRead();
-            XmlPullParser parser = Xml.newPullParser();
-            parser.setInput(fis, StandardCharsets.UTF_8.name());
-            int type;
-            while ((type = parser.next()) != XmlPullParser.START_TAG
-                    && type != XmlPullParser.END_DOCUMENT) {
-                // Skip
-            }
-
-            if (type != XmlPullParser.START_TAG) {
-                Slog.e(LOG_TAG, "Unable to read user " + id);
-                return null;
-            }
-
-            if (type == XmlPullParser.START_TAG && parser.getName().equals(TAG_USER)) {
-                int storedId = readIntAttribute(parser, ATTR_ID, -1);
-                if (storedId != id) {
-                    Slog.e(LOG_TAG, "User id does not match the file name");
-                    return null;
-                }
-                serialNumber = readIntAttribute(parser, ATTR_SERIAL_NO, id);
-                flags = readIntAttribute(parser, ATTR_FLAGS, 0);
-                iconPath = parser.getAttributeValue(null, ATTR_ICON_PATH);
-                creationTime = readLongAttribute(parser, ATTR_CREATION_TIME, 0);
-                lastLoggedInTime = readLongAttribute(parser, ATTR_LAST_LOGGED_IN_TIME, 0);
-                lastLoggedInFingerprint = parser.getAttributeValue(null,
-                        ATTR_LAST_LOGGED_IN_FINGERPRINT);
-                profileGroupId = readIntAttribute(parser, ATTR_PROFILE_GROUP_ID,
-                        UserInfo.NO_PROFILE_GROUP_ID);
-                restrictedProfileParentId = readIntAttribute(parser,
-                        ATTR_RESTRICTED_PROFILE_PARENT_ID, UserInfo.NO_PROFILE_GROUP_ID);
-                String valueString = parser.getAttributeValue(null, ATTR_PARTIAL);
-                if ("true".equals(valueString)) {
-                    partial = true;
-                }
-                valueString = parser.getAttributeValue(null, ATTR_GUEST_TO_REMOVE);
-                if ("true".equals(valueString)) {
-                    guestToRemove = true;
-                }
-
-                seedAccountName = parser.getAttributeValue(null, ATTR_SEED_ACCOUNT_NAME);
-                seedAccountType = parser.getAttributeValue(null, ATTR_SEED_ACCOUNT_TYPE);
-                if (seedAccountName != null || seedAccountType != null) {
-                    persistSeedData = true;
-                }
-
-                int outerDepth = parser.getDepth();
-                while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
-                       && (type != XmlPullParser.END_TAG || parser.getDepth() > outerDepth)) {
-                    if (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) {
-                        continue;
-                    }
-                    String tag = parser.getName();
-                    if (TAG_NAME.equals(tag)) {
-                        type = parser.next();
-                        if (type == XmlPullParser.TEXT) {
-                            name = parser.getText();
-                        }
-                    } else if (TAG_RESTRICTIONS.equals(tag)) {
-                        UserRestrictionsUtils.readRestrictions(parser, baseRestrictions);
-                    } else if (TAG_DEVICE_POLICY_RESTRICTIONS.equals(tag)) {
-                        UserRestrictionsUtils.readRestrictions(parser, localRestrictions);
-                    } else if (TAG_ACCOUNT.equals(tag)) {
-                        type = parser.next();
-                        if (type == XmlPullParser.TEXT) {
-                            account = parser.getText();
-                        }
-                    } else if (TAG_SEED_ACCOUNT_OPTIONS.equals(tag)) {
-                        seedAccountOptions = PersistableBundle.restoreFromXml(parser);
-                        persistSeedData = true;
-                    }
-                }
-            }
-
-            // Create the UserInfo object that gets passed around
-            UserInfo userInfo = new UserInfo(id, name, iconPath, flags);
-            userInfo.serialNumber = serialNumber;
-            userInfo.creationTime = creationTime;
-            userInfo.lastLoggedInTime = lastLoggedInTime;
-            userInfo.lastLoggedInFingerprint = lastLoggedInFingerprint;
-            userInfo.partial = partial;
-            userInfo.guestToRemove = guestToRemove;
-            userInfo.profileGroupId = profileGroupId;
-            userInfo.restrictedProfileParentId = restrictedProfileParentId;
-
-            // Create the UserData object that's internal to this class
-            UserData userData = new UserData();
-            userData.info = userInfo;
-            userData.account = account;
-            userData.seedAccountName = seedAccountName;
-            userData.seedAccountType = seedAccountType;
-            userData.persistSeedData = persistSeedData;
-            userData.seedAccountOptions = seedAccountOptions;
-
-            synchronized (mRestrictionsLock) {
-                mBaseUserRestrictions.put(id, baseRestrictions);
-                mDevicePolicyLocalUserRestrictions.put(id, localRestrictions);
-            }
-            return userData;
-        } catch (IOException ioe) {
-        } catch (XmlPullParserException pe) {
-        } finally {
-            if (fis != null) {
-                try {
-                    fis.close();
-                } catch (IOException e) {
-                }
-            }
-        }
-        return null;
-    }
+    // private UserData readUserLP(int id) {
+    //     int flags = 0;
+    //     int serialNumber = id;
+    //     String name = null;
+    //     String account = null;
+    //     String iconPath = null;
+    //     long creationTime = 0L;
+    //     long lastLoggedInTime = 0L;
+    //     String lastLoggedInFingerprint = null;
+    //     int profileGroupId = UserInfo.NO_PROFILE_GROUP_ID;
+    //     int restrictedProfileParentId = UserInfo.NO_PROFILE_GROUP_ID;
+    //     boolean partial = false;
+    //     boolean guestToRemove = false;
+    //     boolean persistSeedData = false;
+    //     String seedAccountName = null;
+    //     String seedAccountType = null;
+    //     PersistableBundle seedAccountOptions = null;
+    //     Bundle baseRestrictions = new Bundle();
+    //     Bundle localRestrictions = new Bundle();
+    //
+    //     FileInputStream fis = null;
+    //     try {
+    //         AtomicFile userFile =
+    //                 new AtomicFile(new File(mUsersDir, Integer.toString(id) + XML_SUFFIX));
+    //         fis = userFile.openRead();
+    //         XmlPullParser parser = Xml.newPullParser();
+    //         parser.setInput(fis, StandardCharsets.UTF_8.name());
+    //         int type;
+    //         while ((type = parser.next()) != XmlPullParser.START_TAG
+    //                 && type != XmlPullParser.END_DOCUMENT) {
+    //             // Skip
+    //         }
+    //
+    //         if (type != XmlPullParser.START_TAG) {
+    //             Slog.e(LOG_TAG, "Unable to read user " + id);
+    //             return null;
+    //         }
+    //
+    //         if (type == XmlPullParser.START_TAG && parser.getName().equals(TAG_USER)) {
+    //             int storedId = readIntAttribute(parser, ATTR_ID, -1);
+    //             if (storedId != id) {
+    //                 Slog.e(LOG_TAG, "User id does not match the file name");
+    //                 return null;
+    //             }
+    //             serialNumber = readIntAttribute(parser, ATTR_SERIAL_NO, id);
+    //             flags = readIntAttribute(parser, ATTR_FLAGS, 0);
+    //             iconPath = parser.getAttributeValue(null, ATTR_ICON_PATH);
+    //             creationTime = readLongAttribute(parser, ATTR_CREATION_TIME, 0);
+    //             lastLoggedInTime = readLongAttribute(parser, ATTR_LAST_LOGGED_IN_TIME, 0);
+    //             lastLoggedInFingerprint = parser.getAttributeValue(null,
+    //                     ATTR_LAST_LOGGED_IN_FINGERPRINT);
+    //             profileGroupId = readIntAttribute(parser, ATTR_PROFILE_GROUP_ID,
+    //                     UserInfo.NO_PROFILE_GROUP_ID);
+    //             restrictedProfileParentId = readIntAttribute(parser,
+    //                     ATTR_RESTRICTED_PROFILE_PARENT_ID, UserInfo.NO_PROFILE_GROUP_ID);
+    //             String valueString = parser.getAttributeValue(null, ATTR_PARTIAL);
+    //             if ("true".equals(valueString)) {
+    //                 partial = true;
+    //             }
+    //             valueString = parser.getAttributeValue(null, ATTR_GUEST_TO_REMOVE);
+    //             if ("true".equals(valueString)) {
+    //                 guestToRemove = true;
+    //             }
+    //
+    //             seedAccountName = parser.getAttributeValue(null, ATTR_SEED_ACCOUNT_NAME);
+    //             seedAccountType = parser.getAttributeValue(null, ATTR_SEED_ACCOUNT_TYPE);
+    //             if (seedAccountName != null || seedAccountType != null) {
+    //                 persistSeedData = true;
+    //             }
+    //
+    //             int outerDepth = parser.getDepth();
+    //             while ((type = parser.next()) != XmlPullParser.END_DOCUMENT
+    //                    && (type != XmlPullParser.END_TAG || parser.getDepth() > outerDepth)) {
+    //                 if (type == XmlPullParser.END_TAG || type == XmlPullParser.TEXT) {
+    //                     continue;
+    //                 }
+    //                 String tag = parser.getName();
+    //                 if (TAG_NAME.equals(tag)) {
+    //                     type = parser.next();
+    //                     if (type == XmlPullParser.TEXT) {
+    //                         name = parser.getText();
+    //                     }
+    //                 } else if (TAG_RESTRICTIONS.equals(tag)) {
+    //                     UserRestrictionsUtils.readRestrictions(parser, baseRestrictions);
+    //                 } else if (TAG_DEVICE_POLICY_RESTRICTIONS.equals(tag)) {
+    //                     UserRestrictionsUtils.readRestrictions(parser, localRestrictions);
+    //                 } else if (TAG_ACCOUNT.equals(tag)) {
+    //                     type = parser.next();
+    //                     if (type == XmlPullParser.TEXT) {
+    //                         account = parser.getText();
+    //                     }
+    //                 } else if (TAG_SEED_ACCOUNT_OPTIONS.equals(tag)) {
+    //                     seedAccountOptions = PersistableBundle.restoreFromXml(parser);
+    //                     persistSeedData = true;
+    //                 }
+    //             }
+    //         }
+    //
+    //         // Create the UserInfo object that gets passed around
+    //         UserInfo userInfo = new UserInfo(id, name, iconPath, flags);
+    //         userInfo.serialNumber = serialNumber;
+    //         userInfo.creationTime = creationTime;
+    //         userInfo.lastLoggedInTime = lastLoggedInTime;
+    //         userInfo.lastLoggedInFingerprint = lastLoggedInFingerprint;
+    //         userInfo.partial = partial;
+    //         userInfo.guestToRemove = guestToRemove;
+    //         userInfo.profileGroupId = profileGroupId;
+    //         userInfo.restrictedProfileParentId = restrictedProfileParentId;
+    //
+    //         // Create the UserData object that's internal to this class
+    //         UserData userData = new UserData();
+    //         userData.info = userInfo;
+    //         userData.account = account;
+    //         userData.seedAccountName = seedAccountName;
+    //         userData.seedAccountType = seedAccountType;
+    //         userData.persistSeedData = persistSeedData;
+    //         userData.seedAccountOptions = seedAccountOptions;
+    //
+    //         synchronized (mRestrictionsLock) {
+    //             mBaseUserRestrictions.put(id, baseRestrictions);
+    //             mDevicePolicyLocalUserRestrictions.put(id, localRestrictions);
+    //         }
+    //         return userData;
+    //     } catch (IOException ioe) {
+    //     } catch (XmlPullParserException pe) {
+    //     } finally {
+    //         if (fis != null) {
+    //             try {
+    //                 fis.close();
+    //             } catch (IOException e) {
+    //             }
+    //         }
+    //     }
+    //     return null;
+    // }
 
     private int readIntAttribute(XmlPullParser parser, String attr, int defaultValue) {
         String valueString = parser.getAttributeValue(null, attr);
@@ -2305,19 +2310,19 @@ public class UserManagerService extends IUserManager.Stub {
                     userData.info = userInfo;
                     mUsers.put(userId, userData);
                 }
-                writeUserLP(userData);
-                writeUserListLP();
+                // writeUserLP(userData);
+                // writeUserListLP();
                 if (parent != null) {
                     if (isManagedProfile) {
                         if (parent.info.profileGroupId == UserInfo.NO_PROFILE_GROUP_ID) {
                             parent.info.profileGroupId = parent.info.id;
-                            writeUserLP(parent);
+                            // writeUserLP(parent);
                         }
                         userInfo.profileGroupId = parent.info.profileGroupId;
                     } else if (isRestricted) {
                         if (parent.info.restrictedProfileParentId == UserInfo.NO_PROFILE_GROUP_ID) {
                             parent.info.restrictedProfileParentId = parent.info.id;
-                            writeUserLP(parent);
+                            // writeUserLP(parent);
                         }
                         userInfo.restrictedProfileParentId = parent.info.restrictedProfileParentId;
                     }
@@ -2330,7 +2335,7 @@ public class UserManagerService extends IUserManager.Stub {
             mPm.createNewUser(userId);
             userInfo.partial = false;
             synchronized (mPackagesLock) {
-                writeUserLP(userData);
+                // writeUserLP(userData);
             }
             updateUserIds();
             Bundle restrictions = new Bundle();
@@ -2433,7 +2438,7 @@ public class UserManagerService extends IUserManager.Stub {
                 // Mark it as disabled, so that it isn't returned any more when
                 // profiles are queried.
                 userData.info.flags |= UserInfo.FLAG_DISABLED;
-                writeUserLP(userData);
+                // writeUserLP(userData);
             }
         } finally {
             Binder.restoreCallingIdentity(ident);
@@ -2488,7 +2493,7 @@ public class UserManagerService extends IUserManager.Stub {
                 // Mark it as disabled, so that it isn't returned any more when
                 // profiles are queried.
                 userData.info.flags |= UserInfo.FLAG_DISABLED;
-                writeUserLP(userData);
+                // writeUserLP(userData);
             }
 
             if (userData.info.profileGroupId != UserInfo.NO_PROFILE_GROUP_ID
@@ -2598,12 +2603,12 @@ public class UserManagerService extends IUserManager.Stub {
             mDevicePolicyLocalUserRestrictions.remove(userHandle);
         }
         // Update the user list
-        synchronized (mPackagesLock) {
-            writeUserListLP();
-        }
+        // synchronized (mPackagesLock) {
+        //     writeUserListLP();
+        // }
         // Remove user file
-        AtomicFile userFile = new AtomicFile(new File(mUsersDir, userHandle + XML_SUFFIX));
-        userFile.delete();
+        // AtomicFile userFile = new AtomicFile(new File(mUsersDir, userHandle + XML_SUFFIX));
+        // userFile.delete();
         updateUserIds();
     }
 
@@ -3059,7 +3064,7 @@ public class UserManagerService extends IUserManager.Stub {
                 userData.persistSeedData = persist;
             }
             if (persist) {
-                writeUserLP(userData);
+                // writeUserLP(userData);
             }
         }
     }
@@ -3101,7 +3106,7 @@ public class UserManagerService extends IUserManager.Stub {
                 if (userData == null) return;
                 userData.clearSeedAccountData();
             }
-            writeUserLP(userData);
+            // writeUserLP(userData);
         }
     }
 
@@ -3291,7 +3296,7 @@ public class UserManagerService extends IUserManager.Stub {
                         int userId = ((UserData) msg.obj).info.id;
                         UserData userData = getUserDataNoChecks(userId);
                         if (userData != null) {
-                            writeUserLP(userData);
+                            // writeUserLP(userData);
                         }
                     }
             }
@@ -3332,7 +3337,7 @@ public class UserManagerService extends IUserManager.Stub {
             final UserData userData = getUserDataNoChecks(userId);
             synchronized (mPackagesLock) {
                 if (userData != null) {
-                    writeUserLP(userData);
+                    // writeUserLP(userData);
                 } else {
                     Slog.w(LOG_TAG, "UserInfo not found for " + userId);
                 }
@@ -3382,8 +3387,8 @@ public class UserManagerService extends IUserManager.Stub {
                         Slog.w(LOG_TAG, "setUserIcon: unknown user #" + userId);
                         return;
                     }
-                    writeBitmapLP(userData.info, bitmap);
-                    writeUserLP(userData);
+                    // writeBitmapLP(userData.info, bitmap);
+                    // writeUserLP(userData);
                 }
                 sendUserInfoChangedBroadcast(userId);
             } finally {
