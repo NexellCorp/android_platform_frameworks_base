@@ -490,7 +490,7 @@ public class LocationManagerService extends ILocationManager.Stub {
                 Arrays.toString(pkgs));
         if (pkgs != null) providerPackageNames.addAll(Arrays.asList(pkgs));
 
-        ensureFallbackFusedProviderPresentLocked(providerPackageNames);
+        // ensureFallbackFusedProviderPresentLocked(providerPackageNames);
 
         // bind to network provider
         LocationProviderProxy networkProvider = LocationProviderProxy.createAndBind(
