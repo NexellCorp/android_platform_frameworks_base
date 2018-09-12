@@ -508,14 +508,30 @@ public final class PowerManagerService extends SystemService
     // True if we are currently in VR Mode.
     private boolean mIsVrModeEnabled;
 
-    private native void nativeInit();
+    // private native void nativeInit();
+    //
+    // private static native void nativeAcquireSuspendBlocker(String name);
+    // private static native void nativeReleaseSuspendBlocker(String name);
+    // private static native void nativeSetInteractive(boolean enable);
+    // private static native void nativeSetAutoSuspend(boolean enable);
+    // private static native void nativeSendPowerHint(int hintId, int data);
+    // private static native void nativeSetFeature(int featureId, int data);
 
-    private static native void nativeAcquireSuspendBlocker(String name);
-    private static native void nativeReleaseSuspendBlocker(String name);
-    private static native void nativeSetInteractive(boolean enable);
-    private static native void nativeSetAutoSuspend(boolean enable);
-    private static native void nativeSendPowerHint(int hintId, int data);
-    private static native void nativeSetFeature(int featureId, int data);
+    private void nativeInit() {
+    }
+
+    private static void nativeAcquireSuspendBlocker(String name) {
+    }
+    private static void nativeReleaseSuspendBlocker(String name) {
+    }
+    private static void nativeSetInteractive(boolean enable) {
+    }
+    private static void nativeSetAutoSuspend(boolean enable) {
+    }
+    private static void nativeSendPowerHint(int hintId, int data) {
+    }
+    private static void nativeSetFeature(int featureId, int data) {
+    }
 
     public PowerManagerService(Context context) {
         super(context);
