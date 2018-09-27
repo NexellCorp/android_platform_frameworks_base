@@ -167,129 +167,133 @@ jint android_os_Process_getGidForName(JNIEnv* env, jobject clazz, jstring name)
     return -1;
 }
 
-void android_os_Process_setThreadGroup(JNIEnv* env, jobject clazz, int tid, jint grp)
+// void android_os_Process_setThreadGroup(JNIEnv* env, jobject clazz, int tid, jint grp)
+void android_os_Process_setThreadGroup(JNIEnv* /* env */, jobject /* clazz */, int /* tid */, jint /* grp */)
 {
-    ALOGV("%s tid=%d grp=%" PRId32, __func__, tid, grp);
-    SchedPolicy sp = (SchedPolicy) grp;
-    int res = set_sched_policy(tid, sp);
-    if (res != NO_ERROR) {
-        signalExceptionForGroupError(env, -res, tid);
-    }
+    // ALOGV("%s tid=%d grp=%" PRId32, __func__, tid, grp);
+    // SchedPolicy sp = (SchedPolicy) grp;
+    // int res = set_sched_policy(tid, sp);
+    // if (res != NO_ERROR) {
+    //     signalExceptionForGroupError(env, -res, tid);
+    // }
 }
 
-void android_os_Process_setProcessGroup(JNIEnv* env, jobject clazz, int pid, jint grp)
+// void android_os_Process_setProcessGroup(JNIEnv* env, jobject clazz, int pid, jint grp)
+void android_os_Process_setProcessGroup(JNIEnv* /* env */, jobject /* clazz */, int /* pid */, jint /* grp */)
 {
-    ALOGV("%s pid=%d grp=%" PRId32, __func__, pid, grp);
-    DIR *d;
-    char proc_path[255];
-    struct dirent *de;
-
-    if ((grp == SP_FOREGROUND) || (grp > SP_MAX)) {
-        signalExceptionForGroupError(env, EINVAL, pid);
-        return;
-    }
-
-    bool isDefault = false;
-    if (grp < 0) {
-        grp = SP_FOREGROUND;
-        isDefault = true;
-    }
-    SchedPolicy sp = (SchedPolicy) grp;
-
-    if (kDebugPolicy) {
-        char cmdline[32];
-        int fd;
-
-        strcpy(cmdline, "unknown");
-
-        sprintf(proc_path, "/proc/%d/cmdline", pid);
-        fd = open(proc_path, O_RDONLY);
-        if (fd >= 0) {
-            int rc = read(fd, cmdline, sizeof(cmdline)-1);
-            cmdline[rc] = 0;
-            close(fd);
-        }
-
-        if (sp == SP_BACKGROUND) {
-            ALOGD("setProcessGroup: vvv pid %d (%s)", pid, cmdline);
-        } else {
-            ALOGD("setProcessGroup: ^^^ pid %d (%s)", pid, cmdline);
-        }
-    }
-
-    sprintf(proc_path, "/proc/%d/task", pid);
-    if (!(d = opendir(proc_path))) {
-        // If the process exited on us, don't generate an exception
-        if (errno != ENOENT)
-            signalExceptionForGroupError(env, errno, pid);
-        return;
-    }
-
-    while ((de = readdir(d))) {
-        int t_pid;
-        int t_pri;
-
-        if (de->d_name[0] == '.')
-            continue;
-        t_pid = atoi(de->d_name);
-
-        if (!t_pid) {
-            ALOGE("Error getting pid for '%s'\n", de->d_name);
-            continue;
-        }
-
-        t_pri = getpriority(PRIO_PROCESS, t_pid);
-
-        if (t_pri <= ANDROID_PRIORITY_AUDIO) {
-            int scheduler = sched_getscheduler(t_pid) & ~SCHED_RESET_ON_FORK;
-            if ((scheduler == SCHED_FIFO) || (scheduler == SCHED_RR)) {
-                // This task wants to stay in its current audio group so it can keep its budget
-                // don't update its cpuset or cgroup
-                continue;
-            }
-        }
-
-        if (isDefault) {
-            if (t_pri >= ANDROID_PRIORITY_BACKGROUND) {
-                // This task wants to stay at background
-                // update its cpuset so it doesn't only run on bg core(s)
-#ifdef ENABLE_CPUSETS
-                int err = set_cpuset_policy(t_pid, sp);
-                if (err != NO_ERROR) {
-                    signalExceptionForGroupError(env, -err, t_pid);
-                    break;
-                }
-#endif
-                continue;
-            }
-        }
-        int err;
-#ifdef ENABLE_CPUSETS
-        // set both cpuset and cgroup for general threads
-        err = set_cpuset_policy(t_pid, sp);
-        if (err != NO_ERROR) {
-            signalExceptionForGroupError(env, -err, t_pid);
-            break;
-        }
-#endif
-
-        err = set_sched_policy(t_pid, sp);
-        if (err != NO_ERROR) {
-            signalExceptionForGroupError(env, -err, t_pid);
-            break;
-        }
-
-    }
-    closedir(d);
+//     ALOGV("%s pid=%d grp=%" PRId32, __func__, pid, grp);
+//     DIR *d;
+//     char proc_path[255];
+//     struct dirent *de;
+//
+//     if ((grp == SP_FOREGROUND) || (grp > SP_MAX)) {
+//         signalExceptionForGroupError(env, EINVAL, pid);
+//         return;
+//     }
+//
+//     bool isDefault = false;
+//     if (grp < 0) {
+//         grp = SP_FOREGROUND;
+//         isDefault = true;
+//     }
+//     SchedPolicy sp = (SchedPolicy) grp;
+//
+//     if (kDebugPolicy) {
+//         char cmdline[32];
+//         int fd;
+//
+//         strcpy(cmdline, "unknown");
+//
+//         sprintf(proc_path, "/proc/%d/cmdline", pid);
+//         fd = open(proc_path, O_RDONLY);
+//         if (fd >= 0) {
+//             int rc = read(fd, cmdline, sizeof(cmdline)-1);
+//             cmdline[rc] = 0;
+//             close(fd);
+//         }
+//
+//         if (sp == SP_BACKGROUND) {
+//             ALOGD("setProcessGroup: vvv pid %d (%s)", pid, cmdline);
+//         } else {
+//             ALOGD("setProcessGroup: ^^^ pid %d (%s)", pid, cmdline);
+//         }
+//     }
+//
+//     sprintf(proc_path, "/proc/%d/task", pid);
+//     if (!(d = opendir(proc_path))) {
+//         // If the process exited on us, don't generate an exception
+//         if (errno != ENOENT)
+//             signalExceptionForGroupError(env, errno, pid);
+//         return;
+//     }
+//
+//     while ((de = readdir(d))) {
+//         int t_pid;
+//         int t_pri;
+//
+//         if (de->d_name[0] == '.')
+//             continue;
+//         t_pid = atoi(de->d_name);
+//
+//         if (!t_pid) {
+//             ALOGE("Error getting pid for '%s'\n", de->d_name);
+//             continue;
+//         }
+//
+//         t_pri = getpriority(PRIO_PROCESS, t_pid);
+//
+//         if (t_pri <= ANDROID_PRIORITY_AUDIO) {
+//             int scheduler = sched_getscheduler(t_pid) & ~SCHED_RESET_ON_FORK;
+//             if ((scheduler == SCHED_FIFO) || (scheduler == SCHED_RR)) {
+//                 // This task wants to stay in its current audio group so it can keep its budget
+//                 // don't update its cpuset or cgroup
+//                 continue;
+//             }
+//         }
+//
+//         if (isDefault) {
+//             if (t_pri >= ANDROID_PRIORITY_BACKGROUND) {
+//                 // This task wants to stay at background
+//                 // update its cpuset so it doesn't only run on bg core(s)
+// #ifdef ENABLE_CPUSETS
+//                 int err = set_cpuset_policy(t_pid, sp);
+//                 if (err != NO_ERROR) {
+//                     signalExceptionForGroupError(env, -err, t_pid);
+//                     break;
+//                 }
+// #endif
+//                 continue;
+//             }
+//         }
+//         int err;
+// #ifdef ENABLE_CPUSETS
+//         // set both cpuset and cgroup for general threads
+//         err = set_cpuset_policy(t_pid, sp);
+//         if (err != NO_ERROR) {
+//             signalExceptionForGroupError(env, -err, t_pid);
+//             break;
+//         }
+// #endif
+//
+//         err = set_sched_policy(t_pid, sp);
+//         if (err != NO_ERROR) {
+//             signalExceptionForGroupError(env, -err, t_pid);
+//             break;
+//         }
+//
+//     }
+//     closedir(d);
 }
 
-jint android_os_Process_getProcessGroup(JNIEnv* env, jobject clazz, jint pid)
+// jint android_os_Process_getProcessGroup(JNIEnv* env, jobject clazz, jint pid)
+jint android_os_Process_getProcessGroup(JNIEnv* /* env */, jobject /* clazz */, jint /* pid */)
 {
-    SchedPolicy sp;
-    if (get_sched_policy(pid, &sp) != 0) {
-        signalExceptionForGroupError(env, errno, pid);
-    }
-    return (int) sp;
+    // SchedPolicy sp;
+    // if (get_sched_policy(pid, &sp) != 0) {
+    //     signalExceptionForGroupError(env, errno, pid);
+    // }
+    // return (int) sp;
+    return 0;
 }
 
 #ifdef ENABLE_CPUSETS
