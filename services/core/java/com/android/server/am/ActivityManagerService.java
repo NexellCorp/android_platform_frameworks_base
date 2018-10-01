@@ -548,6 +548,11 @@ public final class ActivityManagerService extends ActivityManagerNative
     private boolean mIsBoosted = false;
     private long mBoostStartTime = 0;
 
+    public static final class LauncherWaiter {
+    }
+
+    private final LauncherWaiter mLauncherWaiter = new LauncherWaiter();
+
     /** All system services */
     SystemServiceManager mSystemServiceManager;
 
@@ -11717,6 +11722,12 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
     }
 
+    void launcherDisplayed() {
+        synchronized(mLauncherWaiter) {
+            mLauncherWaiter.notifyAll();
+        }
+    }
+
     /** Pokes the task persister. */
     void notifyTaskPersisterLocked(TaskRecord task, boolean flush) {
         mRecentTasks.notifyTaskPersisterLocked(task, flush);
@@ -13442,6 +13453,15 @@ public final class ActivityManagerService extends ActivityManagerNative
             }
             mStackSupervisor.resumeFocusedStackTopActivityLocked();
             mUserController.sendUserSwitchBroadcastsLocked(-1, currentUserId);
+        }
+
+        synchronized (mLauncherWaiter) {
+            try {
+                Slog.i(TAG, "wait launcher displayed");
+                mLauncherWaiter.wait();
+            } catch (InterruptedException ex) {
+                Slog.i(TAG, "Exception in mLauncherWaiter.wait()");
+            }
         }
     }
 

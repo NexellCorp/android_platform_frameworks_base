@@ -1244,6 +1244,8 @@ final class ActivityRecord {
     void windowsDrawnLocked() {
         // mStackSupervisor.mActivityMetricsLogger.notifyWindowsDrawn();
         if (displayStartTime != 0) {
+			if (shortComponentName.startsWith("com.xsd.launcher"))
+				mStackSupervisor.mService.launcherDisplayed();
             reportLaunchTimeLocked(SystemClock.uptimeMillis());
         }
         mStackSupervisor.sendWaitingVisibleReportLocked(this);
