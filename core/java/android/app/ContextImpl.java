@@ -1801,10 +1801,10 @@ class ContextImpl extends Context {
      * The "AsUser" variants allow us to properly enforce the user's restrictions.
      */
     private void warnIfCallingFromSystemProcess() {
-        if (Process.myUid() == Process.SYSTEM_UID) {
-            Slog.w(TAG, "Calling a method in the system process without a qualified user: "
-                    + Debug.getCallers(5));
-        }
+        // if (Process.myUid() == Process.SYSTEM_UID) {
+        //     Slog.w(TAG, "Calling a method in the system process without a qualified user: "
+        //             + Debug.getCallers(5));
+        // }
     }
 
     @Override
