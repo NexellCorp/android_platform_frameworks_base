@@ -18,6 +18,7 @@ package com.android.server;
 
 import android.app.ActivityThread;
 import android.app.INotificationManager;
+import android.app.AppOpsManager;
 import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -81,6 +82,8 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import static android.os.Process.SYSTEM_UID;
 
 public final class SystemServer {
     private static final String TAG = "SystemServer";
@@ -502,6 +505,10 @@ public final class SystemServer {
         networkStats.bindConnectivityManager(connectivity);
         networkPolicy.bindConnectivityManager(connectivity);
 
+		final Intent connectivityReadyIntent = new Intent("android.intent.action.CONNECTIVITY_READY", null);
+		mActivityManagerService.broadcastIntent(null, connectivityReadyIntent, null, null, 0, null, null,
+				null, AppOpsManager.OP_NONE, null, true, false, SYSTEM_UID);
+
         Slog.i(TAG, "[BootProf] start RecoverySystemService");
         mSystemServiceManager.startService(RecoverySystemService.class);
 
@@ -627,6 +634,10 @@ public final class SystemServer {
         appWidgetService.onUnlockUser(0);
         shortcutService.onUnlockUser(0);
         Slog.d(TAG, "++++++ End onUnlockUser");
+
+		final Intent qbootCompleted = new Intent("android.intent.action.QBOOT_COMPLETED", null);
+		mActivityManagerService.broadcastIntent(null, qbootCompleted, null, null, 0, null, null,
+				null, AppOpsManager.OP_NONE, null, true, false, SYSTEM_UID);
 
         Slog.d(TAG, "=====> set sys.qboot_completed to 1");
         SystemProperties.set("sys.qboot_completed", "1");
