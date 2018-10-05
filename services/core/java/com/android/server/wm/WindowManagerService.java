@@ -144,6 +144,7 @@ import com.android.server.UiThread;
 // import com.android.server.Watchdog;
 import com.android.server.input.InputManagerService;
 import com.android.server.policy.PhoneWindowManager;
+import com.android.server.policy.QuickWindowManager;
 import com.android.server.power.ShutdownThread;
 
 import java.io.BufferedWriter;
@@ -394,7 +395,8 @@ public class WindowManagerService extends IWindowManager.Stub
 
     final boolean mLimitedAlphaCompositing;
 
-    final WindowManagerPolicy mPolicy = new PhoneWindowManager();
+    // final WindowManagerPolicy mPolicy = new PhoneWindowManager();
+    final WindowManagerPolicy mPolicy = new QuickWindowManager();
 
     final IActivityManager mActivityManager;
     final ActivityManagerInternal mAmInternal;
