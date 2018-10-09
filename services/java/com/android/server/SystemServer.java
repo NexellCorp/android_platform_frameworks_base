@@ -637,7 +637,7 @@ public final class SystemServer {
 
 		final Intent qbootCompleted = new Intent("android.intent.action.QBOOT_COMPLETED", null);
 		mActivityManagerService.broadcastIntent(null, qbootCompleted, null, null, 0, null, null,
-				null, AppOpsManager.OP_NONE, null, true, false, SYSTEM_UID);
+				null, AppOpsManager.OP_NONE, null, true, false, UserHandle.USER_ALL);
 
         Slog.d(TAG, "=====> set sys.qboot_completed to 1");
         SystemProperties.set("sys.qboot_completed", "1");
