@@ -724,11 +724,11 @@ public class QuickWindowManager implements WindowManagerPolicy {
                 - getNavigationBarWidth(displayRotation, uiMode);
 
             //modify by zhonghong lihw for navigationBar
-            if (mStatusBar.isVisibleLw()) {
-                mTmpNavigationFrame.set(left, mStatusBarHeight, displayWidth - overscanRight, displayHeight);
-            } else {
-                mTmpNavigationFrame.set(left, 0, displayWidth - overscanRight, displayHeight);
-            }
+            // if (mStatusBar.isVisibleLw()) {
+            //     mTmpNavigationFrame.set(left, mStatusBarHeight, displayWidth - overscanRight, displayHeight);
+            // } else {
+            //     mTmpNavigationFrame.set(left, 0, displayWidth - overscanRight, displayHeight);
+            // }
             //modify end
             
             mStableRight = mStableFullscreenRight = mTmpNavigationFrame.left;
@@ -783,7 +783,7 @@ public class QuickWindowManager implements WindowManagerPolicy {
             vf.top = mStableTop;
 
 			//add by zhonghong lihw for navigationBar
-            vf.right = mUnrestrictedScreenWidth;
+            // vf.right = mUnrestrictedScreenWidth;
 			//add end
 
             vf.bottom = mStableBottom;
@@ -995,17 +995,17 @@ public class QuickWindowManager implements WindowManagerPolicy {
                 & ~mForceClearedSystemUiFlags;        
 
         //add by lihw 20180624
-        if ((tmpVisibility & SYSTEM_UI_FLAG_ZH_NAVIGATION) == 0){
-        	if ((mLastSystemUiFlags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0) {
-        		tmpVisibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE;
-            } else if (!mNavigationBarController.getVisbile()) {
-                    tmpVisibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_IMMERSIVE;
-            }
-        } else {
-        	tmpVisibility &= ~SYSTEM_UI_FLAG_ZH_NAVIGATION; 
-        }
+        // if ((tmpVisibility & SYSTEM_UI_FLAG_ZH_NAVIGATION) == 0){
+        // 	if ((mLastSystemUiFlags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0) {
+        // 		tmpVisibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        //             | View.SYSTEM_UI_FLAG_IMMERSIVE;
+        //     } else if (!mNavigationBarController.getVisbile()) {
+        //             tmpVisibility |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        //                 | View.SYSTEM_UI_FLAG_IMMERSIVE;
+        //     }
+        // } else {
+        // 	tmpVisibility &= ~SYSTEM_UI_FLAG_ZH_NAVIGATION; 
+        // }
         //add end
 
         if (mForcingShowNavBar && win.getSurfaceLayer() < mForcingShowNavBarLayer) {
@@ -1806,15 +1806,15 @@ public class QuickWindowManager implements WindowManagerPolicy {
         int sysUiFl = PolicyControl.getSystemUiVisibility(win, null);
 
         //add by lihw 20180624
-        if ((sysUiFl & SYSTEM_UI_FLAG_ZH_NAVIGATION) == 0) {
-            if ((mLastSystemUiFlags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0
-                    || !mNavigationBarController.getVisbile()) {
-                sysUiFl |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    | View.SYSTEM_UI_FLAG_IMMERSIVE;
-            }
-        } else {
-            sysUiFl &= ~SYSTEM_UI_FLAG_ZH_NAVIGATION; 
-        }
+        // if ((sysUiFl & SYSTEM_UI_FLAG_ZH_NAVIGATION) == 0) {
+        //     if ((mLastSystemUiFlags & View.SYSTEM_UI_FLAG_HIDE_NAVIGATION) != 0
+        //             || !mNavigationBarController.getVisbile()) {
+        //         sysUiFl |= View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+        //             | View.SYSTEM_UI_FLAG_IMMERSIVE;
+        //     }
+        // } else {
+        //     sysUiFl &= ~SYSTEM_UI_FLAG_ZH_NAVIGATION; 
+        // }
         //add end
 
         final Rect pf = mTmpParentFrame;
