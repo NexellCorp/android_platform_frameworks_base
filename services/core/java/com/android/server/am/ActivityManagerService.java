@@ -18409,10 +18409,10 @@ public final class ActivityManagerService extends ActivityManagerNative
             // If we are not serializing this broadcast, then send the
             // registered receivers separately so they don't wait for the
             // components to be launched.
-            if (isCallerSystem) {
-                checkBroadcastFromSystem(intent, callerApp, callerPackage, callingUid,
-                        isProtectedBroadcast, registeredReceivers);
-            }
+            // if (isCallerSystem) {
+            //     checkBroadcastFromSystem(intent, callerApp, callerPackage, callingUid,
+            //             isProtectedBroadcast, registeredReceivers);
+            // }
             final BroadcastQueue queue = broadcastQueueForIntent(intent);
             BroadcastRecord r = new BroadcastRecord(queue, intent, callerApp,
                     callerPackage, callingPid, callingUid, resolvedType, requiredPermissions,
@@ -18500,10 +18500,10 @@ public final class ActivityManagerService extends ActivityManagerNative
             ir++;
         }
 
-        if (isCallerSystem) {
-            checkBroadcastFromSystem(intent, callerApp, callerPackage, callingUid,
-                    isProtectedBroadcast, receivers);
-        }
+        // if (isCallerSystem) {
+        //     checkBroadcastFromSystem(intent, callerApp, callerPackage, callingUid,
+        //             isProtectedBroadcast, receivers);
+        // }
 
         if ((receivers != null && receivers.size() > 0)
                 || resultTo != null) {
