@@ -376,7 +376,6 @@ public final class SystemServer {
         // Enable the JIT for the system_server process
         Slog.i(TAG, "[BootProf] startJitCompilation");
         VMRuntime.getRuntime().startJitCompilation();
-        Slog.d(TAG, "++++++ 363");
 
         Slog.i(TAG, "[BootProf] PHASE_SYSTEM_SERVICES_READY");
         mSystemServiceManager.startBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
