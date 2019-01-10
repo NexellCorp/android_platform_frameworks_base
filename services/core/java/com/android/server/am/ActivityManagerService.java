@@ -13457,14 +13457,14 @@ public final class ActivityManagerService extends ActivityManagerNative
             mUserController.sendUserSwitchBroadcastsLocked(-1, currentUserId);
         }
 
-        synchronized (mLauncherWaiter) {
-            try {
-                Slog.i(TAG, "wait launcher displayed");
-                mLauncherWaiter.wait();
-            } catch (InterruptedException ex) {
-                Slog.i(TAG, "Exception in mLauncherWaiter.wait()");
-            }
-        }
+        // synchronized (mLauncherWaiter) {
+        //     try {
+        //         Slog.i(TAG, "wait launcher displayed");
+        //         mLauncherWaiter.wait();
+        //     } catch (InterruptedException ex) {
+        //         Slog.i(TAG, "Exception in mLauncherWaiter.wait()");
+        //     }
+        // }
     }
 
     void killAppAtUsersRequest(ProcessRecord app, Dialog fromDialog) {
