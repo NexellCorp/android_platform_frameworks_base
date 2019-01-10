@@ -6757,13 +6757,15 @@ public final class ActivityManagerService extends ActivityManagerNative
     }
 
     final void finishBooting() {
-        synchronized (this) {
-            if (!mBootAnimationComplete) {
-                mCallFinishBooting = true;
-                return;
-            }
-            mCallFinishBooting = false;
-        }
+        // synchronized (this) {
+        //     if (!mBootAnimationComplete) {
+        //         mCallFinishBooting = true;
+        //         return;
+        //     }
+        //     mCallFinishBooting = false;
+        // }
+        mBootAnimationComplete = true;
+        mCallFinishBooting = false;
 
         ArraySet<String> completedIsas = new ArraySet<String>();
         for (String abi : Build.SUPPORTED_ABIS) {
@@ -6894,8 +6896,8 @@ public final class ActivityManagerService extends ActivityManagerNative
             enableScreenAfterBoot();
         }
 
-        if (mQuickBoot)
-            bootAnimationComplete();
+        // if (mQuickBoot)
+        //     bootAnimationComplete();
     }
 
     @Override
