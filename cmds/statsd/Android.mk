@@ -149,7 +149,7 @@ ifeq ($(TARGET_BUILD_VARIANT),eng)
         -DVERY_VERBOSE_PRINTING
 endif
 
-LOCAL_INIT_RC := statsd.rc
+# LOCAL_INIT_RC := statsd.rc
 
 include $(BUILD_EXECUTABLE)
 

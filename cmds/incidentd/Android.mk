@@ -84,7 +84,7 @@ GEN_PROTO:=
 
 gen_src_dir:=
 
-LOCAL_INIT_RC := incidentd.rc
+# LOCAL_INIT_RC := incidentd.rc
 
 include $(BUILD_EXECUTABLE)
 
