@@ -339,6 +339,7 @@ public class UsbDeviceManager {
         private boolean mSinkPower;
         private boolean mConfigured;
         private boolean mUsbDataUnlocked;
+        private String mPreviousFunctions;
         private String mCurrentFunctions;
         private boolean mCurrentFunctionsApplied;
         private UsbAccessory mCurrentAccessory;
@@ -362,13 +363,17 @@ public class UsbDeviceManager {
                  * Remove MTP from persistent config, to bring usb to a good state
                  * after fixes to b/31814300. This block can be removed after the update
                  */
+                //[ unblock - set default mtp,adb for usb
                 String persisted = SystemProperties.get(USB_PERSISTENT_CONFIG_PROPERTY);
+                /*
                 if (UsbManager.containsFunction(persisted, UsbManager.USB_FUNCTION_MTP)) {
                     SystemProperties.set(USB_PERSISTENT_CONFIG_PROPERTY,
                             UsbManager.removeFunction(persisted, UsbManager.USB_FUNCTION_MTP));
                 }
-
                 setEnabledFunctions(null, false, false);
+                */
+                setEnabledFunctions(null, false, true);
+                // ] unblock - set default mtp,adb for usb
 
                 String state = FileUtils.readTextFile(new File(STATE_PATH), 0, null).trim();
                 updateState(state);
@@ -561,11 +566,16 @@ public class UsbDeviceManager {
             if (!mCurrentFunctions.equals(functions) || !mCurrentFunctionsApplied
                     || forceRestart) {
                 Slog.i(TAG, "Setting USB config to " + functions);
+                //[ do not set none if previous mode is none.]
+                mPreviousFunctions = mCurrentFunctions;
                 mCurrentFunctions = functions;
                 mCurrentFunctionsApplied = false;
 
                 // Kick the USB stack to close existing connections.
-                setUsbConfig(UsbManager.USB_FUNCTION_NONE);
+                //[ do not set none if previous mode is none.
+                if (!mPreviousFunctions.equals(UsbManager.USB_FUNCTION_NONE))
+                    setUsbConfig(UsbManager.USB_FUNCTION_NONE);
+                //] do not set none if previous mode is none.
 
                 // Set the new USB configuration.
                 if (!setUsbConfig(functions)) {
