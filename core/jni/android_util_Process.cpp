@@ -493,21 +493,22 @@ void android_os_Process_setThreadScheduler(JNIEnv* env, jclass clazz,
 void android_os_Process_setThreadPriority(JNIEnv* env, jobject clazz,
                                               jint pid, jint pri)
 {
-#if GUARD_THREAD_PRIORITY
-    // if we're putting the current thread into the background, check the TLS
-    // to make sure this thread isn't guarded.  If it is, raise an exception.
-    if (pri >= ANDROID_PRIORITY_BACKGROUND) {
-        if (pid == gettid()) {
-            void* bgOk = pthread_getspecific(gBgKey);
-            if (bgOk == ((void*)0xbaad)) {
-                ALOGE("Thread marked fg-only put self in background!");
-                jniThrowException(env, "java/lang/SecurityException", "May not put this thread into background");
-                return;
-            }
-        }
-    }
-#endif
+// #if GUARD_THREAD_PRIORITY
+//     // if we're putting the current thread into the background, check the TLS
+//     // to make sure this thread isn't guarded.  If it is, raise an exception.
+//     if (pri >= ANDROID_PRIORITY_BACKGROUND) {
+//         if (pid == gettid()) {
+//             void* bgOk = pthread_getspecific(gBgKey);
+//             if (bgOk == ((void*)0xbaad)) {
+//                 ALOGE("Thread marked fg-only put self in background!");
+//                 jniThrowException(env, "java/lang/SecurityException", "May not put this thread into background");
+//                 return;
+//             }
+//         }
+//     }
+// #endif
 
+#if 0
     int rc = androidSetThreadPriority(pid, pri);
     if (rc != 0) {
         if (rc == INVALID_OPERATION) {
@@ -519,6 +520,9 @@ void android_os_Process_setThreadPriority(JNIEnv* env, jobject clazz,
 
     //ALOGI("Setting priority of %" PRId32 ": %" PRId32 ", getpriority returns %d\n",
     //     pid, pri, getpriority(PRIO_PROCESS, pid));
+#else
+    androidSetThreadPriority(pid, pri);
+#endif
 }
 
 void android_os_Process_setCallingThreadPriority(JNIEnv* env, jobject clazz,
