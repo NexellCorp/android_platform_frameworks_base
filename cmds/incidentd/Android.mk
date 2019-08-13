@@ -84,7 +84,9 @@ GEN_PROTO:=
 
 gen_src_dir:=
 
+ifeq ($(NEXELL_QUICKBOOT), false)
 LOCAL_INIT_RC := incidentd.rc
+endif
 
 include $(BUILD_EXECUTABLE)
 
