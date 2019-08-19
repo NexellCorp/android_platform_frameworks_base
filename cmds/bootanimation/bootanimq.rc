@@ -1,0 +1,7 @@
+service bootanim /system/bin/bootanimation
+    class core animation
+    user graphics
+    group graphics audio
+    disabled
+    ioprio rt 4
+    oneshot

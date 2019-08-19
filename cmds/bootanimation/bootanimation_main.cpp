@@ -144,6 +144,19 @@ private:
 
 int main()
 {
+    ALOGD("Boot animation start");
+#ifdef QUICKBOOT
+    int fdDmesg = open("/dev/kmsg", O_WRONLY);
+    ALOGD("fdDmesg -> %d", fdDmesg);
+    if (fdDmesg > 0) {
+        static const char _message[] = { '<', '0', '1', '>',
+            'B', 'o', 'o', 't', 'A', 'n', 'i', 'm', ' ', 's', 't', 'a', 'r',
+            't', '\n' };
+        write(fdDmesg, _message, sizeof(_message));
+        close(fdDmesg);
+    }
+#endif
+
     setpriority(PRIO_PROCESS, 0, ANDROID_PRIORITY_DISPLAY);
 
     bool noBootAnimation = bootAnimationDisabled();
