@@ -1,6 +1,10 @@
 bootanimation_CommonCFlags = -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 bootanimation_CommonCFlags += -Wall -Werror -Wunused -Wunreachable-code
 
+ifeq ($(NEXELL_QUICKBOOT), true)
+bootanimation_CommonCFlags += -DQUICKBOOT
+endif
+
 
 # bootanimation executable
 # =========================================================
@@ -44,7 +48,11 @@ endif  # PRODUCT_IOT
 
 LOCAL_MODULE:= bootanimation
 
+ifeq ($(NEXELL_QUICKBOOT), true)
+LOCAL_INIT_RC := bootanimq.rc
+else
 LOCAL_INIT_RC := bootanim.rc
+endif
 
 ifdef TARGET_32_BIT_SURFACEFLINGER
 LOCAL_32_BIT_ONLY := true
