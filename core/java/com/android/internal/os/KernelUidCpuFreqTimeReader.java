@@ -21,6 +21,7 @@ import static com.android.internal.util.Preconditions.checkNotNull;
 import android.annotation.NonNull;
 import android.annotation.Nullable;
 import android.os.StrictMode;
+import android.os.SystemProperties;
 import android.util.IntArray;
 import android.util.Slog;
 import android.util.SparseArray;
@@ -85,8 +86,14 @@ public class KernelUidCpuFreqTimeReader extends
     private boolean mPerClusterTimesAvailable;
     private boolean mAllUidTimesAvailable = true;
 
+    private boolean mQuickBoot = false;
+
     public KernelUidCpuFreqTimeReader() {
-        mProcReader = KernelCpuProcReader.getFreqTimeReaderInstance();
+        mQuickBoot = SystemProperties.get("ro.quickboot").equals("1");
+        if (!mQuickBoot)
+            mProcReader = KernelCpuProcReader.getFreqTimeReaderInstance();
+        else
+            mProcReader = null;
     }
 
     @VisibleForTesting
@@ -95,18 +102,22 @@ public class KernelUidCpuFreqTimeReader extends
     }
 
     public boolean perClusterTimesAvailable() {
+        if (mQuickBoot) return false;
         return mPerClusterTimesAvailable;
     }
 
     public boolean allUidTimesAvailable() {
+        if (mQuickBoot) return false;
         return mAllUidTimesAvailable;
     }
 
     public SparseArray<long[]> getAllUidCpuFreqTimeMs() {
+        if (mQuickBoot) return null;
         return mLastUidCpuFreqTimeMs;
     }
 
     public long[] readFreqs(@NonNull PowerProfile powerProfile) {
+        if (mQuickBoot) return null;
         checkNotNull(powerProfile);
         if (mCpuFreqs != null) {
             // No need to read cpu freqs more than once.
@@ -132,6 +143,7 @@ public class KernelUidCpuFreqTimeReader extends
     @VisibleForTesting
     public long[] readFreqs(BufferedReader reader, PowerProfile powerProfile)
             throws IOException {
+        if (mQuickBoot) return null;
         final String line = reader.readLine();
         if (line == null) {
             return null;
@@ -167,6 +179,7 @@ public class KernelUidCpuFreqTimeReader extends
     @Override
     @VisibleForTesting
     public void readDeltaImpl(@Nullable Callback callback) {
+        if (mQuickBoot) return;
         if (mCpuFreqs == null) {
             return;
         }
@@ -200,6 +213,7 @@ public class KernelUidCpuFreqTimeReader extends
     }
 
     public void readAbsolute(Callback callback) {
+        if (mQuickBoot) return;
         readImpl((buf) -> {
             int uid = buf.get();
             if (getFreqTimeForUid(buf, mCurTimes)) {
