@@ -29,6 +29,8 @@ public class RoSystemProperties {
             SystemProperties.getInt("ro.factorytest", 0);
     public static final String CONTROL_PRIVAPP_PERMISSIONS =
             SystemProperties.get("ro.control_privapp_permissions");
+    public static final boolean QUICKBOOT =
+            SystemProperties.getInt("ro.quickboot", 0) == 1;
 
     // ------ ro.config.* -------- //
     public static final boolean CONFIG_AVOID_GFX_ACCEL =
