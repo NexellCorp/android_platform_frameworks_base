@@ -138,6 +138,8 @@ import static android.os.IServiceManager.DUMP_FLAG_PRIORITY_NORMAL;
 import static android.os.IServiceManager.DUMP_FLAG_PROTO;
 import static android.view.Display.DEFAULT_DISPLAY;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 public final class SystemServer {
     private static final String TAG = "SystemServer";
 
@@ -846,10 +848,12 @@ public final class SystemServer {
             mSystemServiceManager.startService(DropBoxManagerService.class);
             traceEnd();
 
-            traceBeginAndSlog("StartVibratorService");
-            vibrator = new VibratorService(context);
-            ServiceManager.addService("vibrator", vibrator);
-            traceEnd();
+            if (!QUICKBOOT) {
+                traceBeginAndSlog("StartVibratorService");
+                vibrator = new VibratorService(context);
+                ServiceManager.addService("vibrator", vibrator);
+                traceEnd();
+            }
 
             if (!isWatch) {
                 traceBeginAndSlog("StartConsumerIrService");
@@ -1644,13 +1648,15 @@ public final class SystemServer {
 
         // It is now time to start up the app processes...
 
-        traceBeginAndSlog("MakeVibratorServiceReady");
-        try {
-            vibrator.systemReady();
-        } catch (Throwable e) {
-            reportWtf("making Vibrator Service ready", e);
+        if (!QUICKBOOT) {
+            traceBeginAndSlog("MakeVibratorServiceReady");
+            try {
+                vibrator.systemReady();
+            } catch (Throwable e) {
+                reportWtf("making Vibrator Service ready", e);
+            }
+            traceEnd();
         }
-        traceEnd();
 
         traceBeginAndSlog("MakeLockSettingsServiceReady");
         if (lockSettings != null) {
