@@ -818,9 +818,9 @@ public final class SystemServer {
             ServiceManager.addService("telephony.registry", telephonyRegistry);
             traceEnd();
 
-            traceBeginAndSlog("StartEntropyMixer");
-            mEntropyMixer = new EntropyMixer(context);
-            traceEnd();
+            // traceBeginAndSlog("StartEntropyMixer");
+            // mEntropyMixer = new EntropyMixer(context);
+            // traceEnd();
 
             mContentResolver = context.getContentResolver();
 
