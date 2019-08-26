@@ -26,6 +26,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Reads CPU time of a specific core spent at various frequencies and provides a delta from the
  * last call to {@link #readDelta}. Each line in the proc file has the format:
@@ -64,32 +66,37 @@ public class KernelCpuSpeedReader {
      * {@link #readDelta}.
      */
     public long[] readDelta() {
-        StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
-        try (BufferedReader reader = new BufferedReader(new FileReader(mProcFile))) {
-            TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(' ');
-            String line;
-            int speedIndex = 0;
-            while (speedIndex < mLastSpeedTimesMs.length && (line = reader.readLine()) != null) {
-                splitter.setString(line);
-                splitter.next();
+        if (!QUICKBOOT) {
+            StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
+            try (BufferedReader reader = new BufferedReader(new FileReader(mProcFile))) {
+                TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(' ');
+                String line;
+                int speedIndex = 0;
+                while (speedIndex < mLastSpeedTimesMs.length && (line = reader.readLine()) != null) {
+                    splitter.setString(line);
+                    splitter.next();
 
-                long time = Long.parseLong(splitter.next()) * mJiffyMillis;
-                if (time < mLastSpeedTimesMs[speedIndex]) {
-                    // The stats reset when the cpu hotplugged. That means that the time
-                    // we read is offset from 0, so the time is the delta.
-                    mDeltaSpeedTimesMs[speedIndex] = time;
-                } else {
-                    mDeltaSpeedTimesMs[speedIndex] = time - mLastSpeedTimesMs[speedIndex];
+                    long time = Long.parseLong(splitter.next()) * mJiffyMillis;
+                    if (time < mLastSpeedTimesMs[speedIndex]) {
+                        // The stats reset when the cpu hotplugged. That means that the time
+                        // we read is offset from 0, so the time is the delta.
+                        mDeltaSpeedTimesMs[speedIndex] = time;
+                    } else {
+                        mDeltaSpeedTimesMs[speedIndex] = time - mLastSpeedTimesMs[speedIndex];
+                    }
+                    mLastSpeedTimesMs[speedIndex] = time;
+                    speedIndex++;
                 }
-                mLastSpeedTimesMs[speedIndex] = time;
-                speedIndex++;
+            } catch (IOException e) {
+                Slog.e(TAG, "Failed to read cpu-freq: " + e.getMessage());
+                Arrays.fill(mDeltaSpeedTimesMs, 0);
+            } finally {
+                StrictMode.setThreadPolicy(policy);
             }
-        } catch (IOException e) {
-            Slog.e(TAG, "Failed to read cpu-freq: " + e.getMessage());
+        } else {
             Arrays.fill(mDeltaSpeedTimesMs, 0);
-        } finally {
-            StrictMode.setThreadPolicy(policy);
         }
+
         return mDeltaSpeedTimesMs;
     }
 
@@ -98,24 +105,28 @@ public class KernelCpuSpeedReader {
      * monotonically increasing, unless the cpu was hotplugged.
      */
     public long[] readAbsolute() {
-        StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
         long[] speedTimeMs = new long[mNumSpeedSteps];
-        try (BufferedReader reader = new BufferedReader(new FileReader(mProcFile))) {
-            TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(' ');
-            String line;
-            int speedIndex = 0;
-            while (speedIndex < mNumSpeedSteps && (line = reader.readLine()) != null) {
-                splitter.setString(line);
-                splitter.next();
-                long time = Long.parseLong(splitter.next()) * mJiffyMillis;
-                speedTimeMs[speedIndex] = time;
-                speedIndex++;
+        if (!QUICKBOOT) {
+            StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
+            try (BufferedReader reader = new BufferedReader(new FileReader(mProcFile))) {
+                TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(' ');
+                String line;
+                int speedIndex = 0;
+                while (speedIndex < mNumSpeedSteps && (line = reader.readLine()) != null) {
+                    splitter.setString(line);
+                    splitter.next();
+                    long time = Long.parseLong(splitter.next()) * mJiffyMillis;
+                    speedTimeMs[speedIndex] = time;
+                    speedIndex++;
+                }
+            } catch (IOException e) {
+                Slog.e(TAG, "Failed to read cpu-freq: " + e.getMessage());
+                Arrays.fill(speedTimeMs, 0);
+            } finally {
+                StrictMode.setThreadPolicy(policy);
             }
-        } catch (IOException e) {
-            Slog.e(TAG, "Failed to read cpu-freq: " + e.getMessage());
+        } else {
             Arrays.fill(speedTimeMs, 0);
-        } finally {
-            StrictMode.setThreadPolicy(policy);
         }
         return speedTimeMs;
     }
