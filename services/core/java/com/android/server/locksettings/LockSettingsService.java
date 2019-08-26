@@ -145,6 +145,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Keeps the lock pattern/password data and related settings for each user. Used by
  * LockPatternUtils. Needs to be a service because Settings app also needs to be able to save
@@ -653,23 +655,26 @@ public class LockSettingsService extends ILockSettings.Stub {
         }
         checkWritePermission(UserHandle.USER_SYSTEM);
         migrateOldData();
-        try {
-            getGateKeeperService();
-            mSpManager.initWeaverService();
-        } catch (RemoteException e) {
-            Slog.e(TAG, "Failure retrieving IGateKeeperService", e);
-        }
-        // Find the AuthSecret HAL
-        try {
-            mAuthSecretService = IAuthSecret.getService();
-        } catch (NoSuchElementException e) {
-            Slog.i(TAG, "Device doesn't implement AuthSecret HAL");
-        } catch (RemoteException e) {
-            Slog.w(TAG, "Failed to get AuthSecret HAL", e);
+        if (!QUICKBOOT) {
+            try {
+                getGateKeeperService();
+                mSpManager.initWeaverService();
+            } catch (RemoteException e) {
+                Slog.e(TAG, "Failure retrieving IGateKeeperService", e);
+            }
+            // Find the AuthSecret HAL
+            try {
+                mAuthSecretService = IAuthSecret.getService();
+            } catch (NoSuchElementException e) {
+                Slog.i(TAG, "Device doesn't implement AuthSecret HAL");
+            } catch (RemoteException e) {
+                Slog.w(TAG, "Failed to get AuthSecret HAL", e);
+            }
         }
         mDeviceProvisionedObserver.onSystemReady();
         // TODO: maybe skip this for split system user mode.
-        mStorage.prefetchUser(UserHandle.USER_SYSTEM);
+        if (!QUICKBOOT)
+            mStorage.prefetchUser(UserHandle.USER_SYSTEM);
         mStrongAuth.systemReady();
     }
 
