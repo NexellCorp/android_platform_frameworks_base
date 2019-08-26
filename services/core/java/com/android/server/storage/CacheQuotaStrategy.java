@@ -309,6 +309,8 @@ public class CacheQuotaStrategy implements RemoteCallback.OnResultListener {
             cachedValues = readFromXml(stream);
         } catch (XmlPullParserException e) {
             throw new IllegalStateException(e.getMessage());
+        } finally {
+            stream.close();
         }
 
         if (cachedValues == null) {
