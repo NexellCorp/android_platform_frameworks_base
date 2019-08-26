@@ -31,6 +31,7 @@ import static com.android.internal.util.XmlUtils.readStringAttribute;
 import static com.android.internal.util.XmlUtils.writeIntAttribute;
 import static com.android.internal.util.XmlUtils.writeLongAttribute;
 import static com.android.internal.util.XmlUtils.writeStringAttribute;
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
 
 import static org.xmlpull.v1.XmlPullParser.END_DOCUMENT;
 import static org.xmlpull.v1.XmlPullParser.START_TAG;
@@ -971,7 +972,7 @@ class StorageManagerService extends IStorageManager.Stub
 
         // On an encrypted device we can't see system properties yet, so pull
         // the system locale out of the mount service.
-        if ("".equals(SystemProperties.get("vold.encrypt_progress"))) {
+        if (!QUICKBOOT && "".equals(SystemProperties.get("vold.encrypt_progress"))) {
             copyLocaleFromMountService();
         }
     }
