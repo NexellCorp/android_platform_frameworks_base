@@ -250,6 +250,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 public class StatusBar extends SystemUI implements DemoMode,
         DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
         OnHeadsUpChangedListener, CommandQueue.Callbacks, ZenModeController.Callback,
@@ -325,7 +327,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     private static final boolean ONLY_CORE_APPS;
 
     /** If true, the lockscreen will show a distinct wallpaper */
-    private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = true;
+    private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = !QUICKBOOT;
 
     /** Whether to force dark theme if Configuration.UI_MODE_NIGHT_YES. */
     private static final boolean DARK_THEME_IN_NIGHT_MODE = true;
@@ -767,12 +769,14 @@ public class StatusBar extends SystemUI implements DemoMode,
             }
         }
 
-        IWallpaperManager wallpaperManager = IWallpaperManager.Stub.asInterface(
-                ServiceManager.getService(Context.WALLPAPER_SERVICE));
-        try {
-            wallpaperManager.setInAmbientMode(false /* ambientMode */, false /* animated */);
-        } catch (RemoteException e) {
-            // Just pass, nothing critical.
+        if (ENABLE_LOCKSCREEN_WALLPAPER) {
+            IWallpaperManager wallpaperManager = IWallpaperManager.Stub.asInterface(
+                    ServiceManager.getService(Context.WALLPAPER_SERVICE));
+            try {
+                wallpaperManager.setInAmbientMode(false /* ambientMode */, false /* animated */);
+            } catch (RemoteException e) {
+                // Just pass, nothing critical.
+            }
         }
 
         // end old BaseStatusBar.start().
