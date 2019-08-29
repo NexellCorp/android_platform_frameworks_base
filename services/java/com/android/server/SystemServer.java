@@ -983,6 +983,8 @@ public final class SystemServer {
             }
             Trace.traceEnd(Trace.TRACE_TAG_SYSTEM_SERVER);
 
+            mSystemServiceManager.startService(USB_SERVICE_CLASS);
+
             if (!disableNonCoreServices) {
                 if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_MIDI)) {
                     // Start MIDI Manager service

@@ -348,6 +348,9 @@ public final class UsbAlsaManager {
     }
 
     /* package */ void usbDeviceAdded(UsbDevice usbDevice) {
+       if (true)
+	  return;
+
        if (DEBUG) {
           Slog.d(TAG, "deviceAdded(): " + usbDevice.getManufacturerName() +
                   " nm:" + usbDevice.getProductName());
