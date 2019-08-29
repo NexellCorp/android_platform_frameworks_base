@@ -1304,6 +1304,8 @@ public final class SystemServer {
             }
             traceEnd();
 
+            mSystemServiceManager.startService(USB_SERVICE_CLASS);
+
             if (mPackageManager.hasSystemFeature(PackageManager.FEATURE_MIDI)) {
                 // Start MIDI Manager service
                 traceBeginAndSlog("StartMidiManager");
