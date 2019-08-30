@@ -129,9 +129,9 @@ public class BatteryMeterView extends LinearLayout implements
                 getResources().getDimensionPixelSize(R.dimen.status_bar_battery_icon_height));
         mlp.setMargins(0, 0, 0,
                 getResources().getDimensionPixelOffset(R.dimen.battery_margin_bottom));
-        addView(mBatteryIconView, mlp);
+//      addView(mBatteryIconView, mlp);
 
-        updateShowPercent();
+//      updateShowPercent();
         setColorsFromContext(context);
         // Init to not dark at all.
         onDarkChanged(new Rect(), 0, DarkIconDispatcher.DEFAULT_ICON_TINT);
@@ -153,7 +153,7 @@ public class BatteryMeterView extends LinearLayout implements
 
     public void setForceShowPercent(boolean show) {
         mForceShowPercent = show;
-        updateShowPercent();
+//      updateShowPercent();
     }
 
     /**
@@ -217,7 +217,7 @@ public class BatteryMeterView extends LinearLayout implements
         mUser = ActivityManager.getCurrentUser();
         getContext().getContentResolver().registerContentObserver(
                 Settings.System.getUriFor(SHOW_BATTERY_PERCENT), false, mSettingObserver, mUser);
-        updateShowPercent();
+//      updateShowPercent();
         Dependency.get(TunerService.class)
                 .addTunable(this, StatusBarIconController.ICON_BLACKLIST);
         Dependency.get(ConfigurationController.class).addCallback(this);
@@ -236,7 +236,7 @@ public class BatteryMeterView extends LinearLayout implements
 
     @Override
     public void onBatteryLevelChanged(int level, boolean pluggedIn, boolean charging) {
-        mDrawable.setBatteryLevel(level);
+//      mDrawable.setBatteryLevel(level);
         mDrawable.setCharging(pluggedIn);
         mLevel = level;
         updatePercentText();
@@ -288,7 +288,7 @@ public class BatteryMeterView extends LinearLayout implements
 
     @Override
     public void onDensityOrFontScaleChanged() {
-        scaleBatteryMeterViews();
+//      scaleBatteryMeterViews();
     }
 
     /**
@@ -356,7 +356,7 @@ public class BatteryMeterView extends LinearLayout implements
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             super.onChange(selfChange, uri);
-            updateShowPercent();
+//          updateShowPercent();
         }
     }
 }
