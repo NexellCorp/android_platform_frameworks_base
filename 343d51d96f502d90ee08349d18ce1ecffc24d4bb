@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "0707ceac_212a5ef5",
+        "filename": "services/java/com/android/server/SystemServer.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 1303,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-09-02T01:23:33Z",
+      "side": 1,
+      "message": "I think this code is not needed in pie.",
+      "range": {
+        "startLine": 1303,
+        "startChar": 0,
+        "endLine": 1303,
+        "endChar": 1
+      },
+      "revId": "343d51d96f502d90ee08349d18ce1ecffc24d4bb",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    },
+    {
+      "key": {
+        "uuid": "501bcb91_2e607800",
+        "filename": "services/usb/java/com/android/server/usb/UsbAlsaManager.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 155,
+      "author": {
+        "id": 1015389
+      },
+      "writtenOn": "2019-09-02T01:23:33Z",
+      "side": 1,
+      "message": "I think we need adding guard for this code.",
+      "revId": "343d51d96f502d90ee08349d18ce1ecffc24d4bb",
+      "serverId": "d5d70762-12d0-45a1-890d-524b12d3f735",
+      "unresolved": true
+    }
+  ]
+}
