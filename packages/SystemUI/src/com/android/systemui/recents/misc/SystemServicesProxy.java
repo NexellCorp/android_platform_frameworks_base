@@ -75,6 +75,8 @@ import com.android.systemui.statusbar.policy.UserInfoController;
 
 import java.util.List;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Acts as a shim around the real system services that we need to access data from, and provides
  * a point of injection when testing UI.
@@ -508,10 +510,12 @@ public class SystemServicesProxy {
     }
 
     public boolean isDreaming() {
-        try {
-            return mDreamManager.isDreaming();
-        } catch (RemoteException e) {
-            Log.e(TAG, "Failed to query dream manager.", e);
+        if (!QUICKBOOT) {
+            try {
+                return mDreamManager.isDreaming();
+            } catch (RemoteException e) {
+                Log.e(TAG, "Failed to query dream manager.", e);
+            }
         }
         return false;
     }
