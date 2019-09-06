@@ -108,6 +108,8 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.function.Consumer;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Class to handle ugly dependencies throughout sysui until we determine the
  * long-term dependency injection solution.
@@ -172,18 +174,11 @@ public class Dependency extends SystemUI {
         mProviders.put(AsyncSensorManager.class, () ->
                 new AsyncSensorManager(mContext.getSystemService(SensorManager.class)));
 
-        mProviders.put(BluetoothController.class, () ->
-                new BluetoothControllerImpl(mContext, getDependency(BG_LOOPER)));
-
         mProviders.put(LocationController.class, () ->
                 new LocationControllerImpl(mContext, getDependency(BG_LOOPER)));
 
         mProviders.put(RotationLockController.class, () ->
                 new RotationLockControllerImpl(mContext));
-
-        mProviders.put(NetworkController.class, () ->
-                new NetworkControllerImpl(mContext, getDependency(BG_LOOPER),
-                        getDependency(DeviceProvisionedController.class)));
 
         mProviders.put(ZenModeController.class, () ->
                 new ZenModeControllerImpl(mContext, getDependency(MAIN_HANDLER)));
@@ -202,7 +197,7 @@ public class Dependency extends SystemUI {
 
         mProviders.put(UserSwitcherController.class, () ->
                 new UserSwitcherController(mContext, getDependency(KeyguardMonitor.class),
-                        getDependency(MAIN_HANDLER), getDependency(ActivityStarter.class)));
+                    getDependency(MAIN_HANDLER), getDependency(ActivityStarter.class)));
 
         mProviders.put(UserInfoController.class, () ->
                 new UserInfoControllerImpl(mContext));
@@ -242,24 +237,21 @@ public class Dependency extends SystemUI {
         mProviders.put(LEAK_REPORT_EMAIL, () -> null);
 
         mProviders.put(LeakReporter.class, () -> new LeakReporter(
-                mContext,
-                getDependency(LeakDetector.class),
-                getDependency(LEAK_REPORT_EMAIL)));
+                    mContext,
+                    getDependency(LeakDetector.class),
+                    getDependency(LEAK_REPORT_EMAIL)));
 
         mProviders.put(
                 GarbageMonitor.class,
                 () ->
-                        new GarbageMonitor(
-                                mContext,
-                                getDependency(BG_LOOPER),
-                                getDependency(LeakDetector.class),
-                                getDependency(LeakReporter.class)));
+                new GarbageMonitor(
+                    mContext,
+                    getDependency(BG_LOOPER),
+                    getDependency(LeakDetector.class),
+                    getDependency(LeakReporter.class)));
 
         mProviders.put(TunerService.class, () ->
                 new TunerServiceImpl(mContext));
-
-        mProviders.put(StatusBarWindowManager.class, () ->
-                new StatusBarWindowManager(mContext));
 
         mProviders.put(DarkIconDispatcher.class, () ->
                 new DarkIconDispatcherImpl(mContext));
@@ -291,7 +283,6 @@ public class Dependency extends SystemUI {
         mProviders.put(VolumeDialogController.class, () ->
                 new VolumeDialogControllerImpl(mContext));
 
-        mProviders.put(MetricsLogger.class, () -> new MetricsLogger());
 
         mProviders.put(AccessibilityManagerWrapper.class,
                 () -> new AccessibilityManagerWrapper(mContext));
@@ -311,7 +302,7 @@ public class Dependency extends SystemUI {
         mProviders.put(PowerUI.WarningsUI.class, () -> new PowerNotificationWarnings(mContext));
 
         mProviders.put(IconLogger.class, () -> new IconLoggerImpl(mContext,
-                getDependency(BG_LOOPER), getDependency(MetricsLogger.class)));
+                    getDependency(BG_LOOPER), getDependency(MetricsLogger.class)));
 
         mProviders.put(LightBarController.class, () -> new LightBarController(mContext));
 
@@ -325,8 +316,20 @@ public class Dependency extends SystemUI {
 
         mProviders.put(VibratorHelper.class, () -> new VibratorHelper(mContext));
 
+        mProviders.put(BluetoothController.class, () ->
+                new BluetoothControllerImpl(mContext, getDependency(BG_LOOPER)));
+
+        mProviders.put(NetworkController.class, () ->
+                new NetworkControllerImpl(mContext, getDependency(BG_LOOPER),
+                    getDependency(DeviceProvisionedController.class)));
+
+        mProviders.put(StatusBarWindowManager.class, () ->
+                new StatusBarWindowManager(mContext));
+
         mProviders.put(IStatusBarService.class, () -> IStatusBarService.Stub.asInterface(
-                ServiceManager.getService(Context.STATUS_BAR_SERVICE)));
+                    ServiceManager.getService(Context.STATUS_BAR_SERVICE)));
+
+        mProviders.put(MetricsLogger.class, () -> new MetricsLogger());
 
         // Put all dependencies above here so the factory can override them if it wants.
         SystemUIFactory.getInstance().injectDependencies(mProviders, mContext);

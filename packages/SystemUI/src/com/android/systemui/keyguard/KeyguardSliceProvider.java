@@ -51,6 +51,8 @@ import androidx.slice.builders.ListBuilder;
 import androidx.slice.builders.ListBuilder.RowBuilder;
 import androidx.slice.builders.SliceAction;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Simple Slice provider that shows the current date.
  */
@@ -178,6 +180,9 @@ public class KeyguardSliceProvider extends SliceProvider implements
      * Return true if DND is enabled suppressing notifications.
      */
     protected boolean isDndSuppressingNotifications() {
+        if (QUICKBOOT) {
+            return false;
+        }
         boolean suppressingNotifications = (mZenModeController.getConfig().suppressedVisualEffects
                 & NotificationManager.Policy.SUPPRESSED_EFFECT_NOTIFICATION_LIST) != 0;
         return mZenModeController.getZen() != Settings.Global.ZEN_MODE_OFF
@@ -190,8 +195,10 @@ public class KeyguardSliceProvider extends SliceProvider implements
         mContentResolver = getContext().getContentResolver();
         mNextAlarmController = new NextAlarmControllerImpl(getContext());
         mNextAlarmController.addCallback(this);
-        mZenModeController = new ZenModeControllerImpl(getContext(), mHandler);
-        mZenModeController.addCallback(this);
+        if (!QUICKBOOT) {
+            mZenModeController = new ZenModeControllerImpl(getContext(), mHandler);
+            mZenModeController.addCallback(this);
+        }
         mDatePattern = getContext().getString(R.string.system_ui_aod_date_pattern);
         registerClockUpdate();
         updateClock();

@@ -26,6 +26,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Manages creating, starting, and other lifecycle events of
  * {@link com.android.server.SystemService system services}.
@@ -139,7 +141,12 @@ public class SystemServiceManager {
      */
     public void startBootPhase(final int phase) {
         if (phase <= mCurrentPhase) {
-            throw new IllegalArgumentException("Next phase must be larger than previous");
+            if (QUICKBOOT) {
+                Slog.w(TAG, "new phase is older than current phase --> new: " + phase + ", current: " + mCurrentPhase);
+                return;
+            } else {
+                throw new IllegalArgumentException("Next phase must be larger than previous");
+            }
         }
         mCurrentPhase = phase;
 

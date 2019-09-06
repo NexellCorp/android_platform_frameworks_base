@@ -514,6 +514,8 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 public class ActivityManagerService extends IActivityManager.Stub
         implements Watchdog.Monitor, BatteryStatsImpl.BatteryCallback {
 
@@ -15333,6 +15335,10 @@ public class ActivityManagerService extends IActivityManager.Stub
                     throw e.rethrowAsRuntimeException();
                 }
             }
+
+            if (QUICKBOOT)
+                ensureBootCompleted();
+
             startHomeActivityLocked(currentUserId, "systemReady");
 
             try {

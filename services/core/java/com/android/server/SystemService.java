@@ -89,6 +89,11 @@ public abstract class SystemService {
      */
     public static final int PHASE_BOOT_COMPLETED = 1000;
 
+    /**
+     * Nexell added for QUICKBOOT
+     */
+    public static final int PHASE_LATE_BOOT_COMPLETED = 2000;
+
     private final Context mContext;
 
     /**

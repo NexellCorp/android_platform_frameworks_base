@@ -29,6 +29,8 @@ import android.util.proto.ProtoOutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * This class gives you control of the power state of the device.
  *
@@ -1492,24 +1494,26 @@ public final class PowerManager {
         }
 
         private void acquireLocked() {
-            mInternalCount++;
-            mExternalCount++;
-            if (!mRefCounted || mInternalCount == 1) {
-                // Do this even if the wake lock is already thought to be held (mHeld == true)
-                // because non-reference counted wake locks are not always properly released.
-                // For example, the keyguard's wake lock might be forcibly released by the
-                // power manager without the keyguard knowing.  A subsequent call to acquire
-                // should immediately acquire the wake lock once again despite never having
-                // been explicitly released by the keyguard.
-                mHandler.removeCallbacks(mReleaser);
-                Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, mTraceName, 0);
-                try {
-                    mService.acquireWakeLock(mToken, mFlags, mTag, mPackageName, mWorkSource,
-                            mHistoryTag);
-                } catch (RemoteException e) {
-                    throw e.rethrowFromSystemServer();
+            if (!QUICKBOOT) {
+                mInternalCount++;
+                mExternalCount++;
+                if (!mRefCounted || mInternalCount == 1) {
+                    // Do this even if the wake lock is already thought to be held (mHeld == true)
+                    // because non-reference counted wake locks are not always properly released.
+                    // For example, the keyguard's wake lock might be forcibly released by the
+                    // power manager without the keyguard knowing.  A subsequent call to acquire
+                    // should immediately acquire the wake lock once again despite never having
+                    // been explicitly released by the keyguard.
+                    mHandler.removeCallbacks(mReleaser);
+                    Trace.asyncTraceBegin(Trace.TRACE_TAG_POWER, mTraceName, 0);
+                    try {
+                        mService.acquireWakeLock(mToken, mFlags, mTag, mPackageName, mWorkSource,
+                                mHistoryTag);
+                    } catch (RemoteException e) {
+                        throw e.rethrowFromSystemServer();
+                    }
+                    mHeld = true;
                 }
-                mHeld = true;
             }
         }
 
@@ -1538,29 +1542,31 @@ public final class PowerManager {
          * Passing 0 is equivalent to calling {@link #release()}.
          */
         public void release(int flags) {
-            synchronized (mToken) {
-                if (mInternalCount > 0) {
-                    // internal count must only be decreased if it is > 0 or state of
-                    // the WakeLock object is broken.
-                    mInternalCount--;
-                }
-                if ((flags & RELEASE_FLAG_TIMEOUT) == 0) {
-                    mExternalCount--;
-                }
-                if (!mRefCounted || mInternalCount == 0) {
-                    mHandler.removeCallbacks(mReleaser);
-                    if (mHeld) {
-                        Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
-                        try {
-                            mService.releaseWakeLock(mToken, flags);
-                        } catch (RemoteException e) {
-                            throw e.rethrowFromSystemServer();
-                        }
-                        mHeld = false;
+            if (!QUICKBOOT) {
+                synchronized (mToken) {
+                    if (mInternalCount > 0) {
+                        // internal count must only be decreased if it is > 0 or state of
+                        // the WakeLock object is broken.
+                        mInternalCount--;
                     }
-                }
-                if (mRefCounted && mExternalCount < 0) {
-                    throw new RuntimeException("WakeLock under-locked " + mTag);
+                    if ((flags & RELEASE_FLAG_TIMEOUT) == 0) {
+                        mExternalCount--;
+                    }
+                    if (!mRefCounted || mInternalCount == 0) {
+                        mHandler.removeCallbacks(mReleaser);
+                        if (mHeld) {
+                            Trace.asyncTraceEnd(Trace.TRACE_TAG_POWER, mTraceName, 0);
+                            try {
+                                mService.releaseWakeLock(mToken, flags);
+                            } catch (RemoteException e) {
+                                throw e.rethrowFromSystemServer();
+                            }
+                            mHeld = false;
+                        }
+                    }
+                    if (mRefCounted && mExternalCount < 0) {
+                        throw new RuntimeException("WakeLock under-locked " + mTag);
+                    }
                 }
             }
         }

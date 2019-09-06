@@ -66,6 +66,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED;
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
 
 /** Platform implementation of the network controller. **/
 public class NetworkControllerImpl extends BroadcastReceiver
@@ -179,8 +180,12 @@ public class NetworkControllerImpl extends BroadcastReceiver
         mSubscriptionManager = subManager;
         mSubDefaults = defaultsHandler;
         mConnectivityManager = connectivityManager;
-        mHasMobileDataFeature =
+        if (!QUICKBOOT) {
+            mHasMobileDataFeature =
                 mConnectivityManager.isNetworkSupported(ConnectivityManager.TYPE_MOBILE);
+        } else {
+            mHasMobileDataFeature = false;
+        }
 
         // telephony
         mPhone = telephonyManager;
@@ -199,8 +204,12 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 mCallbackHandler.setMobileDataEnabled(enabled);
             }
         });
-        mWifiSignalController = new WifiSignalController(mContext, mHasMobileDataFeature,
-                mCallbackHandler, this, mWifiManager);
+        if (!QUICKBOOT) {
+            mWifiSignalController = new WifiSignalController(mContext, mHasMobileDataFeature,
+                    mCallbackHandler, this, mWifiManager);
+        } else {
+            mWifiSignalController = null;
+        }
 
         mEthernetSignalController = new EthernetSignalController(mContext, mCallbackHandler, this);
 
@@ -251,7 +260,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
         // scratch.
         // TODO: Move off of the deprecated CONNECTIVITY_ACTION broadcast and rely on callbacks
         // exclusively for status bar icons.
-        mConnectivityManager.registerDefaultNetworkCallback(callback, mReceiverHandler);
+        if (!QUICKBOOT)
+            mConnectivityManager.registerDefaultNetworkCallback(callback, mReceiverHandler);
     }
 
     public DataSaverController getDataSaverController() {
@@ -299,7 +309,10 @@ public class NetworkControllerImpl extends BroadcastReceiver
     }
 
     public int getConnectedWifiLevel() {
-        return mWifiSignalController.getState().level;
+        if (mWifiSignalController != null)
+            return mWifiSignalController.getState().level;
+        else
+            return 0;
     }
 
     @Override
@@ -401,7 +414,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
         cb.setIsAirplaneMode(new IconState(mAirplaneMode,
                 TelephonyIcons.FLIGHT_MODE_ICON, R.string.accessibility_airplane_mode, mContext));
         cb.setNoSims(mHasNoSubs, mSimDetected);
-        mWifiSignalController.notifyListeners(cb);
+        if (mWifiSignalController != null)
+            mWifiSignalController.notifyListeners(cb);
         mEthernetSignalController.notifyListeners(cb);
         for (int i = 0; i < mMobileSignalControllers.size(); i++) {
             MobileSignalController mobileSignalController = mMobileSignalControllers.valueAt(i);
@@ -491,7 +505,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
                     }
                 } else {
                     // No sub id, must be for the wifi.
-                    mWifiSignalController.handleBroadcast(intent);
+                    if (mWifiSignalController != null)
+                        mWifiSignalController.handleBroadcast(intent);
                 }
                 break;
         }
@@ -679,7 +694,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
             MobileSignalController mobileSignalController = mMobileSignalControllers.valueAt(i);
             mobileSignalController.notifyListeners();
         }
-        mWifiSignalController.notifyListeners();
+        if (mWifiSignalController != null)
+            mWifiSignalController.notifyListeners();
         mEthernetSignalController.notifyListeners();
     }
 
@@ -700,14 +716,16 @@ public class NetworkControllerImpl extends BroadcastReceiver
     private void updateConnectivity() {
         mConnectedTransports.clear();
         mValidatedTransports.clear();
-        for (NetworkCapabilities nc :
-                mConnectivityManager.getDefaultNetworkCapabilitiesForUser(mCurrentUserId)) {
-            for (int transportType : nc.getTransportTypes()) {
-                mConnectedTransports.set(transportType);
-                if (nc.hasCapability(NET_CAPABILITY_VALIDATED)) {
-                    mValidatedTransports.set(transportType);
+        if (!QUICKBOOT) {
+            for (NetworkCapabilities nc :
+                    mConnectivityManager.getDefaultNetworkCapabilitiesForUser(mCurrentUserId)) {
+                for (int transportType : nc.getTransportTypes()) {
+                    mConnectedTransports.set(transportType);
+                    if (nc.hasCapability(NET_CAPABILITY_VALIDATED)) {
+                        mValidatedTransports.set(transportType);
+                    }
                 }
-            }
+                    }
         }
 
         if (CHATTY) {
@@ -729,7 +747,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
             MobileSignalController mobileSignalController = mMobileSignalControllers.valueAt(i);
             mobileSignalController.updateConnectivity(mConnectedTransports, mValidatedTransports);
         }
-        mWifiSignalController.updateConnectivity(mConnectedTransports, mValidatedTransports);
+        if (mWifiSignalController != null)
+            mWifiSignalController.updateConnectivity(mConnectedTransports, mValidatedTransports);
         mEthernetSignalController.updateConnectivity(mConnectedTransports, mValidatedTransports);
     }
 
@@ -762,7 +781,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
             MobileSignalController mobileSignalController = mMobileSignalControllers.valueAt(i);
             mobileSignalController.dump(pw);
         }
-        mWifiSignalController.dump(pw);
+        if (mWifiSignalController != null)
+            mWifiSignalController.dump(pw);
 
         mEthernetSignalController.dump(pw);
 
@@ -808,7 +828,8 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 MobileSignalController controller = mMobileSignalControllers.valueAt(i);
                 controller.resetLastState();
             }
-            mWifiSignalController.resetLastState();
+            if (mWifiSignalController != null)
+                mWifiSignalController.resetLastState();
             mReceiverHandler.post(mRegisterListeners);
             notifyAllListeners();
         } else if (mDemoMode && command.equals(COMMAND_NETWORK)) {
@@ -825,9 +846,11 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 BitSet connected = new BitSet();
 
                 if (mDemoInetCondition) {
-                    connected.set(mWifiSignalController.mTransportType);
+                    if (mWifiSignalController != null)
+                        connected.set(mWifiSignalController.mTransportType);
                 }
-                mWifiSignalController.updateConnectivity(connected, connected);
+                if (mWifiSignalController != null)
+                    mWifiSignalController.updateConnectivity(connected, connected);
                 for (int i = 0; i < mMobileSignalControllers.size(); i++) {
                     MobileSignalController controller = mMobileSignalControllers.valueAt(i);
                     if (mDemoInetCondition) {
@@ -849,27 +872,33 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 if (activity != null) {
                     switch (activity) {
                         case "inout":
-                            mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_INOUT);
+                            if (mWifiSignalController != null)
+                                mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_INOUT);
                             break;
                         case "in":
-                            mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_IN);
+                            if (mWifiSignalController != null)
+                                mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_IN);
                             break;
                         case "out":
-                            mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_OUT);
+                            if (mWifiSignalController != null)
+                                mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_OUT);
                             break;
                         default:
-                            mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_NONE);
+                            if (mWifiSignalController != null)
+                                mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_NONE);
                             break;
                     }
                 } else {
-                    mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_NONE);
+                    if (mWifiSignalController != null)
+                        mWifiSignalController.setActivity(WifiManager.DATA_ACTIVITY_NONE);
                 }
                 String ssid = args.getString("ssid");
                 if (ssid != null) {
                     mDemoWifiState.ssid = ssid;
                 }
                 mDemoWifiState.enabled = show;
-                mWifiSignalController.notifyListeners();
+                if (mWifiSignalController != null)
+                    mWifiSignalController.notifyListeners();
             }
             String sims = args.getString("sims");
             if (sims != null) {

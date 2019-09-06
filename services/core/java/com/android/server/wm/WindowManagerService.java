@@ -268,6 +268,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /** {@hide} */
 public class WindowManagerService extends IWindowManager.Stub
         implements Watchdog.Monitor, WindowManagerPolicy.WindowManagerFuncs {
@@ -3364,7 +3367,11 @@ public class WindowManagerService extends IWindowManager.Stub
             hideBootMessagesLocked();
             // If the screen still doesn't come up after 30 seconds, give
             // up and turn it on.
-            mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, 30 * 1000);
+            if (QUICKBOOT) {
+                mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, 1 * 1000);
+            } else {
+                mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, 30 * 1000);
+            }
         }
 
         mPolicy.systemBooted();
