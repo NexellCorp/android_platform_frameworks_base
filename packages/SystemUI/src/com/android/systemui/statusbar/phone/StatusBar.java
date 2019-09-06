@@ -250,6 +250,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
 
 public class StatusBar extends SystemUI implements DemoMode,
         DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
@@ -326,7 +327,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     private static final boolean ONLY_CORE_APPS;
 
     /** If true, the lockscreen will show a distinct wallpaper */
-    private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = false;
+    private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = !QUICKBOOT;
 
     /** Whether to force dark theme if Configuration.UI_MODE_NIGHT_YES. */
     private static final boolean DARK_THEME_IN_NIGHT_MODE = true;
