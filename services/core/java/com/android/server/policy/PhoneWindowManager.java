@@ -296,6 +296,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * WindowManagerPolicy implementation for the Android phone UI.  This
  * introduces a new method suffix, Lp, for an internal lock of the
@@ -5695,11 +5697,13 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     private void applyKeyguardPolicyLw(WindowState win, WindowState imeTarget) {
-        if (canBeHiddenByKeyguardLw(win)) {
-            if (shouldBeHiddenByKeyguard(win, imeTarget)) {
-                win.hideLw(false /* doAnimation */);
-            } else {
-                win.showLw(false /* doAnimation */);
+        if (!QUICKBOOT) {
+            if (canBeHiddenByKeyguardLw(win)) {
+                if (shouldBeHiddenByKeyguard(win, imeTarget)) {
+                    win.hideLw(false /* doAnimation */);
+                } else {
+                    win.showLw(false /* doAnimation */);
+                }
             }
         }
     }

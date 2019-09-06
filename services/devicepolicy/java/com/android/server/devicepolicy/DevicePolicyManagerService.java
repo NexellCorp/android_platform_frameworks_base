@@ -264,6 +264,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Implementation of the device policy APIs.
  */
@@ -3351,18 +3353,32 @@ public class DevicePolicyManagerService extends BaseIDevicePolicyManager {
         if (!mHasFeature) {
             return;
         }
-        switch (phase) {
-            case SystemService.PHASE_LOCK_SETTINGS_READY:
-                onLockSettingsReady();
-                loadAdminDataAsync();
-                mOwners.systemReady();
-                break;
-            case SystemService.PHASE_ACTIVITY_MANAGER_READY:
-                maybeStartSecurityLogMonitorOnActivityManagerReady();
-                break;
-            case SystemService.PHASE_BOOT_COMPLETED:
-                ensureDeviceOwnerUserStarted(); // TODO Consider better place to do this.
-                break;
+        if (!QUICKBOOT) {
+            switch (phase) {
+                case SystemService.PHASE_LOCK_SETTINGS_READY:
+                    onLockSettingsReady();
+                    loadAdminDataAsync();
+                    mOwners.systemReady();
+                    break;
+                case SystemService.PHASE_ACTIVITY_MANAGER_READY:
+                    maybeStartSecurityLogMonitorOnActivityManagerReady();
+                    break;
+                case SystemService.PHASE_BOOT_COMPLETED:
+                    if (!QUICKBOOT) {
+                        ensureDeviceOwnerUserStarted(); // TODO Consider better place to do this.
+                    }
+                    break;
+            }
+        } else {
+            switch (phase) {
+                case SystemService.PHASE_LATE_BOOT_COMPLETED:
+                    onLockSettingsReady();
+                    loadAdminDataAsync();
+                    mOwners.systemReady();
+                    maybeStartSecurityLogMonitorOnActivityManagerReady();
+                    ensureDeviceOwnerUserStarted(); // TODO Consider better place to do this.
+                    break;
+            }
         }
     }
 

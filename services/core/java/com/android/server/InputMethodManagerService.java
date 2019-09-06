@@ -175,6 +175,8 @@ import java.util.Locale;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * This class provides a system service that manages input methods.
  */
@@ -1516,8 +1518,16 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                 final int currentUserId = mSettings.getCurrentUserId();
                 mSettings.switchCurrentUser(currentUserId,
                         !mUserManager.isUserUnlockingOrUnlocked(currentUserId));
-                mKeyguardManager = mContext.getSystemService(KeyguardManager.class);
-                mNotificationManager = mContext.getSystemService(NotificationManager.class);
+                if (QUICKBOOT) {
+                    mKeyguardManager = null;
+                } else {
+                    mKeyguardManager = mContext.getSystemService(KeyguardManager.class);
+                }
+                if (QUICKBOOT) {
+                    mNotificationManager = null;
+                } else {
+                    mNotificationManager = mContext.getSystemService(NotificationManager.class);
+                }
                 mStatusBar = statusBar;
                 if (mStatusBar != null) {
                     mStatusBar.setIconVisibility(mSlotIme, false);
@@ -1546,9 +1556,11 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                 buildInputMethodListLocked(!imeSelectedOnBoot /* resetDefaultEnabledIme */);
                 resetDefaultImeLocked(mContext);
                 updateFromSettingsLocked(true);
-                InputMethodUtils.setNonSelectedSystemImesDisabledUntilUsed(mIPackageManager,
-                        mSettings.getEnabledInputMethodListLocked(), currentUserId,
-                        mContext.getBasePackageName());
+                if (!QUICKBOOT) {
+                    InputMethodUtils.setNonSelectedSystemImesDisabledUntilUsed(mIPackageManager,
+                            mSettings.getEnabledInputMethodListLocked(), currentUserId,
+                            mContext.getBasePackageName());
+                }
 
                 try {
                     startInputInnerLocked();

@@ -61,6 +61,8 @@ import com.android.systemui.statusbar.policy.SmartReplyConstants;
 
 import java.util.function.Consumer;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Class factory to provide customizable SystemUI components.
  */
@@ -149,7 +151,8 @@ public class SystemUIFactory {
         providers.put(NotificationEntryManager.class, () -> new NotificationEntryManager(context));
         providers.put(KeyguardDismissUtil.class, KeyguardDismissUtil::new);
         providers.put(SmartReplyController.class, () -> new SmartReplyController());
-        providers.put(RemoteInputQuickSettingsDisabler.class,
-                () -> new RemoteInputQuickSettingsDisabler(context));
+        if (!QUICKBOOT)
+            providers.put(RemoteInputQuickSettingsDisabler.class,
+                    () -> new RemoteInputQuickSettingsDisabler(context));
     }
 }

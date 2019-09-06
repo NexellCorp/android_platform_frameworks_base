@@ -109,6 +109,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * The power manager service is responsible for coordinating power management
  * functions on the device.
@@ -737,11 +739,60 @@ public final class PowerManagerService extends SystemService
                     }
                 }
                 mBootCompletedRunnables = null;
+            } else if (QUICKBOOT && phase == PHASE_LATE_BOOT_COMPLETED) {
+                mBootCompleted = true;
+                mDreamManager = getLocalService(DreamManagerInternal.class);
+                mDisplayManagerInternal = getLocalService(DisplayManagerInternal.class);
+                mPolicy = getLocalService(WindowManagerPolicy.class);
+                mBatteryManagerInternal = getLocalService(BatteryManagerInternal.class);
+
+                PowerManager pm = (PowerManager) mContext.getSystemService(Context.POWER_SERVICE);
+                mScreenBrightnessSettingMinimum = pm.getMinimumScreenBrightnessSetting();
+                mScreenBrightnessSettingMaximum = pm.getMaximumScreenBrightnessSetting();
+                mScreenBrightnessSettingDefault = pm.getDefaultScreenBrightnessSetting();
+
+                SensorManager sensorManager = new SystemSensorManager(mContext, mHandler.getLooper());
+
+                // The notifier runs on the system server's main looper so as not to interfere
+                // with the animations and other critical functions of the power manager.
+                mBatteryStats = BatteryStatsService.getService();
+                mNotifier = new Notifier(Looper.getMainLooper(), mContext, mBatteryStats,
+                        createSuspendBlockerLocked("PowerManagerService.Broadcasts"), mPolicy);
+
+                mWirelessChargerDetector = new WirelessChargerDetector(sensorManager,
+                        createSuspendBlockerLocked("PowerManagerService.WirelessChargerDetector"),
+                        mHandler);
+                mSettingsObserver = new SettingsObserver(mHandler);
+
+                mLightsManager = getLocalService(LightsManager.class);
+                mAttentionLight = mLightsManager.getLight(LightsManager.LIGHT_ID_ATTENTION);
+
+                // Initialize display power management.
+                mDisplayManagerInternal.initPowerManagement(
+                        mDisplayPowerCallbacks, mHandler, sensorManager);
+
+                try {
+                    final ForegroundProfileObserver observer = new ForegroundProfileObserver();
+                    ActivityManager.getService().registerUserSwitchObserver(observer, TAG);
+                } catch (RemoteException e) {
+                    // Shouldn't happen since in-process.
+                }
+
+                // Go.
+                readConfigurationLocked();
+                updateSettingsLocked();
+                mDirty |= DIRTY_BATTERY_STATE;
+                updatePowerStateLocked();
             }
         }
     }
 
     public void systemReady(IAppOpsService appOps) {
+        if (QUICKBOOT) {
+            mSystemReady = true;
+            mAppOps = appOps;
+            return;
+        }
         synchronized (mLock) {
             mSystemReady = true;
             mAppOps = appOps;
@@ -1157,12 +1208,14 @@ public final class PowerManagerService extends SystemService
     }
 
     private void notifyWakeLockAcquiredLocked(WakeLock wakeLock) {
-        if (mSystemReady && !wakeLock.mDisabled) {
-            wakeLock.mNotifiedAcquired = true;
-            mNotifier.onWakeLockAcquired(wakeLock.mFlags, wakeLock.mTag, wakeLock.mPackageName,
-                    wakeLock.mOwnerUid, wakeLock.mOwnerPid, wakeLock.mWorkSource,
-                    wakeLock.mHistoryTag);
-            restartNofifyLongTimerLocked(wakeLock);
+        if (!QUICKBOOT) {
+            if (mSystemReady && !wakeLock.mDisabled) {
+                wakeLock.mNotifiedAcquired = true;
+                mNotifier.onWakeLockAcquired(wakeLock.mFlags, wakeLock.mTag, wakeLock.mPackageName,
+                        wakeLock.mOwnerUid, wakeLock.mOwnerPid, wakeLock.mWorkSource,
+                        wakeLock.mHistoryTag);
+                restartNofifyLongTimerLocked(wakeLock);
+            }
         }
     }
 
@@ -1182,44 +1235,52 @@ public final class PowerManagerService extends SystemService
     }
 
     private void notifyWakeLockLongStartedLocked(WakeLock wakeLock) {
-        if (mSystemReady && !wakeLock.mDisabled) {
-            wakeLock.mNotifiedLong = true;
-            mNotifier.onLongPartialWakeLockStart(wakeLock.mTag, wakeLock.mOwnerUid,
-                    wakeLock.mWorkSource, wakeLock.mHistoryTag);
+        if (!QUICKBOOT) {
+            if (mSystemReady && !wakeLock.mDisabled) {
+                wakeLock.mNotifiedLong = true;
+                mNotifier.onLongPartialWakeLockStart(wakeLock.mTag, wakeLock.mOwnerUid,
+                        wakeLock.mWorkSource, wakeLock.mHistoryTag);
+            }
         }
     }
 
     private void notifyWakeLockLongFinishedLocked(WakeLock wakeLock) {
-        if (wakeLock.mNotifiedLong) {
-            wakeLock.mNotifiedLong = false;
-            mNotifier.onLongPartialWakeLockFinish(wakeLock.mTag, wakeLock.mOwnerUid,
-                    wakeLock.mWorkSource, wakeLock.mHistoryTag);
+        if (!QUICKBOOT) {
+            if (wakeLock.mNotifiedLong) {
+                wakeLock.mNotifiedLong = false;
+                mNotifier.onLongPartialWakeLockFinish(wakeLock.mTag, wakeLock.mOwnerUid,
+                        wakeLock.mWorkSource, wakeLock.mHistoryTag);
+            }
         }
     }
 
     private void notifyWakeLockChangingLocked(WakeLock wakeLock, int flags, String tag,
             String packageName, int uid, int pid, WorkSource ws, String historyTag) {
-        if (mSystemReady && wakeLock.mNotifiedAcquired) {
-            mNotifier.onWakeLockChanging(wakeLock.mFlags, wakeLock.mTag, wakeLock.mPackageName,
-                    wakeLock.mOwnerUid, wakeLock.mOwnerPid, wakeLock.mWorkSource,
-                    wakeLock.mHistoryTag, flags, tag, packageName, uid, pid, ws, historyTag);
-            notifyWakeLockLongFinishedLocked(wakeLock);
-            // Changing the wake lock will count as releasing the old wake lock(s) and
-            // acquiring the new ones...  we do this because otherwise once a wakelock
-            // becomes long, if we just continued to treat it as long we can get in to
-            // situations where we spam battery stats with every following change to it.
-            restartNofifyLongTimerLocked(wakeLock);
+        if (!QUICKBOOT) {
+            if (mSystemReady && wakeLock.mNotifiedAcquired) {
+                mNotifier.onWakeLockChanging(wakeLock.mFlags, wakeLock.mTag, wakeLock.mPackageName,
+                        wakeLock.mOwnerUid, wakeLock.mOwnerPid, wakeLock.mWorkSource,
+                        wakeLock.mHistoryTag, flags, tag, packageName, uid, pid, ws, historyTag);
+                notifyWakeLockLongFinishedLocked(wakeLock);
+                // Changing the wake lock will count as releasing the old wake lock(s) and
+                // acquiring the new ones...  we do this because otherwise once a wakelock
+                // becomes long, if we just continued to treat it as long we can get in to
+                // situations where we spam battery stats with every following change to it.
+                restartNofifyLongTimerLocked(wakeLock);
+            }
         }
     }
 
     private void notifyWakeLockReleasedLocked(WakeLock wakeLock) {
-        if (mSystemReady && wakeLock.mNotifiedAcquired) {
-            wakeLock.mNotifiedAcquired = false;
-            wakeLock.mAcquireTime = 0;
-            mNotifier.onWakeLockReleased(wakeLock.mFlags, wakeLock.mTag,
-                    wakeLock.mPackageName, wakeLock.mOwnerUid, wakeLock.mOwnerPid,
-                    wakeLock.mWorkSource, wakeLock.mHistoryTag);
-            notifyWakeLockLongFinishedLocked(wakeLock);
+        if (!QUICKBOOT) {
+            if (mSystemReady && wakeLock.mNotifiedAcquired) {
+                wakeLock.mNotifiedAcquired = false;
+                wakeLock.mAcquireTime = 0;
+                mNotifier.onWakeLockReleased(wakeLock.mFlags, wakeLock.mTag,
+                        wakeLock.mPackageName, wakeLock.mOwnerUid, wakeLock.mOwnerPid,
+                        wakeLock.mWorkSource, wakeLock.mHistoryTag);
+                notifyWakeLockLongFinishedLocked(wakeLock);
+            }
         }
     }
 
@@ -1236,7 +1297,11 @@ public final class PowerManagerService extends SystemService
                     return true;
 
                 case PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK:
-                    return mSystemReady && mDisplayManagerInternal.isProximitySensorAvailable();
+                    if (QUICKBOOT) {
+                        return mSystemReady;
+                    } else {
+                        return mSystemReady && mDisplayManagerInternal.isProximitySensorAvailable();
+                    }
 
                 default:
                     return false;
@@ -1276,7 +1341,8 @@ public final class PowerManagerService extends SystemService
                 mLastInteractivePowerHintTime = eventTime;
             }
 
-            mNotifier.onUserActivity(event, uid);
+            if (mNotifier != null)
+                mNotifier.onUserActivity(event, uid);
 
             if (mUserInactiveOverrideFromWindowManager) {
                 mUserInactiveOverrideFromWindowManager = false;
@@ -1367,7 +1433,8 @@ public final class PowerManagerService extends SystemService
             mLastWakeTime = eventTime;
             setWakefulnessLocked(WAKEFULNESS_AWAKE, 0);
 
-            mNotifier.onWakeUp(reason, reasonUid, opPackageName, opUid);
+            if (mNotifier != null)
+                mNotifier.onWakeUp(reason, reasonUid, opPackageName, opUid);
             userActivityNoUpdateLocked(
                     eventTime, PowerManager.USER_ACTIVITY_EVENT_OTHER, 0, reasonUid);
         } finally {
@@ -1408,8 +1475,13 @@ public final class PowerManagerService extends SystemService
                             + "(uid " + uid +")...");
                     break;
                 case PowerManager.GO_TO_SLEEP_REASON_TIMEOUT:
-                    Slog.i(TAG, "Going to sleep due to screen timeout (uid " + uid +")...");
-                    break;
+                    if (!QUICKBOOT) {
+                        Slog.i(TAG, "Going to sleep due to screen timeout (uid " + uid +")...");
+                        break;
+                    } else {
+                        Slog.w(TAG, "Screen Timeout is not available in QUICKBOOT");
+                        return false;
+                    }
                 case PowerManager.GO_TO_SLEEP_REASON_LID_SWITCH:
                     Slog.i(TAG, "Going to sleep due to lid switch (uid " + uid +")...");
                     break;
@@ -1569,7 +1641,8 @@ public final class PowerManagerService extends SystemService
                 logScreenOn();
             }
             mWakefulnessChanging = false;
-            mNotifier.onWakefulnessChangeFinished();
+            if (!QUICKBOOT)
+                mNotifier.onWakefulnessChangeFinished();
         }
     }
 
@@ -1645,7 +1718,8 @@ public final class PowerManagerService extends SystemService
                 profile.mLockingNotified = false;
             } else if (!profile.mLockingNotified) {
                 profile.mLockingNotified = true;
-                mNotifier.onProfileTimeout(profile.mUserId);
+                if (!QUICKBOOT)
+                    mNotifier.onProfileTimeout(profile.mUserId);
             }
         }
     }
@@ -1702,7 +1776,7 @@ public final class PowerManagerService extends SystemService
 
                 // only play charging sounds if boot is completed so charging sounds don't play
                 // with potential notification sounds
-                if (mBootCompleted) {
+                if (mBootCompleted && !QUICKBOOT) {
                     if (mIsPowered && !BatteryManager.isPlugWired(oldPlugType)
                             && BatteryManager.isPlugWired(mPlugType)) {
                         mNotifier.onWiredChargingStarted();
@@ -2434,7 +2508,8 @@ public final class PowerManagerService extends SystemService
                     }
                 }
                 mScreenBrightnessBoostInProgress = false;
-                mNotifier.onScreenBrightnessBoostChanged();
+                if (!QUICKBOOT)
+                    mNotifier.onScreenBrightnessBoostChanged();
                 userActivityNoUpdateLocked(now,
                         PowerManager.USER_ACTIVITY_EVENT_OTHER, 0, Process.SYSTEM_UID);
             }
@@ -3044,7 +3119,8 @@ public final class PowerManagerService extends SystemService
             mLastScreenBrightnessBoostTime = eventTime;
             if (!mScreenBrightnessBoostInProgress) {
                 mScreenBrightnessBoostInProgress = true;
-                mNotifier.onScreenBrightnessBoostChanged();
+                if (!QUICKBOOT)
+                    mNotifier.onScreenBrightnessBoostChanged();
             }
             mDirty |= DIRTY_SCREEN_BRIGHTNESS_BOOST;
 
