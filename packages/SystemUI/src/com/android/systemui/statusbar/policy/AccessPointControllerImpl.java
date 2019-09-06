@@ -33,6 +33,7 @@ import com.android.systemui.R;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
 
 public class AccessPointControllerImpl
         implements NetworkController.AccessPointController, WifiListener {
@@ -61,14 +62,19 @@ public class AccessPointControllerImpl
     public AccessPointControllerImpl(Context context) {
         mContext = context;
         mUserManager = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
-        mWifiTracker = new WifiTracker(context, this, false, true);
+        if (!QUICKBOOT) {
+            mWifiTracker = new WifiTracker(context, this, false, true);
+        } else {
+            mWifiTracker = null;
+        }
         mCurrentUser = ActivityManager.getCurrentUser();
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        mWifiTracker.onDestroy();
+        if (mWifiTracker != null)
+            mWifiTracker.onDestroy();
     }
 
     public boolean canConfigWifi() {
@@ -86,7 +92,8 @@ public class AccessPointControllerImpl
         if (DEBUG) Log.d(TAG, "addCallback " + callback);
         mCallbacks.add(callback);
         if (mCallbacks.size() == 1) {
-            mWifiTracker.onStart();
+            if (mWifiTracker != null)
+                mWifiTracker.onStart();
         }
     }
 
@@ -96,13 +103,15 @@ public class AccessPointControllerImpl
         if (DEBUG) Log.d(TAG, "removeCallback " + callback);
         mCallbacks.remove(callback);
         if (mCallbacks.isEmpty()) {
-            mWifiTracker.onStop();
+            if (mWifiTracker != null)
+                mWifiTracker.onStop();
         }
     }
 
     @Override
     public void scanForAccessPoints() {
-        fireAcccessPointsCallback(mWifiTracker.getAccessPoints());
+        if (mWifiTracker != null)
+            fireAcccessPointsCallback(mWifiTracker.getAccessPoints());
     }
 
     @Override
@@ -115,7 +124,8 @@ public class AccessPointControllerImpl
         if (ap == null) return false;
         if (DEBUG) Log.d(TAG, "connect networkId=" + ap.getConfig().networkId);
         if (ap.isSaved()) {
-            mWifiTracker.getManager().connect(ap.getConfig().networkId, mConnectListener);
+            if (mWifiTracker != null)
+                mWifiTracker.getManager().connect(ap.getConfig().networkId, mConnectListener);
         } else {
             // Unknown network, need to add it.
             if (ap.getSecurity() != AccessPoint.SECURITY_NONE) {
@@ -126,7 +136,8 @@ public class AccessPointControllerImpl
                 return true;
             } else {
                 ap.generateOpenNetworkConfig();
-                mWifiTracker.getManager().connect(ap.getConfig(), mConnectListener);
+                if (mWifiTracker != null)
+                    mWifiTracker.getManager().connect(ap.getConfig(), mConnectListener);
             }
         }
         return false;
@@ -145,7 +156,8 @@ public class AccessPointControllerImpl
     }
 
     public void dump(PrintWriter pw) {
-        mWifiTracker.dump(pw);
+        if (mWifiTracker != null)
+            mWifiTracker.dump(pw);
     }
 
     @Override
@@ -154,12 +166,14 @@ public class AccessPointControllerImpl
 
     @Override
     public void onConnectedChanged() {
-        fireAcccessPointsCallback(mWifiTracker.getAccessPoints());
+        if (mWifiTracker != null)
+            fireAcccessPointsCallback(mWifiTracker.getAccessPoints());
     }
 
     @Override
     public void onAccessPointsChanged() {
-        fireAcccessPointsCallback(mWifiTracker.getAccessPoints());
+        if (mWifiTracker != null)
+            fireAcccessPointsCallback(mWifiTracker.getAccessPoints());
     }
 
     private final ActionListener mConnectListener = new ActionListener() {

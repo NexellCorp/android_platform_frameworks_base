@@ -96,6 +96,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Watches for updates that may be interesting to the keyguard, and provides
  * the up to date information as well as a registration for callbacks that care
@@ -517,7 +519,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
         Trace.beginSection("KeyGuardUpdateMonitor#onFingerPrintAuthenticated");
         mUserFingerprintAuthenticated.put(userId, true);
         // Update/refresh trust state only if user can skip bouncer
-        if (getUserCanSkipBouncer(userId)) {
+        if (!QUICKBOOT && getUserCanSkipBouncer(userId)) {
             mTrustManager.unlockedByFingerprintForUser(userId);
         }
         // Don't send cancel if authentication succeeds
@@ -1234,8 +1236,12 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
             e.rethrowAsRuntimeException();
         }
 
-        mTrustManager = (TrustManager) context.getSystemService(Context.TRUST_SERVICE);
-        mTrustManager.registerTrustListener(this);
+        if (!QUICKBOOT) {
+            mTrustManager = (TrustManager) context.getSystemService(Context.TRUST_SERVICE);
+            mTrustManager.registerTrustListener(this);
+        } else {
+            mTrustManager = null;
+        }
         mLockPatternUtils = new LockPatternUtils(context);
         mLockPatternUtils.registerStrongAuthTracker(mStrongAuthTracker);
 
@@ -1849,7 +1855,8 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
 
     public void clearFingerprintRecognized() {
         mUserFingerprintAuthenticated.clear();
-        mTrustManager.clearAllFingerprints();
+        if (!QUICKBOOT)
+            mTrustManager.clearAllFingerprints();
     }
 
     public boolean isSimPinVoiceSecure() {

@@ -115,6 +115,8 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Responsible for taking jobs representing work to be performed by a client app, and determining
  * based on the criteria specified when that job should be run against the client application's
@@ -174,11 +176,11 @@ public class JobSchedulerService extends com.android.server.SystemService
     /** List of controllers that will notify this service of updates to jobs. */
     private final List<StateController> mControllers;
     /** Need direct access to this for testing. */
-    private final BatteryController mBatteryController;
+    private BatteryController mBatteryController;
     /** Need direct access to this for testing. */
-    private final StorageController mStorageController;
+    private StorageController mStorageController;
     /** Need directly for sending uid state changes */
-    private final DeviceIdleJobsController mDeviceIdleJobsController;
+    private DeviceIdleJobsController mDeviceIdleJobsController;
 
     /**
      * Queue of pending jobs. The JobServiceContext class will receive jobs from this list
@@ -1150,17 +1152,19 @@ public class JobSchedulerService extends com.android.server.SystemService
 
         // Create the controllers.
         mControllers = new ArrayList<StateController>();
-        mControllers.add(new ConnectivityController(this));
-        mControllers.add(new TimeController(this));
-        mControllers.add(new IdleController(this));
-        mBatteryController = new BatteryController(this);
-        mControllers.add(mBatteryController);
-        mStorageController = new StorageController(this);
-        mControllers.add(mStorageController);
-        mControllers.add(new BackgroundJobsController(this));
-        mControllers.add(new ContentObserverController(this));
-        mDeviceIdleJobsController = new DeviceIdleJobsController(this);
-        mControllers.add(mDeviceIdleJobsController);
+        if (!QUICKBOOT) {
+            mControllers.add(new ConnectivityController(this));
+            mControllers.add(new TimeController(this));
+            mControllers.add(new IdleController(this));
+            mBatteryController = new BatteryController(this);
+            mControllers.add(mBatteryController);
+            mStorageController = new StorageController(this);
+            mControllers.add(mStorageController);
+            mControllers.add(new BackgroundJobsController(this));
+            mControllers.add(new ContentObserverController(this));
+            mDeviceIdleJobsController = new DeviceIdleJobsController(this);
+            mControllers.add(mDeviceIdleJobsController);
+        }
 
         // If the job store determined that it can't yet reschedule persisted jobs,
         // we need to start watching the clock.
@@ -1219,58 +1223,130 @@ public class JobSchedulerService extends com.android.server.SystemService
 
     @Override
     public void onBootPhase(int phase) {
-        if (PHASE_SYSTEM_SERVICES_READY == phase) {
-            mConstantsObserver.start(getContext().getContentResolver());
+        if (!QUICKBOOT) {
+            if (PHASE_SYSTEM_SERVICES_READY == phase) {
+                mConstantsObserver.start(getContext().getContentResolver());
 
-            mAppStateTracker = Preconditions.checkNotNull(
-                    LocalServices.getService(AppStateTracker.class));
-            setNextHeartbeatAlarm();
+                mAppStateTracker = Preconditions.checkNotNull(
+                        LocalServices.getService(AppStateTracker.class));
+                setNextHeartbeatAlarm();
 
-            // Register br for package removals and user removals.
-            final IntentFilter filter = new IntentFilter();
-            filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-            filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
-            filter.addAction(Intent.ACTION_PACKAGE_RESTARTED);
-            filter.addAction(Intent.ACTION_QUERY_PACKAGE_RESTART);
-            filter.addDataScheme("package");
-            getContext().registerReceiverAsUser(
-                    mBroadcastReceiver, UserHandle.ALL, filter, null, null);
-            final IntentFilter userFilter = new IntentFilter(Intent.ACTION_USER_REMOVED);
-            getContext().registerReceiverAsUser(
-                    mBroadcastReceiver, UserHandle.ALL, userFilter, null, null);
-            try {
-                ActivityManager.getService().registerUidObserver(mUidObserver,
-                        ActivityManager.UID_OBSERVER_PROCSTATE | ActivityManager.UID_OBSERVER_GONE
-                        | ActivityManager.UID_OBSERVER_IDLE | ActivityManager.UID_OBSERVER_ACTIVE,
-                        ActivityManager.PROCESS_STATE_UNKNOWN, null);
-            } catch (RemoteException e) {
-                // ignored; both services live in system_server
-            }
-            // Remove any jobs that are not associated with any of the current users.
-            cancelJobsForNonExistentUsers();
-        } else if (phase == PHASE_THIRD_PARTY_APPS_CAN_START) {
-            synchronized (mLock) {
-                // Let's go!
-                mReadyToRock = true;
-                mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
-                        BatteryStats.SERVICE_NAME));
-                mLocalDeviceIdleController
-                        = LocalServices.getService(DeviceIdleController.LocalService.class);
-                // Create the "runners".
-                for (int i = 0; i < MAX_JOB_CONTEXTS_COUNT; i++) {
-                    mActiveServices.add(
-                            new JobServiceContext(this, mBatteryStats, mJobPackageTracker,
-                                    getContext().getMainLooper()));
+                // Register br for package removals and user removals.
+                final IntentFilter filter = new IntentFilter();
+                filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+                filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+                filter.addAction(Intent.ACTION_PACKAGE_RESTARTED);
+                filter.addAction(Intent.ACTION_QUERY_PACKAGE_RESTART);
+                filter.addDataScheme("package");
+                getContext().registerReceiverAsUser(
+                        mBroadcastReceiver, UserHandle.ALL, filter, null, null);
+                final IntentFilter userFilter = new IntentFilter(Intent.ACTION_USER_REMOVED);
+                getContext().registerReceiverAsUser(
+                        mBroadcastReceiver, UserHandle.ALL, userFilter, null, null);
+                try {
+                    ActivityManager.getService().registerUidObserver(mUidObserver,
+                            ActivityManager.UID_OBSERVER_PROCSTATE | ActivityManager.UID_OBSERVER_GONE
+                            | ActivityManager.UID_OBSERVER_IDLE | ActivityManager.UID_OBSERVER_ACTIVE,
+                            ActivityManager.PROCESS_STATE_UNKNOWN, null);
+                } catch (RemoteException e) {
+                    // ignored; both services live in system_server
                 }
-                // Attach jobs to their controllers.
-                mJobs.forEachJob((job) -> {
-                    for (int controller = 0; controller < mControllers.size(); controller++) {
-                        final StateController sc = mControllers.get(controller);
-                        sc.maybeStartTrackingJobLocked(job, null);
+                // Remove any jobs that are not associated with any of the current users.
+                cancelJobsForNonExistentUsers();
+            } else if (phase == PHASE_THIRD_PARTY_APPS_CAN_START) {
+                synchronized (mLock) {
+                    // Let's go!
+                    mReadyToRock = true;
+                    mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
+                                BatteryStats.SERVICE_NAME));
+                    mLocalDeviceIdleController
+                        = LocalServices.getService(DeviceIdleController.LocalService.class);
+                    // Create the "runners".
+                    for (int i = 0; i < MAX_JOB_CONTEXTS_COUNT; i++) {
+                        mActiveServices.add(
+                                new JobServiceContext(this, mBatteryStats, mJobPackageTracker,
+                                    getContext().getMainLooper()));
                     }
-                });
-                // GO GO GO!
-                mHandler.obtainMessage(MSG_CHECK_JOB).sendToTarget();
+                    // Attach jobs to their controllers.
+                    mJobs.forEachJob((job) -> {
+                        for (int controller = 0; controller < mControllers.size(); controller++) {
+                            final StateController sc = mControllers.get(controller);
+                            sc.maybeStartTrackingJobLocked(job, null);
+                        }
+                    });
+                    // GO GO GO!
+                    mHandler.obtainMessage(MSG_CHECK_JOB).sendToTarget();
+                }
+            }
+        } else {
+            if (phase == PHASE_LATE_BOOT_COMPLETED) {
+                // PHASE_SYSTEM_SERVICES_READY
+                mConstantsObserver.start(getContext().getContentResolver());
+
+                mAppStateTracker = Preconditions.checkNotNull(
+                        LocalServices.getService(AppStateTracker.class));
+                setNextHeartbeatAlarm();
+
+                // Register br for package removals and user removals.
+                final IntentFilter filter = new IntentFilter();
+                filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+                filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+                filter.addAction(Intent.ACTION_PACKAGE_RESTARTED);
+                filter.addAction(Intent.ACTION_QUERY_PACKAGE_RESTART);
+                filter.addDataScheme("package");
+                getContext().registerReceiverAsUser(
+                        mBroadcastReceiver, UserHandle.ALL, filter, null, null);
+                final IntentFilter userFilter = new IntentFilter(Intent.ACTION_USER_REMOVED);
+                getContext().registerReceiverAsUser(
+                        mBroadcastReceiver, UserHandle.ALL, userFilter, null, null);
+                try {
+                    ActivityManager.getService().registerUidObserver(mUidObserver,
+                            ActivityManager.UID_OBSERVER_PROCSTATE | ActivityManager.UID_OBSERVER_GONE
+                            | ActivityManager.UID_OBSERVER_IDLE | ActivityManager.UID_OBSERVER_ACTIVE,
+                            ActivityManager.PROCESS_STATE_UNKNOWN, null);
+                } catch (RemoteException e) {
+                    // ignored; both services live in system_server
+                }
+                // Remove any jobs that are not associated with any of the current users.
+                cancelJobsForNonExistentUsers();
+
+                // PHASE_THIRD_PARTY_APPS_CAN_START
+                synchronized (mLock) {
+                    // Let's go!
+                    mReadyToRock = true;
+                    mBatteryStats = IBatteryStats.Stub.asInterface(ServiceManager.getService(
+                                BatteryStats.SERVICE_NAME));
+                    mLocalDeviceIdleController
+                        = LocalServices.getService(DeviceIdleController.LocalService.class);
+                    // Create the "runners".
+                    for (int i = 0; i < MAX_JOB_CONTEXTS_COUNT; i++) {
+                        mActiveServices.add(
+                                new JobServiceContext(this, mBatteryStats, mJobPackageTracker,
+                                    getContext().getMainLooper()));
+                    }
+                    // Attach jobs to their controllers.
+                    mJobs.forEachJob((job) -> {
+                        for (int controller = 0; controller < mControllers.size(); controller++) {
+                            final StateController sc = mControllers.get(controller);
+                            sc.maybeStartTrackingJobLocked(job, null);
+                        }
+                    });
+                    // GO GO GO!
+                    mHandler.obtainMessage(MSG_CHECK_JOB).sendToTarget();
+                }
+
+                // others
+                mControllers.add(new ConnectivityController(this));
+                mControllers.add(new TimeController(this));
+                mControllers.add(new IdleController(this));
+                mBatteryController = new BatteryController(this);
+                mControllers.add(mBatteryController);
+                mStorageController = new StorageController(this);
+                mControllers.add(mStorageController);
+                mControllers.add(new BackgroundJobsController(this));
+                mControllers.add(new ContentObserverController(this));
+                mDeviceIdleJobsController = new DeviceIdleJobsController(this);
+                mControllers.add(mDeviceIdleJobsController);
             }
         }
     }

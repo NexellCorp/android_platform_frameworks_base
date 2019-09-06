@@ -79,6 +79,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * A service that collects, aggregates, and persists application usage data.
  * This data can be queried by apps that have been granted permission by AppOps.
@@ -207,7 +209,11 @@ public class UsageStatsService extends SystemService implements
 
     @Override
     public void onBootPhase(int phase) {
-        if (phase == PHASE_SYSTEM_SERVICES_READY) {
+        int checkPhase = PHASE_SYSTEM_SERVICES_READY;
+        if (QUICKBOOT) {
+            checkPhase = PHASE_LATE_BOOT_COMPLETED;
+        }
+        if (phase == checkPhase) {
             mAppStandby.onBootPhase(phase);
             // initialize mDpmInternal
             getDpmInternal();
@@ -219,7 +225,7 @@ public class UsageStatsService extends SystemService implements
                 try {
                     ActivityManager.getService().registerUidObserver(mUidObserver,
                             ActivityManager.UID_OBSERVER_PROCSTATE
-                                    | ActivityManager.UID_OBSERVER_GONE,
+                            | ActivityManager.UID_OBSERVER_GONE,
                             ActivityManager.PROCESS_STATE_UNKNOWN, null);
                 } catch (RemoteException e) {
                     throw new RuntimeException(e);

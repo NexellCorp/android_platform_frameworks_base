@@ -341,11 +341,26 @@ bool BootAnimation::threadLoop()
     bool r;
     // We have no bootanimation file, so we use the stock android logo
     // animation.
+#ifdef QUICKBOOT
+    char value[PROPERTY_VALUE_MAX];
+    property_get("persist.quickboot.firstboot", value, "0");
+    int firstBoot = atoi(value);
+    if (firstBoot) {
+        r = android();
+    } else {
+        if (mZipFileName.isEmpty()) {
+            r = android();
+        } else {
+            r = movie();
+        }
+    }
+#else
     if (mZipFileName.isEmpty()) {
         r = android();
     } else {
         r = movie();
     }
+#endif
 
     eglMakeCurrent(mDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(mDisplay, mContext);
