@@ -792,7 +792,11 @@ public class UsbDeviceManager implements ActivityManagerInternal.ScreenObserver 
          */
         long getAppliedFunctions(long functions) {
             if (functions == UsbManager.FUNCTION_NONE) {
-                return getChargingFunctions();
+                if ("adb".equals(SystemProperties.get("sys.usb.config"))) {
+                    return getChargingFunctions();
+                } else {
+                    return functions;
+                }
             }
             if (mAdbEnabled) {
                 return functions | UsbManager.FUNCTION_ADB;
