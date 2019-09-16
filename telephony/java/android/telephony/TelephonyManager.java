@@ -81,6 +81,8 @@ import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Provides access to information about the telephony services on
  * the device. Applications can use the methods in this class to
@@ -1707,7 +1709,7 @@ public class TelephonyManager {
     }
 
     /** Kernel command line */
-    private static final String sKernelCmdLine = getProcCmdLine();
+    // private static final String sKernelCmdLine = getProcCmdLine();
 
     /** Pattern for selecting the product type from the kernel command line */
     private static final Pattern sProductTypePattern =
@@ -1736,11 +1738,16 @@ public class TelephonyManager {
                     PhoneConstants.LTE_ON_CDMA_UNKNOWN);
         retVal = curVal;
         if (retVal == PhoneConstants.LTE_ON_CDMA_UNKNOWN) {
-            Matcher matcher = sProductTypePattern.matcher(sKernelCmdLine);
-            if (matcher.find()) {
-                productType = matcher.group(1);
-                if (sLteOnCdmaProductType.equals(productType)) {
-                    retVal = PhoneConstants.LTE_ON_CDMA_TRUE;
+            if (!QUICKBOOT) {
+                // Matcher matcher = sProductTypePattern.matcher(sKernelCmdLine);
+                Matcher matcher = sProductTypePattern.matcher(getProcCmdLine());
+                if (matcher.find()) {
+                    productType = matcher.group(1);
+                    if (sLteOnCdmaProductType.equals(productType)) {
+                        retVal = PhoneConstants.LTE_ON_CDMA_TRUE;
+                    } else {
+                        retVal = PhoneConstants.LTE_ON_CDMA_FALSE;
+                    }
                 } else {
                     retVal = PhoneConstants.LTE_ON_CDMA_FALSE;
                 }
