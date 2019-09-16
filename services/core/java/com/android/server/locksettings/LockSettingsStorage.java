@@ -52,6 +52,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Storage for the lock settings service.
  */
@@ -334,21 +336,25 @@ class LockSettingsStorage {
     }
 
     public boolean hasChildProfileLock(int userId) {
+        if (QUICKBOOT) return false;
         return hasFile(getChildProfileLockFile(userId));
     }
 
     public boolean hasPassword(int userId) {
+        if (QUICKBOOT) return false;
         return hasFile(getLockPasswordFilename(userId)) ||
             hasFile(getLegacyLockPasswordFilename(userId));
     }
 
     public boolean hasPattern(int userId) {
+        if (QUICKBOOT) return false;
         return hasFile(getLockPatternFilename(userId)) ||
             hasFile(getBaseZeroLockPatternFilename(userId)) ||
             hasFile(getLegacyLockPatternFilename(userId));
     }
 
     public boolean hasCredential(int userId) {
+        if (QUICKBOOT) return false;
         return hasPassword(userId) || hasPattern(userId);
     }
 
