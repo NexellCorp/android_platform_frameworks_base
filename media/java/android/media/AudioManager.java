@@ -70,6 +70,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 
 /**
  * AudioManager provides access to volume and ringer mode control.
@@ -744,8 +746,10 @@ public class AudioManager {
      *     or {@link KeyEvent#KEYCODE_MEDIA_AUDIO_TRACK}.
      */
     public void dispatchMediaKeyEvent(KeyEvent keyEvent) {
-        MediaSessionLegacyHelper helper = MediaSessionLegacyHelper.getHelper(getContext());
-        helper.sendMediaButtonEvent(keyEvent, false);
+        if (!QUICKBOOT) {
+            MediaSessionLegacyHelper helper = MediaSessionLegacyHelper.getHelper(getContext());
+            helper.sendMediaButtonEvent(keyEvent, false);
+        }
     }
 
     /**
@@ -875,11 +879,39 @@ public class AudioManager {
     /** @hide */
     public void setMasterMute(boolean mute, int flags) {
         final IAudioService service = getService();
-        try {
-            service.setMasterMute(mute, flags, getContext().getOpPackageName(),
-                    UserHandle.getCallingUserId());
-        } catch (RemoteException e) {
-            throw e.rethrowFromSystemServer();
+        if (!QUICKBOOT) {
+            try {
+                service.setMasterMute(mute, flags, getContext().getOpPackageName(),
+                        UserHandle.getCallingUserId());
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
+            }
+        } else {
+            if (service == null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (true) {
+                            IAudioService s = getService();
+                            if (s == null) {
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                }
+                            } else {
+                                try {
+                                    Log.d(TAG, "========> setMasterMute catch the AudioService !!!!");
+                                    s.setMasterMute(mute, flags, getContext().getOpPackageName(),
+                                            UserHandle.getCallingUserId());
+                                } catch (RemoteException e) {
+                                    throw e.rethrowFromSystemServer();
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }).start();
+            }
         }
     }
 
@@ -3147,17 +3179,64 @@ public class AudioManager {
             throw new IllegalArgumentException("Illegal null AudioPolicy argument");
         }
         final IAudioService service = getService();
-        try {
-            String regId = service.registerAudioPolicy(policy.getConfig(), policy.cb(),
-                    policy.hasFocusListener(), policy.isFocusPolicy(), policy.isVolumeController());
-            if (regId == null) {
-                return ERROR;
-            } else {
-                policy.setRegistration(regId);
+        if (!QUICKBOOT) {
+            try {
+                String regId = service.registerAudioPolicy(policy.getConfig(), policy.cb(),
+                        policy.hasFocusListener(), policy.isFocusPolicy(), policy.isVolumeController());
+                if (regId == null) {
+                    return ERROR;
+                } else {
+                    policy.setRegistration(regId);
+                }
+                // successful registration
+            } catch (RemoteException e) {
+                throw e.rethrowFromSystemServer();
             }
-            // successful registration
-        } catch (RemoteException e) {
-            throw e.rethrowFromSystemServer();
+        } else {
+            if (service == null) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (true) {
+                            IAudioService s = getService();
+                            if (s == null) {
+                                try {
+                                    Thread.sleep(100);
+                                } catch (InterruptedException e) {
+                                }
+                            } else {
+                                try {
+                                    Log.d(TAG, "========> catch the AudioService !!!!");
+                                    String regId = s.registerAudioPolicy(policy.getConfig(), policy.cb(),
+                                            policy.hasFocusListener(), policy.isFocusPolicy(), policy.isVolumeController());
+                                    if (regId == null) {
+                                        return;
+                                    } else {
+                                        policy.setRegistration(regId);
+                                    }
+                                    // successful registration
+                                } catch (RemoteException e) {
+                                    throw e.rethrowFromSystemServer();
+                                }
+                                return;
+                            }
+                        }
+                    }
+                }).start();
+            } else {
+                try {
+                    String regId = service.registerAudioPolicy(policy.getConfig(), policy.cb(),
+                            policy.hasFocusListener(), policy.isFocusPolicy(), policy.isVolumeController());
+                    if (regId == null) {
+                        return ERROR;
+                    } else {
+                        policy.setRegistration(regId);
+                    }
+                    // successful registration
+                } catch (RemoteException e) {
+                    throw e.rethrowFromSystemServer();
+                }
+            }
         }
         return SUCCESS;
     }
