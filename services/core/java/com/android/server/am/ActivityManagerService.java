@@ -4552,8 +4552,10 @@ public class ActivityManagerService extends IActivityManager.Stub
             Process.killProcessGroup(app.uid, app.pid);
             return false;
         }
-        mBatteryStatsService.noteProcessStart(app.processName, app.info.uid);
-        checkTime(app.startTime, "startProcess: done updating battery stats");
+        if (!QUICKBOOT) {
+            mBatteryStatsService.noteProcessStart(app.processName, app.info.uid);
+            checkTime(app.startTime, "startProcess: done updating battery stats");
+        }
 
         EventLog.writeEvent(EventLogTags.AM_PROC_START,
                 UserHandle.getUserId(app.startUid), pid, app.startUid,
@@ -4571,27 +4573,29 @@ public class ActivityManagerService extends IActivityManager.Stub
             Watchdog.getInstance().processStarted(app.processName, pid);
         }
 
-        checkTime(app.startTime, "startProcess: building log message");
-        StringBuilder buf = mStringBuilder;
-        buf.setLength(0);
-        buf.append("Start proc ");
-        buf.append(pid);
-        buf.append(':');
-        buf.append(app.processName);
-        buf.append('/');
-        UserHandle.formatUid(buf, app.startUid);
-        if (app.isolatedEntryPoint != null) {
-            buf.append(" [");
-            buf.append(app.isolatedEntryPoint);
-            buf.append("]");
+        if (!QUICKBOOT) {
+            checkTime(app.startTime, "startProcess: building log message");
+            StringBuilder buf = mStringBuilder;
+            buf.setLength(0);
+            buf.append("Start proc ");
+            buf.append(pid);
+            buf.append(':');
+            buf.append(app.processName);
+            buf.append('/');
+            UserHandle.formatUid(buf, app.startUid);
+            if (app.isolatedEntryPoint != null) {
+                buf.append(" [");
+                buf.append(app.isolatedEntryPoint);
+                buf.append("]");
+            }
+            buf.append(" for ");
+            buf.append(app.hostingType);
+            if (app.hostingNameStr != null) {
+                buf.append(" ");
+                buf.append(app.hostingNameStr);
+            }
+            reportUidInfoMessageLocked(TAG, buf.toString(), app.startUid);
         }
-        buf.append(" for ");
-        buf.append(app.hostingType);
-        if (app.hostingNameStr != null) {
-            buf.append(" ");
-            buf.append(app.hostingNameStr);
-        }
-        reportUidInfoMessageLocked(TAG, buf.toString(), app.startUid);
         app.setPid(pid);
         app.usingWrapper = usingWrapper;
         app.pendingStart = false;
