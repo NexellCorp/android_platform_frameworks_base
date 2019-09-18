@@ -3368,7 +3368,11 @@ public class WindowManagerService extends IWindowManager.Stub
             // If the screen still doesn't come up after 30 seconds, give
             // up and turn it on.
             if (QUICKBOOT) {
-                mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, 1 * 1000);
+                int timeOut = 1 * 1000;
+                if (SystemProperties.getInt("persist.quickboot.firstboot", 0) != 1)
+                    mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, timeOut);
+                else
+                    mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, 3 * timeOut);
             } else {
                 mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, 30 * 1000);
             }
