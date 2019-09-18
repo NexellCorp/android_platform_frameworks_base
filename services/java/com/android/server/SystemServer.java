@@ -2119,6 +2119,12 @@ public final class SystemServer {
         mSystemServiceManager.startService(DeviceIdleController.class);
         traceEnd();
 
+        traceBeginAndSlog("StartNotificationManager");
+        SystemService notificationManagerService = mSystemServiceManager.startService(NotificationManagerService.class);
+        INotificationManager notification = INotificationManager.Stub.asInterface(
+                ServiceManager.getService(Context.NOTIFICATION_SERVICE));
+        traceEnd();
+
         traceBeginAndSlog("StartBootPhaseSystemServicesReady");
         mSystemServiceManager.startBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
         traceEnd();
@@ -2428,15 +2434,6 @@ public final class SystemServer {
         } catch (Throwable e) {
             reportWtf("starting UpdateLockService", e);
         }
-        traceEnd();
-
-        traceBeginAndSlog("StartNotificationManager");
-        SystemService notificationManagerService = mSystemServiceManager.startService(NotificationManagerService.class);
-        SystemNotificationChannels.createAll(context);
-        INotificationManager notification = INotificationManager.Stub.asInterface(
-                ServiceManager.getService(Context.NOTIFICATION_SERVICE));
-        notificationManagerService.onBootPhase(SystemService.PHASE_SYSTEM_SERVICES_READY);
-        notificationManagerService.onBootPhase(SystemService.PHASE_THIRD_PARTY_APPS_CAN_START);
         traceEnd();
 
         traceBeginAndSlog("StartDeviceMonitor");
@@ -2954,6 +2951,7 @@ public final class SystemServer {
         mSystemServiceManager.startBootPhase(
                 SystemService.PHASE_LATE_BOOT_COMPLETED);
         SystemProperties.set("sys.late_boot_completed", "1");
+        SystemNotificationChannels.createAll(context);
         traceEnd();
     }
 
