@@ -28,6 +28,8 @@ import com.android.systemui.statusbar.policy.DataSaverController.Listener;
 import com.android.systemui.statusbar.policy.HotspotController;
 import com.android.systemui.statusbar.policy.HotspotController.Callback;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Manages which tiles should be automatically added to QS.
  */
@@ -55,33 +57,37 @@ public class AutoTileManager {
         mContext = context;
         mHost = host;
         mHandler = handler;
-        if (!mAutoTracker.isAdded(HOTSPOT)) {
-            Dependency.get(HotspotController.class).addCallback(mHotspotCallback);
-        }
-        if (!mAutoTracker.isAdded(SAVER)) {
-            Dependency.get(DataSaverController.class).addCallback(mDataSaverListener);
-        }
-        if (!mAutoTracker.isAdded(INVERSION)) {
-            mColorsSetting = new SecureSetting(mContext, mHandler,
-                    Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) {
-                @Override
-                protected void handleValueChanged(int value, boolean observedChange) {
-                    if (mAutoTracker.isAdded(INVERSION)) return;
-                    if (value != 0) {
-                        mHost.addTile(INVERSION);
-                        mAutoTracker.setTileAdded(INVERSION);
-                        mHandler.post(() -> mColorsSetting.setListening(false));
+        if (!QUICKBOOT) {
+            if (!mAutoTracker.isAdded(HOTSPOT)) {
+                Dependency.get(HotspotController.class).addCallback(mHotspotCallback);
+            }
+            if (!mAutoTracker.isAdded(SAVER)) {
+                Dependency.get(DataSaverController.class).addCallback(mDataSaverListener);
+            }
+            if (!mAutoTracker.isAdded(INVERSION)) {
+                mColorsSetting = new SecureSetting(mContext, mHandler,
+                        Secure.ACCESSIBILITY_DISPLAY_INVERSION_ENABLED) {
+                    @Override
+                    protected void handleValueChanged(int value, boolean observedChange) {
+                        if (mAutoTracker.isAdded(INVERSION)) return;
+                        if (value != 0) {
+                            mHost.addTile(INVERSION);
+                            mAutoTracker.setTileAdded(INVERSION);
+                            mHandler.post(() -> mColorsSetting.setListening(false));
+                        }
                     }
-                }
-            };
-            mColorsSetting.setListening(true);
-        }
-        if (!mAutoTracker.isAdded(WORK)) {
-            Dependency.get(ManagedProfileController.class).addCallback(mProfileCallback);
-        }
-        if (!mAutoTracker.isAdded(NIGHT)
-            && ColorDisplayController.isAvailable(mContext)) {
-            Dependency.get(ColorDisplayController.class).setListener(mColorDisplayCallback);
+                };
+                mColorsSetting.setListening(true);
+            }
+            if (!mAutoTracker.isAdded(WORK)) {
+                Dependency.get(ManagedProfileController.class).addCallback(mProfileCallback);
+            }
+            if (!mAutoTracker.isAdded(NIGHT)
+                    && ColorDisplayController.isAvailable(mContext)) {
+                Dependency.get(ColorDisplayController.class).setListener(mColorDisplayCallback);
+                    }
+        } else {
+            mColorsSetting = null;
         }
     }
 

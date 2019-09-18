@@ -240,6 +240,9 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import android.provider.Settings.Global;
+
 /** {@hide} */
 public class NotificationManagerService extends SystemService {
     static final String TAG = "NotificationService";
@@ -1493,8 +1496,7 @@ public class NotificationManagerService extends SystemService {
                 || mPackageManagerClient.hasSystemFeature(FEATURE_TELEVISION);
     }
 
-    @Override
-    public void onStart() {
+    private void startHelper() {
         SnoozeHelper snoozeHelper = new SnoozeHelper(getContext(), new SnoozeHelper.Callback() {
             @Override
             public void repost(int userId, NotificationRecord r) {
@@ -1526,7 +1528,9 @@ public class NotificationManagerService extends SystemService {
                 getGroupHelper(), ActivityManager.getService(),
                 LocalServices.getService(UsageStatsManagerInternal.class),
                 LocalServices.getService(DevicePolicyManagerInternal.class));
+    }
 
+    private void startMandatory() {
         // register for various Intents
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_ON);
@@ -1576,6 +1580,14 @@ public class NotificationManagerService extends SystemService {
         publishLocalService(NotificationManagerInternal.class, mInternalService);
     }
 
+    @Override
+    public void onStart() {
+        if (!QUICKBOOT) {
+            startHelper();
+        }
+        startMandatory();
+    }
+
     private GroupHelper getGroupHelper() {
         return new GroupHelper(new GroupHelper.Callback() {
             @Override
@@ -1613,22 +1625,40 @@ public class NotificationManagerService extends SystemService {
 
     @Override
     public void onBootPhase(int phase) {
-        if (phase == SystemService.PHASE_SYSTEM_SERVICES_READY) {
-            // no beeping until we're basically done booting
-            mSystemReady = true;
+        if (!QUICKBOOT) {
+            if (phase == SystemService.PHASE_SYSTEM_SERVICES_READY) {
+                // no beeping until we're basically done booting
+                mSystemReady = true;
 
-            // Grab our optional AudioService
-            mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
-            mAudioManagerInternal = getLocalService(AudioManagerInternal.class);
-            mWindowManagerInternal = LocalServices.getService(WindowManagerInternal.class);
-            mZenModeHelper.onSystemReady();
-        } else if (phase == SystemService.PHASE_THIRD_PARTY_APPS_CAN_START) {
-            // This observer will force an update when observe is called, causing us to
-            // bind to listener services.
-            mSettingsObserver.observe();
-            mListeners.onBootPhaseAppsCanStart();
-            mAssistants.onBootPhaseAppsCanStart();
-            mConditionProviders.onBootPhaseAppsCanStart();
+                // Grab our optional AudioService
+                mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+                mAudioManagerInternal = getLocalService(AudioManagerInternal.class);
+                mWindowManagerInternal = LocalServices.getService(WindowManagerInternal.class);
+                mZenModeHelper.onSystemReady();
+            } else if (phase == SystemService.PHASE_THIRD_PARTY_APPS_CAN_START) {
+                // This observer will force an update when observe is called, causing us to
+                // bind to listener services.
+                mSettingsObserver.observe();
+                mListeners.onBootPhaseAppsCanStart();
+                mAssistants.onBootPhaseAppsCanStart();
+                mConditionProviders.onBootPhaseAppsCanStart();
+            }
+        } else {
+            if (phase == SystemService.PHASE_LATE_BOOT_COMPLETED) {
+                // onStart
+                startHelper();
+                // PHASE_SYSTEM_SERVICES_READY
+                mSystemReady = true;
+                mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+                mAudioManagerInternal = getLocalService(AudioManagerInternal.class);
+                mWindowManagerInternal = LocalServices.getService(WindowManagerInternal.class);
+                mZenModeHelper.onSystemReady();
+                // PHASE_THIRD_PARTY_APPS_CAN_START
+                mSettingsObserver.observe();
+                mListeners.onBootPhaseAppsCanStart();
+                mAssistants.onBootPhaseAppsCanStart();
+                mConditionProviders.onBootPhaseAppsCanStart();
+            }
         }
     }
 
@@ -2929,13 +2959,19 @@ public class NotificationManagerService extends SystemService {
 
         @Override
         public int getZenMode() {
-            return mZenModeHelper.getZenMode();
+            if (mZenModeHelper != null)
+                return mZenModeHelper.getZenMode();
+            return Global.ZEN_MODE_OFF;
         }
 
         @Override
         public ZenModeConfig getZenModeConfig() {
-            enforceSystemOrSystemUI("INotificationManager.getZenModeConfig");
-            return mZenModeHelper.getConfig();
+            if (mZenModeHelper != null) {
+                enforceSystemOrSystemUI("INotificationManager.getZenModeConfig");
+                return mZenModeHelper.getConfig();
+            } else {
+                return null;
+            }
         }
 
         @Override

@@ -51,6 +51,8 @@ import com.android.systemui.statusbar.policy.NetworkController;
 import com.android.systemui.statusbar.policy.NetworkController.IconState;
 import com.android.systemui.statusbar.policy.NetworkController.SignalCallback;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /** Quick settings tile: Cellular **/
 public class CellularTile extends QSTileImpl<SignalState> {
     private static final String ENABLE_SETTINGS_DATA_PLAN = "enable.settings.data.plan";
@@ -171,7 +173,9 @@ public class CellularTile extends QSTileImpl<SignalState> {
         state.activityIn = cb.enabled && cb.activityIn;
         state.activityOut = cb.enabled && cb.activityOut;
         state.label = r.getString(R.string.mobile_data);
-        boolean mobileDataEnabled = mDataController.isMobileDataSupported()
+        boolean mobileDataEnabled = false;
+        if (!QUICKBOOT)
+            mobileDataEnabled = mDataController.isMobileDataSupported()
                 && mDataController.isMobileDataEnabled();
         state.value = mobileDataEnabled;
         state.expandedAccessibilityClassName = Switch.class.getName();

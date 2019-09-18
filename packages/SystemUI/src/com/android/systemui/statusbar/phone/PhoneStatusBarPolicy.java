@@ -92,6 +92,8 @@ import com.android.systemui.util.NotificationChannels;
 import java.util.List;
 import java.util.Locale;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * This class contains all of the policy about which icons are installed in the status
  * bar at boot time.  It goes through the normal API for icons, even though it probably
@@ -244,7 +246,8 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
         mProvisionedController.addCallback(this);
         mZenController.addCallback(this);
         mCast.addCallback(mCastCallback);
-        mHotspot.addCallback(mHotspotCallback);
+        if (!QUICKBOOT)
+            mHotspot.addCallback(mHotspotCallback);
         mNextAlarmController.addCallback(mNextAlarmCallback);
         mDataSaver.addCallback(this);
         mKeyguardMonitor.addCallback(this);

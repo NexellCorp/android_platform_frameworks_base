@@ -2904,6 +2904,8 @@ public class ActivityManagerService extends IActivityManager.Stub
             if (phase == PHASE_SYSTEM_SERVICES_READY) {
                 mService.mBatteryStatsService.systemServicesReady();
                 mService.mServices.systemServicesReady();
+            } else if (phase == PHASE_LATE_BOOT_COMPLETED) {
+                mService.startPersistentApps(PackageManager.MATCH_DIRECT_BOOT_AWARE);
             }
         }
 
@@ -15316,7 +15318,8 @@ public class ActivityManagerService extends IActivityManager.Stub
         synchronized (this) {
             // Only start up encryption-aware persistent apps; once user is
             // unlocked we'll come back around and start unaware apps
-            startPersistentApps(PackageManager.MATCH_DIRECT_BOOT_AWARE);
+            if (!QUICKBOOT)
+                startPersistentApps(PackageManager.MATCH_DIRECT_BOOT_AWARE);
 
             // Start up initial activity.
             mBooting = true;

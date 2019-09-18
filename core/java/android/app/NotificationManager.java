@@ -52,6 +52,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * Class to notify the user of events that happen.  This is how you tell
  * the user that something has happened in the background. {@more}
@@ -537,11 +539,22 @@ public class NotificationManager {
      */
     public void createNotificationChannels(@NonNull List<NotificationChannel> channels) {
         INotificationManager service = getService();
-        try {
-            service.createNotificationChannels(mContext.getPackageName(),
-                    new ParceledListSlice(channels));
-        } catch (RemoteException e) {
-            throw e.rethrowFromSystemServer();
+        if (!QUICKBOOT) {
+            try {
+                service.createNotificationChannels(mContext.getPackageName(),
+                        new ParceledListSlice(channels));
+            } catch (RemoteException e) {
+                if (!QUICKBOOT) {
+                    RemoteException re = e;
+                    throw re.rethrowFromSystemServer();
+                }
+            }
+        } else {
+            try {
+                service.createNotificationChannels(mContext.getPackageName(),
+                        new ParceledListSlice(channels));
+            } catch (Exception e) {
+            }
         }
     }
 
