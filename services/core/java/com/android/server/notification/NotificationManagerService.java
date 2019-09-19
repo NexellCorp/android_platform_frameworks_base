@@ -2259,24 +2259,60 @@ public class NotificationManagerService extends SystemService {
                 ParceledListSlice channelsList) {
             List<NotificationChannel> channels = channelsList.getList();
             final int channelsSize = channels.size();
+            boolean rankNull = false;
             for (int i = 0; i < channelsSize; i++) {
                 final NotificationChannel channel = channels.get(i);
                 Preconditions.checkNotNull(channel, "channel in list is null");
-                mRankingHelper.createNotificationChannel(pkg, uid, channel,
-                        true /* fromTargetApp */, mConditionProviders.isPackageOrComponentAllowed(
+                // Slog.d(TAG, "Notification channel --> " + channel);
+                if (mRankingHelper != null) {
+                    mRankingHelper.createNotificationChannel(pkg, uid, channel,
+                            true /* fromTargetApp */, mConditionProviders.isPackageOrComponentAllowed(
                                 pkg, UserHandle.getUserId(uid)));
-                mListeners.notifyNotificationChannelChanged(pkg,
-                        UserHandle.getUserHandleForUid(uid),
-                        mRankingHelper.getNotificationChannel(pkg, uid, channel.getId(), false),
-                        NOTIFICATION_CHANNEL_OR_GROUP_ADDED);
+                    mListeners.notifyNotificationChannelChanged(pkg,
+                            UserHandle.getUserHandleForUid(uid),
+                            mRankingHelper.getNotificationChannel(pkg, uid, channel.getId(), false),
+                            NOTIFICATION_CHANNEL_OR_GROUP_ADDED);
+                } else {
+                    rankNull = true;
+                    break;
+                }
             }
-            savePolicyFile();
+            
+            if (rankNull == false) {
+                savePolicyFile();
+            } else {
+                new Thread(() -> {
+                    while (true) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                        }
+                        if (mRankingHelper != null) {
+                            for (int i = 0; i < channelsSize; i++) {
+                                final NotificationChannel channel = channels.get(i);
+                                Preconditions.checkNotNull(channel, "channel in list is null");
+                                // Slog.d(TAG, "Thread --> Notification channel --> " + channel);
+                                mRankingHelper.createNotificationChannel(pkg, uid, channel,
+                                        true /* fromTargetApp */, mConditionProviders.isPackageOrComponentAllowed(
+                                            pkg, UserHandle.getUserId(uid)));
+                                mListeners.notifyNotificationChannelChanged(pkg,
+                                        UserHandle.getUserHandleForUid(uid),
+                                        mRankingHelper.getNotificationChannel(pkg, uid, channel.getId(), false),
+                                        NOTIFICATION_CHANNEL_OR_GROUP_ADDED);
+                            }
+                            savePolicyFile();
+                            return;
+                        }
+                    }
+                }).start();
+            }
         }
 
         @Override
         public void createNotificationChannels(String pkg,
                 ParceledListSlice channelsList) throws RemoteException {
-            checkCallerIsSystemOrSameApp(pkg);
+            if (!QUICKBOOT)
+                checkCallerIsSystemOrSameApp(pkg);
             createNotificationChannelsImpl(pkg, Binder.getCallingUid(), channelsList);
         }
 
@@ -4081,7 +4117,8 @@ public class NotificationManagerService extends SystemService {
         final NotificationChannel channel = mRankingHelper.getNotificationChannel(pkg,
                 notificationUid, channelId, false /* includeDeleted */);
         if (channel == null) {
-            final String noChannelStr = "No Channel found for "
+            if (!QUICKBOOT) {
+                final String noChannelStr = "No Channel found for "
                     + "pkg=" + pkg
                     + ", channelId=" + channelId
                     + ", id=" + id
@@ -4092,14 +4129,15 @@ public class NotificationManagerService extends SystemService {
                     + ", incomingUserId=" + incomingUserId
                     + ", notificationUid=" + notificationUid
                     + ", notification=" + notification;
-            Log.e(TAG, noChannelStr);
-            boolean appNotificationsOff = mRankingHelper.getImportance(pkg, notificationUid)
+                Log.e(TAG, noChannelStr);
+                boolean appNotificationsOff = mRankingHelper.getImportance(pkg, notificationUid)
                     == NotificationManager.IMPORTANCE_NONE;
 
-            if (!appNotificationsOff) {
-                doChannelWarningToast("Developer warning for package \"" + pkg + "\"\n" +
-                        "Failed to post notification on channel \"" + channelId + "\"\n" +
-                        "See log for more details");
+                if (!appNotificationsOff) {
+                    doChannelWarningToast("Developer warning for package \"" + pkg + "\"\n" +
+                            "Failed to post notification on channel \"" + channelId + "\"\n" +
+                            "See log for more details");
+                }
             }
             return;
         }
@@ -6232,19 +6270,21 @@ public class NotificationManagerService extends SystemService {
     }
 
     private void checkCallerIsSameApp(String pkg) {
-        final int uid = Binder.getCallingUid();
-        try {
-            ApplicationInfo ai = mPackageManager.getApplicationInfo(
-                    pkg, 0, UserHandle.getCallingUserId());
-            if (ai == null) {
-                throw new SecurityException("Unknown package " + pkg);
+        if (!QUICKBOOT) {
+            final int uid = Binder.getCallingUid();
+            try {
+                ApplicationInfo ai = mPackageManager.getApplicationInfo(
+                        pkg, 0, UserHandle.getCallingUserId());
+                if (ai == null) {
+                    throw new SecurityException("Unknown package " + pkg);
+                }
+                if (!UserHandle.isSameApp(ai.uid, uid)) {
+                    throw new SecurityException("Calling uid " + uid + " gave package "
+                            + pkg + " which is owned by uid " + ai.uid);
+                }
+            } catch (RemoteException re) {
+                throw new SecurityException("Unknown package " + pkg + "\n" + re);
             }
-            if (!UserHandle.isSameApp(ai.uid, uid)) {
-                throw new SecurityException("Calling uid " + uid + " gave package "
-                        + pkg + " which is owned by uid " + ai.uid);
-            }
-        } catch (RemoteException re) {
-            throw new SecurityException("Unknown package " + pkg + "\n" + re);
         }
     }
 
