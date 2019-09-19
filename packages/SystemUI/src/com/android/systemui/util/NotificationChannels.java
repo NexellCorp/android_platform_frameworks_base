@@ -29,6 +29,8 @@ import com.android.systemui.SystemUI;
 
 import java.util.Arrays;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 public class NotificationChannels extends SystemUI {
     public static String ALERTS      = "ALR";
     public static String SCREENSHOTS_LEGACY = "SCN";
@@ -75,22 +77,31 @@ public class NotificationChannels extends SystemUI {
                 NotificationManager.IMPORTANCE_DEFAULT);
         // No need to bypass DND.
 
-        nm.createNotificationChannels(Arrays.asList(
-                alerts,
-                general,
-                storage,
-                createScreenshotChannel(
-                        context.getString(R.string.notification_channel_screenshot),
-                        nm.getNotificationChannel(SCREENSHOTS_LEGACY)),
-                batteryChannel,
-                hint
-        ));
+        if (!QUICKBOOT) {
+            nm.createNotificationChannels(Arrays.asList(
+                        alerts,
+                        general,
+                        storage,
+                        createScreenshotChannel(
+                            context.getString(R.string.notification_channel_screenshot),
+                            nm.getNotificationChannel(SCREENSHOTS_LEGACY)),
+                        batteryChannel,
+                        hint
+                        ));
 
-        // Delete older SS channel if present.
-        // Screenshots promoted to heads-up in P, this cleans up the lower priority channel from O.
-        // This line can be deleted in Q.
-        nm.deleteNotificationChannel(SCREENSHOTS_LEGACY);
-
+            // Delete older SS channel if present.
+            // Screenshots promoted to heads-up in P, this cleans up the lower priority channel from O.
+            // This line can be deleted in Q.
+            nm.deleteNotificationChannel(SCREENSHOTS_LEGACY);
+        } else {
+            nm.createNotificationChannels(Arrays.asList(
+                        alerts,
+                        general,
+                        storage,
+                        batteryChannel,
+                        hint
+                        ));
+        }
 
         if (isTv(context)) {
             // TV specific notification channel for TV PIP controls.

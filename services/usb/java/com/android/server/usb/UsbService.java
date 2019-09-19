@@ -54,6 +54,8 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Collections;
 
+import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+
 /**
  * UsbService manages all USB related state, including both host and device support.
  * Host related events and calls are delegated to UsbHostManager, and device related
@@ -70,32 +72,46 @@ public class UsbService extends IUsbManager.Stub {
 
         @Override
         public void onStart() {
-            mUsbService = new UsbService(getContext());
-            publishBinderService(Context.USB_SERVICE, mUsbService);
+            if (!QUICKBOOT) {
+                mUsbService = new UsbService(getContext());
+                publishBinderService(Context.USB_SERVICE, mUsbService);
+            }
         }
 
         @Override
         public void onBootPhase(int phase) {
-            if (phase == SystemService.PHASE_ACTIVITY_MANAGER_READY) {
-                mUsbService.systemReady();
-            } else if (phase == SystemService.PHASE_BOOT_COMPLETED) {
-                mUsbService.bootCompleted();
+            if (!QUICKBOOT) {
+                if (phase == SystemService.PHASE_ACTIVITY_MANAGER_READY) {
+                    mUsbService.systemReady();
+                } else if (phase == SystemService.PHASE_BOOT_COMPLETED) {
+                    mUsbService.bootCompleted();
+                }
+            } else {
+                if (phase == SystemService.PHASE_LATE_BOOT_COMPLETED) {
+                    mUsbService = new UsbService(getContext());
+                    publishBinderService(Context.USB_SERVICE, mUsbService);
+                    mUsbService.systemReady();
+                    mUsbService.bootCompleted();
+                }
             }
         }
 
         @Override
         public void onSwitchUser(int newUserId) {
-            mUsbService.onSwitchUser(newUserId);
+            if (mUsbService != null)
+                mUsbService.onSwitchUser(newUserId);
         }
 
         @Override
         public void onStopUser(int userHandle) {
-            mUsbService.onStopUser(UserHandle.of(userHandle));
+            if (mUsbService != null)
+                mUsbService.onStopUser(UserHandle.of(userHandle));
         }
 
         @Override
         public void onUnlockUser(int userHandle) {
-            mUsbService.onUnlockUser(userHandle);
+            if (mUsbService != null)
+                mUsbService.onUnlockUser(userHandle);
         }
     }
 

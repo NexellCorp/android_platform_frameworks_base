@@ -544,16 +544,14 @@ public class NotificationManager {
                 service.createNotificationChannels(mContext.getPackageName(),
                         new ParceledListSlice(channels));
             } catch (RemoteException e) {
-                if (!QUICKBOOT) {
-                    RemoteException re = e;
-                    throw re.rethrowFromSystemServer();
-                }
+                throw e.rethrowFromSystemServer();
             }
         } else {
             try {
                 service.createNotificationChannels(mContext.getPackageName(),
                         new ParceledListSlice(channels));
             } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
