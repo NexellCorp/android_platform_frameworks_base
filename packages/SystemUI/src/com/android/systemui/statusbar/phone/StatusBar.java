@@ -409,9 +409,8 @@ public class StatusBar extends SystemUI implements DemoMode,
     private View mPendingRemoteInputView;
     private View mPendingWorkRemoteInputView;
 
-    // private RemoteInputQuickSettingsDisabler mRemoteInputQuickSettingsDisabler =
-    //         Dependency.get(RemoteInputQuickSettingsDisabler.class);
-    private RemoteInputQuickSettingsDisabler mRemoteInputQuickSettingsDisabler = null;
+    private RemoteInputQuickSettingsDisabler mRemoteInputQuickSettingsDisabler =
+            Dependency.get(RemoteInputQuickSettingsDisabler.class);
 
     private View mReportRejectedTouch;
 
@@ -1350,24 +1349,22 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     protected void startKeyguard() {
-        if (!QUICKBOOT) {
-            Trace.beginSection("StatusBar#startKeyguard");
-            KeyguardViewMediator keyguardViewMediator = getComponent(KeyguardViewMediator.class);
-            mFingerprintUnlockController = new FingerprintUnlockController(mContext,
-                    mDozeScrimController, keyguardViewMediator,
-                    mScrimController, this, UnlockMethodCache.getInstance(mContext));
-            mStatusBarKeyguardViewManager = keyguardViewMediator.registerStatusBar(this,
-                    getBouncerContainer(), mNotificationPanel, mFingerprintUnlockController);
-            mKeyguardIndicationController
-                .setStatusBarKeyguardViewManager(mStatusBarKeyguardViewManager);
-            mFingerprintUnlockController.setStatusBarKeyguardViewManager(mStatusBarKeyguardViewManager);
-            mRemoteInputManager.getController().addCallback(mStatusBarKeyguardViewManager);
+        Trace.beginSection("StatusBar#startKeyguard");
+        KeyguardViewMediator keyguardViewMediator = getComponent(KeyguardViewMediator.class);
+        mFingerprintUnlockController = new FingerprintUnlockController(mContext,
+                mDozeScrimController, keyguardViewMediator,
+                mScrimController, this, UnlockMethodCache.getInstance(mContext));
+        mStatusBarKeyguardViewManager = keyguardViewMediator.registerStatusBar(this,
+                getBouncerContainer(), mNotificationPanel, mFingerprintUnlockController);
+        mKeyguardIndicationController
+            .setStatusBarKeyguardViewManager(mStatusBarKeyguardViewManager);
+        mFingerprintUnlockController.setStatusBarKeyguardViewManager(mStatusBarKeyguardViewManager);
+        mRemoteInputManager.getController().addCallback(mStatusBarKeyguardViewManager);
 
-            mKeyguardViewMediatorCallback = keyguardViewMediator.getViewMediatorCallback();
-            mLightBarController.setFingerprintUnlockController(mFingerprintUnlockController);
-            Dependency.get(KeyguardDismissUtil.class).setDismissHandler(this::executeWhenUnlocked);
-            Trace.endSection();
-        }
+        mKeyguardViewMediatorCallback = keyguardViewMediator.getViewMediatorCallback();
+        mLightBarController.setFingerprintUnlockController(mFingerprintUnlockController);
+        Dependency.get(KeyguardDismissUtil.class).setDismissHandler(this::executeWhenUnlocked);
+        Trace.endSection();
     }
 
     protected View getStatusBarView() {
@@ -1817,12 +1814,10 @@ public class StatusBar extends SystemUI implements DemoMode,
      */
     @Override
     public void disable(int state1, int state2, boolean animate) {
-        if (!QUICKBOOT) {
-            if (mRemoteInputQuickSettingsDisabler == null)
-                mRemoteInputQuickSettingsDisabler =
-                    Dependency.get(RemoteInputQuickSettingsDisabler.class);
-            state2 = mRemoteInputQuickSettingsDisabler.adjustDisableFlags(state2);
-        }
+        if (mRemoteInputQuickSettingsDisabler == null)
+            mRemoteInputQuickSettingsDisabler =
+                Dependency.get(RemoteInputQuickSettingsDisabler.class);
+        state2 = mRemoteInputQuickSettingsDisabler.adjustDisableFlags(state2);
 
         animate &= mStatusBarWindowState != WINDOW_STATE_HIDDEN;
         final int old1 = mDisabled1;
@@ -3570,30 +3565,34 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     private boolean updateIsKeyguard() {
-        boolean wakeAndUnlocking = mFingerprintUnlockController.getMode()
+        if (!QUICKBOOT) {
+            boolean wakeAndUnlocking = mFingerprintUnlockController.getMode()
                 == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK;
 
-        // For dozing, keyguard needs to be shown whenever the device is non-interactive. Otherwise
-        // there's no surface we can show to the user. Note that the device goes fully interactive
-        // late in the transition, so we also allow the device to start dozing once the screen has
-        // turned off fully.
-        boolean keyguardForDozing = mDozingRequested &&
+            // For dozing, keyguard needs to be shown whenever the device is non-interactive. Otherwise
+            // there's no surface we can show to the user. Note that the device goes fully interactive
+            // late in the transition, so we also allow the device to start dozing once the screen has
+            // turned off fully.
+            boolean keyguardForDozing = mDozingRequested &&
                 (!mDeviceInteractive || isGoingToSleep() && (isScreenFullyOff() || mIsKeyguard));
-        boolean shouldBeKeyguard = (mKeyguardRequested || keyguardForDozing) && !wakeAndUnlocking;
-        if (keyguardForDozing) {
-            updatePanelExpansionForKeyguard();
-        }
-        if (shouldBeKeyguard) {
-            if (isGoingToSleep()
-                    && mScreenLifecycle.getScreenState() == ScreenLifecycle.SCREEN_TURNING_OFF) {
-                // Delay showing the keyguard until screen turned off.
-            } else {
-                showKeyguardImpl();
+            boolean shouldBeKeyguard = (mKeyguardRequested || keyguardForDozing) && !wakeAndUnlocking;
+            if (keyguardForDozing) {
+                updatePanelExpansionForKeyguard();
             }
+            if (shouldBeKeyguard) {
+                if (isGoingToSleep()
+                        && mScreenLifecycle.getScreenState() == ScreenLifecycle.SCREEN_TURNING_OFF) {
+                    // Delay showing the keyguard until screen turned off.
+                } else {
+                    showKeyguardImpl();
+                }
+            } else {
+                return hideKeyguardImpl();
+            }
+            return false;
         } else {
             return hideKeyguardImpl();
         }
-        return false;
     }
 
     public void showKeyguardImpl() {
@@ -3847,31 +3846,29 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     // TODO: Move this to NotificationLockscreenUserManager.
     private void updatePublicMode() {
-        if (!QUICKBOOT) {
-            final boolean showingKeyguard = mStatusBarKeyguardViewManager.isShowing();
-            final boolean devicePublic = showingKeyguard
-                && mStatusBarKeyguardViewManager.isSecure(
-                        mLockscreenUserManager.getCurrentUserId());
+        final boolean showingKeyguard = mStatusBarKeyguardViewManager.isShowing();
+        final boolean devicePublic = showingKeyguard
+            && mStatusBarKeyguardViewManager.isSecure(
+                    mLockscreenUserManager.getCurrentUserId());
 
-            // Look for public mode users. Users are considered public in either case of:
-            //   - device keyguard is shown in secure mode;
-            //   - profile is locked with a work challenge.
-            SparseArray<UserInfo> currentProfiles = mLockscreenUserManager.getCurrentProfiles();
-            for (int i = currentProfiles.size() - 1; i >= 0; i--) {
-                final int userId = currentProfiles.valueAt(i).id;
-                boolean isProfilePublic = devicePublic;
-                if (!devicePublic && userId != mLockscreenUserManager.getCurrentUserId()) {
-                    // We can't rely on KeyguardManager#isDeviceLocked() for unified profile challenge
-                    // due to a race condition where this code could be called before
-                    // TrustManagerService updates its internal records, resulting in an incorrect
-                    // state being cached in mLockscreenPublicMode. (b/35951989)
-                    if (mLockPatternUtils.isSeparateProfileChallengeEnabled(userId)
-                            && mStatusBarKeyguardViewManager.isSecure(userId)) {
-                        isProfilePublic = mKeyguardManager.isDeviceLocked(userId);
-                            }
-                }
-                mLockscreenUserManager.setLockscreenPublicMode(isProfilePublic, userId);
+        // Look for public mode users. Users are considered public in either case of:
+        //   - device keyguard is shown in secure mode;
+        //   - profile is locked with a work challenge.
+        SparseArray<UserInfo> currentProfiles = mLockscreenUserManager.getCurrentProfiles();
+        for (int i = currentProfiles.size() - 1; i >= 0; i--) {
+            final int userId = currentProfiles.valueAt(i).id;
+            boolean isProfilePublic = devicePublic;
+            if (!devicePublic && userId != mLockscreenUserManager.getCurrentUserId()) {
+                // We can't rely on KeyguardManager#isDeviceLocked() for unified profile challenge
+                // due to a race condition where this code could be called before
+                // TrustManagerService updates its internal records, resulting in an incorrect
+                // state being cached in mLockscreenPublicMode. (b/35951989)
+                if (mLockPatternUtils.isSeparateProfileChallengeEnabled(userId)
+                        && mStatusBarKeyguardViewManager.isSecure(userId)) {
+                    isProfilePublic = mKeyguardManager.isDeviceLocked(userId);
+                        }
             }
+            mLockscreenUserManager.setLockscreenPublicMode(isProfilePublic, userId);
         }
     }
 
@@ -3908,10 +3905,9 @@ public class StatusBar extends SystemUI implements DemoMode,
         checkBarModes();
         updateScrimController();
         updateMediaMetaData(false, mState != StatusBarState.KEYGUARD);
-        if (!QUICKBOOT)
-            mKeyguardMonitor.notifyKeyguardState(mStatusBarKeyguardViewManager.isShowing(),
-                    mUnlockMethodCache.isMethodSecure(),
-                    mStatusBarKeyguardViewManager.isOccluded());
+        mKeyguardMonitor.notifyKeyguardState(mStatusBarKeyguardViewManager.isShowing(),
+                mUnlockMethodCache.isMethodSecure(),
+                mStatusBarKeyguardViewManager.isOccluded());
         Trace.endSection();
     }
 
@@ -3971,22 +3967,20 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     private void updateDozingState() {
-        if (!QUICKBOOT) {
-            Trace.traceCounter(Trace.TRACE_TAG_APP, "dozing", mDozing ? 1 : 0);
-            Trace.beginSection("StatusBar#updateDozingState");
+        Trace.traceCounter(Trace.TRACE_TAG_APP, "dozing", mDozing ? 1 : 0);
+        Trace.beginSection("StatusBar#updateDozingState");
 
-            boolean sleepingFromKeyguard =
-                mStatusBarKeyguardViewManager.isGoingToSleepVisibleNotOccluded();
-            boolean animate = (!mDozing && mDozeServiceHost.shouldAnimateWakeup())
-                || (mDozing && mDozeServiceHost.shouldAnimateScreenOff() && sleepingFromKeyguard);
+        boolean sleepingFromKeyguard =
+            mStatusBarKeyguardViewManager.isGoingToSleepVisibleNotOccluded();
+        boolean animate = (!mDozing && mDozeServiceHost.shouldAnimateWakeup())
+            || (mDozing && mDozeServiceHost.shouldAnimateScreenOff() && sleepingFromKeyguard);
 
-            mStackScroller.setDark(mDozing, animate, mWakeUpTouchLocation);
-            mDozeScrimController.setDozing(mDozing);
-            mKeyguardIndicationController.setDozing(mDozing);
-            mNotificationPanel.setDozing(mDozing, animate);
-            updateQsExpansionEnabled();
-            Trace.endSection();
-        }
+        mStackScroller.setDark(mDozing, animate, mWakeUpTouchLocation);
+        mDozeScrimController.setDozing(mDozing);
+        mKeyguardIndicationController.setDozing(mDozing);
+        mNotificationPanel.setDozing(mDozing, animate);
+        updateQsExpansionEnabled();
+        Trace.endSection();
     }
 
     public void updateStackScrollerState(boolean goingToFullShade, boolean fromShadeLocked) {
@@ -4013,21 +4007,13 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     public boolean interceptMediaKey(KeyEvent event) {
-        if (!QUICKBOOT) {
-            return mState == StatusBarState.KEYGUARD
-                && mStatusBarKeyguardViewManager.interceptMediaKey(event);
-        } else {
-            return mState == StatusBarState.KEYGUARD;
-        }
+        return mState == StatusBarState.KEYGUARD
+            && mStatusBarKeyguardViewManager.interceptMediaKey(event);
     }
 
     protected boolean shouldUnlockOnMenuPressed() {
-        if (!QUICKBOOT) {
-            return mDeviceInteractive && mState != StatusBarState.SHADE
-                && mStatusBarKeyguardViewManager.shouldDismissOnMenuPressed();
-        } else {
-            return mDeviceInteractive && mState != StatusBarState.SHADE;
-        }
+        return mDeviceInteractive && mState != StatusBarState.SHADE
+            && mStatusBarKeyguardViewManager.shouldDismissOnMenuPressed();
     }
 
     public boolean onMenuPressed() {
@@ -4046,13 +4032,11 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     public boolean onBackPressed() {
         boolean isScrimmedBouncer = mScrimController.getState() == ScrimState.BOUNCER_SCRIMMED;
-        if (!QUICKBOOT) {
-            if (mStatusBarKeyguardViewManager.onBackPressed(isScrimmedBouncer /* hideImmediately */)) {
-                if (!isScrimmedBouncer) {
-                    mNotificationPanel.expandWithoutQs();
-                }
-                return true;
+        if (mStatusBarKeyguardViewManager.onBackPressed(isScrimmedBouncer /* hideImmediately */)) {
+            if (!isScrimmedBouncer) {
+                mNotificationPanel.expandWithoutQs();
             }
+            return true;
         }
         if (mNotificationPanel.isQsExpanded()) {
             if (mNotificationPanel.isQsDetailShowing()) {
@@ -4777,88 +4761,79 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     private void updateDozing() {
-        if (!QUICKBOOT) {
-            Trace.beginSection("StatusBar#updateDozing");
-            // When in wake-and-unlock while pulsing, keep dozing state until fully unlocked.
-            boolean dozing = mDozingRequested && mState == StatusBarState.KEYGUARD
-                || mFingerprintUnlockController.getMode()
-                == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING;
-            // When in wake-and-unlock we may not have received a change to mState
-            // but we still should not be dozing, manually set to false.
-            if (mFingerprintUnlockController.getMode() ==
-                    FingerprintUnlockController.MODE_WAKE_AND_UNLOCK) {
-                dozing = false;
-                    }
-            if (mDozing != dozing) {
-                mDozing = dozing;
-                mKeyguardViewMediator.setAodShowing(mDozing);
-                mStatusBarWindowManager.setDozing(mDozing);
-                mStatusBarKeyguardViewManager.setDozing(mDozing);
-                if (mAmbientIndicationContainer instanceof DozeReceiver) {
-                    ((DozeReceiver) mAmbientIndicationContainer).setDozing(mDozing);
+        Trace.beginSection("StatusBar#updateDozing");
+        // When in wake-and-unlock while pulsing, keep dozing state until fully unlocked.
+        boolean dozing = mDozingRequested && mState == StatusBarState.KEYGUARD
+            || mFingerprintUnlockController.getMode()
+            == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK_PULSING;
+        // When in wake-and-unlock we may not have received a change to mState
+        // but we still should not be dozing, manually set to false.
+        if (mFingerprintUnlockController.getMode() ==
+                FingerprintUnlockController.MODE_WAKE_AND_UNLOCK) {
+            dozing = false;
                 }
-                mEntryManager.updateNotifications();
-                updateDozingState();
-                updateReportRejectedTouchVisibility();
+        if (mDozing != dozing) {
+            mDozing = dozing;
+            mKeyguardViewMediator.setAodShowing(mDozing);
+            mStatusBarWindowManager.setDozing(mDozing);
+            mStatusBarKeyguardViewManager.setDozing(mDozing);
+            if (mAmbientIndicationContainer instanceof DozeReceiver) {
+                ((DozeReceiver) mAmbientIndicationContainer).setDozing(mDozing);
             }
-            Trace.endSection();
+            mEntryManager.updateNotifications();
+            updateDozingState();
+            updateReportRejectedTouchVisibility();
         }
+        Trace.endSection();
     }
 
     @VisibleForTesting
     void updateScrimController() {
-        if (!QUICKBOOT) {
-            Trace.beginSection("StatusBar#updateScrimController");
+        Trace.beginSection("StatusBar#updateScrimController");
 
-            // We don't want to end up in KEYGUARD state when we're unlocking with
-            // fingerprint from doze. We should cross fade directly from black.
-            boolean wakeAndUnlocking = mFingerprintUnlockController.isWakeAndUnlock();
+        // We don't want to end up in KEYGUARD state when we're unlocking with
+        // fingerprint from doze. We should cross fade directly from black.
+        boolean wakeAndUnlocking = mFingerprintUnlockController.isWakeAndUnlock();
 
-            // Do not animate the scrim expansion when triggered by the fingerprint sensor.
-            mScrimController.setExpansionAffectsAlpha(
-                    !mFingerprintUnlockController.isFingerprintUnlock());
+        // Do not animate the scrim expansion when triggered by the fingerprint sensor.
+        mScrimController.setExpansionAffectsAlpha(
+                !mFingerprintUnlockController.isFingerprintUnlock());
 
-            boolean launchingAffordanceWithPreview =
-                mNotificationPanel.isLaunchingAffordanceWithPreview();
-            mScrimController.setLaunchingAffordanceWithPreview(launchingAffordanceWithPreview);
+        boolean launchingAffordanceWithPreview =
+            mNotificationPanel.isLaunchingAffordanceWithPreview();
+        mScrimController.setLaunchingAffordanceWithPreview(launchingAffordanceWithPreview);
 
-            if (mBouncerShowing) {
-                // Bouncer needs the front scrim when it's on top of an activity,
-                // tapping on a notification, editing QS or being dismissed by
-                // FLAG_DISMISS_KEYGUARD_ACTIVITY.
-                ScrimState state = mIsOccluded || mStatusBarKeyguardViewManager.bouncerNeedsScrimming()
-                    || mStatusBarKeyguardViewManager.willDismissWithAction()
-                    || mStatusBarKeyguardViewManager.isFullscreenBouncer() ?
-                    ScrimState.BOUNCER_SCRIMMED : ScrimState.BOUNCER;
-                mScrimController.transitionTo(state);
-            } else if (isInLaunchTransition() || mLaunchCameraOnScreenTurningOn
-                    || launchingAffordanceWithPreview) {
-                mScrimController.transitionTo(ScrimState.UNLOCKED, mUnlockScrimCallback);
-            } else if (mBrightnessMirrorVisible) {
-                mScrimController.transitionTo(ScrimState.BRIGHTNESS_MIRROR);
-            } else if (isPulsing()) {
-                // Handled in DozeScrimController#setPulsing
-            } else if (mDozing) {
-                mScrimController.transitionTo(ScrimState.AOD);
-            } else if (mIsKeyguard && !wakeAndUnlocking) {
-                mScrimController.transitionTo(ScrimState.KEYGUARD);
-            } else {
-                mScrimController.transitionTo(ScrimState.UNLOCKED, mUnlockScrimCallback);
-            }
-            Trace.endSection();
+        if (mBouncerShowing) {
+            // Bouncer needs the front scrim when it's on top of an activity,
+            // tapping on a notification, editing QS or being dismissed by
+            // FLAG_DISMISS_KEYGUARD_ACTIVITY.
+            ScrimState state = mIsOccluded || mStatusBarKeyguardViewManager.bouncerNeedsScrimming()
+                || mStatusBarKeyguardViewManager.willDismissWithAction()
+                || mStatusBarKeyguardViewManager.isFullscreenBouncer() ?
+                ScrimState.BOUNCER_SCRIMMED : ScrimState.BOUNCER;
+            mScrimController.transitionTo(state);
+        } else if (isInLaunchTransition() || mLaunchCameraOnScreenTurningOn
+                || launchingAffordanceWithPreview) {
+            mScrimController.transitionTo(ScrimState.UNLOCKED, mUnlockScrimCallback);
+        } else if (mBrightnessMirrorVisible) {
+            mScrimController.transitionTo(ScrimState.BRIGHTNESS_MIRROR);
+        } else if (isPulsing()) {
+            // Handled in DozeScrimController#setPulsing
+        } else if (mDozing) {
+            mScrimController.transitionTo(ScrimState.AOD);
+        } else if (mIsKeyguard && !wakeAndUnlocking) {
+            mScrimController.transitionTo(ScrimState.KEYGUARD);
+        } else {
+            mScrimController.transitionTo(ScrimState.UNLOCKED, mUnlockScrimCallback);
         }
+        Trace.endSection();
     }
 
     public boolean isKeyguardShowing() {
-        if (!QUICKBOOT) {
-            if (mStatusBarKeyguardViewManager == null) {
-                Slog.i(TAG, "isKeyguardShowing() called before startKeyguard(), returning true");
-                return true;
-            }
-            return mStatusBarKeyguardViewManager.isShowing();
-        } else {
-            return false;
+        if (mStatusBarKeyguardViewManager == null) {
+            return true;
         }
+        return mStatusBarKeyguardViewManager.isShowing();
     }
 
     private final class DozeServiceHost implements DozeHost {
