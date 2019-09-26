@@ -2767,13 +2767,16 @@ class StorageManagerService extends IStorageManager.Stub
                     reportUnmounted = true;
                 }
 
-                final StorageVolume userVol = vol.buildStorageVolume(mContext, userId,
-                        reportUnmounted);
-                if (vol.isPrimary()) {
-                    res.add(0, userVol);
-                    foundPrimary = true;
-                } else {
-                    res.add(userVol);
+                try {
+                    final StorageVolume userVol = vol.buildStorageVolume(mContext, userId,
+                            reportUnmounted);
+                    if (vol.isPrimary()) {
+                        res.add(0, userVol);
+                        foundPrimary = true;
+                    } else {
+                        res.add(userVol);
+                    }
+                } catch (Exception e) {
                 }
             }
         }
