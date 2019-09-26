@@ -151,8 +151,7 @@ public class SystemUIFactory {
         providers.put(NotificationEntryManager.class, () -> new NotificationEntryManager(context));
         providers.put(KeyguardDismissUtil.class, KeyguardDismissUtil::new);
         providers.put(SmartReplyController.class, () -> new SmartReplyController());
-        if (!QUICKBOOT)
-            providers.put(RemoteInputQuickSettingsDisabler.class,
-                    () -> new RemoteInputQuickSettingsDisabler(context));
+        providers.put(RemoteInputQuickSettingsDisabler.class,
+                () -> new RemoteInputQuickSettingsDisabler(context));
     }
 }
