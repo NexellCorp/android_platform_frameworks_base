@@ -32,6 +32,10 @@ import java.util.Locale;
  */
 public class MediaFile {
 
+    private final static String TAG = "MediaFile";
+
+/**
+ * org source
     // Audio file types
     public static final int FILE_TYPE_MP3     = 1;
     public static final int FILE_TYPE_M4A     = 2;
@@ -52,8 +56,44 @@ public class MediaFile {
     public static final int FILE_TYPE_IMY     = 13;
     private static final int FIRST_MIDI_FILE_TYPE = FILE_TYPE_MID;
     private static final int LAST_MIDI_FILE_TYPE = FILE_TYPE_IMY;
+*/
+
+/****************************************************************/
+/**
+ * Add by hcjun for Audio APE
+ */
+
+    // Audio file types
+    public static final int FILE_TYPE_MP3     = 1;
+    public static final int FILE_TYPE_M4A     = 2;
+    public static final int FILE_TYPE_WAV     = 3;
+    public static final int FILE_TYPE_AMR     = 4;
+    public static final int FILE_TYPE_AWB     = 5;
+    public static final int FILE_TYPE_WMA     = 6;
+    public static final int FILE_TYPE_OGG     = 7;
+    public static final int FILE_TYPE_AAC     = 8;
+    public static final int FILE_TYPE_MKA     = 9;
+    public static final int FILE_TYPE_APE     = 10;
+    public static final int FILE_TYPE_FLAC    = 11;
+    private static final int FIRST_AUDIO_FILE_TYPE = FILE_TYPE_MP3;
+    private static final int LAST_AUDIO_FILE_TYPE = FILE_TYPE_FLAC;
+
+    // MIDI file types
+    public static final int FILE_TYPE_MID     = 12;
+    public static final int FILE_TYPE_SMF     = 13;
+    public static final int FILE_TYPE_IMY     = 14;
+    private static final int FIRST_MIDI_FILE_TYPE = FILE_TYPE_MID;
+    private static final int LAST_MIDI_FILE_TYPE = FILE_TYPE_IMY;
+/****************************************************************/    
 
     // Video file types
+
+/**
+ * Add by hcjun for Video FLV,RV
+ */
+    public static final int FILE_TYPE_FLV     = 19;
+    public static final int FILE_TYPE_RV      = 20;
+
     public static final int FILE_TYPE_MP4     = 21;
     public static final int FILE_TYPE_M4V     = 22;
     public static final int FILE_TYPE_3GPP    = 23;
@@ -64,7 +104,13 @@ public class MediaFile {
     public static final int FILE_TYPE_MP2TS   = 28;
     public static final int FILE_TYPE_AVI     = 29;
     public static final int FILE_TYPE_WEBM    = 30;
+/**
+ * org source
     private static final int FIRST_VIDEO_FILE_TYPE = FILE_TYPE_MP4;
+*/
+
+    // Add by hcjun for Video FLV,RV
+    private static final int FIRST_VIDEO_FILE_TYPE = FILE_TYPE_FLV;    
     private static final int LAST_VIDEO_FILE_TYPE = FILE_TYPE_WEBM;
 
     // More video file types
@@ -193,9 +239,17 @@ public class MediaFile {
         addFileType("WAV", FILE_TYPE_WAV, "audio/x-wav", MtpConstants.FORMAT_WAV, true);
         addFileType("AMR", FILE_TYPE_AMR, "audio/amr");
         addFileType("AWB", FILE_TYPE_AWB, "audio/amr-wb");
+/**
+ * org source
         if (isWMAEnabled()) {
             addFileType("WMA", FILE_TYPE_WMA, "audio/x-ms-wma", MtpConstants.FORMAT_WMA, true);
         }
+*/
+
+        // Add by hcjun for APE
+        addFileType("WMA", FILE_TYPE_WMA, "audio/x-ms-wma", MtpConstants.FORMAT_WMA, true);
+        addFileType("APE", FILE_TYPE_APE, "audio/ape");
+
         addFileType("OGG", FILE_TYPE_OGG, "audio/ogg", MtpConstants.FORMAT_OGG, false);
         addFileType("OGG", FILE_TYPE_OGG, "application/ogg", MtpConstants.FORMAT_OGG, true);
         addFileType("OGA", FILE_TYPE_OGG, "application/ogg", MtpConstants.FORMAT_OGG, false);
@@ -228,10 +282,24 @@ public class MediaFile {
         addFileType("TS", FILE_TYPE_MP2TS, "video/mp2ts");
         addFileType("AVI", FILE_TYPE_AVI, "video/avi");
 
+/**
+ * org source
         if (isWMVEnabled()) {
             addFileType("WMV", FILE_TYPE_WMV, "video/x-ms-wmv", MtpConstants.FORMAT_WMV, true);
             addFileType("ASF", FILE_TYPE_ASF, "video/x-ms-asf");
         }
+*/
+
+        // Add by hcjun delete isWMVEnabled()
+        addFileType("WMV", FILE_TYPE_WMV, "video/x-ms-wmv", MtpConstants.FORMAT_WMV, true);
+        addFileType("ASF", FILE_TYPE_ASF, "video/x-ms-asf");
+
+        // Add by hcjun for m2ts,tp,flv,vob,rmvb
+        addFileType("M2TS", FILE_TYPE_MP2TS, "video/mp2ts");
+        addFileType("TP", FILE_TYPE_MP2TS, "video/mp2ts");
+        addFileType("FLV", FILE_TYPE_FLV, "video/x-flv");
+        addFileType("VOB", FILE_TYPE_MP4, "video/mpeg");
+        addFileType("RMVB", FILE_TYPE_RV, "video/rm");
 
         addFileType("JPG", FILE_TYPE_JPEG, "image/jpeg", MtpConstants.FORMAT_EXIF_JPEG, true);
         addFileType("JPEG", FILE_TYPE_JPEG, "image/jpeg", MtpConstants.FORMAT_EXIF_JPEG, false);
