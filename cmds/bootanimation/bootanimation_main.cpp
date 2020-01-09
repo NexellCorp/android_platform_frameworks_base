@@ -24,7 +24,11 @@
 #include <utils/Log.h>
 #include <utils/threads.h>
 
-#include "BootAnimation.h"
+#ifdef NXBOOTANIMATION
+#   include "NxBootAnimation.h"
+#else
+#   include "BootAnimation.h"
+#endif
 
 using namespace android;
 
