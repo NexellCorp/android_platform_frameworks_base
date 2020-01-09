@@ -3,12 +3,23 @@ include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
     bootanimation_main.cpp \
-    audioplay.cpp \
+    audioplay.cpp
+
+ifeq ($(BOOTLOGO), true)
+LOCAL_SRC_FILES += \
+    NxBootAnimation.cpp
+else
+LOCAL_SRC_FILES += \
     BootAnimation.cpp
+endif
 
 LOCAL_CFLAGS += -DGL_GLEXT_PROTOTYPES -DEGL_EGLEXT_PROTOTYPES
 
 LOCAL_CFLAGS += -Wall -Werror -Wunused -Wunreachable-code
+
+ifeq ($(BOOTLOGO), true)
+LOCAL_CFLAGS += -DNXBOOTANIMATION
+endif
 
 LOCAL_C_INCLUDES += \
     external/tinyalsa/include \
