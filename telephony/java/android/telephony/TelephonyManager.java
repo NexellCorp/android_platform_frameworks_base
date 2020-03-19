@@ -81,7 +81,7 @@ import java.util.concurrent.Executor;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.TELEPHONY_MANAGER_QUICKBOOT;
 
 /**
  * Provides access to information about the telephony services on
@@ -1738,7 +1738,7 @@ public class TelephonyManager {
                     PhoneConstants.LTE_ON_CDMA_UNKNOWN);
         retVal = curVal;
         if (retVal == PhoneConstants.LTE_ON_CDMA_UNKNOWN) {
-            if (!QUICKBOOT) {
+            if (!TELEPHONY_MANAGER_QUICKBOOT) {
                 // Matcher matcher = sProductTypePattern.matcher(sKernelCmdLine);
                 Matcher matcher = sProductTypePattern.matcher(getProcCmdLine());
                 if (matcher.find()) {

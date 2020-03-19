@@ -115,7 +115,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.JOB_SCHEDULER_SERVICE_QUICKBOOT;
 
 /**
  * Responsible for taking jobs representing work to be performed by a client app, and determining
@@ -1152,7 +1152,7 @@ public class JobSchedulerService extends com.android.server.SystemService
 
         // Create the controllers.
         mControllers = new ArrayList<StateController>();
-        if (!QUICKBOOT) {
+        if (!JOB_SCHEDULER_SERVICE_QUICKBOOT) {
             mControllers.add(new ConnectivityController(this));
             mControllers.add(new TimeController(this));
             mControllers.add(new IdleController(this));
@@ -1223,7 +1223,7 @@ public class JobSchedulerService extends com.android.server.SystemService
 
     @Override
     public void onBootPhase(int phase) {
-        if (!QUICKBOOT) {
+        if (!JOB_SCHEDULER_SERVICE_QUICKBOOT) {
             if (PHASE_SYSTEM_SERVICES_READY == phase) {
                 mConstantsObserver.start(getContext().getContentResolver());
 

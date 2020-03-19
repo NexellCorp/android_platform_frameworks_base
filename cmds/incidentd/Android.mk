@@ -84,7 +84,7 @@ GEN_PROTO:=
 
 gen_src_dir:=
 
-ifeq ($(NEXELL_QUICKBOOT), false)
+ifeq ($(INCIDENTD_QUICKBOOT), false)
 LOCAL_INIT_RC := incidentd.rc
 endif
 

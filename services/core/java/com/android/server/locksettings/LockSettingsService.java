@@ -145,7 +145,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.LOCK_SETTINGS_SERVICE_QUICKBOOT;
 
 /**
  * Keeps the lock pattern/password data and related settings for each user. Used by
@@ -655,7 +655,7 @@ public class LockSettingsService extends ILockSettings.Stub {
         }
         checkWritePermission(UserHandle.USER_SYSTEM);
         migrateOldData();
-        if (!QUICKBOOT) {
+        if (!LOCK_SETTINGS_SERVICE_QUICKBOOT) {
             try {
                 getGateKeeperService();
                 mSpManager.initWeaverService();
@@ -673,7 +673,7 @@ public class LockSettingsService extends ILockSettings.Stub {
         }
         mDeviceProvisionedObserver.onSystemReady();
         // TODO: maybe skip this for split system user mode.
-        if (!QUICKBOOT)
+        if (!LOCK_SETTINGS_SERVICE_QUICKBOOT)
             mStorage.prefetchUser(UserHandle.USER_SYSTEM);
         mStrongAuth.systemReady();
     }

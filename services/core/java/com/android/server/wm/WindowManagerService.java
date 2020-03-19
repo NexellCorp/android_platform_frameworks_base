@@ -269,7 +269,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.WINDOW_MANAGER_SERVICE_QUICKBOOT;
 
 /** {@hide} */
 public class WindowManagerService extends IWindowManager.Stub
@@ -3367,7 +3367,7 @@ public class WindowManagerService extends IWindowManager.Stub
             hideBootMessagesLocked();
             // If the screen still doesn't come up after 30 seconds, give
             // up and turn it on.
-            if (QUICKBOOT) {
+            if (WINDOW_MANAGER_SERVICE_QUICKBOOT) {
                 int timeOut = 1 * 1000;
                 if (SystemProperties.getInt("persist.quickboot.firstboot", 0) != 1)
                     mH.sendEmptyMessageDelayed(H.BOOT_TIMEOUT, timeOut);

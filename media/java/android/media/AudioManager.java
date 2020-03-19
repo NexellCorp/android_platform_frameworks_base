@@ -70,7 +70,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.AUDIO_MANAGER_QUICKBOOT;
 
 
 /**
@@ -746,7 +746,7 @@ public class AudioManager {
      *     or {@link KeyEvent#KEYCODE_MEDIA_AUDIO_TRACK}.
      */
     public void dispatchMediaKeyEvent(KeyEvent keyEvent) {
-        if (!QUICKBOOT) {
+        if (!AUDIO_MANAGER_QUICKBOOT) {
             MediaSessionLegacyHelper helper = MediaSessionLegacyHelper.getHelper(getContext());
             helper.sendMediaButtonEvent(keyEvent, false);
         }
@@ -879,7 +879,7 @@ public class AudioManager {
     /** @hide */
     public void setMasterMute(boolean mute, int flags) {
         final IAudioService service = getService();
-        if (!QUICKBOOT) {
+        if (!AUDIO_MANAGER_QUICKBOOT) {
             try {
                 service.setMasterMute(mute, flags, getContext().getOpPackageName(),
                         UserHandle.getCallingUserId());
@@ -3179,7 +3179,7 @@ public class AudioManager {
             throw new IllegalArgumentException("Illegal null AudioPolicy argument");
         }
         final IAudioService service = getService();
-        if (!QUICKBOOT) {
+        if (!AUDIO_MANAGER_QUICKBOOT) {
             try {
                 String regId = service.registerAudioPolicy(policy.getConfig(), policy.cb(),
                         policy.hasFocusListener(), policy.isFocusPolicy(), policy.isVolumeController());

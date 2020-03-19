@@ -25,7 +25,7 @@ import com.android.internal.annotations.VisibleForTesting;
 import java.io.FileInputStream;
 import java.util.Iterator;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.KERNEL_WAKE_LOCK_READER_QUICKBOOT;
 
 /**
  * Reads and parses wakelock stats from the kernel (/proc/wakelocks).
@@ -67,7 +67,7 @@ public class KernelWakelockReader {
      * @return the updated data.
      */
     public final KernelWakelockStats readKernelWakelockStats(KernelWakelockStats staleStats) {
-        if (QUICKBOOT)
+        if (KERNEL_WAKE_LOCK_READER_QUICKBOOT)
             return null;
 
         byte[] buffer = new byte[32*1024];
@@ -127,7 +127,7 @@ public class KernelWakelockReader {
     @VisibleForTesting
     public KernelWakelockStats parseProcWakelocks(byte[] wlBuffer, int len, boolean wakeup_sources,
                                                   final KernelWakelockStats staleStats) {
-        if (QUICKBOOT)
+        if (KERNEL_WAKE_LOCK_READER_QUICKBOOT)
             return null;
         String name;
         int count;

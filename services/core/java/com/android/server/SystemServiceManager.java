@@ -26,7 +26,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.SYSTEM_SERVICE_MANAGER_QUICKBOOT;
 
 /**
  * Manages creating, starting, and other lifecycle events of
@@ -141,7 +141,7 @@ public class SystemServiceManager {
      */
     public void startBootPhase(final int phase) {
         if (phase <= mCurrentPhase) {
-            if (QUICKBOOT) {
+            if (SYSTEM_SERVICE_MANAGER_QUICKBOOT) {
                 Slog.w(TAG, "new phase is older than current phase --> new: " + phase + ", current: " + mCurrentPhase);
                 return;
             } else {

@@ -102,7 +102,7 @@ import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.DEVICE_IDLE_CONTROLLER_QUICKBOOT;
 
 /**
  * Keeps track of device idleness and drives low power mode based on that.
@@ -1459,7 +1459,7 @@ public class DeviceIdleController extends SystemService
     @Override
     public void onBootPhase(int phase) {
         int checkPhase = PHASE_SYSTEM_SERVICES_READY;
-        if (QUICKBOOT) {
+        if (DEVICE_IDLE_CONTROLLER_QUICKBOOT) {
             checkPhase = PHASE_LATE_BOOT_COMPLETED;
         }
         if (phase == checkPhase) {

@@ -75,7 +75,7 @@ import com.android.systemui.statusbar.policy.UserInfoController;
 
 import java.util.List;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.SYSTEM_SERVICES_PROXY_QUICKBOOT;
 
 /**
  * Acts as a shim around the real system services that we need to access data from, and provides
@@ -510,7 +510,7 @@ public class SystemServicesProxy {
     }
 
     public boolean isDreaming() {
-        if (!QUICKBOOT) {
+        if (!SYSTEM_SERVICES_PROXY_QUICKBOOT) {
             try {
                 return mDreamManager.isDreaming();
             } catch (RemoteException e) {

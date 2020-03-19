@@ -66,7 +66,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static android.net.NetworkCapabilities.NET_CAPABILITY_VALIDATED;
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.NETWORK_CONTROLLER_IMPL_QUICKBOOT;
 
 /** Platform implementation of the network controller. **/
 public class NetworkControllerImpl extends BroadcastReceiver
@@ -180,7 +180,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
         mSubscriptionManager = subManager;
         mSubDefaults = defaultsHandler;
         mConnectivityManager = connectivityManager;
-        if (!QUICKBOOT) {
+        if (!NETWORK_CONTROLLER_IMPL_QUICKBOOT) {
             mHasMobileDataFeature =
                 mConnectivityManager.isNetworkSupported(ConnectivityManager.TYPE_MOBILE);
         } else {
@@ -204,7 +204,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
                 mCallbackHandler.setMobileDataEnabled(enabled);
             }
         });
-        if (!QUICKBOOT) {
+        if (!NETWORK_CONTROLLER_IMPL_QUICKBOOT) {
             mWifiSignalController = new WifiSignalController(mContext, mHasMobileDataFeature,
                     mCallbackHandler, this, mWifiManager);
         } else {
@@ -260,7 +260,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
         // scratch.
         // TODO: Move off of the deprecated CONNECTIVITY_ACTION broadcast and rely on callbacks
         // exclusively for status bar icons.
-        if (!QUICKBOOT)
+        if (!NETWORK_CONTROLLER_IMPL_QUICKBOOT)
             mConnectivityManager.registerDefaultNetworkCallback(callback, mReceiverHandler);
     }
 
@@ -716,7 +716,7 @@ public class NetworkControllerImpl extends BroadcastReceiver
     private void updateConnectivity() {
         mConnectedTransports.clear();
         mValidatedTransports.clear();
-        if (!QUICKBOOT) {
+        if (!NETWORK_CONTROLLER_IMPL_QUICKBOOT) {
             for (NetworkCapabilities nc :
                     mConnectivityManager.getDefaultNetworkCapabilitiesForUser(mCurrentUserId)) {
                 for (int transportType : nc.getTransportTypes()) {

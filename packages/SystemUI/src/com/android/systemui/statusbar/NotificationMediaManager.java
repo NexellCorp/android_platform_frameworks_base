@@ -32,7 +32,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.NOTIFICATION_MEDIA_QUICKBOOT;
 
 /**
  * Handles tasks and state related to media notifications. For example, there is a 'current' media
@@ -79,7 +79,7 @@ public class NotificationMediaManager implements Dumpable {
 
     public NotificationMediaManager(Context context) {
         mContext = context;
-        if (!QUICKBOOT) {
+        if (!NOTIFICATION_MEDIA_QUICKBOOT) {
             mMediaSessionManager
                 = (MediaSessionManager) mContext.getSystemService(Context.MEDIA_SESSION_SERVICE);
         } else {

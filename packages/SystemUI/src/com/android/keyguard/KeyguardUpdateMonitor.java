@@ -96,7 +96,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.KEYGUARD_UPDATE_MONITOR_QUICKBOOT;
 
 /**
  * Watches for updates that may be interesting to the keyguard, and provides
@@ -519,7 +519,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
         Trace.beginSection("KeyGuardUpdateMonitor#onFingerPrintAuthenticated");
         mUserFingerprintAuthenticated.put(userId, true);
         // Update/refresh trust state only if user can skip bouncer
-        if (!QUICKBOOT && getUserCanSkipBouncer(userId)) {
+        if (!KEYGUARD_UPDATE_MONITOR_QUICKBOOT && getUserCanSkipBouncer(userId)) {
             mTrustManager.unlockedByFingerprintForUser(userId);
         }
         // Don't send cancel if authentication succeeds
@@ -1236,7 +1236,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
             e.rethrowAsRuntimeException();
         }
 
-        if (!QUICKBOOT) {
+        if (!KEYGUARD_UPDATE_MONITOR_QUICKBOOT) {
             mTrustManager = (TrustManager) context.getSystemService(Context.TRUST_SERVICE);
             mTrustManager.registerTrustListener(this);
         } else {
@@ -1295,7 +1295,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
     }
 
     private boolean shouldListenForFingerprint() {
-        if (QUICKBOOT) return false;
+        if (KEYGUARD_UPDATE_MONITOR_QUICKBOOT) return false;
         return (mKeyguardIsVisible || !mDeviceInteractive ||
                 (mBouncer && !mKeyguardGoingAway) || mGoingToSleep ||
                 shouldListenForFingerprintAssistant() || (mKeyguardOccluded && mIsDreaming))
@@ -1856,7 +1856,7 @@ public class KeyguardUpdateMonitor implements TrustManager.TrustListener {
 
     public void clearFingerprintRecognized() {
         mUserFingerprintAuthenticated.clear();
-        if (!QUICKBOOT)
+        if (!KEYGUARD_UPDATE_MONITOR_QUICKBOOT)
             mTrustManager.clearAllFingerprints();
     }
 

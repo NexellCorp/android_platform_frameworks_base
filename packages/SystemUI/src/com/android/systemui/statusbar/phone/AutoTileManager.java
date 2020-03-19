@@ -28,7 +28,7 @@ import com.android.systemui.statusbar.policy.DataSaverController.Listener;
 import com.android.systemui.statusbar.policy.HotspotController;
 import com.android.systemui.statusbar.policy.HotspotController.Callback;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.AUTO_TILE_MANAGER_QUICKBOOT;
 
 /**
  * Manages which tiles should be automatically added to QS.
@@ -57,7 +57,7 @@ public class AutoTileManager {
         mContext = context;
         mHost = host;
         mHandler = handler;
-        if (!QUICKBOOT) {
+        if (!AUTO_TILE_MANAGER_QUICKBOOT) {
             if (!mAutoTracker.isAdded(HOTSPOT)) {
                 Dependency.get(HotspotController.class).addCallback(mHotspotCallback);
             }

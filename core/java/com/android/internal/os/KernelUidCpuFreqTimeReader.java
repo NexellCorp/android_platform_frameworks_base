@@ -17,7 +17,7 @@
 package com.android.internal.os;
 
 import static com.android.internal.util.Preconditions.checkNotNull;
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT;
 
 import android.annotation.NonNull;
 import android.annotation.Nullable;
@@ -88,7 +88,7 @@ public class KernelUidCpuFreqTimeReader extends
     private boolean mAllUidTimesAvailable = true;
 
     public KernelUidCpuFreqTimeReader() {
-        if (!QUICKBOOT)
+        if (!KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT)
             mProcReader = KernelCpuProcReader.getFreqTimeReaderInstance();
         else
             mProcReader = null;
@@ -100,22 +100,22 @@ public class KernelUidCpuFreqTimeReader extends
     }
 
     public boolean perClusterTimesAvailable() {
-        if (QUICKBOOT) return false;
+        if (KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT) return false;
         return mPerClusterTimesAvailable;
     }
 
     public boolean allUidTimesAvailable() {
-        if (QUICKBOOT) return false;
+        if (KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT) return false;
         return mAllUidTimesAvailable;
     }
 
     public SparseArray<long[]> getAllUidCpuFreqTimeMs() {
-        if (QUICKBOOT) return null;
+        if (KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT) return null;
         return mLastUidCpuFreqTimeMs;
     }
 
     public long[] readFreqs(@NonNull PowerProfile powerProfile) {
-        if (QUICKBOOT) return null;
+        if (KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT) return null;
         checkNotNull(powerProfile);
         if (mCpuFreqs != null) {
             // No need to read cpu freqs more than once.
@@ -141,7 +141,7 @@ public class KernelUidCpuFreqTimeReader extends
     @VisibleForTesting
     public long[] readFreqs(BufferedReader reader, PowerProfile powerProfile)
             throws IOException {
-        if (QUICKBOOT) return null;
+        if (KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT) return null;
         final String line = reader.readLine();
         if (line == null) {
             return null;
@@ -177,7 +177,7 @@ public class KernelUidCpuFreqTimeReader extends
     @Override
     @VisibleForTesting
     public void readDeltaImpl(@Nullable Callback callback) {
-        if (QUICKBOOT) return;
+        if (KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT) return;
         if (mCpuFreqs == null) {
             return;
         }
@@ -211,7 +211,7 @@ public class KernelUidCpuFreqTimeReader extends
     }
 
     public void readAbsolute(Callback callback) {
-        if (QUICKBOOT) return;
+        if (KERNEL_UID_CPU_FREQ_TIME_READER_QUICKBOOT) return;
         readImpl((buf) -> {
             int uid = buf.get();
             if (getFreqTimeForUid(buf, mCurTimes)) {

@@ -29,7 +29,7 @@ import android.util.proto.ProtoOutputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.POWER_MANAGER_QUICKBOOT;
 
 /**
  * This class gives you control of the power state of the device.
@@ -1494,7 +1494,7 @@ public final class PowerManager {
         }
 
         private void acquireLocked() {
-            if (!QUICKBOOT) {
+            if (!POWER_MANAGER_QUICKBOOT) {
                 mInternalCount++;
                 mExternalCount++;
                 if (!mRefCounted || mInternalCount == 1) {
@@ -1542,7 +1542,7 @@ public final class PowerManager {
          * Passing 0 is equivalent to calling {@link #release()}.
          */
         public void release(int flags) {
-            if (!QUICKBOOT) {
+            if (!POWER_MANAGER_QUICKBOOT) {
                 synchronized (mToken) {
                     if (mInternalCount > 0) {
                         // internal count must only be decreased if it is > 0 or state of

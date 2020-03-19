@@ -26,7 +26,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.KERNEL_CPU_SPEED_READER_QUICKBOOT;
 
 /**
  * Reads CPU time of a specific core spent at various frequencies and provides a delta from the
@@ -66,7 +66,7 @@ public class KernelCpuSpeedReader {
      * {@link #readDelta}.
      */
     public long[] readDelta() {
-        if (!QUICKBOOT) {
+        if (!KERNEL_CPU_SPEED_READER_QUICKBOOT) {
             StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
             try (BufferedReader reader = new BufferedReader(new FileReader(mProcFile))) {
                 TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(' ');
@@ -106,7 +106,7 @@ public class KernelCpuSpeedReader {
      */
     public long[] readAbsolute() {
         long[] speedTimeMs = new long[mNumSpeedSteps];
-        if (!QUICKBOOT) {
+        if (!KERNEL_CPU_SPEED_READER_QUICKBOOT) {
             StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
             try (BufferedReader reader = new BufferedReader(new FileReader(mProcFile))) {
                 TextUtils.SimpleStringSplitter splitter = new TextUtils.SimpleStringSplitter(' ');

@@ -29,7 +29,7 @@ import com.android.systemui.SystemUI;
 
 import java.util.Arrays;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.NOTIFICATION_CHANNELS_QUICKBOOT;
 
 public class NotificationChannels extends SystemUI {
     public static String ALERTS      = "ALR";
@@ -77,7 +77,7 @@ public class NotificationChannels extends SystemUI {
                 NotificationManager.IMPORTANCE_DEFAULT);
         // No need to bypass DND.
 
-        if (!QUICKBOOT) {
+        if (!NOTIFICATION_CHANNELS_QUICKBOOT) {
             nm.createNotificationChannels(Arrays.asList(
                         alerts,
                         general,

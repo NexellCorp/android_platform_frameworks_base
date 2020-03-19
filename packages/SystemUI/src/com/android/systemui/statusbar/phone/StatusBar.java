@@ -250,7 +250,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.STATUS_BAR_QUICKBOOT;
 
 public class StatusBar extends SystemUI implements DemoMode,
         DragDownHelper.DragDownCallback, ActivityStarter, OnUnlockMethodChangedListener,
@@ -327,7 +327,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     private static final boolean ONLY_CORE_APPS;
 
     /** If true, the lockscreen will show a distinct wallpaper */
-    private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = !QUICKBOOT;
+    private static final boolean ENABLE_LOCKSCREEN_WALLPAPER = !STATUS_BAR_QUICKBOOT;
 
     /** Whether to force dark theme if Configuration.UI_MODE_NIGHT_YES. */
     private static final boolean DARK_THEME_IN_NIGHT_MODE = true;
@@ -3322,7 +3322,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     private void logStateToEventlog() {
-        if (!QUICKBOOT) {
+        if (!STATUS_BAR_QUICKBOOT) {
             boolean isShowing = mStatusBarKeyguardViewManager.isShowing();
             boolean isOccluded = mStatusBarKeyguardViewManager.isOccluded();
             boolean isBouncerShowing = mStatusBarKeyguardViewManager.isBouncerShowing();
@@ -3565,7 +3565,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     private boolean updateIsKeyguard() {
-        if (!QUICKBOOT) {
+        if (!STATUS_BAR_QUICKBOOT) {
             boolean wakeAndUnlocking = mFingerprintUnlockController.getMode()
                 == FingerprintUnlockController.MODE_WAKE_AND_UNLOCK;
 
@@ -4680,7 +4680,7 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     @Override
     public void onCameraLaunchGestureDetected(int source) {
-        if (!QUICKBOOT) {
+        if (!STATUS_BAR_QUICKBOOT) {
             mLastCameraLaunchSource = source;
             if (isGoingToSleep()) {
                 if (DEBUG_CAMERA_LIFT) Slog.d(TAG, "Finish going to sleep before launching camera");
@@ -4729,7 +4729,7 @@ public class StatusBar extends SystemUI implements DemoMode,
     }
 
     boolean isCameraAllowedByAdmin() {
-        if (!QUICKBOOT) {
+        if (!STATUS_BAR_QUICKBOOT) {
             if (mDevicePolicyManager.getCameraDisabled(null,
                         mLockscreenUserManager.getCurrentUserId())) {
                 return false;

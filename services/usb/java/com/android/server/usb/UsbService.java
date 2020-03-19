@@ -54,7 +54,7 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.Collections;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.USB_SERVICE_QUICKBOOT;
 
 /**
  * UsbService manages all USB related state, including both host and device support.
@@ -72,7 +72,7 @@ public class UsbService extends IUsbManager.Stub {
 
         @Override
         public void onStart() {
-            if (!QUICKBOOT) {
+            if (!USB_SERVICE_QUICKBOOT) {
                 mUsbService = new UsbService(getContext());
                 publishBinderService(Context.USB_SERVICE, mUsbService);
             }
@@ -80,7 +80,7 @@ public class UsbService extends IUsbManager.Stub {
 
         @Override
         public void onBootPhase(int phase) {
-            if (!QUICKBOOT) {
+            if (!USB_SERVICE_QUICKBOOT) {
                 if (phase == SystemService.PHASE_ACTIVITY_MANAGER_READY) {
                     mUsbService.systemReady();
                 } else if (phase == SystemService.PHASE_BOOT_COMPLETED) {

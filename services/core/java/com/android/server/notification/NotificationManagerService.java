@@ -240,7 +240,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.NOTIFICATION_MANAGER_SERVICE_QUICKBOOT;
 import android.provider.Settings.Global;
 
 /** {@hide} */
@@ -1582,7 +1582,7 @@ public class NotificationManagerService extends SystemService {
 
     @Override
     public void onStart() {
-        if (!QUICKBOOT) {
+        if (!NOTIFICATION_MANAGER_SERVICE_QUICKBOOT) {
             startHelper();
         }
         startMandatory();
@@ -1625,7 +1625,7 @@ public class NotificationManagerService extends SystemService {
 
     @Override
     public void onBootPhase(int phase) {
-        if (!QUICKBOOT) {
+        if (!NOTIFICATION_MANAGER_SERVICE_QUICKBOOT) {
             if (phase == SystemService.PHASE_SYSTEM_SERVICES_READY) {
                 // no beeping until we're basically done booting
                 mSystemReady = true;
@@ -2277,7 +2277,7 @@ public class NotificationManagerService extends SystemService {
                     break;
                 }
             }
-            
+
             if (rankNull == false) {
                 savePolicyFile();
             } else {
@@ -2311,7 +2311,7 @@ public class NotificationManagerService extends SystemService {
         @Override
         public void createNotificationChannels(String pkg,
                 ParceledListSlice channelsList) throws RemoteException {
-            if (!QUICKBOOT)
+            if (!NOTIFICATION_MANAGER_SERVICE_QUICKBOOT)
                 checkCallerIsSystemOrSameApp(pkg);
             createNotificationChannelsImpl(pkg, Binder.getCallingUid(), channelsList);
         }
@@ -4117,7 +4117,7 @@ public class NotificationManagerService extends SystemService {
         final NotificationChannel channel = mRankingHelper.getNotificationChannel(pkg,
                 notificationUid, channelId, false /* includeDeleted */);
         if (channel == null) {
-            if (!QUICKBOOT) {
+            if (!NOTIFICATION_MANAGER_SERVICE_QUICKBOOT) {
                 final String noChannelStr = "No Channel found for "
                     + "pkg=" + pkg
                     + ", channelId=" + channelId
@@ -6270,7 +6270,7 @@ public class NotificationManagerService extends SystemService {
     }
 
     private void checkCallerIsSameApp(String pkg) {
-        if (!QUICKBOOT) {
+        if (!NOTIFICATION_MANAGER_SERVICE_QUICKBOOT) {
             final int uid = Binder.getCallingUid();
             try {
                 ApplicationInfo ai = mPackageManager.getApplicationInfo(
