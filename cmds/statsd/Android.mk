@@ -149,7 +149,7 @@ ifeq ($(TARGET_BUILD_VARIANT),eng)
         -DVERY_VERBOSE_PRINTING
 endif
 
-ifeq ($(NEXELL_QUICKBOOT), false)
+ifeq ($(STATSD_QUICKBOOT), false)
 LOCAL_INIT_RC := statsd.rc
 endif
 

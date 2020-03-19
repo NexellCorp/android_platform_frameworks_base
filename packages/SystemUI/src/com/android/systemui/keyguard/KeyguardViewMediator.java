@@ -90,7 +90,7 @@ import java.io.FileDescriptor;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.KEYGUARD_VIEW_MEDIATOR_QUICKBOOT;
 
 /**
  * Mediates requests related to the keyguard.  This includes queries about the
@@ -738,7 +738,7 @@ public class KeyguardViewMediator extends SystemUI {
 
         mDeviceInteractive = mPM.isInteractive();
 
-        if (!QUICKBOOT) {
+        if (!KEYGUARD_VIEW_MEDIATOR_QUICKBOOT) {
             mLockSounds = new SoundPool(1, AudioManager.STREAM_SYSTEM, 0);
             String soundPath = Settings.Global.getString(cr, Settings.Global.LOCK_SOUND);
             if (soundPath != null) {
@@ -1725,7 +1725,7 @@ public class KeyguardViewMediator extends SystemUI {
     }
 
     private void playSound(int soundId) {
-        if (QUICKBOOT) return;
+        if (KEYGUARD_VIEW_MEDIATOR_QUICKBOOT) return;
         if (soundId == 0) return;
         final ContentResolver cr = mContext.getContentResolver();
         if (Settings.System.getInt(cr, Settings.System.LOCKSCREEN_SOUNDS_ENABLED, 1) == 1) {

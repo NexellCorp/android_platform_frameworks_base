@@ -79,7 +79,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.USAGE_STATS_SERVICE_QUICKBOOT;
 
 /**
  * A service that collects, aggregates, and persists application usage data.
@@ -210,7 +210,7 @@ public class UsageStatsService extends SystemService implements
     @Override
     public void onBootPhase(int phase) {
         int checkPhase = PHASE_SYSTEM_SERVICES_READY;
-        if (QUICKBOOT) {
+        if (USAGE_STATS_SERVICE_QUICKBOOT) {
             checkPhase = PHASE_LATE_BOOT_COMPLETED;
         }
         if (phase == checkPhase) {

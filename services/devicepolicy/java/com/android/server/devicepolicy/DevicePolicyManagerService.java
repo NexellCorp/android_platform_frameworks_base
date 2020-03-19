@@ -264,7 +264,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.DEVICE_POLICY_MANAGER_SERVICE_QUICKBOOT;
 
 /**
  * Implementation of the device policy APIs.
@@ -3353,7 +3353,7 @@ public class DevicePolicyManagerService extends BaseIDevicePolicyManager {
         if (!mHasFeature) {
             return;
         }
-        if (!QUICKBOOT) {
+        if (!DEVICE_POLICY_MANAGER_SERVICE_QUICKBOOT) {
             switch (phase) {
                 case SystemService.PHASE_LOCK_SETTINGS_READY:
                     onLockSettingsReady();
@@ -3364,7 +3364,7 @@ public class DevicePolicyManagerService extends BaseIDevicePolicyManager {
                     maybeStartSecurityLogMonitorOnActivityManagerReady();
                     break;
                 case SystemService.PHASE_BOOT_COMPLETED:
-                    if (!QUICKBOOT) {
+                    if (!DEVICE_POLICY_MANAGER_SERVICE_QUICKBOOT) {
                         ensureDeviceOwnerUserStarted(); // TODO Consider better place to do this.
                     }
                     break;

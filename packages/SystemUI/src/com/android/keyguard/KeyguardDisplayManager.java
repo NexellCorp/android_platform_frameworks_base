@@ -30,7 +30,7 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.KEYGUARD_DISPLAY_MANAGER_QUICKBOOT;
 
 // TODO(multi-display): Support multiple external displays
 public class KeyguardDisplayManager {
@@ -47,7 +47,7 @@ public class KeyguardDisplayManager {
     public KeyguardDisplayManager(Context context, ViewMediatorCallback callback) {
         mContext = context;
         mCallback = callback;
-        if (!QUICKBOOT)
+        if (!KEYGUARD_DISPLAY_MANAGER_QUICKBOOT)
             mMediaRouter = (MediaRouter) mContext.getSystemService(Context.MEDIA_ROUTER_SERVICE);
         else
             mMediaRouter = null;

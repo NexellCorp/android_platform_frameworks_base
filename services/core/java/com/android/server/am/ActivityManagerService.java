@@ -514,7 +514,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.ACTIVITY_MANAGER_SERVICE_QUICKBOOT;
 
 public class ActivityManagerService extends IActivityManager.Stub
         implements Watchdog.Monitor, BatteryStatsImpl.BatteryCallback {
@@ -4552,7 +4552,7 @@ public class ActivityManagerService extends IActivityManager.Stub
             Process.killProcessGroup(app.uid, app.pid);
             return false;
         }
-        if (!QUICKBOOT) {
+        if (!ACTIVITY_MANAGER_SERVICE_QUICKBOOT) {
             mBatteryStatsService.noteProcessStart(app.processName, app.info.uid);
             checkTime(app.startTime, "startProcess: done updating battery stats");
         }
@@ -4573,7 +4573,7 @@ public class ActivityManagerService extends IActivityManager.Stub
             Watchdog.getInstance().processStarted(app.processName, pid);
         }
 
-        if (!QUICKBOOT) {
+        if (!ACTIVITY_MANAGER_SERVICE_QUICKBOOT) {
             checkTime(app.startTime, "startProcess: building log message");
             StringBuilder buf = mStringBuilder;
             buf.setLength(0);
@@ -15322,7 +15322,7 @@ public class ActivityManagerService extends IActivityManager.Stub
         synchronized (this) {
             // Only start up encryption-aware persistent apps; once user is
             // unlocked we'll come back around and start unaware apps
-            if (!QUICKBOOT)
+            if (!ACTIVITY_MANAGER_SERVICE_QUICKBOOT)
                 startPersistentApps(PackageManager.MATCH_DIRECT_BOOT_AWARE);
 
             // Start up initial activity.
@@ -15343,7 +15343,7 @@ public class ActivityManagerService extends IActivityManager.Stub
                 }
             }
 
-            if (QUICKBOOT)
+            if (ACTIVITY_MANAGER_SERVICE_QUICKBOOT)
                 ensureBootCompleted();
 
             startHomeActivityLocked(currentUserId, "systemReady");

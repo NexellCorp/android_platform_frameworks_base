@@ -37,7 +37,7 @@ import com.android.systemui.statusbar.policy.NetworkController.SignalCallback;
 
 import java.util.Objects;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.WIFI_SIGNAL_QUICKBOOT;
 
 public class WifiSignalController extends
         SignalController<WifiSignalController.WifiState, SignalController.IconGroup> {
@@ -56,7 +56,7 @@ public class WifiSignalController extends
                 context.getSystemService(ConnectivityManager.class);
         mWifiTracker = new WifiStatusTracker(mContext, wifiManager, networkScoreManager,
                 connectivityManager, this::handleStatusUpdated);
-        if (!QUICKBOOT)
+        if (!WIFI_SIGNAL_QUICKBOOT)
             mWifiTracker.setListening(true);
         mHasMobileData = hasMobileData;
         Handler handler = new WifiHandler(Looper.getMainLooper());

@@ -33,7 +33,7 @@ import com.android.systemui.R;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.ACCESS_POINT_CONTROLLER_IMPL_QUICKBOOT;
 
 public class AccessPointControllerImpl
         implements NetworkController.AccessPointController, WifiListener {
@@ -62,7 +62,7 @@ public class AccessPointControllerImpl
     public AccessPointControllerImpl(Context context) {
         mContext = context;
         mUserManager = (UserManager) mContext.getSystemService(Context.USER_SERVICE);
-        if (!QUICKBOOT) {
+        if (!ACCESS_POINT_CONTROLLER_IMPL_QUICKBOOT) {
             mWifiTracker = new WifiTracker(context, this, false, true);
         } else {
             mWifiTracker = null;

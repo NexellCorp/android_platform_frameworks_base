@@ -175,7 +175,7 @@ import java.util.Locale;
 import java.util.WeakHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.INPUT_METHOD_MANAGER_SERVICE_QUICKBOOT;
 
 /**
  * This class provides a system service that manages input methods.
@@ -1518,12 +1518,12 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                 final int currentUserId = mSettings.getCurrentUserId();
                 mSettings.switchCurrentUser(currentUserId,
                         !mUserManager.isUserUnlockingOrUnlocked(currentUserId));
-                if (QUICKBOOT) {
+                if (INPUT_METHOD_MANAGER_SERVICE_QUICKBOOT) {
                     mKeyguardManager = null;
                 } else {
                     mKeyguardManager = mContext.getSystemService(KeyguardManager.class);
                 }
-                if (QUICKBOOT) {
+                if (INPUT_METHOD_MANAGER_SERVICE_QUICKBOOT) {
                     mNotificationManager = null;
                 } else {
                     mNotificationManager = mContext.getSystemService(NotificationManager.class);
@@ -1556,7 +1556,7 @@ public class InputMethodManagerService extends IInputMethodManager.Stub
                 buildInputMethodListLocked(!imeSelectedOnBoot /* resetDefaultEnabledIme */);
                 resetDefaultImeLocked(mContext);
                 updateFromSettingsLocked(true);
-                if (!QUICKBOOT) {
+                if (!INPUT_METHOD_MANAGER_SERVICE_QUICKBOOT) {
                     InputMethodUtils.setNonSelectedSystemImesDisabledUntilUsed(mIPackageManager,
                             mSettings.getEnabledInputMethodListLocked(), currentUserId,
                             mContext.getBasePackageName());

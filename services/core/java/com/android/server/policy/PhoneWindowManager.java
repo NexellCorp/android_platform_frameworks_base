@@ -296,7 +296,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.PHONE_WINDOW_MANAGER_QUICKBOOT;
 
 /**
  * WindowManagerPolicy implementation for the Android phone UI.  This
@@ -5697,7 +5697,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     }
 
     private void applyKeyguardPolicyLw(WindowState win, WindowState imeTarget) {
-        if (!QUICKBOOT) {
+        if (!PHONE_WINDOW_MANAGER_QUICKBOOT) {
             if (canBeHiddenByKeyguardLw(win)) {
                 if (shouldBeHiddenByKeyguard(win, imeTarget)) {
                     win.hideLw(false /* doAnimation */);

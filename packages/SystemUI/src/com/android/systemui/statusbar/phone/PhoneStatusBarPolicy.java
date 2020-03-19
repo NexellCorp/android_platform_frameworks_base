@@ -92,7 +92,7 @@ import com.android.systemui.util.NotificationChannels;
 import java.util.List;
 import java.util.Locale;
 
-import static com.android.internal.os.RoSystemProperties.QUICKBOOT;
+import static com.android.internal.os.RoSystemProperties.PHONE_STATUS_BAR_POLICY_QUICKBOOT;
 
 /**
  * This class contains all of the policy about which icons are installed in the status
@@ -246,7 +246,7 @@ public class PhoneStatusBarPolicy implements Callback, Callbacks,
         mProvisionedController.addCallback(this);
         mZenController.addCallback(this);
         mCast.addCallback(mCastCallback);
-        if (!QUICKBOOT)
+        if (!PHONE_STATUS_BAR_POLICY_QUICKBOOT)
             mHotspot.addCallback(mHotspotCallback);
         mNextAlarmController.addCallback(mNextAlarmCallback);
         mDataSaver.addCallback(this);

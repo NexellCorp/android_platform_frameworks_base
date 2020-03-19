@@ -79,6 +79,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import static com.android.internal.os.RoSystemProperties.BLUETOOTH_DELAY_QUICKBOOT;
+
 
 class BluetoothManagerService extends IBluetoothManager.Stub {
     private static final String TAG = "BluetoothManagerService";
@@ -1460,6 +1462,13 @@ class BluetoothManagerService extends IBluetoothManager.Stub {
 
         @Override
         public void handleMessage(Message msg) {
+            if(BLUETOOTH_DELAY_QUICKBOOT) {
+                if (!"1".equals(SystemProperties.get("sys.late_boot_completed"))) {
+                    mHandler.sendMessageDelayed(mHandler.obtainMessage(msg.what, msg.arg1, msg.arg2, msg.obj), 100);
+                    return;
+                }
+
+            }
             switch (msg.what) {
                 case MESSAGE_GET_NAME_AND_ADDRESS:
                     if (DBG) {
