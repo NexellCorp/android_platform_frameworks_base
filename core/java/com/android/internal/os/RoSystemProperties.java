@@ -113,8 +113,12 @@ public class RoSystemProperties {
             SystemProperties.getInt("ro.quickboot.wake_lock_state_machine", 0) == 1;
     public static final boolean WIFI_THREAD_QUICKBOOT =
             SystemProperties.getInt("ro.quickboot.wifi_thread", 0) == 1;
+    public static final boolean ZYGOTE_THREAD_QUICKBOOT =
+            SystemProperties.getInt("ro.quickboot.zygote_thread", 0) == 1;
     public static final boolean BLUETOOTH_DELAY_QUICKBOOT =
             SystemProperties.getInt("ro.quickboot.bluetooth_delay", 0) == 1;
+    public static final boolean SYSTEM_SERVER_THREAD_QUICKBOOT =
+            SystemProperties.getInt("ro.quickboot.system_server_thread", 0) == 1;
 
     // ------ ro.config.* -------- //
     public static final boolean CONFIG_AVOID_GFX_ACCEL =

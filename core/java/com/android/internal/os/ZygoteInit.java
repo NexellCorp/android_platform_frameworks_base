@@ -70,6 +70,10 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.Provider;
 import java.security.Security;
+import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
+
+import static com.android.internal.os.RoSystemProperties.ZYGOTE_THREAD_QUICKBOOT;
 
 /**
  * Startup class for the zygote process.
@@ -119,9 +123,12 @@ public class ZygoteInit {
     private static final int ROOT_GID = 0;
 
     private static boolean sPreloadComplete;
+    private static CountDownLatch pclassCountDown;
+    private static CountDownLatch ptextCountDown;
 
     static void preload(TimingsTraceLog bootTimingsTraceLog) {
         Log.d(TAG, "begin preload");
+        preloadTextResources();
         bootTimingsTraceLog.traceBegin("BeginIcuCachePinning");
         beginIcuCachePinning();
         bootTimingsTraceLog.traceEnd(); // BeginIcuCachePinning
@@ -138,7 +145,6 @@ public class ZygoteInit {
         preloadOpenGL();
         Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
         preloadSharedLibraries();
-        preloadTextResources();
         // Ask the WebViewFactory to do any initialization that must run in the zygote process,
         // for memory sharing purposes.
         WebViewFactory.prepareWebViewInZygote();
@@ -197,8 +203,23 @@ public class ZygoteInit {
     }
 
     private static void preloadTextResources() {
-        Hyphenator.init();
-        TextView.preloadFontCache();
+        if (!ZYGOTE_THREAD_QUICKBOOT) {
+            Hyphenator.init();
+            TextView.preloadFontCache();
+        } else {
+            class PreloadTextResourceThread  extends Thread {
+                @Override
+                    public void run() {
+                        Hyphenator.init();
+                        TextView.preloadFontCache();
+                        ptextCountDown.countDown();
+                    }
+                }
+
+            ptextCountDown = new CountDownLatch(1);
+            PreloadTextResourceThread thread = new PreloadTextResourceThread();
+            thread.start();
+        }
     }
 
     /**
@@ -238,106 +259,252 @@ public class ZygoteInit {
      * a few will allocate a dozen Kbytes (in one case, 500+K).
      */
     private static void preloadClasses() {
-        final VMRuntime runtime = VMRuntime.getRuntime();
+        if (ZYGOTE_THREAD_QUICKBOOT) {
+            class PreloadClassThread extends Thread {
+                ArrayList<String> preloadList;
+                public void setList(ArrayList<String> list) {
+                    this.preloadList = list;
+                }
 
-        InputStream is;
-        try {
-            is = new FileInputStream(PRELOADED_CLASSES);
-        } catch (FileNotFoundException e) {
-            Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + ".");
-            return;
-        }
+                @Override
+                public void run() {
+                    try {
+                        for (String line: preloadList) {
+                            try {
+                                Class.forName(line, true, null);
+                            } catch (ClassNotFoundException e) {
+                                Log.w(TAG, "Class not found for preloading: " + line);
+                            } catch (UnsatisfiedLinkError e) {
+                                Log.w(TAG, "Problem preloading " + line + ": " + e);
+                            } catch (Throwable t) {
+                                Log.e(TAG, "Error preloading " + line + ".", t);
+                                if (t instanceof Error) {
+                                    throw (Error) t;
+                                }
+                                if (t instanceof RuntimeException) {
+                                    throw (RuntimeException) t;
+                                }
+                                throw new RuntimeException(t);
+                            }
+                        }
+                    } catch (Exception err) {
+                        throw err;
+                    } finally {
+                        pclassCountDown.countDown();
+                    }
+                }
+            }
 
-        Log.i(TAG, "Preloading classes...");
-        long startTime = SystemClock.uptimeMillis();
+            final VMRuntime runtime = VMRuntime.getRuntime();
 
-        // Drop root perms while running static initializers.
-        final int reuid = Os.getuid();
-        final int regid = Os.getgid();
-
-        // We need to drop root perms only if we're already root. In the case of "wrapped"
-        // processes (see WrapperInit), this function is called from an unprivileged uid
-        // and gid.
-        boolean droppedPriviliges = false;
-        if (reuid == ROOT_UID && regid == ROOT_GID) {
+            InputStream is;
             try {
-                Os.setregid(ROOT_GID, UNPRIVILEGED_GID);
-                Os.setreuid(ROOT_UID, UNPRIVILEGED_UID);
-            } catch (ErrnoException ex) {
-                throw new RuntimeException("Failed to drop root", ex);
+                is = new FileInputStream(PRELOADED_CLASSES);
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + ".");
+                return;
             }
 
-            droppedPriviliges = true;
+            Log.i(TAG, "Preloading classes...");
+            long startTime = SystemClock.uptimeMillis();
+
+            // Drop root perms while running static initializers.
+            final int reuid = Os.getuid();
+            final int regid = Os.getgid();
+
+            // We need to drop root perms only if we're already root. In the case of "wrapped"
+            // processes (see WrapperInit), this function is called from an unprivileged uid
+            // and gid.
+            boolean droppedPriviliges = false;
+            if (reuid == ROOT_UID && regid == ROOT_GID) {
+                try {
+                    Os.setregid(ROOT_GID, UNPRIVILEGED_GID);
+                    Os.setreuid(ROOT_UID, UNPRIVILEGED_UID);
+                } catch (ErrnoException ex) {
+                    throw new RuntimeException("Failed to drop root", ex);
+                }
+
+                droppedPriviliges = true;
+            }
+
+            // Alter the target heap utilization.  With explicit GCs this
+            // is not likely to have any effect.
+            float defaultUtilization = runtime.getTargetHeapUtilization();
+            runtime.setTargetHeapUtilization(0.8f);
+            ArrayList<String> list_all = new ArrayList<String>();
+            ArrayList<String> list = new ArrayList<String>();
+            ArrayList<ArrayList<String>> task_list = new ArrayList<ArrayList<String>>();
+            int list_len = 0;
+
+            try {
+                BufferedReader br
+                    = new BufferedReader(new InputStreamReader(is), 256);
+
+                int count = 0;
+                String line;
+                while ((line = br.readLine()) != null) {
+                    // Skip comments and blank lines.
+                    //Split to multiple thread. Each thread handle 1600 classes.
+                    list.add(line);
+                    list_len ++;
+                    if (list_len >= 1600) {
+                        list = new ArrayList<String>();
+                        list_len = 0;
+                        task_list.add(list);
+                    }
+
+                    Trace.traceBegin(Trace.TRACE_TAG_DALVIK, line);
+                    Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+                }
+                if (list_len != 0) {
+                    list = new ArrayList<String>();
+                    task_list.add(list);
+                }
+                pclassCountDown = new CountDownLatch(task_list.size());
+                for(ArrayList<String> onelist: task_list) {
+                    PreloadClassThread thread = new PreloadClassThread();
+                    thread.setList(onelist);
+                    thread.start();
+                }
+
+                Log.i(TAG, "...preloaded " + count + " classes in "
+                        + (SystemClock.uptimeMillis()-startTime) + "ms.");
+            } catch (IOException e) {
+                Log.e(TAG, "Error reading " + PRELOADED_CLASSES + ".", e);
+            } finally {
+                IoUtils.closeQuietly(is);
+                // Restore default.
+                runtime.setTargetHeapUtilization(defaultUtilization);
+                // Fill in dex caches with classes, fields, and methods brought in by preloading.
+                Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadDexCaches");
+                runtime.preloadDexCaches();
+                Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+                // Bring back root. We'll need it later if we're in the zygote.
+                if (droppedPriviliges) {
+                    try {
+                        Os.setreuid(ROOT_UID, ROOT_UID);
+                        Os.setregid(ROOT_GID, ROOT_GID);
+                    } catch (ErrnoException ex) {
+                        throw new RuntimeException("Failed to restore root", ex);
+                    }
+                }
+            }
+        } else {
+            final VMRuntime runtime = VMRuntime.getRuntime();
+
+            InputStream is;
+            try {
+                is = new FileInputStream(PRELOADED_CLASSES);
+            } catch (FileNotFoundException e) {
+                Log.e(TAG, "Couldn't find " + PRELOADED_CLASSES + ".");
+                return;
+            }
+
+            Log.i(TAG, "Preloading classes...");
+            long startTime = SystemClock.uptimeMillis();
+
+            // Drop root perms while running static initializers.
+            final int reuid = Os.getuid();
+            final int regid = Os.getgid();
+
+            // We need to drop root perms only if we're already root. In the case of "wrapped"
+            // processes (see WrapperInit), this function is called from an unprivileged uid
+            // and gid.
+            boolean droppedPriviliges = false;
+            if (reuid == ROOT_UID && regid == ROOT_GID) {
+                try {
+                    Os.setregid(ROOT_GID, UNPRIVILEGED_GID);
+                    Os.setreuid(ROOT_UID, UNPRIVILEGED_UID);
+                } catch (ErrnoException ex) {
+                    throw new RuntimeException("Failed to drop root", ex);
+                }
+
+                droppedPriviliges = true;
+            }
+
+            // Alter the target heap utilization.  With explicit GCs this
+            // is not likely to have any effect.
+            float defaultUtilization = runtime.getTargetHeapUtilization();
+            runtime.setTargetHeapUtilization(0.8f);
+
+            try {
+                BufferedReader br
+                    = new BufferedReader(new InputStreamReader(is), 256);
+
+                int count = 0;
+                String line;
+                while ((line = br.readLine()) != null) {
+                    // Skip comments and blank lines.
+                    line = line.trim();
+                    if (line.startsWith("#") || line.equals("")) {
+                        continue;
+                    }
+
+                    Trace.traceBegin(Trace.TRACE_TAG_DALVIK, line);
+                    try {
+                        if (false) {
+                            Log.v(TAG, "Preloading " + line + "...");
+                        }
+                        // Load and explicitly initialize the given class. Use
+                        // Class.forName(String, boolean, ClassLoader) to avoid repeated stack lookups
+                        // (to derive the caller's class-loader). Use true to force initialization, and
+                        // null for the boot classpath class-loader (could as well cache the
+                        // class-loader of this class in a variable).
+                        Class.forName(line, true, null);
+                        count++;
+                    } catch (ClassNotFoundException e) {
+                        Log.w(TAG, "Class not found for preloading: " + line);
+                    } catch (UnsatisfiedLinkError e) {
+                        Log.w(TAG, "Problem preloading " + line + ": " + e);
+                    } catch (Throwable t) {
+                        Log.e(TAG, "Error preloading " + line + ".", t);
+                        if (t instanceof Error) {
+                            throw (Error) t;
+                        }
+                        if (t instanceof RuntimeException) {
+                            throw (RuntimeException) t;
+                        }
+                        throw new RuntimeException(t);
+                    }
+                    Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+                }
+
+                Log.i(TAG, "...preloaded " + count + " classes in "
+                        + (SystemClock.uptimeMillis()-startTime) + "ms.");
+            } catch (IOException e) {
+                Log.e(TAG, "Error reading " + PRELOADED_CLASSES + ".", e);
+            } finally {
+                IoUtils.closeQuietly(is);
+                // Restore default.
+                runtime.setTargetHeapUtilization(defaultUtilization);
+
+                // Fill in dex caches with classes, fields, and methods brought in by preloading.
+                Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadDexCaches");
+                runtime.preloadDexCaches();
+                Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
+
+                // Bring back root. We'll need it later if we're in the zygote.
+                if (droppedPriviliges) {
+                    try {
+                        Os.setreuid(ROOT_UID, ROOT_UID);
+                        Os.setregid(ROOT_GID, ROOT_GID);
+                    } catch (ErrnoException ex) {
+                        throw new RuntimeException("Failed to restore root", ex);
+                    }
+                }
+            }
         }
 
-        // Alter the target heap utilization.  With explicit GCs this
-        // is not likely to have any effect.
-        float defaultUtilization = runtime.getTargetHeapUtilization();
-        runtime.setTargetHeapUtilization(0.8f);
+    }
 
-        try {
-            BufferedReader br
-                = new BufferedReader(new InputStreamReader(is), 256);
-
-            int count = 0;
-            String line;
-            while ((line = br.readLine()) != null) {
-                // Skip comments and blank lines.
-                line = line.trim();
-                if (line.startsWith("#") || line.equals("")) {
-                    continue;
-                }
-
-                Trace.traceBegin(Trace.TRACE_TAG_DALVIK, line);
+    private static void waitForPreloadAsync() {
+        if(ZYGOTE_THREAD_QUICKBOOT) {
+            if (pclassCountDown != null) {
                 try {
-                    if (false) {
-                        Log.v(TAG, "Preloading " + line + "...");
-                    }
-                    // Load and explicitly initialize the given class. Use
-                    // Class.forName(String, boolean, ClassLoader) to avoid repeated stack lookups
-                    // (to derive the caller's class-loader). Use true to force initialization, and
-                    // null for the boot classpath class-loader (could as well cache the
-                    // class-loader of this class in a variable).
-                    Class.forName(line, true, null);
-                    count++;
-                } catch (ClassNotFoundException e) {
-                    Log.w(TAG, "Class not found for preloading: " + line);
-                } catch (UnsatisfiedLinkError e) {
-                    Log.w(TAG, "Problem preloading " + line + ": " + e);
-                } catch (Throwable t) {
-                    Log.e(TAG, "Error preloading " + line + ".", t);
-                    if (t instanceof Error) {
-                        throw (Error) t;
-                    }
-                    if (t instanceof RuntimeException) {
-                        throw (RuntimeException) t;
-                    }
-                    throw new RuntimeException(t);
-                }
-                Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
-            }
-
-            Log.i(TAG, "...preloaded " + count + " classes in "
-                    + (SystemClock.uptimeMillis()-startTime) + "ms.");
-        } catch (IOException e) {
-            Log.e(TAG, "Error reading " + PRELOADED_CLASSES + ".", e);
-        } finally {
-            IoUtils.closeQuietly(is);
-            // Restore default.
-            runtime.setTargetHeapUtilization(defaultUtilization);
-
-            // Fill in dex caches with classes, fields, and methods brought in by preloading.
-            Trace.traceBegin(Trace.TRACE_TAG_DALVIK, "PreloadDexCaches");
-            runtime.preloadDexCaches();
-            Trace.traceEnd(Trace.TRACE_TAG_DALVIK);
-
-            // Bring back root. We'll need it later if we're in the zygote.
-            if (droppedPriviliges) {
-                try {
-                    Os.setreuid(ROOT_UID, ROOT_UID);
-                    Os.setregid(ROOT_GID, ROOT_GID);
-                } catch (ErrnoException ex) {
-                    throw new RuntimeException("Failed to restore root", ex);
+                    pclassCountDown.await();
+                    ptextCountDown.await();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }
@@ -708,6 +875,10 @@ public class ZygoteInit {
                 parsedArgs.runtimeFlags |= Zygote.PROFILE_SYSTEM_SERVER;
             }
 
+            if (ZYGOTE_THREAD_QUICKBOOT) {
+                waitForPreloadAsync();
+            }
+
             /* Request to fork the system server process */
             pid = Zygote.forkSystemServer(
                     parsedArgs.uid, parsedArgs.gid,
@@ -752,7 +923,9 @@ public class ZygoteInit {
 
         // Mark zygote start. This ensures that thread creation will throw
         // an error.
-        ZygoteHooks.startZygoteNoThreadCreation();
+        if (!ZYGOTE_THREAD_QUICKBOOT) {
+            ZygoteHooks.startZygoteNoThreadCreation();
+        }
 
         // Zygote goes into its own process group.
         try {
@@ -827,7 +1000,9 @@ public class ZygoteInit {
             // Zygote process unmounts root storage spaces.
             Zygote.nativeUnmountStorageOnInit();
 
-            ZygoteHooks.stopZygoteNoThreadCreation();
+            if (!ZYGOTE_THREAD_QUICKBOOT) {
+                ZygoteHooks.stopZygoteNoThreadCreation();
+            }
 
             if (startSystemServer) {
                 Runnable r = forkSystemServer(abiList, socketName, zygoteServer);
