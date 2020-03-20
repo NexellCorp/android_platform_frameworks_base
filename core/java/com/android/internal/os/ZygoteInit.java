@@ -985,6 +985,28 @@ public class ZygoteInit {
                 Zygote.resetNicePriority();
             }
 
+            // for CRIU
+            if (SystemProperties.getBoolean("ro.checkpoint_restore", false)) {
+                Log.i(TAG, "CRIU:  start checkpoint restore : " + Integer.toString(android.os.Process.myPid()));
+
+                File checkDumpFile = new File("/data/criu/flags/dumped");
+                if (!checkDumpFile.exists()) {
+                    SystemProperties.set("sys.criu.do_dump", "true");
+                }
+
+                int waitCount = 0;
+                File checkResotreFile = new File("/data/criu/flags/restored");
+                boolean isExist = checkResotreFile.exists();
+                while (!isExist) {
+                    waitCount++;
+                    isExist = checkResotreFile.exists();
+                }
+
+                checkResotreFile.delete();
+
+                Log.i(TAG, "CRIU: restored");
+            }
+
             // Do an initial gc to clean up after startup
             bootTimingsTraceLog.traceBegin("PostZygoteInitGC");
             gcAndFinalize();
