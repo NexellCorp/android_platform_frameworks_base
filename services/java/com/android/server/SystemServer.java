@@ -3050,6 +3050,12 @@ public final class SystemServer {
         SystemProperties.set("sys.late_boot_completed", "1");
         SystemNotificationChannels.createAll(context);
         traceEnd();
+
+        if(WIFI_THREAD_QUICKBOOT) {
+            if (mNetworkPrepare != null) {
+                ConcurrentUtils.waitForFutureNoInterrupt(mNetworkPrepare, START_NETWORK);
+            }
+        }
     }
 
     static final void startSystemUi(Context context, WindowManagerService windowManager) {
